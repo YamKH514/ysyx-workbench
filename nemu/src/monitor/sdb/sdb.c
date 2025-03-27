@@ -18,6 +18,7 @@
 #include <readline/readline.h>
 #include <readline/history.h>
 #include <utils.h>
+#include <stdlib.h>
 #include "sdb.h"
 
 static int is_batch_mode = false;
@@ -48,6 +49,11 @@ static int cmd_c(char *args) {
   return 0;
 }
 
+static int cmd_si(char *args) {
+  int N = (args == NULL) ? 1 : (atoi(args));
+  cpu_exec(N);
+  return 0;
+}
 
 static int cmd_q(char *args) {
   nemu_state.state = NEMU_END;
@@ -64,6 +70,7 @@ static struct {
   { "help", "Display information about all supported commands", cmd_help },
   { "c", "Continue the execution of the program", cmd_c },
   { "q", "Exit NEMU", cmd_q },
+  {"si", "Let's the programepause after executing N instructions in a single step. N defaults to 1", cmd_si},
 
   /* TODO: Add more commands */
 
