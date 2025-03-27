@@ -55,6 +55,19 @@ static int cmd_si(char *args) {
   return 0;
 }
 
+static int cmd_info(char *args) {
+  if(strcmp(args, "r") == 0) {
+    isa_reg_display();
+  }
+  else if(strcmp(args, "w") == 0) {
+    printf("Printing of monitoring point information is not yet realized.\n");
+  }
+  else {
+    printf("Unknown argument\n");
+  }
+  return 0;
+}
+
 static int cmd_q(char *args) {
   nemu_state.state = NEMU_END;
   return -1;
@@ -71,6 +84,7 @@ static struct {
   { "c", "Continue the execution of the program", cmd_c },
   { "q", "Exit NEMU", cmd_q },
   {"si", "Let's the programepause after executing N instructions in a single step. N defaults to 1", cmd_si},
+  {"info", "Type r to print the register, type w for status watchpoint information", cmd_info}
 
   /* TODO: Add more commands */
 
