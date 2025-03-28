@@ -19,6 +19,7 @@
 #include <readline/history.h>
 #include <utils.h>
 #include <stdlib.h>
+#include <memory/paddr.h>
 #include "sdb.h"
 
 static int is_batch_mode = false;
@@ -55,6 +56,32 @@ static int cmd_si(char *args) {
   return 0;
 }
 
+static int cmd_info(char *args) {
+  if(strcmp(args, "r") == 0) {
+    isa_reg_display();
+  }
+  else if(strcmp(args, "w") == 0) {
+    printf("Printing of monitoring point information is not yet realized.\n");
+  }
+  else {
+    printf("Unknown argument\n");
+  }
+  return 0;
+}
+
+static int cmd_x(char* args) {
+  int n = atoi(strtok(args, " "));
+  char* expr = strtok(NULL, " ");
+  paddr_t addr = 0;
+
+  addr = strtoul(expr, NULL, 16);
+  for(int i = 0; i < n; i++) {
+    printf("0x%08x  0x%08x\n", addr, paddr_read(addr, 4));
+    addr += 4;
+  }
+  return 0;
+}
+
 static int cmd_q(char *args) {
   nemu_state.state = NEMU_END;
   return -1;
@@ -71,6 +98,8 @@ static struct {
   { "c", "Continue the execution of the program", cmd_c },
   { "q", "Exit NEMU", cmd_q },
   {"si", "Let's the programepause after executing N instructions in a single step. N defaults to 1", cmd_si},
+  {"info", "Type r to print the register, type w for status watchpoint information", cmd_info},
+  {"x", "x N EXPR, Scanning Memory, Outputs N consecutive 4 bytes starting from EXPR", cmd_x},
 
   /* TODO: Add more commands */
 
