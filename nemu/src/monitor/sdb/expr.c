@@ -161,7 +161,7 @@ int get_priority(int type) {
   }
 }
 
-int eval(int p, int q, bool *success) {
+word_t eval(int p, int q, bool *success) {
   *success = true;
   if (p > q) {
     printf("Bad expression.\n");
@@ -230,8 +230,5 @@ word_t expr(char *e, bool *success) {
   }
 
   /* TODO: Insert codes to evaluate the expression. */
-  int result = eval(0, nr_token - 1, success);
-  printf("Result: %d\n", result);
-
-  return 0;
+  return eval(0, nr_token - 1, success);
 }

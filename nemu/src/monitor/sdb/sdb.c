@@ -103,11 +103,17 @@ static int cmd_p(char *args) {
   //   return 0;
   // }
 
+  word_t res;
   bool *success;
   success = (bool *)malloc(sizeof(bool));
-  expr(args, success);
+  res = expr(args, success);
 
-  if(success == false) printf("Unable to evaluate mathematical expressions.\n");
+  if(success) {
+    printf("Result: %u\n", res);
+  }
+  else {
+    printf("Unable to evaluate mathematical expressions.\n");
+  }
 
   free(success);
 
