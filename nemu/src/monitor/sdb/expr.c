@@ -161,9 +161,11 @@ int get_priority(int type) {
   }
 }
 
-int eval(int p, int q) {
+int eval(int p, int q, bool *success) {
+  *success = true;
   if (p > q) {
     printf("Bad expression.\n");
+    *success = false;
     return 0;
   }
   else if (p == q) {
@@ -172,11 +174,12 @@ int eval(int p, int q) {
     }
     else {
       printf("Unknow Token Type.\n");
-      return false;
+      *success = false;
+      return 0;
     }
   }
   else if (check_parentheses(p, q) == true) {
-    return eval(p + 1, q - 1);
+    return eval(p + 1, q - 1, success);
   }
   else {
     int op = -1, lowest_priority = 10;
@@ -197,11 +200,12 @@ int eval(int p, int q) {
 
     if(op == -1) {
       printf("Cannot find out principal operator.\n");
+      *success = false;
       return 0;
     }
 
-    int val1 = eval(p, op - 1);
-    int val2 = eval(op + 1, q);
+    int val1 = eval(p, op - 1, success);
+    int val2 = eval(op + 1, q, success);
 
     switch (tokens[op].type) {
       case '+': return val1 + val2;
@@ -210,6 +214,7 @@ int eval(int p, int q) {
       case '/': 
         if(val2 == 0) {
           printf("ERROR: Not divisible by zero\n");
+          *success = false;
           return 0;
         }
         return val1 / val2;
@@ -225,8 +230,7 @@ word_t expr(char *e, bool *success) {
   }
 
   /* TODO: Insert codes to evaluate the expression. */
-  *success = true;
-  int result = eval(0, nr_token - 1);
+  int result = eval(0, nr_token - 1, success);
   printf("Result: %d\n", result);
 
   return 0;

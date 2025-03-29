@@ -82,7 +82,27 @@ static int cmd_x(char *args) {
   return 0;
 }
 
+// static void cmd_p_test() {
+//   const char *nemu_home = getenv("NEMU_HOME");
+//   if(nemu_home == NULL) {
+//     fprintf(stderr, "Error: NEMU_HOME environment variable not set.\n");
+//     exit(1);
+//   }
+//   char filepath[512];
+//   snprintf(filepath, sizeof(filepath), "%s/nemu/tools/gen-expr/input", nemu_home);
+
+//   FILE *fp = fopen(filepath, "r");
+//   if(fp == NULL) assert(0);
+
+
+// }
+
 static int cmd_p(char *args) {
+  // if(strcmp(args, "test") == 0) {
+  //   cmd_p_test();
+  //   return 0;
+  // }
+
   bool *success;
   success = (bool *)malloc(sizeof(bool));
   expr(args, success);
