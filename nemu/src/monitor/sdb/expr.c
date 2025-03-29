@@ -45,8 +45,8 @@ static struct rule {
   {"\\*", '*'},         // mul
   {"\\/", '/'},         // div
   {"==", TK_EQ},        // equal
-  {"(", TK_LEFT_BRACKET},
-  {")", TK_RIGHT_BRACKET},
+  {"\\(", TK_LEFT_BRACKET},
+  {"\\)", TK_RIGHT_BRACKET},
   {"[0-9]+", TK_NUM},
 };
 
