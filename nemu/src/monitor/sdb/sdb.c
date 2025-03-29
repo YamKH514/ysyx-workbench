@@ -83,7 +83,8 @@ static int cmd_x(char *args) {
 }
 
 static int cmd_p(char *args) {
-  bool *success = false;
+  bool *success;
+  success = (bool *)malloc(sizeof(bool));
   expr(args, success);
 
   if(success == false) printf("Unable to evaluate mathematical expressions.\n");
