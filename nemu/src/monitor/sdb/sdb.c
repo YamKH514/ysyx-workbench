@@ -89,6 +89,8 @@ static int cmd_p(char *args) {
 
   if(success == false) printf("Unable to evaluate mathematical expressions.\n");
 
+  free(success);
+
   return 0;
 }
 
