@@ -14,6 +14,9 @@
 ***************************************************************************************/
 
 #include <isa.h>
+#include <stdlib.h>
+#include <assert.h>
+#include <stdbool.h>
 
 /* We use the POSIX regex functions to process regular expressions.
  * Type 'man regex' for more information about POSIX regex functions.
@@ -21,7 +24,7 @@
 #include <regex.h>
 
 enum {
-  TK_NOTYPE = 256, TK_EQ,
+  TK_NOTYPE = 256, TK_EQ, TK_LEFT_BRACKET, TK_RIGHT_BRACKET, TK_NUM,
 
   /* TODO: Add more token types */
 
@@ -38,7 +41,13 @@ static struct rule {
 
   {" +", TK_NOTYPE},    // spaces
   {"\\+", '+'},         // plus
+  {"\\-", '-'},         // sub
+  {"\\*", '*'},         // mul
+  {"\\/", '/'},         // div
   {"==", TK_EQ},        // equal
+  {"(", TK_LEFT_BRACKET},
+  {")", TK_RIGHT_BRACKET},
+  {"[0-9]+", TK_NUM},
 };
 
 #define NR_REGEX ARRLEN(rules)
@@ -95,7 +104,22 @@ static bool make_token(char *e) {
          */
 
         switch (rules[i].token_type) {
-          default: TODO();
+          case '+': case '-': case '*': case '/': case '(': case ')':
+            tokens[nr_token].type = rules[i].token_type;
+            nr_token ++;
+            break;
+          case TK_NUM:
+            assert(substr_len < 32);
+            tokens[nr_token].type = rules[i].token_type;
+            strncpy(tokens[nr_token].str, substr_start, substr_len);
+            tokens[nr_token].str[substr_len] = '\0';
+            nr_token ++;
+            break;
+          case TK_NOTYPE:
+            break;
+          default:
+            printf("Unknow token type at position %d\n", position);
+            return false;
         }
 
         break;
@@ -111,6 +135,88 @@ static bool make_token(char *e) {
   return true;
 }
 
+bool check_parentheses(int p, int q) {
+  if (tokens[p].type != TK_LEFT_BRACKET || tokens[q].type != TK_RIGHT_BRACKET) {
+    return false;
+  }
+
+  int cnt = 0;
+
+  for(int i = p; i <= q; i++) {
+    if(tokens[i].type == TK_LEFT_BRACKET) cnt ++;
+    if(tokens[i].type == TK_RIGHT_BRACKET) cnt --;
+
+    if(cnt == 0 && i < q) return false;
+    if(cnt < 0) return false;
+  }
+
+  return cnt == 0;
+}
+
+int get_priority(int type) {
+  switch(type) {
+    case '+': case '-': return 1;
+    case '*': case '/': return 2;
+    default: return 10;
+  }
+}
+
+int eval(int p, int q) {
+  if (p > q) {
+    printf("Bad expression.\n");
+    return false;
+  }
+  else if (p == q) {
+    if(tokens[p].type == TK_NUM) {
+      return atoi(tokens[p].str);
+    }
+    else {
+      printf("Unknow Token Type.\n");
+      return false;
+    }
+  }
+  else if (check_parentheses(p, q) == true) {
+    return eval(p + 1, q - 1);
+  }
+  else {
+    int op = -1, lowest_priority = 10;
+    int cnt = 0;
+
+    for(int i = p; i <= q; i++) {
+      if(tokens[i].type == TK_LEFT_BRACKET) cnt ++;
+      if(tokens[i].type == TK_RIGHT_BRACKET) cnt --;
+
+      if(cnt == 0) {
+        int priority = get_priority(tokens[i].type);
+        if(priority <= lowest_priority) {
+          lowest_priority = priority;
+          op = i;
+        }
+      }
+    }
+
+    if(op == -1) {
+      printf("Cannot find out principal operator.\n");
+      return 0;
+    }
+
+    int val1 = eval(p, op - 1);
+    int val2 = eval(op + 1, q);
+
+    switch (tokens[op].type) {
+      case '+': return val1 + val2;
+      case '-': return val1 - val2;
+      case '*': return val1 * val2;
+      case '/': 
+        if(val2 == 0) {
+          printf("ERROR: Not divisible by zero\n");
+          return 0;
+        }
+        return val1 / val2;
+      default: assert(0);
+    }
+  }
+}
 
 word_t expr(char *e, bool *success) {
   if (!make_token(e)) {
@@ -119,7 +225,8 @@ word_t expr(char *e, bool *success) {
   }
 
   /* TODO: Insert codes to evaluate the expression. */
-  TODO();
+  *success = true;
+  return eval(0, nr_token - 1);
 
   return 0;
 }

@@ -69,7 +69,7 @@ static int cmd_info(char *args) {
   return 0;
 }
 
-static int cmd_x(char* args) {
+static int cmd_x(char *args) {
   int n = atoi(strtok(args, " "));
   char* expr = strtok(NULL, " ");
   paddr_t addr = 0;
@@ -79,6 +79,16 @@ static int cmd_x(char* args) {
     printf("0x%08x  0x%08x\n", addr, paddr_read(addr, 4));
     addr += 4;
   }
+  return 0;
+}
+
+static int cmd_p(char *args) {
+  bool *success = false;
+  int result = expr(args, success);
+
+  if(*success == true) printf("Result: %d\n", result);
+  else if(*success == false) printf("Unable to evaluate mathematical expressions.\n");
+
   return 0;
 }
 
@@ -100,6 +110,7 @@ static struct {
   {"si", "Let's the programepause after executing N instructions in a single step. N defaults to 1", cmd_si},
   {"info", "Type r to print the register, type w for status watchpoint information", cmd_info},
   {"x", "x N EXPR, Scanning Memory, Outputs N consecutive 4 bytes starting from EXPR", cmd_x},
+  {"p", "p EXPR, Find the value of the expression EXPR", cmd_p},
 
   /* TODO: Add more commands */
 
