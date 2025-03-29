@@ -84,10 +84,9 @@ static int cmd_x(char *args) {
 
 static int cmd_p(char *args) {
   bool *success = false;
-  int result = expr(args, success);
+  expr(args, success);
 
-  if(*success == true) printf("Result: %d\n", result);
-  else if(*success == false) printf("Unable to evaluate mathematical expressions.\n");
+  if(success == false) printf("Unable to evaluate mathematical expressions.\n");
 
   return 0;
 }
