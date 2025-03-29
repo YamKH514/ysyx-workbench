@@ -31,8 +31,65 @@ static char *code_format =
 "  return 0; "
 "}";
 
+int buf_position = 0;
+
+uint32_t choose(uint32_t n) {
+  return (rand() % n);
+}
+
+uint32_t get_rand_num(void) {
+  return (rand() % 4294967296);
+}
+
+void gen_num(void) {
+  char num[12];
+  sprintf(num, "%u", get_rand_num());
+  int len = strlen(num);
+  if(buf_position + len < sizeof(buf) - 1) {
+    strcat(buf, num);
+    buf_position += len;
+  }
+}
+
+void gen(char c) {
+  if(buf_position < sizeof(buf) - 2) {
+    buf[buf_position] = c;
+    buf[buf_position + 1] = '\0';
+    buf_position++;
+  }
+}
+
+void gen_rand_op(void) {
+  switch(choose(4)) {
+    case 0:
+      gen('+');
+      break;
+    case 1:
+      gen('-');
+      break;
+    case 2:
+      gen('*');
+      break;
+    case 3:
+      gen('/');
+      break;
+  }
+}
+
 static void gen_rand_expr() {
-  buf[0] = '\0';
+  if(buf_position + 32 >= sizeof(buf)) return;
+
+  switch(choose(3)) {
+    case 0:
+      gen_num();
+      break;
+    case 1:
+      gen('('); gen_rand_expr(); gen(')');
+      break;
+    default:
+      gen_rand_expr(); gen_rand_op(); gen_rand_expr();
+      break;
+  }
 }
 
 int main(int argc, char *argv[]) {
