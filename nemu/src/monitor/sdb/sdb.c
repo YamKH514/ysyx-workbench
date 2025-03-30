@@ -75,14 +75,23 @@ static int cmd_info(char *args) {
 }
 
 static int cmd_x(char *args) {
+  bool *success;
+  success = (bool *)malloc(sizeof(bool));
   int n = atoi(strtok(args, " "));
-  char* expr = strtok(NULL, " ");
+  char* expression = strtok(NULL, " ");
   paddr_t addr = 0;
 
-  addr = strtoul(expr, NULL, 16);
-  for(int i = 0; i < n; i++) {
-    printf("0x%08x  0x%08x\n", addr, paddr_read(addr, 4));
-    addr += 4;
+  addr = expr(expression, success);
+  if(*success == true) {
+    for(int i = 0; i < n; i++) {
+      printf("0x%08x  0x%08x\n", addr, paddr_read(addr, 4));
+      addr += 4;
+    }
+    free(success);
+  }
+  else {
+    free(success);
+    assert(0);
   }
   return 0;
 }
@@ -116,7 +125,7 @@ static void cmd_p_test() {
     }
 
     result = expr(expression, success);
-    if((result != test_result) || !success) {
+    if((result != test_result) || !(*success)) {
       printf("Incorrect calculation results: line %d, correct result: %u, result: %u\n", line_num, test_result, result);
       error_num ++;
       assert(0);

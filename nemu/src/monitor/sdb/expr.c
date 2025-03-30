@@ -24,7 +24,7 @@
 #include <regex.h>
 
 enum {
-  TK_NOTYPE = 256, TK_EQ, TK_LEFT_BRACKET, TK_RIGHT_BRACKET, TK_NUM,
+  TK_NOTYPE = 256, TK_EQ, TK_LEFT_BRACKET, TK_RIGHT_BRACKET, TK_NUM, TK_HEX_NUM, TK_REG, TK_NOT_EQ, TK_AND, TK_POINTER,
 
   /* TODO: Add more token types */
 
@@ -39,12 +39,16 @@ static struct rule {
    * Pay attention to the precedence level of different rules.
    */
 
+  {"0x[0-9a-fA-F]+", TK_HEX_NUM},
+  {"$[a-zA-Z0-9]+", TK_REG},
   {" +", TK_NOTYPE},    // spaces
   {"\\+", '+'},         // plus
   {"\\-", '-'},         // sub
   {"\\*", '*'},         // mul
   {"\\/", '/'},         // div
   {"==", TK_EQ},        // equal
+  {"!=", TK_NOT_EQ},
+  {"&&", TK_AND},
   {"\\(", TK_LEFT_BRACKET},
   {"\\)", TK_RIGHT_BRACKET},
   {"[0-9]+", TK_NUM},
@@ -104,11 +108,11 @@ static bool make_token(char *e) {
          */
 
         switch (rules[i].token_type) {
-          case '+': case '-': case '*': case '/': case TK_LEFT_BRACKET: case TK_RIGHT_BRACKET:
+          case '+': case '-': case '*': case '/': case TK_LEFT_BRACKET: case TK_RIGHT_BRACKET: case TK_EQ: case TK_NOT_EQ: case TK_AND:
             tokens[nr_token].type = rules[i].token_type;
             nr_token ++;
             break;
-          case TK_NUM:
+          case TK_NUM: case TK_HEX_NUM: case TK_REG:
             assert(substr_len < 32);
             tokens[nr_token].type = rules[i].token_type;
             strncpy(tokens[nr_token].str, substr_start, substr_len);
@@ -155,8 +159,10 @@ bool check_parentheses(int p, int q) {
 
 int get_priority(int type) {
   switch(type) {
-    case '+': case '-': return 1;
-    case '*': case '/': return 2;
+    case TK_AND: return 6;
+    case TK_EQ: case TK_NOT_EQ: return 7;
+    case '+': case '-': return 8;
+    case '*': case '/': return 9;
     default: return 10;
   }
 }
@@ -171,6 +177,12 @@ word_t eval(int p, int q, bool *success) {
   else if (p == q) {
     if(tokens[p].type == TK_NUM) {
       return atoi(tokens[p].str);
+    }
+    else if(tokens[p].type == TK_HEX_NUM) {
+      return strtoul(tokens[p].str, NULL, 16);
+    }
+    else if(tokens[p].type == TK_REG) {
+      return isa_reg_str2val(tokens[p].str, success);
     }
     else {
       printf("Unknow Token Type.\n");
@@ -218,6 +230,9 @@ word_t eval(int p, int q, bool *success) {
           return 0;
         }
         return val1 / val2;
+      case TK_EQ: return val1 == val2;
+      case TK_NOT_EQ: return val1 != val2;
+      case TK_AND: return val1 && val2;
       default: assert(0);
     }
   }
@@ -227,6 +242,12 @@ word_t expr(char *e, bool *success) {
   if (!make_token(e)) {
     *success = false;
     return 0;
+  }
+
+  for(int i = 0; i < nr_token; i++) {
+    if(tokens[i].type == '*' && (i == 0 || tokens[i - 1].type == TK_LEFT_BRACKET || i == 0 || tokens[i - 1].type == TK_EQ || i == 0 || tokens[i - 1].type == TK_NOT_EQ)) {
+      tokens[i].type = TK_POINTER;
+    }
   }
 
   return eval(0, nr_token - 1, success);
