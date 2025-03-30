@@ -13,6 +13,9 @@
 * See the Mulan PSL v2 for more details.
 ***************************************************************************************/
 
+#define MAX_LINE 2000
+#define MAX_EXPR 1000
+
 #include <isa.h>
 #include <cpu/cpu.h>
 #include <readline/readline.h>
@@ -20,6 +23,8 @@
 #include <utils.h>
 #include <stdlib.h>
 #include <memory/paddr.h>
+#include <stdio.h>
+#include <stdlib.h>
 #include "sdb.h"
 
 static int is_batch_mode = false;
@@ -69,7 +74,7 @@ static int cmd_info(char *args) {
   return 0;
 }
 
-static int cmd_x(char* args) {
+static int cmd_x(char *args) {
   int n = atoi(strtok(args, " "));
   char* expr = strtok(NULL, " ");
   paddr_t addr = 0;
@@ -79,6 +84,73 @@ static int cmd_x(char* args) {
     printf("0x%08x  0x%08x\n", addr, paddr_read(addr, 4));
     addr += 4;
   }
+  return 0;
+}
+
+static void cmd_p_test() {
+  int line_num = 1, error_num = 0;
+  bool *success;
+  success = (bool *)malloc(sizeof(bool));
+
+  FILE *fp = fopen("/home/renkh/ysyx-workbench/nemu/tools/gen-expr/input", "r");
+  assert(fp != NULL);
+
+  char line[MAX_LINE];
+  word_t test_result, result;
+  char expression[MAX_EXPR];
+
+  while(fgets(line, sizeof(line), fp)) {
+    if(sscanf(line, "%u", &test_result) ==  1) {
+      char *expr_start = strchr(line, ' ');
+      for(int i = 0; i < MAX_EXPR; i++) {
+        if(*(expr_start + i) == '\n') {
+          expression[i] = '\0';
+          break;
+        }
+        expression[i] = *(expr_start + i);
+      }
+      expression[MAX_EXPR - 1] = '\0';
+    }
+    else {
+      expression[0] = '\0';
+    }
+
+    result = expr(expression, success);
+    if((result != test_result) || !success) {
+      printf("Incorrect calculation results: line %d, correct result: %u, result: %u\n", line_num, test_result, result);
+      error_num ++;
+      assert(0);
+    }
+    line_num ++;
+  }
+
+  if(error_num == 0) {
+    printf("Test Pass\n");
+  }
+
+  free(success);
+}
+
+static int cmd_p(char *args) {
+  if(strcmp(args, "test") == 0) {
+    cmd_p_test();
+    return 0;
+  }
+
+  word_t res;
+  bool *success;
+  success = (bool *)malloc(sizeof(bool));
+  res = expr(args, success);
+
+  if(success) {
+    printf("Result: %u\n", res);
+  }
+  else {
+    printf("Unable to evaluate mathematical expressions.\n");
+  }
+
+  free(success);
+
   return 0;
 }
 
@@ -100,6 +172,7 @@ static struct {
   {"si", "Let's the programepause after executing N instructions in a single step. N defaults to 1", cmd_si},
   {"info", "Type r to print the register, type w for status watchpoint information", cmd_info},
   {"x", "x N EXPR, Scanning Memory, Outputs N consecutive 4 bytes starting from EXPR", cmd_x},
+  {"p", "p EXPR, Find the value of the expression EXPR", cmd_p},
 
   /* TODO: Add more commands */
 
