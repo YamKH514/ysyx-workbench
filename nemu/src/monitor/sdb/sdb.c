@@ -102,7 +102,13 @@ static void cmd_p_test() {
   while(fgets(line, sizeof(line), fp)) {
     if(sscanf(line, "%u", &test_result) ==  1) {
       char *expr_start = strchr(line, ' ');
-      strncpy(expression, expr_start, MAX_EXPR);
+      for(int i = 0; i < MAX_EXPR; i++) {
+        if(*(expr_start + i) == '\n') {
+          expression[i] = '\0';
+          break;
+        }
+        expression[i] = *(expr_start + i);
+      }
       expression[MAX_EXPR - 1] = '\0';
     }
     else {
