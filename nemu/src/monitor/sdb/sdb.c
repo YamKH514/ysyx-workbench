@@ -98,6 +98,7 @@ static void cmd_p_test() {
     assert(0);
   }
   char filepath[512];
+  printf("%s\n", filepath);
   snprintf(filepath, sizeof(filepath), "%s/nemu/tools/gen-expr/input", nemu_home);
 
   FILE *fp = fopen(filepath, "r");
