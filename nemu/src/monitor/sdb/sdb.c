@@ -92,16 +92,7 @@ static void cmd_p_test() {
   bool *success;
   success = (bool *)malloc(sizeof(bool));
 
-  const char *nemu_home = getenv("NEMU_HOME");
-  if(nemu_home == NULL) {
-    fprintf(stderr, "Error: NEMU_HOME environment variable not set.\n");
-    assert(0);
-  }
-  char filepath[512];
-  printf("%s\n", filepath);
-  snprintf(filepath, sizeof(filepath), "%s/nemu/tools/gen-expr/input", nemu_home);
-
-  FILE *fp = fopen(filepath, "r");
+  FILE *fp = fopen("/home/renkh/ysyx-workbench/nemu/tools/gen-expr/input", "r");
   assert(fp != NULL);
 
   char line[MAX_LINE];
