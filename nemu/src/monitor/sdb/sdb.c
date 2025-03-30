@@ -13,6 +13,9 @@
 * See the Mulan PSL v2 for more details.
 ***************************************************************************************/
 
+#define MAX_LINE 2000
+#define MAX_EXPR 1000
+
 #include <isa.h>
 #include <cpu/cpu.h>
 #include <readline/readline.h>
@@ -20,6 +23,8 @@
 #include <utils.h>
 #include <stdlib.h>
 #include <memory/paddr.h>
+#include <stdio.h>
+#include <stdlib.h>
 #include "sdb.h"
 
 static int is_batch_mode = false;
@@ -82,26 +87,56 @@ static int cmd_x(char *args) {
   return 0;
 }
 
-// static void cmd_p_test() {
-//   const char *nemu_home = getenv("NEMU_HOME");
-//   if(nemu_home == NULL) {
-//     fprintf(stderr, "Error: NEMU_HOME environment variable not set.\n");
-//     exit(1);
-//   }
-//   char filepath[512];
-//   snprintf(filepath, sizeof(filepath), "%s/nemu/tools/gen-expr/input", nemu_home);
+static void cmd_p_test() {
+  int line_num = 1, error_num = 0;
+  bool *success;
+  success = (bool *)malloc(sizeof(bool));
 
-//   FILE *fp = fopen(filepath, "r");
-//   if(fp == NULL) assert(0);
+  const char *nemu_home = getenv("NEMU_HOME");
+  if(nemu_home == NULL) {
+    fprintf(stderr, "Error: NEMU_HOME environment variable not set.\n");
+    assert(0);
+  }
+  char filepath[512];
+  snprintf(filepath, sizeof(filepath), "%s/nemu/tools/gen-expr/input", nemu_home);
 
+  FILE *fp = fopen(filepath, "r");
+  assert(fp != NULL);
 
-// }
+  char line[MAX_LINE];
+  word_t test_result, result;
+  char expression[MAX_EXPR];
+
+  while(fgets(line, sizeof(line), fp)) {
+    if(sscanf(line, "%u", &test_result) ==  1) {
+      char *expr_start = strchr(line, ' ');
+      strncpy(expression, expr_start, MAX_EXPR);
+      expression[MAX_EXPR - 1] = '\0';
+    }
+    else {
+      expression[0] = '\0';
+    }
+
+    result = expr(expression, success);
+    if((result != test_result) || !success) {
+      printf("Incorrect calculation results: line %d, test result: %u, result: %u\n", line_num, test_result, result);
+      error_num ++;
+    }
+    line_num ++;
+  }
+
+  if(error_num == 0) {
+    printf("Test Pass\n");
+  }
+
+  free(success);
+}
 
 static int cmd_p(char *args) {
-  // if(strcmp(args, "test") == 0) {
-  //   cmd_p_test();
-  //   return 0;
-  // }
+  if(strcmp(args, "test") == 0) {
+    cmd_p_test();
+    return 0;
+  }
 
   word_t res;
   bool *success;
