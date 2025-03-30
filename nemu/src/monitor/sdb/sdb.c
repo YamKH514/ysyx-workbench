@@ -119,6 +119,7 @@ static void cmd_p_test() {
     if((result != test_result) || !success) {
       printf("Incorrect calculation results: line %d, test result: %u, result: %u\n", line_num, test_result, result);
       error_num ++;
+      assert(0);
     }
     line_num ++;
   }
