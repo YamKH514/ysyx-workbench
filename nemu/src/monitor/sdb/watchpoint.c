@@ -107,6 +107,8 @@ bool wp_scan() {
     current = current->next;
   }
   
+  free(success);
+
   return changed;
 }
 
