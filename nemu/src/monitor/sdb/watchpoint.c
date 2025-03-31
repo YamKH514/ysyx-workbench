@@ -70,8 +70,8 @@ void free_wp(int n){
     return;
   }
 
-  current->expression[0] = '\0';
-  current->old_value = 0;
+  pre->expression[0] = '\0';
+  pre->old_value = 0;
 
   pre->next = current->next;
   current->next = free_;
