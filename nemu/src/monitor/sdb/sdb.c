@@ -76,8 +76,8 @@ static int cmd_info(char *args) {
 }
 
 static int cmd_x(char *args) {
-  bool *success = NULL;
-  // success = (bool *)malloc(sizeof(bool));
+  bool *success;
+  success = (bool *)malloc(sizeof(bool));
   int n = atoi(strtok(args, " "));
   char* expression = strtok(NULL, " ");
   paddr_t addr = 0;
