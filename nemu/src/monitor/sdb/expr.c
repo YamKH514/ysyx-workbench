@@ -162,10 +162,11 @@ bool check_parentheses(int p, int q) {
 
 int get_priority(int type) {
   switch(type) {
-    case TK_AND: return 6;
-    case TK_EQ: case TK_NOT_EQ: return 7;
-    case '+': case '-': return 8;
-    case '*': case '/': return 9;
+    case TK_AND: return 5;
+    case TK_EQ: case TK_NOT_EQ: return 6;
+    case '+': case '-': return 7;
+    case '*': case '/': return 8;
+    case TK_POINTER: return 9;
     default: return 10;
   }
 }
@@ -187,10 +188,10 @@ word_t eval(int p, int q, bool *success) {
     else if(tokens[p].type == TK_REG) {
       return isa_reg_str2val(tokens[p].str, success);
     }
-    else if(tokens[p].type == TK_POINTER) {
-      word_t addr = strtoul(tokens[p].str, NULL, 16);
-      return vaddr_read(addr, 4);
-    }
+    // else if(tokens[p].type == TK_POINTER) {
+    //   word_t addr = strtoul(tokens[p].str, NULL, 16);
+    //   return vaddr_read(addr, 4);
+    // }
     else {
       printf("Unknow Token Type.\n");
       *success = false;
@@ -240,7 +241,7 @@ word_t eval(int p, int q, bool *success) {
       case TK_EQ: return val1 == val2;
       case TK_NOT_EQ: return val1 != val2;
       case TK_AND: return val1 && val2;
-      // case TK_POINTER: return vaddr_read(val2, 4);
+      case TK_POINTER: return vaddr_read(val2, 4);
       default: assert(0);
     }
   }
@@ -259,9 +260,6 @@ word_t expr(char *e, bool *success) {
                                     tokens[i - 1].type == '-' || tokens[i - 1].type == '*' || 
                                     tokens[i - 1].type == '/')) {
         tokens[i].type = TK_POINTER;
-        if(tokens[i + 1].type != TK_HEX_NUM) assert(0);
-        strcpy(tokens[i].str, tokens[i + 1].str);
-        tokens[i + 1].type = TK_NOTYPE;
     }
 }
 
