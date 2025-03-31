@@ -26,6 +26,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "sdb.h"
+#include "watchpoint.h"
 
 static int is_batch_mode = false;
 
@@ -66,7 +67,7 @@ static int cmd_info(char *args) {
     isa_reg_display();
   }
   else if(strcmp(args, "w") == 0) {
-    printf("Printing of monitoring point information is not yet realized.\n");
+    wp_info();
   }
   else {
     printf("Unknown argument\n");
@@ -163,6 +164,18 @@ static int cmd_p(char *args) {
   return 0;
 }
 
+static int cmd_w(char *args) {
+  WP *cur = new_wp();
+  strcpy(cur->expression, args);
+  return 0;
+}
+
+static int cmd_d(char *args) {
+  int n = atoi(args);
+  free_wp(n);
+  return 0;
+}
+
 static int cmd_q(char *args) {
   nemu_state.state = NEMU_END;
   return -1;
@@ -182,6 +195,8 @@ static struct {
   {"info", "Type r to print the register, type w for status watchpoint information", cmd_info},
   {"x", "x N EXPR, Scanning Memory, Outputs N consecutive 4 bytes starting from EXPR", cmd_x},
   {"p", "p EXPR, Find the value of the expression EXPR", cmd_p},
+  {"w", "w EXPR, Watchpoint set", cmd_w},
+  {"d", "d N, Delete the monitoring point with serial number N", cmd_d},
 
   /* TODO: Add more commands */
 
