@@ -35,6 +35,7 @@ word_t isa_reg_str2val(const char *s, bool *success) {
   int i;
   printf("ren_name: %s\n", s);
   if(strcmp(s, "pc") == 0) {
+    printf("pc: %u", pc_addr);
     return pc_addr;
   }
   else {
