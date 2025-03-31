@@ -47,24 +47,26 @@ WP* new_wp() {
   return head;
 }
 
-void free_wp(WP *wp){
-  if(wp == NULL || free_wp_num >= 32) return;
+void free_wp(int n){
+  if(free_wp_num >= 32) {
+    printf("Watchpoints that are not being used right now\n");
+    return;
+  }
   bool is_wp_used = false;
   WP *pre = NULL;
   WP *current = head;
 
-  do
-  {
-    if(wp->NO == current->NO) {
+  while (current != NULL) {
+    if(current->NO == n) {
       is_wp_used = true;
       break;
     }
     pre = current;
     current = current->next;
-  } while (current->next != NULL);
+  }
   
   if(is_wp_used == false) {
-    printf("NO.%d wp not be used!\n", wp->NO);
+    printf("NO.%d wp not be used!\n", n);
     return;
   }
 

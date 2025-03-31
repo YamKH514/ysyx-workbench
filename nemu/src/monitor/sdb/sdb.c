@@ -170,6 +170,12 @@ static int cmd_w(char *args) {
   return 0;
 }
 
+static int cmd_d(char *args) {
+  int n = atoi(args);
+  free_wp(n);
+  return 0;
+}
+
 static int cmd_q(char *args) {
   nemu_state.state = NEMU_END;
   return -1;
@@ -190,6 +196,7 @@ static struct {
   {"x", "x N EXPR, Scanning Memory, Outputs N consecutive 4 bytes starting from EXPR", cmd_x},
   {"p", "p EXPR, Find the value of the expression EXPR", cmd_p},
   {"w", "w EXPR, Watchpoint set", cmd_w},
+  {"d", "d N, Delete the monitoring point with serial number N", cmd_d},
 
   /* TODO: Add more commands */
 
