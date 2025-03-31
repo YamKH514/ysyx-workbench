@@ -32,13 +32,12 @@ void isa_reg_display() {
 }
 
 word_t isa_reg_str2val(const char *s, bool *success) {
-  int i;
-  printf("ren_name: %s\n", s);
   if(strcmp(s, "pc") == 0) {
-    printf("pc: %u", pc_addr);
+    printf("pc: %x\n", pc_addr);
     return pc_addr;
   }
   else {
+    int i;
     for(i = 0; i < reg_length; i++) {
       if(strcmp(s, regs[i]) == 0) break;
     }
