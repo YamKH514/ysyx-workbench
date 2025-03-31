@@ -32,9 +32,15 @@ void isa_reg_display() {
 }
 
 word_t isa_reg_str2val(const char *s, bool *success) {
-  int i;
-  for(i = 0; i < reg_length; i++) {
-    if(strcmp(s, regs[i]) == 0) break;
+  if(strcmp(s, "pc") == 0) {
+    printf("pc: %x\n", pc_addr);
+    return pc_addr;
   }
-  return gpr(i);
+  else {
+    int i;
+    for(i = 0; i < reg_length; i++) {
+      if(strcmp(s, regs[i]) == 0) break;
+    }
+    return gpr(i);
+  }
 }

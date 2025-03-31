@@ -41,7 +41,7 @@ static struct rule {
    */
 
   {"0x[0-9a-fA-F]+", TK_HEX_NUM},
-  {"$[a-zA-Z0-9]+", TK_REG},
+  {"\\$[a-zA-Z0-9]+", TK_REG},
   {" +", TK_NOTYPE},    // spaces
   {"\\+", '+'},         // plus
   {"\\-", '-'},         // sub
@@ -186,7 +186,9 @@ word_t eval(int p, int q, bool *success) {
       return strtoul(tokens[p].str, NULL, 16);
     }
     else if(tokens[p].type == TK_REG) {
-      return isa_reg_str2val(tokens[p].str, success);
+      char reg[32];
+      strcpy(reg, tokens[p].str + 1);
+      return isa_reg_str2val(reg, success);
     }
     else {
       printf("Unknow Token Type.\n");
