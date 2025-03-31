@@ -54,11 +54,13 @@ void free_wp(int n){
   }
   bool is_wp_used = false;
   WP *pre = NULL;
+  WP *need_del = NULL;
   WP *current = head;
 
   while (current != NULL) {
     if(current->NO == n) {
       is_wp_used = true;
+      need_del = current;
       break;
     }
     pre = current;
@@ -70,12 +72,12 @@ void free_wp(int n){
     return;
   }
 
-  pre->expression[0] = '\0';
-  pre->old_value = 0;
+  need_del->expression[0] = '\0';
+  need_del->old_value = 0;
 
-  pre->next = current->next;
-  current->next = free_;
-  free_ = current;
+  pre->next = need_del->next;
+  need_del->next = free_;
+  free_ = need_del;
 
   free_wp_num ++;
 }
