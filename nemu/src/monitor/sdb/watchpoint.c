@@ -100,3 +100,18 @@ bool wp_scan() {
   
   return changed;
 }
+
+void wp_info() {
+  if(head == NULL) {
+    printf("Watchpoints that are not being used right now\n");
+    return;
+  }
+
+  printf("NUM     What\n");
+  WP *cur = head;
+  while (cur != NULL)
+  {
+    printf("%-8d%s", cur->NO, cur->expression);
+    cur = cur->next;
+  }
+}
