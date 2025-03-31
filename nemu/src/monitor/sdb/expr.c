@@ -59,6 +59,8 @@ static struct rule {
 
 static regex_t re[NR_REGEX] = {};
 
+word_t expr(char *e, bool *success);
+
 /* Rules are used for many times.
  * Therefore we compile them only once before any usage.
  */
@@ -185,6 +187,12 @@ word_t eval(int p, int q, bool *success) {
     else if(tokens[p].type == TK_REG) {
       return isa_reg_str2val(tokens[p].str, success);
     }
+    else if(tokens[p].type == TK_POINTER) {
+      assert(tokens[p + 1].type == TK_HEX_NUM);
+      word_t addr = expr(tokens[p + 1].str, success);
+      if(*success) return vaddr_read(addr, 4);
+      else assert(0);
+    }
     else {
       printf("Unknow Token Type.\n");
       *success = false;
@@ -234,7 +242,7 @@ word_t eval(int p, int q, bool *success) {
       case TK_EQ: return val1 == val2;
       case TK_NOT_EQ: return val1 != val2;
       case TK_AND: return val1 && val2;
-      case TK_POINTER: return vaddr_read(val2, 4);
+      // case TK_POINTER: return vaddr_read(val2, 4);
       default: assert(0);
     }
   }
