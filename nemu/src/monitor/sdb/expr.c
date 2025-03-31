@@ -17,6 +17,7 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <stdbool.h>
+#include <memory/vaddr.h>
 
 /* We use the POSIX regex functions to process regular expressions.
  * Type 'man regex' for more information about POSIX regex functions.
@@ -57,6 +58,8 @@ static struct rule {
 #define NR_REGEX ARRLEN(rules)
 
 static regex_t re[NR_REGEX] = {};
+
+word_t expr(char *e, bool *success);
 
 /* Rules are used for many times.
  * Therefore we compile them only once before any usage.
@@ -159,10 +162,11 @@ bool check_parentheses(int p, int q) {
 
 int get_priority(int type) {
   switch(type) {
-    case TK_AND: return 6;
-    case TK_EQ: case TK_NOT_EQ: return 7;
-    case '+': case '-': return 8;
-    case '*': case '/': return 9;
+    case TK_AND: return 5;
+    case TK_EQ: case TK_NOT_EQ: return 6;
+    case '+': case '-': return 7;
+    case '*': case '/': return 8;
+    case TK_POINTER: return 9;
     default: return 10;
   }
 }
@@ -216,7 +220,8 @@ word_t eval(int p, int q, bool *success) {
       return 0;
     }
 
-    int val1 = eval(p, op - 1, success);
+    int val1 = 0;
+    if(op != 0) val1 = eval(p, op - 1, success);
     int val2 = eval(op + 1, q, success);
 
     switch (tokens[op].type) {
@@ -233,6 +238,7 @@ word_t eval(int p, int q, bool *success) {
       case TK_EQ: return val1 == val2;
       case TK_NOT_EQ: return val1 != val2;
       case TK_AND: return val1 && val2;
+      case TK_POINTER: return vaddr_read(val2, 4);
       default: assert(0);
     }
   }
@@ -244,11 +250,15 @@ word_t expr(char *e, bool *success) {
     return 0;
   }
 
-  for(int i = 0; i < nr_token; i++) {
-    if(tokens[i].type == '*' && (i == 0 || tokens[i - 1].type == TK_LEFT_BRACKET || i == 0 || tokens[i - 1].type == TK_EQ || i == 0 || tokens[i - 1].type == TK_NOT_EQ)) {
-      tokens[i].type = TK_POINTER;
+  for (int i = 0; i < nr_token; i++) {
+    if (tokens[i].type == '*' && (i == 0 || tokens[i - 1].type == TK_LEFT_BRACKET || 
+                                    tokens[i - 1].type == TK_EQ || tokens[i - 1].type == TK_NOT_EQ || 
+                                    tokens[i - 1].type == TK_AND || tokens[i - 1].type == '+' || 
+                                    tokens[i - 1].type == '-' || tokens[i - 1].type == '*' || 
+                                    tokens[i - 1].type == '/')) {
+        tokens[i].type = TK_POINTER;
     }
-  }
+}
 
   return eval(0, nr_token - 1, success);
 }
