@@ -33,6 +33,7 @@ void isa_reg_display() {
 
 word_t isa_reg_str2val(const char *s, bool *success) {
   int i;
+  printf("ren_name: %s\n", s);
   if(strcmp(s, "pc")) {
     return pc_addr;
   }
