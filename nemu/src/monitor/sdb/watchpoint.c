@@ -111,7 +111,7 @@ void wp_info() {
   WP *cur = head;
   while (cur != NULL)
   {
-    printf("%-8d%s", cur->NO, cur->expression);
+    printf("%-8d%s\n", cur->NO, cur->expression);
     cur = cur->next;
   }
 }
