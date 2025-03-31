@@ -188,10 +188,6 @@ word_t eval(int p, int q, bool *success) {
     else if(tokens[p].type == TK_REG) {
       return isa_reg_str2val(tokens[p].str, success);
     }
-    // else if(tokens[p].type == TK_POINTER) {
-    //   word_t addr = strtoul(tokens[p].str, NULL, 16);
-    //   return vaddr_read(addr, 4);
-    // }
     else {
       printf("Unknow Token Type.\n");
       *success = false;
