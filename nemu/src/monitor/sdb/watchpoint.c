@@ -93,7 +93,7 @@ bool wp_scan() {
     if(current->old_value != res) {
       printf("wp %d: %s changed\n\n", current->NO, current->expression);
       printf("Old value = %u\n", current->old_value);
-      printf("New value = %u\n", res);
+      printf("New value = %u\n\n", res);
       current->old_value = res;
       changed = true;
     }
