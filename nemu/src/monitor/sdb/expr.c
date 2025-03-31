@@ -220,7 +220,8 @@ word_t eval(int p, int q, bool *success) {
       return 0;
     }
 
-    int val1 = eval(p, op - 1, success);
+    int val1 = 0;
+    if(op != 0) val1 = eval(p, op - 1, success);
     int val2 = eval(op + 1, q, success);
 
     switch (tokens[op].type) {
