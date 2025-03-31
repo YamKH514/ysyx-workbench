@@ -188,10 +188,8 @@ word_t eval(int p, int q, bool *success) {
       return isa_reg_str2val(tokens[p].str, success);
     }
     else if(tokens[p].type == TK_POINTER) {
-      assert(tokens[p + 1].type == TK_HEX_NUM);
-      word_t addr = expr(tokens[p + 1].str, success);
-      if(*success) return vaddr_read(addr, 4);
-      else assert(0);
+      word_t addr = expr(tokens[p].str, success);
+      return vaddr_read(addr, 4);
     }
     else {
       printf("Unknow Token Type.\n");
@@ -261,6 +259,9 @@ word_t expr(char *e, bool *success) {
                                     tokens[i - 1].type == '-' || tokens[i - 1].type == '*' || 
                                     tokens[i - 1].type == '/')) {
         tokens[i].type = TK_POINTER;
+        if(tokens[i + 1].type != TK_HEX_NUM) assert(0);
+        strcpy(tokens[i].str, tokens[i + 1].str);
+        tokens[i + 1].type = TK_NOTYPE;
     }
 }
 
