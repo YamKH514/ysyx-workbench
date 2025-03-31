@@ -26,6 +26,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "sdb.h"
+#include "watchpoint.h"
 
 static int is_batch_mode = false;
 
@@ -163,6 +164,12 @@ static int cmd_p(char *args) {
   return 0;
 }
 
+static int cmd_w(char *args) {
+  WP *cur = new_wp();
+  strcpy(cur->expression, args);
+  return 0;
+}
+
 static int cmd_q(char *args) {
   nemu_state.state = NEMU_END;
   return -1;
@@ -182,6 +189,7 @@ static struct {
   {"info", "Type r to print the register, type w for status watchpoint information", cmd_info},
   {"x", "x N EXPR, Scanning Memory, Outputs N consecutive 4 bytes starting from EXPR", cmd_x},
   {"p", "p EXPR, Find the value of the expression EXPR", cmd_p},
+  {"w", "w EXPR, Watchpoint set", cmd_w},
 
   /* TODO: Add more commands */
 

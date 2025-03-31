@@ -14,25 +14,19 @@
 ***************************************************************************************/
 
 #include "sdb.h"
-
-#define NR_WP 32
-
-typedef struct watchpoint {
-  int NO;
-  struct watchpoint *next;
-
-  /* TODO: Add more members if necessary */
-
-} WP;
+#include "watchpoint.h"
 
 static WP wp_pool[NR_WP] = {};
 static WP *head = NULL, *free_ = NULL;
+static int free_wp_num = 32;
 
 void init_wp_pool() {
   int i;
   for (i = 0; i < NR_WP; i ++) {
     wp_pool[i].NO = i;
     wp_pool[i].next = (i == NR_WP - 1 ? NULL : &wp_pool[i + 1]);
+    wp_pool[i].expression[0] = '\0';
+    wp_pool[i].old_value = 0;
   }
 
   head = NULL;
@@ -40,4 +34,69 @@ void init_wp_pool() {
 }
 
 /* TODO: Implement the functionality of watchpoint */
+WP* new_wp() {
+  if(free_wp_num < 1) assert(0);
 
+  WP *temp = head;
+  head = free_;
+  free_ = free_->next;
+  head->next = temp;
+
+  free_wp_num --;
+
+  return head;
+}
+
+void free_wp(WP *wp){
+  if(wp == NULL || free_wp_num >= 32) return;
+  bool is_wp_used = false;
+  WP *pre = NULL;
+  WP *current = head;
+
+  do
+  {
+    if(wp->NO == current->NO) {
+      is_wp_used = true;
+      break;
+    }
+    pre = current;
+    current = current->next;
+  } while (current->next != NULL);
+  
+  if(is_wp_used == false) {
+    printf("NO.%d wp not be used!\n", wp->NO);
+    return;
+  }
+
+  current->expression[0] = '\0';
+  current->old_value = 0;
+
+  pre->next = current->next;
+  current->next = free_;
+  free_ = current;
+
+  free_wp_num ++;
+}
+
+bool wp_scan() {
+  if(head == NULL) return false;
+  bool changed = false;
+  WP *current = head;
+
+  bool *success;
+  success = (bool *)malloc(sizeof(bool));
+  word_t res = expr(current->expression, success);
+
+  do
+  {
+    if(current->old_value != res) {
+      printf("wp %d: %s changed\n\n", current->NO, current->expression);
+      printf("Old value = %u\n", current->old_value);
+      printf("New value = %u\n", res);
+      current->old_value = res;
+      changed = true;
+    }
+  } while (current->next != NULL);
+  
+  return changed;
+}

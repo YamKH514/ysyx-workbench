@@ -17,6 +17,7 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <stdbool.h>
+#include <memory/vaddr.h>
 
 /* We use the POSIX regex functions to process regular expressions.
  * Type 'man regex' for more information about POSIX regex functions.
@@ -233,6 +234,7 @@ word_t eval(int p, int q, bool *success) {
       case TK_EQ: return val1 == val2;
       case TK_NOT_EQ: return val1 != val2;
       case TK_AND: return val1 && val2;
+      case TK_POINTER: return vaddr_read(val2, 4);
       default: assert(0);
     }
   }
