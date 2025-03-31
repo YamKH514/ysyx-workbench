@@ -75,7 +75,12 @@ void free_wp(int n){
   need_del->expression[0] = '\0';
   need_del->old_value = 0;
 
-  pre->next = need_del->next;
+  if(pre != NULL) {
+    pre->next = need_del->next;
+  }
+  else {
+    head = need_del->next;
+  }
   need_del->next = free_;
   free_ = need_del;
 
