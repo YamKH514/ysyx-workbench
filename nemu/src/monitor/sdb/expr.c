@@ -246,11 +246,15 @@ word_t expr(char *e, bool *success) {
     return 0;
   }
 
-  for(int i = 0; i < nr_token; i++) {
-    if(tokens[i].type == '*' && (i == 0 || tokens[i - 1].type == TK_LEFT_BRACKET || i == 0 || tokens[i - 1].type == TK_EQ || i == 0 || tokens[i - 1].type == TK_NOT_EQ)) {
-      tokens[i].type = TK_POINTER;
+  for (int i = 0; i < nr_token; i++) {
+    if (tokens[i].type == '*' && (i == 0 || tokens[i - 1].type == TK_LEFT_BRACKET || 
+                                    tokens[i - 1].type == TK_EQ || tokens[i - 1].type == TK_NOT_EQ || 
+                                    tokens[i - 1].type == TK_AND || tokens[i - 1].type == '+' || 
+                                    tokens[i - 1].type == '-' || tokens[i - 1].type == '*' || 
+                                    tokens[i - 1].type == '/')) {
+        tokens[i].type = TK_POINTER;
     }
-  }
+}
 
   return eval(0, nr_token - 1, success);
 }
