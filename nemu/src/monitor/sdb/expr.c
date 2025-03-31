@@ -188,7 +188,7 @@ word_t eval(int p, int q, bool *success) {
       return isa_reg_str2val(tokens[p].str, success);
     }
     else if(tokens[p].type == TK_POINTER) {
-      word_t addr = expr(tokens[p].str, success);
+      word_t addr = strtoul(tokens[p].str, NULL, 16);
       return vaddr_read(addr, 4);
     }
     else {
