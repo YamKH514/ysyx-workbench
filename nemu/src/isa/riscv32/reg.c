@@ -23,9 +23,24 @@ const char *regs[] = {
   "s8", "s9", "s10", "s11", "t3", "t4", "t5", "t6"
 };
 
+int reg_length = sizeof(regs)/sizeof(regs[0]);
+
 void isa_reg_display() {
+  for(int i = 0; i < reg_length; i++) {
+    printf("%-10s 0x%-8x  %-10u\n", regs[i], gpr(i), gpr(i));
+  }
 }
 
 word_t isa_reg_str2val(const char *s, bool *success) {
-  return 0;
+  if(strcmp(s, "pc") == 0) {
+    printf("pc: %x\n", pc_addr);
+    return pc_addr;
+  }
+  else {
+    int i;
+    for(i = 0; i < reg_length; i++) {
+      if(strcmp(s, regs[i]) == 0) break;
+    }
+    return gpr(i);
+  }
 }
