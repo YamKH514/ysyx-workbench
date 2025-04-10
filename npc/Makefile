@@ -11,7 +11,7 @@ $(shell mkdir -p $(BUILD_DIR))
 
 # 源码
 VSRCS = ./vsrc/top.v $(shell find ./vsrc -name "*.v" ! -name "top.v")
-CSRCS = $(shell find ./csrc -name "*.c" -or -name "*.cc" -or -name "*.cpp")
+CSRCS = ./csrc/main.cpp $(shell find ./csrc -name "*.c" -or -name "*.cc" -or -name "*.cpp" ! -name "main.cpp")
 
 # 头文件路径（可选）
 INC_PATH += $(shell find ./csrc -name "*.h")
