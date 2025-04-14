@@ -4,6 +4,7 @@ module top(
     output [31:0] pc
 );
     wire wen, success;
+    wire addi_en, ebreak_en;
     wire [4:0] raddr, waddr, addr_s, addr_d;
     wire [31:0] rdata, wdata, imm;
     
@@ -24,10 +25,12 @@ module top(
     );
     
     Decode u_Decode(
-        .inst   	(inst    ),
-        .addr_s 	(addr_s  ),
-        .addr_d 	(addr_d  ),
-        .imm    	(imm     )
+        .inst   	(inst       ),
+        .addr_s 	(addr_s     ),
+        .addr_d 	(addr_d     ),
+        .imm    	(imm        ),
+        .addi_en    (addi_en    ),
+        .ebreak_en  (ebreak_en  )
     );
     
     ADDI u_ADDI(
@@ -39,7 +42,13 @@ module top(
         .addr_s_out 	(raddr       ),
         .addr_d_out 	(waddr       ),
         .res        	(wdata       ),
-        .success    	(success     )
+        .success    	(success     ),
+        .en             (addi_en     )
+    );
+
+    EBREAK u_EBREAK(
+        .ebreak_en 	(ebreak_en  ),
+        .clk        (clk        )
     );
     
 endmodule

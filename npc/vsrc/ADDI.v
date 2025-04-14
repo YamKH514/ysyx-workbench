@@ -1,4 +1,5 @@
 module ADDI(
+        input en,
         input [4:0] addr_s, addr_d,
         input [31:0] imm, src1,
         output wen,
@@ -22,7 +23,7 @@ module ADDI(
                 .zero     	(zero      )
             );
     
-    assign success = 1;
+    assign success = (en == 1) ? 1 : 0;
     assign wen = (addr_d != 0) && success;
 
 endmodule
