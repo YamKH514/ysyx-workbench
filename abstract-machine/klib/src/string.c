@@ -26,7 +26,19 @@ char *strncpy(char *dst, const char *src, size_t n) {
 }
 
 char *strcat(char *dst, const char *src) {
-  panic("Not implemented");
+  char *ret = dst;
+  while (*dst != '\0')
+  {
+    dst ++;
+  }
+  while (*src != '\0')
+  {
+    *dst = *src;
+    dst ++;
+    src ++;
+  }
+  *dst = '\0';
+  return ret;
 }
 
 int strcmp(const char *s1, const char *s2) {
