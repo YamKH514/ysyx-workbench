@@ -18,6 +18,7 @@ char *strcpy(char *dst, const char *src) {
   }
   dst ++;
   *dst = '\0';
+
   return ret;
 }
 
@@ -38,6 +39,7 @@ char *strcat(char *dst, const char *src) {
     src ++;
   }
   *dst = '\0';
+
   return ret;
 }
 
@@ -51,8 +53,8 @@ int strcmp(const char *s1, const char *s2) {
     s1 ++;
     s2 ++;
   }
-
   if(*s1 == *s2) return 0;
+
   return (*s1 < *s2) ? -1 : 1;
 }
 
@@ -61,7 +63,14 @@ int strncmp(const char *s1, const char *s2, size_t n) {
 }
 
 void *memset(void *s, int c, size_t n) {
-  panic("Not implemented");
+  unsigned char *p = s;
+  while (n > 0)
+  {
+    *p = (unsigned char)c;
+    n --;
+  }
+  
+  return s;
 }
 
 void *memmove(void *dst, const void *src, size_t n) {
@@ -73,7 +82,19 @@ void *memcpy(void *out, const void *in, size_t n) {
 }
 
 int memcmp(const void *s1, const void *s2, size_t n) {
-  panic("Not implemented");
+  const unsigned char *src1 = s1;
+  const unsigned char *src2 = s2;
+  while(n > 0)
+  {
+    if(*src1 != *src2)
+    {
+      return *src1 - *src2;
+    }
+    n --;
+    src1 ++;
+    src2 ++;
+  }
+  return 0;
 }
 
 #endif
