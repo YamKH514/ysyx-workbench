@@ -13,8 +13,96 @@ int vsprintf(char *out, const char *fmt, va_list ap) {
   panic("Not implemented");
 }
 
+char *chwrite(char *dest, char *ch, int *cnt) {
+  while (*ch != '\0')
+  {
+    *dest = *ch;
+    ch ++;
+    dest ++;
+    (*cnt) ++;
+  }
+  return dest;
+}
+
+char *int_to_str(int num, char *dest, int *cnt) {
+  assert(dest);
+  char numbuf[32];
+  int i = 0;
+  int is_negative = 0;
+  if(num < 0)
+  {
+    is_negative = 1;
+    num = -num;
+  }
+
+  if(num == 0)
+  {
+    numbuf[0] = '0';
+    i ++;
+  }
+  else
+  {
+    while (num > 0)
+    {
+      numbuf[i] = '0' + (num % 10);
+      num /= 10;
+      i ++;
+    }
+  }
+  if(is_negative)
+  {
+    *dest = '-';
+    (*cnt) ++;
+    dest ++;
+  }
+  (*cnt) += i;
+  while (i-- > 0)
+  {
+    *dest = numbuf[i];
+    dest ++;
+  }
+  return dest;
+}
+
 int sprintf(char *out, const char *fmt, ...) {
-  panic("Not implemented");
+  if(out == NULL) return -1;
+  int cnt = 0;
+  va_list args;
+  va_start(args, fmt);
+  const char *p = fmt;
+  while (*p != '\0')
+  {
+    if(*p == '%')
+    {
+      p ++;
+      switch (*p)
+      {
+      case 'd':
+        int num = va_arg(args, int);
+        out = int_to_str(num, out, &cnt);
+        p ++;
+        break;
+      case 's':
+        char *ch = va_arg(args, char *);
+        out = chwrite(out, ch, &cnt);
+        p ++;
+        break;
+      default:
+        assert(0);
+        break;
+      }
+    }
+    else
+    {
+      *out = *p;
+      out ++;
+      p ++;
+      cnt ++;
+    }
+  }
+  *out = '\0';
+  va_end(args);
+  return cnt;
 }
 
 int snprintf(char *out, size_t n, const char *fmt, ...) {
