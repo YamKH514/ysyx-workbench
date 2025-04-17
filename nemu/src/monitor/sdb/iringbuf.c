@@ -31,7 +31,7 @@ void iringbuf_print()
     int i = (is_full == 1) ? p_cur : 0;
     int end = p_cur;
     void disassemble(char *str, int size, uint64_t pc, uint8_t *code, int nbyte);
-    char buf[256];
+    char buf[128];
     char *p = NULL;
     do
     {
@@ -41,11 +41,10 @@ void iringbuf_print()
         int j;
         uint8_t *inst = (uint8_t *)&iringbuf[i].inst;
 #ifdef CONFIG_ISA_x86
-        for(j = 0; j < ilen; j ++)
+        for(j = 0; j < ilen; j ++) {
 #else
-        for(j = ilen - 1; j >= 0; j ++)
+        for(j = ilen - 1; j >= 0; j ++) {
 #endif
-        {
             p += snprintf(p, 4, "%02x", inst[j]);
         }
         int ilen_max = MUXDEF(CONFIG_ISA_x86, 8, 4);
