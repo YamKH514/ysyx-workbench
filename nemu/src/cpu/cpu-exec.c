@@ -104,6 +104,7 @@ void iringbuf_print();
 void assert_fail_msg() {
   printf("ASSERT_FAIL_MSG\n");
   iringbuf_print();
+  printf("ASSERT_FAIL_MSG\n");
   isa_reg_display();
   statistic();
 }
