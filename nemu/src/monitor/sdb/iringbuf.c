@@ -1,0 +1,82 @@
+#include <common.h>
+#include <cpu/decode.h>
+#include <isa.h>
+
+#define MAX_IRINGBUF 64
+
+typedef struct 
+{
+    word_t pc;
+    word_t snpc;
+    uint32_t inst;
+} itrackNode;
+
+itrackNode iringbuf[MAX_IRINGBUF];
+int p_cur = 0;
+int is_full = 0;
+
+void iringbuf_get_inst(Decode *s)
+{
+    iringbuf[p_cur].pc = s->pc;
+    iringbuf[p_cur].snpc = s->snpc;
+    iringbuf[p_cur].inst = s->isa.inst;
+
+    p_cur = (p_cur + 1) % MAX_IRINGBUF;
+    is_full = is_full || (p_cur == 0);
+}
+
+void iringbuf_print() {
+    if ((p_cur == 0) && (is_full == 0)) return;
+
+    int i = (is_full == 1) ? p_cur : 0;
+    int end = p_cur;
+
+    void disassemble(char *str, int size, uint64_t pc, uint8_t *code, int nbyte);
+    char buf[128];
+
+    do {
+        char *p = buf;
+        size_t remain = sizeof(buf);
+
+        int len = snprintf(p, remain, FMT_WORD ":", iringbuf[i].pc);
+        if (len < 0 || (size_t)len >= remain) break;
+        p += len;
+        remain -= len;
+
+        int ilen = iringbuf[i].snpc - iringbuf[i].pc;
+        uint8_t *inst = (uint8_t *)&iringbuf[i].inst;
+
+#ifdef CONFIG_ISA_x86
+        for (int j = 0; j < ilen; j++) {
+#else
+        for (int j = ilen - 1; j >= 0; j--) {
+#endif
+            if (remain <= 0) break;
+            len = snprintf(p, remain, " %02x", inst[j]);
+            if (len < 0 || (size_t)len >= remain) break;
+            p += len;
+            remain -= len;
+        }
+
+        int ilen_max = MUXDEF(CONFIG_ISA_x86, 8, 4);
+        int space_len = ilen_max - ilen;
+        if (space_len < 0) space_len = 0;
+        space_len = space_len * 3 + 1;
+
+        if ((size_t)space_len < remain) {
+            memset(p, ' ', space_len);
+            p += space_len;
+            remain -= space_len;
+        }
+
+        disassemble(p, remain,
+            MUXDEF(CONFIG_ISA_x86, iringbuf[i].snpc, iringbuf[i].pc),
+            (uint8_t *)&iringbuf[i].inst, ilen);
+
+        if ((i + 1) % MAX_IRINGBUF == end) {
+            printf(ANSI_FG_RED);
+        }
+        puts(buf);
+    } while ((i = (i + 1) % MAX_IRINGBUF) != end);
+    puts(ANSI_NONE);
+}

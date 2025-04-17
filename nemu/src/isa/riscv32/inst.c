@@ -117,7 +117,10 @@ static int decode_exec(Decode *s) {
   return 0;
 }
 
+void iringbuf_get_inst(Decode *s);
+
 int isa_exec_once(Decode *s) {
   s->isa.inst = inst_fetch(&s->snpc, 4);
+  IFDEF(CONFIG_ITRACE, iringbuf_get_inst(s));
   return decode_exec(s);
 }
