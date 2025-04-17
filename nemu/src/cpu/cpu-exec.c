@@ -99,7 +99,10 @@ static void statistic() {
   else Log("Finish running in less than 1 us and can not calculate the simulation frequency");
 }
 
+void iringbuf_print();
+
 void assert_fail_msg() {
+  iringbuf_print();
   isa_reg_display();
   statistic();
 }
