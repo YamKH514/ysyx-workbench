@@ -24,44 +24,66 @@ void iringbuf_get_inst(Decode *s)
     is_full = is_full || (p_cur == 0);
 }
 
-void iringbuf_print()
-{
-    if((p_cur == 0) && (is_full == 0)) return;
+void iringbuf_print() {
+    if ((p_cur == 0) && (is_full == 0)) return;
 
     int i = (is_full == 1) ? p_cur : 0;
     int end = p_cur;
+
     void disassemble(char *str, int size, uint64_t pc, uint8_t *code, int nbyte);
     char buf[128];
-    char *p = NULL;
-    do
-    {
-        p = buf;
-        p += snprintf(p, sizeof(buf), FMT_WORD ":", iringbuf[i].pc);
+
+    do {
+        char *p = buf;
+        size_t remain = sizeof(buf);
+
+        // 打印 PC
+        int len = snprintf(p, remain, FMT_WORD ":", iringbuf[i].pc);
+        if (len < 0 || (size_t)len >= remain) break;
+        p += len;
+        remain -= len;
+
+        // 获取指令长度
         int ilen = iringbuf[i].snpc - iringbuf[i].pc;
-        int j;
         uint8_t *inst = (uint8_t *)&iringbuf[i].inst;
+
+        // 打印机器码字节
 #ifdef CONFIG_ISA_x86
-        for(j = 0; j < ilen; j ++) {
+        for (int j = 0; j < ilen; j++) {
 #else
-        for(j = ilen - 1; j >= 0; j ++) {
+        for (int j = ilen - 1; j >= 0; j--) {
 #endif
-            p += snprintf(p, 4, "%02x", inst[j]);
+            if (remain <= 0) break;
+            len = snprintf(p, remain, " %02x", inst[j]);
+            if (len < 0 || (size_t)len >= remain) break;
+            p += len;
+            remain -= len;
         }
+
+        // 打空格对齐
         int ilen_max = MUXDEF(CONFIG_ISA_x86, 8, 4);
         int space_len = ilen_max - ilen;
         if (space_len < 0) space_len = 0;
         space_len = space_len * 3 + 1;
-        memset(p, ' ', space_len);
-        p += space_len;
 
-        disassemble(p, buf + sizeof(buf) - p,
-            MUXDEF(CONFIG_ISA_x86, iringbuf[i].snpc, iringbuf[i].pc), (uint8_t *)&iringbuf[i].inst, ilen);
-        
-        if((i + 1) % MAX_IRINGBUF == end)
-        {
+        if ((size_t)space_len < remain) {
+            memset(p, ' ', space_len);
+            p += space_len;
+            remain -= space_len;
+        }
+
+        // 反汇编
+        disassemble(p, remain,
+            MUXDEF(CONFIG_ISA_x86, iringbuf[i].snpc, iringbuf[i].pc),
+            (uint8_t *)&iringbuf[i].inst, ilen);
+
+        // 标红最近的一条
+        if ((i + 1) % MAX_IRINGBUF == end) {
             printf(ANSI_FG_RED);
         }
         puts(buf);
+
     } while ((i = (i + 1) % MAX_IRINGBUF) != end);
+
     puts(ANSI_NONE);
 }
