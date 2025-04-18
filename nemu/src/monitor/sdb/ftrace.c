@@ -73,7 +73,7 @@ size_t extract_func(FILE *file, Elf32_Shdr *symtab_header, Elf32_Shdr *strtab_he
     *funcs = malloc(func_cnt * sizeof(Symtab_func));
 
     int j = 0;
-    for(int i = 0; i < symtab_header->sh_size; i++)
+    for(int i = 0; i < sym_num; i++)
     {
         if(ELF32_ST_TYPE(symtab[i].st_info) == STT_FUNC)
         {
