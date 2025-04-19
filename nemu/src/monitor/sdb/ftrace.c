@@ -140,7 +140,8 @@ int find_func(word_t addr)
 {
     for(int i = 0; i < func_num; i++)
     {
-        if(funcs[i].addr == addr) return i;
+        if((funcs[i].addr <= addr) && (addr < (funcs[i].addr + funcs[i].size)))
+            return i;
     }
     return -1;
 }
