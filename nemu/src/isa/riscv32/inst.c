@@ -87,8 +87,8 @@ static int decode_exec(Decode *s) {
     IFDEF(CONFIG_FTRACE ,{if(rd == 1) ftrace_call(s->pc, s->dnpc);});
     R(rd) = s->pc + 4);
   INSTPAT("??????? ????? ????? 000 ????? 11001 11", jalr   , I, s->dnpc = src1 + imm;
-    IFDEF(CONFIG_FTRACE, {if((rd == 1) || (imm == 0 && rd == 0)) {ftrace_call(s->pc, s->dnpc);}
-    else if(s->isa.inst == 0x00008067){ftrace_ret(s->pc, s->dnpc);}});
+    IFDEF(CONFIG_FTRACE, {if(s->isa.inst == 0x00008067) {ftrace_call(s->pc, s->dnpc);}
+    else if((rd == 1) || (imm == 0 && rd == 0)){ftrace_ret(s->pc, s->dnpc);}});
     R(rd) = s->pc + 4);
   INSTPAT("??????? ????? ????? 000 ????? 11000 11", beq    , B, BRANCH(src1 == src2));
   INSTPAT("??????? ????? ????? 001 ????? 11000 11", bne    , B, BRANCH(src1 != src2));
