@@ -92,15 +92,6 @@ size_t extract_func(FILE *file, Elf32_Shdr *symtab_header, Elf32_Shdr *strtab_he
     return func_cnt;
 }
 
-void print_func()
-{
-    for(int i = 0; i < func_num; i++)
-    {
-        printf("func%d: %s, addr: %x, info: %c, size: %u\n", i, funcs[i].name, funcs[i].addr, funcs[i].info, funcs[i].size);
-    }
-    free(funcs);
-}
-
 void parse_elf(const char *elf_file)
 {
     FILE *file = fopen(elf_file, "rb");
@@ -139,16 +130,14 @@ void parse_elf(const char *elf_file)
 
     func_num = extract_func(file, symtab_header, strtab_header, &funcs);
 
-    print_func();
-
     free(shstrtab_names);
     free(section_header);
     fclose(file);
 }
 
-void ftrace_call()
+void ftrace_call(word_t pc, word_t dnpc)
 {
-
+    
 }
 
 void ftrace_ret()
