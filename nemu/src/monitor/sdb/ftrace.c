@@ -149,22 +149,20 @@ void ftrace_call(word_t pc, word_t dnpc)
 {
     assert(funcs != NULL);
 
-    ++call_deep;
-    // if(call_deep <=2) return;
-
     int i = find_func(dnpc);
     printf(FMT_PADDR ": %*scall [%s@" FMT_PADDR "]\n", pc, call_deep * 2, "", i>=0?funcs[i].name:"???",dnpc);
+
+    ++call_deep;
 }
 
 void ftrace_ret(word_t pc, word_t dnpc)
 {
     assert(funcs != NULL);
 
-    --call_deep;
-    // if(call_deep <= 2) return;
-
     int i = find_func(dnpc);
     printf(FMT_PADDR ": %*scall [%s@]\n", pc, call_deep * 2, "", i>=0?funcs[i].name:"???");
+
+    --call_deep;
 }
 
 void ftrace_end()
