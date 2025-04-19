@@ -160,7 +160,7 @@ void ftrace_ret(word_t pc, word_t dnpc)
     --call_deep;
 
     int i = find_func(dnpc);
-    printf(FMT_PADDR ": %*sret [%s]\n", pc, call_deep * 2, "", i>=0?funcs[i].name:"???");
+    printf(FMT_PADDR ": %*sret [%s@" FMT_PADDR "]\n", pc, call_deep * 2, "", i>=0?funcs[i].name:"???", dnpc);
 }
 
 void ftrace_end()
