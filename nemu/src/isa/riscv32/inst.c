@@ -36,7 +36,7 @@ enum {
 #define immB() do { *imm = (SEXT(((BITS(i, 31, 31) << 12) | (BITS(i, 7, 7) << 11) | (BITS(i, 30, 25) << 5) | (BITS(i, 11, 8) << 1)), 13)); } while(0)
 
 void ftrace_call(word_t pc, word_t dnpc);
-void ftrace_ret(word_t pc, word_t dnpc);
+void ftrace_ret(word_t pc);
 
 static void decode_operand(Decode *s, int *rd, word_t *src1, word_t *src2, word_t *imm, int type) {
   uint32_t i = s->isa.inst;
@@ -87,7 +87,7 @@ static int decode_exec(Decode *s) {
     IFDEF(CONFIG_ITRACE ,{if(rd == 1) ftrace_call(s->pc, s->dnpc);});
     R(rd) = s->pc + 4);
   INSTPAT("??????? ????? ????? 000 ????? 11001 11", jalr   , I, s->dnpc = src1 + imm;
-    IFDEF(CONFIG_ITRACE, {if(s->isa.inst == 0x00008067) {ftrace_ret(s->pc, s->dnpc);}
+    IFDEF(CONFIG_ITRACE, {if(s->isa.inst == 0x00008067) {ftrace_ret(s->pc);}
     else if((rd == 1) || (imm == 0 && rd == 0)){ftrace_call(s->pc, s->dnpc);}});
     R(rd) = s->pc + 4);
   INSTPAT("??????? ????? ????? 000 ????? 11000 11", beq    , B, BRANCH(src1 == src2));

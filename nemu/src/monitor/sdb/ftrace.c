@@ -136,11 +136,11 @@ void parse_elf(const char *elf_file)
     fclose(file);
 }
 
-int find_func(word_t dnpc)
+int find_func(word_t addr)
 {
     for(int i = 0; i < func_num; i++)
     {
-        if(funcs[i].addr == dnpc) return i;
+        if(funcs[i].addr == addr) return i;
     }
     return -1;
 }
@@ -154,13 +154,13 @@ void ftrace_call(word_t pc, word_t dnpc)
     printf(FMT_PADDR ": %*scall [%s@" FMT_PADDR "]\n", pc, call_deep * 2, "", i>=0?funcs[i].name:"???",dnpc);
 }
 
-void ftrace_ret(word_t pc, word_t dnpc)
+void ftrace_ret(word_t pc)
 {
     assert(funcs != NULL);
     --call_deep;
 
-    int i = find_func(dnpc);
-    printf(FMT_PADDR ": %*sret [%s@" FMT_PADDR "]\n", pc, call_deep * 2, "", i>=0?funcs[i].name:"???", dnpc);
+    int i = find_func(pc);
+    printf(FMT_PADDR ": %*sret [%s]\n", pc, call_deep * 2, "", i>=0?funcs[i].name:"???");
 }
 
 void ftrace_end()
