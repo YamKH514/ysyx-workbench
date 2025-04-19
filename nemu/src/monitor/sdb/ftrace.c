@@ -11,6 +11,7 @@ typedef struct
 
 int func_num = 0;
 Symtab_func *funcs = NULL;
+int call_deep = 0;
 
 size_t get_elf_header(FILE *file, Elf32_Ehdr *ehdr)
 {
@@ -135,14 +136,42 @@ void parse_elf(const char *elf_file)
     fclose(file);
 }
 
-void ftrace_call(word_t pc, word_t dnpc)
+int find_func(word_t dnpc)
 {
-    
+    for(int i = 0; i < func_num; i++)
+    {
+        if(funcs[i].addr == dnpc) return i;
+    }
+    return -1;
 }
 
-void ftrace_ret()
+void ftrace_call(word_t pc, word_t dnpc)
 {
+    assert(funcs != NULL);
 
+    call_deep ++;
+    if(call_deep <=2) return;
+
+    int i = find_func(dnpc);
+    log_write(FMT_PADDR ": %*scall [%s@" FMT_PADDR "]\n",
+		pc,
+		(call_deep-3)*2, "",
+		i>=0?funcs[i].name:"???",
+		dnpc);
+}
+
+void ftrace_ret(word_t pc, word_t dnpc)
+{
+    assert(funcs != NULL);
+
+    call_deep--;
+    if(call_deep <= 2) return;
+
+    int i = find_func(dnpc);
+    log_write(FMT_PADDR ": %*sret [%s]\n",
+		pc,
+		(call_deep-3)*2, "",
+		i>=0?funcs[i].name:"???");
 }
 
 void ftrace_end()
