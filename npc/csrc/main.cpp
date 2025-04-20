@@ -8,6 +8,8 @@
 #include "verilated.h"
 #include "verilated_fst_c.h"
 
+void init_npcmem(int argc, char *argv[]);
+
 static void single_cycle(std::unique_ptr<Vtop>& top, VerilatedContext* contextp, VerilatedFstC* tfp)
 {
     contextp->timeInc(1);
@@ -30,8 +32,10 @@ static void reset(std::unique_ptr<Vtop>& top, VerilatedContext* contextp, Verila
 
 int clk = 1;
 
-int main(int argc, char **argv)
+int main(int argc, char *argv[])
 {
+    init_npcmem(argc, argv);
+
     Verilated::mkdir("logs");
     const std::unique_ptr<VerilatedContext> contextp{new VerilatedContext};
     contextp->debug(0);
