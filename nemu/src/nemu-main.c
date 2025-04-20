@@ -32,6 +32,6 @@ int main(int argc, char *argv[]) {
   /* Start engine. */
   engine_start();
 
-  void ftrace_end();
+  IFDEF(CONFIG_FTRACE, {void ftrace_end();});
   return is_exit_status_bad();
 }
