@@ -114,7 +114,7 @@ void init_monitor(int argc, char *argv[]) {
   init_log(log_file);
 
   /* Parse the elf file. */
-  parse_elf(elf_file);
+  IFDEF(CONFIG_FTRACE, {parse_elf(elf_file);});
 
   /* Initialize memory. */
   init_mem();
