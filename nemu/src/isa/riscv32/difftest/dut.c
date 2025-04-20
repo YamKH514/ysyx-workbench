@@ -21,7 +21,7 @@ bool isa_difftest_checkregs(CPU_state *ref_r, vaddr_t pc) {
   int reg_num = ARRLEN(cpu.gpr);
   for(int i = 0; i < reg_num; i++)
   {
-    if(ref_r->gpr[i] != pc)
+    if(ref_r->gpr[i] != cpu.gpr[i])
     {
       printf("Difftest: Inconsistent register values, pc = 0x%x\n", pc);
       return false;
