@@ -30,6 +30,9 @@ include $(NVBOARD_HOME)/scripts/nvboard.mk
 INCFLAGS = $(addprefix -I, $(INC_PATH))
 CXXFLAGS += $(INCFLAGS) -DTOP_NAME="\"V$(TOPNAME)\""
 
+# am img
+IMG ?=
+
 $(BIN): $(VSRCS) $(CSRCS) $(SRC_AUTO_BIND) $(NVBOARD_ARCHIVE)
 	@echo "--Build--"
 	@rm -rf $(OBJ_DIR)
@@ -58,7 +61,9 @@ sim:
 	@echo "-- RUN ---------------------"
 	@rm -rf logs
 	@mkdir -p logs
-	obj_dir/Vtop +trace
+	obj_dir/Vtop -i $(IMG) +trace
+
+run: sim
 
 clean:
 	rm -rf $(BUILD_DIR) logs obj_dir

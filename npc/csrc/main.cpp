@@ -1,12 +1,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
-#include "mem.h"
 // #include <nvboard.h>
 #include "Vtop.h"
 #include "Vtop__Dpi.h"
 #include "verilated.h"
 #include "verilated_fst_c.h"
+
+void init_npcmem(int argc, char *argv[]);
+uint32_t mem_read(uint32_t pc);
+void mem_end();
 
 static void single_cycle(std::unique_ptr<Vtop>& top, VerilatedContext* contextp, VerilatedFstC* tfp)
 {
@@ -30,8 +33,10 @@ static void reset(std::unique_ptr<Vtop>& top, VerilatedContext* contextp, Verila
 
 int clk = 1;
 
-int main(int argc, char **argv)
+int main(int argc, char *argv[])
 {
+    init_npcmem(argc, argv);
+
     Verilated::mkdir("logs");
     const std::unique_ptr<VerilatedContext> contextp{new VerilatedContext};
     contextp->debug(0);
@@ -50,12 +55,15 @@ int main(int argc, char **argv)
         contextp->timeInc(1);
         top->clk = clk;
         top->inst = mem_read(top->pc);
+        printf("END\n");
+        break;
         top->eval();
         tfp->dump(contextp->time());
         clk = !clk;
     }
     tfp->close();
     top->final();
+    mem_end();
 
     return 0;
 }
