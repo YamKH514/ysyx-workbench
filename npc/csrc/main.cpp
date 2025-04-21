@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
-#include "mem.h"
 // #include <nvboard.h>
 #include "Vtop.h"
 #include "Vtop__Dpi.h"
@@ -9,6 +8,7 @@
 #include "verilated_fst_c.h"
 
 void init_npcmem(int argc, char *argv[]);
+uint32_t mem_read(uint32_t pc);
 
 static void single_cycle(std::unique_ptr<Vtop>& top, VerilatedContext* contextp, VerilatedFstC* tfp)
 {
