@@ -1,16 +1,36 @@
 module Decode(
-    input [31:0] inst,
-    output [4:0] addr_s, addr_d,
-    output [31:0] imm,
-    output addi_en, ebreak_en
+    input [6:0] opcode,
+    input [2:0] funct3,
+    /* verilator lint_off UNUSED */
+    input [6:0] funct7,
+    /* verilator lint_off UNUSED */
+    output [2:0] imm_type, // I(000) S(001) B(010) U(011) J(100)
+    output wen,
+    output [1:0] src1_sel, // 0(00) PC(01) src1(10)
+    output [1:0] pc_sel // npc = pc+4(00) pc+imm(01) src1+imm(11)
 );
+    import "DPI-C" function void ebreak_trigger();
+    always @(*) begin
+        if((opcode == 7'b1110011) && (funct3 == 3'b000)) begin
+            ebreak_trigger();
+        end
+    end
 
-    wire [6:0]  opcode  = inst[6:0];
-    wire [2:0]  funct3  = inst[14:12];
-    assign addi_en = (opcode == 7'b0010011) && (funct3 == 3'b000);
-    assign ebreak_en = (opcode == 7'b1110011) && (funct3 == 3'b000);
-    assign {imm[11:0], addr_s, addr_d} = {inst[31:15], inst[11:7]};
-    assign imm[31:12] = (inst[31] == 0) ? 0 : 20'hFFFFF;
-
+    assign imm_type = 
+                ((opcode == 7'b0010011 && funct3 == 3'b000) || (opcode == 7'b1100111 && funct3 == 3'b000)) ? 3'b000 :
+                ((opcode == 7'b0010111) || (opcode == 7'b0110111)) ? 3'b011 :
+                (opcode == 7'b1101111) ? 3'b100 :
+                3'b000;
+    assign wen = 1;
+    assign src1_sel =
+                (opcode == 7'b0110111) ? 2'b00 :
+                ((opcode == 7'b0010111) || (opcode == 7'b1101111)) ? 2'b01 :
+                ((opcode == 7'b0010011 && funct3 == 3'b000) || (opcode == 7'b1100111 && funct3 == 3'b000)) ? 2'b10 :
+                2'b00;
+    assign pc_sel =
+                ((opcode == 7'b0010011 && funct3 == 3'b000) || opcode == 7'b0110111 || opcode == 7'b0010111) ? 2'b00:
+                (opcode == 7'b1101111) ? 2'b01 :
+                (opcode == 7'b1100111 && funct3 == 3'b000) ? 2'b11 :
+                2'b00;
 
 endmodule

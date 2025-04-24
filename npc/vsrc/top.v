@@ -3,52 +3,60 @@ module top(
     input [31:0] inst,
     output [31:0] pc
 );
-    wire wen, success;
-    wire addi_en, ebreak_en;
-    wire [4:0] raddr, waddr, addr_s, addr_d;
-    wire [31:0] rdata, wdata, imm;
-    
-    GPR u_GPR(
-        .clk   	(clk    ),
-        .wen   	(wen    ),
-        .waddr 	(waddr  ),
-        .raddr 	(raddr  ),
-        .wdata 	(wdata  ),
-        .rdata 	(rdata  )
-    );
-    
+    wire [31:0] npc;
+    wire [2:0] imm_type;
+    wire wen;
+    wire [1:0] pc_sel;
+    wire [1:0] src1_sel;
+    wire [31:0] imm;
+    wire [31:0] src1;
+    wire [31:0] src;
+    wire [31:0] res;
+
+    assign npc = ((pc_sel[1] == 0) ? pc : src1) + ((pc_sel[0] == 0) ? 4 : imm);
+
     PC u_PC(
-        .clk    	(clk     ),
-        .rst    	(rst     ),
-        .next   	(success ),
-        .pc_out 	(pc      )
+        .clk 	(clk  ),
+        .rst 	(rst  ),
+        .npc 	(npc  ),
+        .pc  	(pc   )
     );
     
     Decode u_Decode(
-        .inst   	(inst       ),
-        .addr_s 	(addr_s     ),
-        .addr_d 	(addr_d     ),
-        .imm    	(imm        ),
-        .addi_en    (addi_en    ),
-        .ebreak_en  (ebreak_en  )
+        .opcode   	(inst[6:0]      ),
+        .funct3   	(inst[14:12]    ),
+        .funct7   	(inst[31:25]    ),
+        .imm_type 	(imm_type       ),
+        .wen      	(wen            ),
+        .src1_sel 	(src1_sel       ),
+        .pc_sel     (pc_sel         )
     );
     
-    ADDI u_ADDI(
-        .addr_s     	(addr_s      ),
-        .addr_d     	(addr_d      ),
-        .imm        	(imm         ),
-        .src1       	(rdata       ),
-        .wen        	(wen         ),
-        .addr_s_out 	(raddr       ),
-        .addr_d_out 	(waddr       ),
-        .res        	(wdata       ),
-        .success    	(success     ),
-        .en             (addi_en     )
+    ImmDecode u_ImmDecode(
+        .imm_type 	(imm_type       ),
+        .imm_in   	(inst[31:7]     ),
+        .imm_out  	(imm            )
     );
+    
+    assign src =
+            (src1_sel == 2'b00) ? 32'b0 :
+            (src1_sel == 2'b01) ? pc    :
+            (src1_sel == 2'b10) ? src1  :
+            32'b0;
 
-    EBREAK u_EBREAK(
-        .ebreak_en 	(ebreak_en  ),
-        .clk        (clk        )
+    ADD u_ADD(
+        .imm 	(imm  ),
+        .src 	(src  ),
+        .res 	(res  )
+    );
+    
+    GPR u_GPR(
+        .clk   	(clk            ),
+        .wen   	(wen            ),
+        .waddr 	(inst[11:7]     ),
+        .raddr 	(inst[19:15]    ),
+        .wdata 	(res            ),
+        .rdata 	(src1           )
     );
     
 endmodule

@@ -7,160 +7,407 @@
 
 #include "Vtop___024root.h"
 
+void Vtop___024root____Vdpiimwrap_top__DOT__u_Decode__DOT__ebreak_trigger_TOP();
+
 VL_INLINE_OPT void Vtop___024root___ico_sequent__TOP__0(Vtop___024root* vlSelf) {
     if (false && vlSelf) {}  // Prevent unused
     Vtop__Syms* const __restrict vlSymsp VL_ATTR_UNUSED = vlSelf->vlSymsp;
     VL_DEBUG_IF(VL_DBG_MSGF("+    Vtop___024root___ico_sequent__TOP__0\n"); );
     // Body
-    vlSelf->top__DOT__addi_en = (IData)((0x13U == (0x707fU 
-                                                   & vlSelf->inst)));
-    vlSelf->top__DOT__rdata = vlSelf->top__DOT__u_GPR__DOT__general_reg__DOT__rf
+    if ((IData)((0x73U == (0x707fU & vlSelf->inst)))) {
+        Vtop___024root____Vdpiimwrap_top__DOT__u_Decode__DOT__ebreak_trigger_TOP();
+    }
+    vlSelf->top__DOT__src1 = vlSelf->top__DOT__u_GPR__DOT__general_reg__DOT__rf
         [(0x1fU & (vlSelf->inst >> 0xfU))];
-    vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__1__KET____DOT__u_adder1__Cin 
-        = (1U & (vlSelf->top__DOT__rdata & (vlSelf->inst 
-                                            >> 0x14U)));
-    vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__2__KET____DOT__u_adder1__Cin 
-        = (1U & (((vlSelf->top__DOT__rdata >> 1U) & 
-                  ((IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__1__KET____DOT__u_adder1__Cin) 
-                   | (vlSelf->inst >> 0x15U))) | ((IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__1__KET____DOT__u_adder1__Cin) 
+    vlSelf->top__DOT__u_Decode__DOT____VdfgTmp_h8e5fb8c0__0 
+        = (IData)((0x13U == (0x707fU & vlSelf->inst)));
+    vlSelf->top__DOT__u_Decode__DOT____VdfgTmp_he6c9fe4d__0 
+        = (IData)((0x67U == (0x707fU & vlSelf->inst)));
+    vlSelf->top__DOT__u_Decode__DOT____VdfgTmp_hbc9923dd__0 
+        = ((IData)(vlSelf->top__DOT__u_Decode__DOT____VdfgTmp_h8e5fb8c0__0) 
+           | (IData)(vlSelf->top__DOT__u_Decode__DOT____VdfgTmp_he6c9fe4d__0));
+    vlSelf->top__DOT__imm_type = ((IData)(vlSelf->top__DOT__u_Decode__DOT____VdfgTmp_hbc9923dd__0)
+                                   ? 0U : (((0x17U 
+                                             == (0x7fU 
+                                                 & vlSelf->inst)) 
+                                            | (0x37U 
+                                               == (0x7fU 
+                                                   & vlSelf->inst)))
+                                            ? 3U : 
+                                           ((0x6fU 
+                                             == (0x7fU 
+                                                 & vlSelf->inst))
+                                             ? 4U : 0U)));
+    vlSelf->top__DOT__src1_sel = ((0x37U == (0x7fU 
+                                             & vlSelf->inst))
+                                   ? 0U : (((0x17U 
+                                             == (0x7fU 
+                                                 & vlSelf->inst)) 
+                                            | (0x6fU 
+                                               == (0x7fU 
+                                                   & vlSelf->inst)))
+                                            ? 1U : 
+                                           ((IData)(vlSelf->top__DOT__u_Decode__DOT____VdfgTmp_hbc9923dd__0)
+                                             ? 2U : 0U)));
+    vlSelf->top__DOT__imm = ((0U == (IData)(vlSelf->top__DOT__imm_type))
+                              ? (((- (IData)((vlSelf->inst 
+                                              >> 0x1fU))) 
+                                  << 0xbU) | (0x7ffU 
+                                              & (vlSelf->inst 
+                                                 >> 0x14U)))
+                              : ((1U == (IData)(vlSelf->top__DOT__imm_type))
+                                  ? (((- (IData)((vlSelf->inst 
+                                                  >> 0x1fU))) 
+                                      << 0xbU) | ((0x7e0U 
+                                                   & (vlSelf->inst 
+                                                      >> 0x14U)) 
+                                                  | (0x1fU 
+                                                     & (vlSelf->inst 
+                                                        >> 7U))))
+                                  : ((2U == (IData)(vlSelf->top__DOT__imm_type))
+                                      ? (((- (IData)(
+                                                     (vlSelf->inst 
+                                                      >> 0x1fU))) 
+                                          << 0xeU) 
+                                         | ((0x3800U 
+                                             & ((- (IData)(
+                                                           (1U 
+                                                            & (vlSelf->inst 
+                                                               >> 7U)))) 
+                                                << 0xbU)) 
+                                            | ((0x7e0U 
+                                                & (vlSelf->inst 
+                                                   >> 0x14U)) 
+                                               | (0x1eU 
                                                   & (vlSelf->inst 
-                                                     >> 0x15U))));
-    vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__3__KET____DOT__u_adder1__Cin 
-        = (1U & (((vlSelf->top__DOT__rdata >> 2U) & 
-                  ((IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__2__KET____DOT__u_adder1__Cin) 
-                   | (vlSelf->inst >> 0x16U))) | ((IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__2__KET____DOT__u_adder1__Cin) 
-                                                  & (vlSelf->inst 
-                                                     >> 0x16U))));
-    vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__4__KET____DOT__u_adder1__Cin 
-        = (1U & (((vlSelf->top__DOT__rdata >> 3U) & 
-                  ((IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__3__KET____DOT__u_adder1__Cin) 
-                   | (vlSelf->inst >> 0x17U))) | ((IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__3__KET____DOT__u_adder1__Cin) 
-                                                  & (vlSelf->inst 
-                                                     >> 0x17U))));
-    vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__5__KET____DOT__u_adder1__Cin 
-        = (1U & (((vlSelf->top__DOT__rdata >> 4U) & 
-                  ((IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__4__KET____DOT__u_adder1__Cin) 
-                   | (vlSelf->inst >> 0x18U))) | ((IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__4__KET____DOT__u_adder1__Cin) 
-                                                  & (vlSelf->inst 
-                                                     >> 0x18U))));
-    vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__6__KET____DOT__u_adder1__Cin 
-        = (1U & (((vlSelf->top__DOT__rdata >> 5U) & 
-                  ((IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__5__KET____DOT__u_adder1__Cin) 
-                   | (vlSelf->inst >> 0x19U))) | ((IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__5__KET____DOT__u_adder1__Cin) 
-                                                  & (vlSelf->inst 
-                                                     >> 0x19U))));
-    vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__7__KET____DOT__u_adder1__Cin 
-        = (1U & (((vlSelf->top__DOT__rdata >> 6U) & 
-                  ((IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__6__KET____DOT__u_adder1__Cin) 
-                   | (vlSelf->inst >> 0x1aU))) | ((IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__6__KET____DOT__u_adder1__Cin) 
-                                                  & (vlSelf->inst 
-                                                     >> 0x1aU))));
-    vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__8__KET____DOT__u_adder1__Cin 
-        = (1U & (((vlSelf->top__DOT__rdata >> 7U) & 
-                  ((IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__7__KET____DOT__u_adder1__Cin) 
-                   | (vlSelf->inst >> 0x1bU))) | ((IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__7__KET____DOT__u_adder1__Cin) 
-                                                  & (vlSelf->inst 
-                                                     >> 0x1bU))));
-    vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__9__KET____DOT__u_adder1__Cin 
-        = (1U & (((vlSelf->top__DOT__rdata >> 8U) & 
-                  ((IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__8__KET____DOT__u_adder1__Cin) 
-                   | (vlSelf->inst >> 0x1cU))) | ((IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__8__KET____DOT__u_adder1__Cin) 
-                                                  & (vlSelf->inst 
-                                                     >> 0x1cU))));
-    vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__10__KET____DOT__u_adder1__Cin 
-        = (1U & (((vlSelf->top__DOT__rdata >> 9U) & 
-                  ((IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__9__KET____DOT__u_adder1__Cin) 
-                   | (vlSelf->inst >> 0x1dU))) | ((IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__9__KET____DOT__u_adder1__Cin) 
-                                                  & (vlSelf->inst 
-                                                     >> 0x1dU))));
-    vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__11__KET____DOT__u_adder1__Cin 
-        = (1U & (((vlSelf->top__DOT__rdata >> 0xaU) 
-                  & ((IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__10__KET____DOT__u_adder1__Cin) 
-                     | (vlSelf->inst >> 0x1eU))) | 
-                 ((IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__10__KET____DOT__u_adder1__Cin) 
-                  & (vlSelf->inst >> 0x1eU))));
-    vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__12__KET____DOT__u_adder1__Cin 
-        = (1U & (((vlSelf->top__DOT__rdata >> 0xbU) 
-                  & ((IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__11__KET____DOT__u_adder1__Cin) 
-                     | (vlSelf->inst >> 0x1fU))) | 
-                 ((IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__11__KET____DOT__u_adder1__Cin) 
-                  & (vlSelf->inst >> 0x1fU))));
-    vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__13__KET____DOT__u_adder1__Cin 
-        = (1U & (((vlSelf->top__DOT__rdata >> 0xcU) 
-                  & ((vlSelf->inst >> 0x1fU) | (IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__12__KET____DOT__u_adder1__Cin))) 
-                 | ((vlSelf->inst >> 0x1fU) & (IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__12__KET____DOT__u_adder1__Cin))));
-    vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__14__KET____DOT__u_adder1__Cin 
-        = (1U & (((vlSelf->top__DOT__rdata >> 0xdU) 
-                  & ((vlSelf->inst >> 0x1fU) | (IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__13__KET____DOT__u_adder1__Cin))) 
-                 | ((vlSelf->inst >> 0x1fU) & (IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__13__KET____DOT__u_adder1__Cin))));
-    vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__15__KET____DOT__u_adder1__Cin 
-        = (1U & (((vlSelf->top__DOT__rdata >> 0xeU) 
-                  & ((vlSelf->inst >> 0x1fU) | (IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__14__KET____DOT__u_adder1__Cin))) 
-                 | ((vlSelf->inst >> 0x1fU) & (IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__14__KET____DOT__u_adder1__Cin))));
-    vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__16__KET____DOT__u_adder1__Cin 
-        = (1U & (((vlSelf->top__DOT__rdata >> 0xfU) 
-                  & ((vlSelf->inst >> 0x1fU) | (IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__15__KET____DOT__u_adder1__Cin))) 
-                 | ((vlSelf->inst >> 0x1fU) & (IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__15__KET____DOT__u_adder1__Cin))));
-    vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__17__KET____DOT__u_adder1__Cin 
-        = (1U & (((vlSelf->top__DOT__rdata >> 0x10U) 
-                  & ((vlSelf->inst >> 0x1fU) | (IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__16__KET____DOT__u_adder1__Cin))) 
-                 | ((vlSelf->inst >> 0x1fU) & (IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__16__KET____DOT__u_adder1__Cin))));
-    vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__18__KET____DOT__u_adder1__Cin 
-        = (1U & (((vlSelf->top__DOT__rdata >> 0x11U) 
-                  & ((vlSelf->inst >> 0x1fU) | (IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__17__KET____DOT__u_adder1__Cin))) 
-                 | ((vlSelf->inst >> 0x1fU) & (IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__17__KET____DOT__u_adder1__Cin))));
-    vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__19__KET____DOT__u_adder1__Cin 
-        = (1U & (((vlSelf->top__DOT__rdata >> 0x12U) 
-                  & ((vlSelf->inst >> 0x1fU) | (IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__18__KET____DOT__u_adder1__Cin))) 
-                 | ((vlSelf->inst >> 0x1fU) & (IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__18__KET____DOT__u_adder1__Cin))));
-    vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__20__KET____DOT__u_adder1__Cin 
-        = (1U & (((vlSelf->top__DOT__rdata >> 0x13U) 
-                  & ((vlSelf->inst >> 0x1fU) | (IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__19__KET____DOT__u_adder1__Cin))) 
-                 | ((vlSelf->inst >> 0x1fU) & (IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__19__KET____DOT__u_adder1__Cin))));
-    vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__21__KET____DOT__u_adder1__Cin 
-        = (1U & (((vlSelf->top__DOT__rdata >> 0x14U) 
-                  & ((vlSelf->inst >> 0x1fU) | (IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__20__KET____DOT__u_adder1__Cin))) 
-                 | ((vlSelf->inst >> 0x1fU) & (IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__20__KET____DOT__u_adder1__Cin))));
-    vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__22__KET____DOT__u_adder1__Cin 
-        = (1U & (((vlSelf->top__DOT__rdata >> 0x15U) 
-                  & ((vlSelf->inst >> 0x1fU) | (IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__21__KET____DOT__u_adder1__Cin))) 
-                 | ((vlSelf->inst >> 0x1fU) & (IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__21__KET____DOT__u_adder1__Cin))));
-    vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__23__KET____DOT__u_adder1__Cin 
-        = (1U & (((vlSelf->top__DOT__rdata >> 0x16U) 
-                  & ((vlSelf->inst >> 0x1fU) | (IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__22__KET____DOT__u_adder1__Cin))) 
-                 | ((vlSelf->inst >> 0x1fU) & (IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__22__KET____DOT__u_adder1__Cin))));
-    vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__24__KET____DOT__u_adder1__Cin 
-        = (1U & (((vlSelf->top__DOT__rdata >> 0x17U) 
-                  & ((vlSelf->inst >> 0x1fU) | (IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__23__KET____DOT__u_adder1__Cin))) 
-                 | ((vlSelf->inst >> 0x1fU) & (IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__23__KET____DOT__u_adder1__Cin))));
-    vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__25__KET____DOT__u_adder1__Cin 
-        = (1U & (((vlSelf->top__DOT__rdata >> 0x18U) 
-                  & ((vlSelf->inst >> 0x1fU) | (IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__24__KET____DOT__u_adder1__Cin))) 
-                 | ((vlSelf->inst >> 0x1fU) & (IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__24__KET____DOT__u_adder1__Cin))));
-    vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__26__KET____DOT__u_adder1__Cin 
-        = (1U & (((vlSelf->top__DOT__rdata >> 0x19U) 
-                  & ((vlSelf->inst >> 0x1fU) | (IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__25__KET____DOT__u_adder1__Cin))) 
-                 | ((vlSelf->inst >> 0x1fU) & (IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__25__KET____DOT__u_adder1__Cin))));
-    vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__27__KET____DOT__u_adder1__Cin 
-        = (1U & (((vlSelf->top__DOT__rdata >> 0x1aU) 
-                  & ((vlSelf->inst >> 0x1fU) | (IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__26__KET____DOT__u_adder1__Cin))) 
-                 | ((vlSelf->inst >> 0x1fU) & (IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__26__KET____DOT__u_adder1__Cin))));
-    vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__28__KET____DOT__u_adder1__Cin 
-        = (1U & (((vlSelf->top__DOT__rdata >> 0x1bU) 
-                  & ((vlSelf->inst >> 0x1fU) | (IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__27__KET____DOT__u_adder1__Cin))) 
-                 | ((vlSelf->inst >> 0x1fU) & (IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__27__KET____DOT__u_adder1__Cin))));
-    vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__29__KET____DOT__u_adder1__Cin 
-        = (1U & (((vlSelf->top__DOT__rdata >> 0x1cU) 
-                  & ((vlSelf->inst >> 0x1fU) | (IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__28__KET____DOT__u_adder1__Cin))) 
-                 | ((vlSelf->inst >> 0x1fU) & (IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__28__KET____DOT__u_adder1__Cin))));
-    vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__30__KET____DOT__u_adder1__Cin 
-        = (1U & (((vlSelf->top__DOT__rdata >> 0x1dU) 
-                  & ((vlSelf->inst >> 0x1fU) | (IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__29__KET____DOT__u_adder1__Cin))) 
-                 | ((vlSelf->inst >> 0x1fU) & (IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__29__KET____DOT__u_adder1__Cin))));
-    vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__31__KET____DOT__u_adder1__Cin 
-        = (1U & (((vlSelf->top__DOT__rdata >> 0x1eU) 
-                  & ((vlSelf->inst >> 0x1fU) | (IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__30__KET____DOT__u_adder1__Cin))) 
-                 | ((vlSelf->inst >> 0x1fU) & (IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__30__KET____DOT__u_adder1__Cin))));
+                                                     >> 7U)))))
+                                      : ((3U == (IData)(vlSelf->top__DOT__imm_type))
+                                          ? (0xfffff000U 
+                                             & vlSelf->inst)
+                                          : ((4U == (IData)(vlSelf->top__DOT__imm_type))
+                                              ? (((- (IData)(
+                                                             (vlSelf->inst 
+                                                              >> 0x1fU))) 
+                                                  << 0x14U) 
+                                                 | ((0xff000U 
+                                                     & vlSelf->inst) 
+                                                    | ((0x800U 
+                                                        & (vlSelf->inst 
+                                                           >> 9U)) 
+                                                       | (0x7feU 
+                                                          & (vlSelf->inst 
+                                                             >> 0x14U)))))
+                                              : 0U)))));
+    vlSelf->__VdfgTmp_h1bde3cb9__0 = ((1U == (IData)(vlSelf->top__DOT__src1_sel))
+                                       ? vlSelf->pc
+                                       : ((2U == (IData)(vlSelf->top__DOT__src1_sel))
+                                           ? vlSelf->top__DOT__src1
+                                           : 0U));
+    vlSelf->top__DOT__npc = ((((~ ((IData)(vlSelf->top__DOT__u_Decode__DOT____VdfgTmp_h8e5fb8c0__0) 
+                                   | ((0x37U == (0x7fU 
+                                                 & vlSelf->inst)) 
+                                      | (0x17U == (0x7fU 
+                                                   & vlSelf->inst))))) 
+                               & ((0x6fU != (0x7fU 
+                                             & vlSelf->inst)) 
+                                  & (IData)(vlSelf->top__DOT__u_Decode__DOT____VdfgTmp_he6c9fe4d__0)))
+                               ? vlSelf->top__DOT__src1
+                               : vlSelf->pc) + (((~ 
+                                                  ((IData)(vlSelf->top__DOT__u_Decode__DOT____VdfgTmp_h8e5fb8c0__0) 
+                                                   | ((0x37U 
+                                                       == 
+                                                       (0x7fU 
+                                                        & vlSelf->inst)) 
+                                                      | (0x17U 
+                                                         == 
+                                                         (0x7fU 
+                                                          & vlSelf->inst))))) 
+                                                 & ((0x6fU 
+                                                     == 
+                                                     (0x7fU 
+                                                      & vlSelf->inst)) 
+                                                    | (IData)(vlSelf->top__DOT__u_Decode__DOT____VdfgTmp_he6c9fe4d__0)))
+                                                 ? vlSelf->top__DOT__imm
+                                                 : 4U));
+    vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__31__KET____DOT__u_adder1__a 
+        = ((0U != (IData)(vlSelf->top__DOT__src1_sel)) 
+           & (vlSelf->__VdfgTmp_h1bde3cb9__0 >> 0x1fU));
+    vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__30__KET____DOT__u_adder1__a 
+        = ((0U != (IData)(vlSelf->top__DOT__src1_sel)) 
+           & (vlSelf->__VdfgTmp_h1bde3cb9__0 >> 0x1eU));
+    vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__29__KET____DOT__u_adder1__a 
+        = ((0U != (IData)(vlSelf->top__DOT__src1_sel)) 
+           & (vlSelf->__VdfgTmp_h1bde3cb9__0 >> 0x1dU));
+    vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__28__KET____DOT__u_adder1__a 
+        = ((0U != (IData)(vlSelf->top__DOT__src1_sel)) 
+           & (vlSelf->__VdfgTmp_h1bde3cb9__0 >> 0x1cU));
+    vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__27__KET____DOT__u_adder1__a 
+        = ((0U != (IData)(vlSelf->top__DOT__src1_sel)) 
+           & (vlSelf->__VdfgTmp_h1bde3cb9__0 >> 0x1bU));
+    vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__26__KET____DOT__u_adder1__a 
+        = ((0U != (IData)(vlSelf->top__DOT__src1_sel)) 
+           & (vlSelf->__VdfgTmp_h1bde3cb9__0 >> 0x1aU));
+    vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__25__KET____DOT__u_adder1__a 
+        = ((0U != (IData)(vlSelf->top__DOT__src1_sel)) 
+           & (vlSelf->__VdfgTmp_h1bde3cb9__0 >> 0x19U));
+    vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__24__KET____DOT__u_adder1__a 
+        = ((0U != (IData)(vlSelf->top__DOT__src1_sel)) 
+           & (vlSelf->__VdfgTmp_h1bde3cb9__0 >> 0x18U));
+    vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__23__KET____DOT__u_adder1__a 
+        = ((0U != (IData)(vlSelf->top__DOT__src1_sel)) 
+           & (vlSelf->__VdfgTmp_h1bde3cb9__0 >> 0x17U));
+    vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__22__KET____DOT__u_adder1__a 
+        = ((0U != (IData)(vlSelf->top__DOT__src1_sel)) 
+           & (vlSelf->__VdfgTmp_h1bde3cb9__0 >> 0x16U));
+    vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__21__KET____DOT__u_adder1__a 
+        = ((0U != (IData)(vlSelf->top__DOT__src1_sel)) 
+           & (vlSelf->__VdfgTmp_h1bde3cb9__0 >> 0x15U));
+    vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__20__KET____DOT__u_adder1__a 
+        = ((0U != (IData)(vlSelf->top__DOT__src1_sel)) 
+           & (vlSelf->__VdfgTmp_h1bde3cb9__0 >> 0x14U));
+    vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__19__KET____DOT__u_adder1__a 
+        = ((0U != (IData)(vlSelf->top__DOT__src1_sel)) 
+           & (vlSelf->__VdfgTmp_h1bde3cb9__0 >> 0x13U));
+    vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__18__KET____DOT__u_adder1__a 
+        = ((0U != (IData)(vlSelf->top__DOT__src1_sel)) 
+           & (vlSelf->__VdfgTmp_h1bde3cb9__0 >> 0x12U));
+    vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__17__KET____DOT__u_adder1__a 
+        = ((0U != (IData)(vlSelf->top__DOT__src1_sel)) 
+           & (vlSelf->__VdfgTmp_h1bde3cb9__0 >> 0x11U));
+    vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__16__KET____DOT__u_adder1__a 
+        = ((0U != (IData)(vlSelf->top__DOT__src1_sel)) 
+           & (vlSelf->__VdfgTmp_h1bde3cb9__0 >> 0x10U));
+    vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__15__KET____DOT__u_adder1__a 
+        = ((0U != (IData)(vlSelf->top__DOT__src1_sel)) 
+           & (vlSelf->__VdfgTmp_h1bde3cb9__0 >> 0xfU));
+    vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__14__KET____DOT__u_adder1__a 
+        = ((0U != (IData)(vlSelf->top__DOT__src1_sel)) 
+           & (vlSelf->__VdfgTmp_h1bde3cb9__0 >> 0xeU));
+    vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__13__KET____DOT__u_adder1__a 
+        = ((0U != (IData)(vlSelf->top__DOT__src1_sel)) 
+           & (vlSelf->__VdfgTmp_h1bde3cb9__0 >> 0xdU));
+    vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__12__KET____DOT__u_adder1__a 
+        = ((0U != (IData)(vlSelf->top__DOT__src1_sel)) 
+           & (vlSelf->__VdfgTmp_h1bde3cb9__0 >> 0xcU));
+    vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__11__KET____DOT__u_adder1__a 
+        = ((0U != (IData)(vlSelf->top__DOT__src1_sel)) 
+           & (vlSelf->__VdfgTmp_h1bde3cb9__0 >> 0xbU));
+    vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__10__KET____DOT__u_adder1__a 
+        = ((0U != (IData)(vlSelf->top__DOT__src1_sel)) 
+           & (vlSelf->__VdfgTmp_h1bde3cb9__0 >> 0xaU));
+    vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__9__KET____DOT__u_adder1__a 
+        = ((0U != (IData)(vlSelf->top__DOT__src1_sel)) 
+           & (vlSelf->__VdfgTmp_h1bde3cb9__0 >> 9U));
+    vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__8__KET____DOT__u_adder1__a 
+        = ((0U != (IData)(vlSelf->top__DOT__src1_sel)) 
+           & (vlSelf->__VdfgTmp_h1bde3cb9__0 >> 8U));
+    vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__7__KET____DOT__u_adder1__a 
+        = ((0U != (IData)(vlSelf->top__DOT__src1_sel)) 
+           & (vlSelf->__VdfgTmp_h1bde3cb9__0 >> 7U));
+    vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__6__KET____DOT__u_adder1__a 
+        = ((0U != (IData)(vlSelf->top__DOT__src1_sel)) 
+           & (vlSelf->__VdfgTmp_h1bde3cb9__0 >> 6U));
+    vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__5__KET____DOT__u_adder1__a 
+        = ((0U != (IData)(vlSelf->top__DOT__src1_sel)) 
+           & (vlSelf->__VdfgTmp_h1bde3cb9__0 >> 5U));
+    vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__4__KET____DOT__u_adder1__a 
+        = ((0U != (IData)(vlSelf->top__DOT__src1_sel)) 
+           & (vlSelf->__VdfgTmp_h1bde3cb9__0 >> 4U));
+    vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__3__KET____DOT__u_adder1__a 
+        = ((0U != (IData)(vlSelf->top__DOT__src1_sel)) 
+           & (vlSelf->__VdfgTmp_h1bde3cb9__0 >> 3U));
+    vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__2__KET____DOT__u_adder1__a 
+        = ((0U != (IData)(vlSelf->top__DOT__src1_sel)) 
+           & (vlSelf->__VdfgTmp_h1bde3cb9__0 >> 2U));
+    vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__1__KET____DOT__u_adder1__a 
+        = ((0U != (IData)(vlSelf->top__DOT__src1_sel)) 
+           & (vlSelf->__VdfgTmp_h1bde3cb9__0 >> 1U));
+    vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__u_adder0__a 
+        = ((0U != (IData)(vlSelf->top__DOT__src1_sel)) 
+           & vlSelf->__VdfgTmp_h1bde3cb9__0);
+    vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__1__KET____DOT__u_adder1__Cin 
+        = ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__u_adder0__a) 
+           & vlSelf->top__DOT__imm);
+    vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__2__KET____DOT__u_adder1__Cin 
+        = (((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__1__KET____DOT__u_adder1__a) 
+            & ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__1__KET____DOT__u_adder1__Cin) 
+               | (vlSelf->top__DOT__imm >> 1U))) | 
+           ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__1__KET____DOT__u_adder1__Cin) 
+            & (vlSelf->top__DOT__imm >> 1U)));
+    vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__3__KET____DOT__u_adder1__Cin 
+        = (((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__2__KET____DOT__u_adder1__a) 
+            & ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__2__KET____DOT__u_adder1__Cin) 
+               | (vlSelf->top__DOT__imm >> 2U))) | 
+           ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__2__KET____DOT__u_adder1__Cin) 
+            & (vlSelf->top__DOT__imm >> 2U)));
+    vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__4__KET____DOT__u_adder1__Cin 
+        = (((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__3__KET____DOT__u_adder1__a) 
+            & ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__3__KET____DOT__u_adder1__Cin) 
+               | (vlSelf->top__DOT__imm >> 3U))) | 
+           ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__3__KET____DOT__u_adder1__Cin) 
+            & (vlSelf->top__DOT__imm >> 3U)));
+    vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__5__KET____DOT__u_adder1__Cin 
+        = (((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__4__KET____DOT__u_adder1__a) 
+            & ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__4__KET____DOT__u_adder1__Cin) 
+               | (vlSelf->top__DOT__imm >> 4U))) | 
+           ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__4__KET____DOT__u_adder1__Cin) 
+            & (vlSelf->top__DOT__imm >> 4U)));
+    vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__6__KET____DOT__u_adder1__Cin 
+        = (((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__5__KET____DOT__u_adder1__a) 
+            & ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__5__KET____DOT__u_adder1__Cin) 
+               | (vlSelf->top__DOT__imm >> 5U))) | 
+           ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__5__KET____DOT__u_adder1__Cin) 
+            & (vlSelf->top__DOT__imm >> 5U)));
+    vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__7__KET____DOT__u_adder1__Cin 
+        = (((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__6__KET____DOT__u_adder1__a) 
+            & ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__6__KET____DOT__u_adder1__Cin) 
+               | (vlSelf->top__DOT__imm >> 6U))) | 
+           ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__6__KET____DOT__u_adder1__Cin) 
+            & (vlSelf->top__DOT__imm >> 6U)));
+    vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__8__KET____DOT__u_adder1__Cin 
+        = (((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__7__KET____DOT__u_adder1__a) 
+            & ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__7__KET____DOT__u_adder1__Cin) 
+               | (vlSelf->top__DOT__imm >> 7U))) | 
+           ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__7__KET____DOT__u_adder1__Cin) 
+            & (vlSelf->top__DOT__imm >> 7U)));
+    vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__9__KET____DOT__u_adder1__Cin 
+        = (((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__8__KET____DOT__u_adder1__a) 
+            & ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__8__KET____DOT__u_adder1__Cin) 
+               | (vlSelf->top__DOT__imm >> 8U))) | 
+           ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__8__KET____DOT__u_adder1__Cin) 
+            & (vlSelf->top__DOT__imm >> 8U)));
+    vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__10__KET____DOT__u_adder1__Cin 
+        = (((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__9__KET____DOT__u_adder1__a) 
+            & ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__9__KET____DOT__u_adder1__Cin) 
+               | (vlSelf->top__DOT__imm >> 9U))) | 
+           ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__9__KET____DOT__u_adder1__Cin) 
+            & (vlSelf->top__DOT__imm >> 9U)));
+    vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__11__KET____DOT__u_adder1__Cin 
+        = (((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__10__KET____DOT__u_adder1__a) 
+            & ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__10__KET____DOT__u_adder1__Cin) 
+               | (vlSelf->top__DOT__imm >> 0xaU))) 
+           | ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__10__KET____DOT__u_adder1__Cin) 
+              & (vlSelf->top__DOT__imm >> 0xaU)));
+    vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__12__KET____DOT__u_adder1__Cin 
+        = (((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__11__KET____DOT__u_adder1__a) 
+            & ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__11__KET____DOT__u_adder1__Cin) 
+               | (vlSelf->top__DOT__imm >> 0xbU))) 
+           | ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__11__KET____DOT__u_adder1__Cin) 
+              & (vlSelf->top__DOT__imm >> 0xbU)));
+    vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__13__KET____DOT__u_adder1__Cin 
+        = (((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__12__KET____DOT__u_adder1__a) 
+            & ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__12__KET____DOT__u_adder1__Cin) 
+               | (vlSelf->top__DOT__imm >> 0xcU))) 
+           | ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__12__KET____DOT__u_adder1__Cin) 
+              & (vlSelf->top__DOT__imm >> 0xcU)));
+    vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__14__KET____DOT__u_adder1__Cin 
+        = (((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__13__KET____DOT__u_adder1__a) 
+            & ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__13__KET____DOT__u_adder1__Cin) 
+               | (vlSelf->top__DOT__imm >> 0xdU))) 
+           | ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__13__KET____DOT__u_adder1__Cin) 
+              & (vlSelf->top__DOT__imm >> 0xdU)));
+    vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__15__KET____DOT__u_adder1__Cin 
+        = (((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__14__KET____DOT__u_adder1__a) 
+            & ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__14__KET____DOT__u_adder1__Cin) 
+               | (vlSelf->top__DOT__imm >> 0xeU))) 
+           | ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__14__KET____DOT__u_adder1__Cin) 
+              & (vlSelf->top__DOT__imm >> 0xeU)));
+    vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__16__KET____DOT__u_adder1__Cin 
+        = (((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__15__KET____DOT__u_adder1__a) 
+            & ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__15__KET____DOT__u_adder1__Cin) 
+               | (vlSelf->top__DOT__imm >> 0xfU))) 
+           | ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__15__KET____DOT__u_adder1__Cin) 
+              & (vlSelf->top__DOT__imm >> 0xfU)));
+    vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__17__KET____DOT__u_adder1__Cin 
+        = (((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__16__KET____DOT__u_adder1__a) 
+            & ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__16__KET____DOT__u_adder1__Cin) 
+               | (vlSelf->top__DOT__imm >> 0x10U))) 
+           | ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__16__KET____DOT__u_adder1__Cin) 
+              & (vlSelf->top__DOT__imm >> 0x10U)));
+    vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__18__KET____DOT__u_adder1__Cin 
+        = (((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__17__KET____DOT__u_adder1__a) 
+            & ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__17__KET____DOT__u_adder1__Cin) 
+               | (vlSelf->top__DOT__imm >> 0x11U))) 
+           | ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__17__KET____DOT__u_adder1__Cin) 
+              & (vlSelf->top__DOT__imm >> 0x11U)));
+    vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__19__KET____DOT__u_adder1__Cin 
+        = (((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__18__KET____DOT__u_adder1__a) 
+            & ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__18__KET____DOT__u_adder1__Cin) 
+               | (vlSelf->top__DOT__imm >> 0x12U))) 
+           | ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__18__KET____DOT__u_adder1__Cin) 
+              & (vlSelf->top__DOT__imm >> 0x12U)));
+    vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__20__KET____DOT__u_adder1__Cin 
+        = (((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__19__KET____DOT__u_adder1__a) 
+            & ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__19__KET____DOT__u_adder1__Cin) 
+               | (vlSelf->top__DOT__imm >> 0x13U))) 
+           | ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__19__KET____DOT__u_adder1__Cin) 
+              & (vlSelf->top__DOT__imm >> 0x13U)));
+    vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__21__KET____DOT__u_adder1__Cin 
+        = (((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__20__KET____DOT__u_adder1__a) 
+            & ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__20__KET____DOT__u_adder1__Cin) 
+               | (vlSelf->top__DOT__imm >> 0x14U))) 
+           | ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__20__KET____DOT__u_adder1__Cin) 
+              & (vlSelf->top__DOT__imm >> 0x14U)));
+    vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__22__KET____DOT__u_adder1__Cin 
+        = (((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__21__KET____DOT__u_adder1__a) 
+            & ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__21__KET____DOT__u_adder1__Cin) 
+               | (vlSelf->top__DOT__imm >> 0x15U))) 
+           | ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__21__KET____DOT__u_adder1__Cin) 
+              & (vlSelf->top__DOT__imm >> 0x15U)));
+    vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__23__KET____DOT__u_adder1__Cin 
+        = (((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__22__KET____DOT__u_adder1__a) 
+            & ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__22__KET____DOT__u_adder1__Cin) 
+               | (vlSelf->top__DOT__imm >> 0x16U))) 
+           | ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__22__KET____DOT__u_adder1__Cin) 
+              & (vlSelf->top__DOT__imm >> 0x16U)));
+    vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__24__KET____DOT__u_adder1__Cin 
+        = (((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__23__KET____DOT__u_adder1__a) 
+            & ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__23__KET____DOT__u_adder1__Cin) 
+               | (vlSelf->top__DOT__imm >> 0x17U))) 
+           | ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__23__KET____DOT__u_adder1__Cin) 
+              & (vlSelf->top__DOT__imm >> 0x17U)));
+    vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__25__KET____DOT__u_adder1__Cin 
+        = (((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__24__KET____DOT__u_adder1__a) 
+            & ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__24__KET____DOT__u_adder1__Cin) 
+               | (vlSelf->top__DOT__imm >> 0x18U))) 
+           | ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__24__KET____DOT__u_adder1__Cin) 
+              & (vlSelf->top__DOT__imm >> 0x18U)));
+    vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__26__KET____DOT__u_adder1__Cin 
+        = (((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__25__KET____DOT__u_adder1__a) 
+            & ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__25__KET____DOT__u_adder1__Cin) 
+               | (vlSelf->top__DOT__imm >> 0x19U))) 
+           | ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__25__KET____DOT__u_adder1__Cin) 
+              & (vlSelf->top__DOT__imm >> 0x19U)));
+    vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__27__KET____DOT__u_adder1__Cin 
+        = (((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__26__KET____DOT__u_adder1__a) 
+            & ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__26__KET____DOT__u_adder1__Cin) 
+               | (vlSelf->top__DOT__imm >> 0x1aU))) 
+           | ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__26__KET____DOT__u_adder1__Cin) 
+              & (vlSelf->top__DOT__imm >> 0x1aU)));
+    vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__28__KET____DOT__u_adder1__Cin 
+        = (((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__27__KET____DOT__u_adder1__a) 
+            & ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__27__KET____DOT__u_adder1__Cin) 
+               | (vlSelf->top__DOT__imm >> 0x1bU))) 
+           | ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__27__KET____DOT__u_adder1__Cin) 
+              & (vlSelf->top__DOT__imm >> 0x1bU)));
+    vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__29__KET____DOT__u_adder1__Cin 
+        = (((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__28__KET____DOT__u_adder1__a) 
+            & ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__28__KET____DOT__u_adder1__Cin) 
+               | (vlSelf->top__DOT__imm >> 0x1cU))) 
+           | ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__28__KET____DOT__u_adder1__Cin) 
+              & (vlSelf->top__DOT__imm >> 0x1cU)));
+    vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__30__KET____DOT__u_adder1__Cin 
+        = (((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__29__KET____DOT__u_adder1__a) 
+            & ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__29__KET____DOT__u_adder1__Cin) 
+               | (vlSelf->top__DOT__imm >> 0x1dU))) 
+           | ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__29__KET____DOT__u_adder1__Cin) 
+              & (vlSelf->top__DOT__imm >> 0x1dU)));
+    vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__31__KET____DOT__u_adder1__Cin 
+        = (((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__30__KET____DOT__u_adder1__a) 
+            & ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__30__KET____DOT__u_adder1__Cin) 
+               | (vlSelf->top__DOT__imm >> 0x1eU))) 
+           | ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__30__KET____DOT__u_adder1__Cin) 
+              & (vlSelf->top__DOT__imm >> 0x1eU)));
 }
 
 void Vtop___024root___eval_ico(Vtop___024root* vlSelf) {
@@ -180,8 +427,6 @@ void Vtop___024root___eval_act(Vtop___024root* vlSelf) {
     VL_DEBUG_IF(VL_DBG_MSGF("+    Vtop___024root___eval_act\n"); );
 }
 
-void Vtop___024root____Vdpiimwrap_top__DOT__u_EBREAK__DOT__ebreak_trigger_TOP();
-
 VL_INLINE_OPT void Vtop___024root___nba_sequent__TOP__0(Vtop___024root* vlSelf) {
     if (false && vlSelf) {}  // Prevent unused
     Vtop__Syms* const __restrict vlSymsp VL_ATTR_UNUSED = vlSelf->vlSymsp;
@@ -191,434 +436,565 @@ VL_INLINE_OPT void Vtop___024root___nba_sequent__TOP__0(Vtop___024root* vlSelf) 
     __Vdlyvdim0__top__DOT__u_GPR__DOT__general_reg__DOT__rf__v0 = 0;
     IData/*31:0*/ __Vdlyvval__top__DOT__u_GPR__DOT__general_reg__DOT__rf__v0;
     __Vdlyvval__top__DOT__u_GPR__DOT__general_reg__DOT__rf__v0 = 0;
-    CData/*0:0*/ __Vdlyvset__top__DOT__u_GPR__DOT__general_reg__DOT__rf__v0;
-    __Vdlyvset__top__DOT__u_GPR__DOT__general_reg__DOT__rf__v0 = 0;
-    IData/*31:0*/ __Vdly__top__DOT__u_PC__DOT__pc;
-    __Vdly__top__DOT__u_PC__DOT__pc = 0;
     // Body
-    if ((IData)((0x73U == (0x707fU & vlSelf->inst)))) {
-        Vtop___024root____Vdpiimwrap_top__DOT__u_EBREAK__DOT__ebreak_trigger_TOP();
-    }
-    __Vdly__top__DOT__u_PC__DOT__pc = vlSelf->top__DOT__u_PC__DOT__pc;
-    __Vdlyvset__top__DOT__u_GPR__DOT__general_reg__DOT__rf__v0 = 0U;
-    if (vlSelf->rst) {
-        __Vdly__top__DOT__u_PC__DOT__pc = 0x80000000U;
-    } else if (vlSelf->top__DOT__addi_en) {
-        __Vdly__top__DOT__u_PC__DOT__pc = ((IData)(4U) 
-                                           + vlSelf->top__DOT__u_PC__DOT__pc);
-    }
-    if (((0U != (0x1fU & (vlSelf->inst >> 7U))) & (IData)(vlSelf->top__DOT__addi_en))) {
-        __Vdlyvval__top__DOT__u_GPR__DOT__general_reg__DOT__rf__v0 
-            = ((((vlSelf->top__DOT__rdata >> 0x1fU) 
-                 + ((vlSelf->inst >> 0x1fU) + (IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__31__KET____DOT__u_adder1__Cin))) 
-                << 0x1fU) | ((0x40000000U & (((vlSelf->top__DOT__rdata 
-                                               >> 0x1eU) 
-                                              + ((vlSelf->inst 
-                                                  >> 0x1fU) 
-                                                 + (IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__30__KET____DOT__u_adder1__Cin))) 
-                                             << 0x1eU)) 
-                             | ((0x20000000U & (((vlSelf->top__DOT__rdata 
-                                                  >> 0x1dU) 
+    __Vdlyvval__top__DOT__u_GPR__DOT__general_reg__DOT__rf__v0 
+        = ((((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__31__KET____DOT__u_adder1__a) 
+             + ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__31__KET____DOT__u_adder1__Cin) 
+                + (vlSelf->top__DOT__imm >> 0x1fU))) 
+            << 0x1fU) | ((0x40000000U & (((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__30__KET____DOT__u_adder1__a) 
+                                          + ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__30__KET____DOT__u_adder1__Cin) 
+                                             + (vlSelf->top__DOT__imm 
+                                                >> 0x1eU))) 
+                                         << 0x1eU)) 
+                         | ((0x20000000U & (((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__29__KET____DOT__u_adder1__a) 
+                                             + ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__29__KET____DOT__u_adder1__Cin) 
+                                                + (vlSelf->top__DOT__imm 
+                                                   >> 0x1dU))) 
+                                            << 0x1dU)) 
+                            | ((0x10000000U & (((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__28__KET____DOT__u_adder1__a) 
+                                                + ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__28__KET____DOT__u_adder1__Cin) 
+                                                   + 
+                                                   (vlSelf->top__DOT__imm 
+                                                    >> 0x1cU))) 
+                                               << 0x1cU)) 
+                               | ((0x8000000U & (((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__27__KET____DOT__u_adder1__a) 
+                                                  + 
+                                                  ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__27__KET____DOT__u_adder1__Cin) 
+                                                   + 
+                                                   (vlSelf->top__DOT__imm 
+                                                    >> 0x1bU))) 
+                                                 << 0x1bU)) 
+                                  | ((0x4000000U & 
+                                      (((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__26__KET____DOT__u_adder1__a) 
+                                        + ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__26__KET____DOT__u_adder1__Cin) 
+                                           + (vlSelf->top__DOT__imm 
+                                              >> 0x1aU))) 
+                                       << 0x1aU)) | 
+                                     ((0x2000000U & 
+                                       (((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__25__KET____DOT__u_adder1__a) 
+                                         + ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__25__KET____DOT__u_adder1__Cin) 
+                                            + (vlSelf->top__DOT__imm 
+                                               >> 0x19U))) 
+                                        << 0x19U)) 
+                                      | ((0x1000000U 
+                                          & (((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__24__KET____DOT__u_adder1__a) 
+                                              + ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__24__KET____DOT__u_adder1__Cin) 
                                                  + 
-                                                 ((vlSelf->inst 
-                                                   >> 0x1fU) 
-                                                  + (IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__29__KET____DOT__u_adder1__Cin))) 
-                                                << 0x1dU)) 
-                                | ((0x10000000U & (
-                                                   ((vlSelf->top__DOT__rdata 
-                                                     >> 0x1cU) 
-                                                    + 
-                                                    ((vlSelf->inst 
-                                                      >> 0x1fU) 
-                                                     + (IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__28__KET____DOT__u_adder1__Cin))) 
-                                                   << 0x1cU)) 
-                                   | ((0x8000000U & 
-                                       (((vlSelf->top__DOT__rdata 
-                                          >> 0x1bU) 
-                                         + ((vlSelf->inst 
-                                             >> 0x1fU) 
-                                            + (IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__27__KET____DOT__u_adder1__Cin))) 
-                                        << 0x1bU)) 
-                                      | ((0x4000000U 
-                                          & (((vlSelf->top__DOT__rdata 
-                                               >> 0x1aU) 
-                                              + ((vlSelf->inst 
-                                                  >> 0x1fU) 
-                                                 + (IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__26__KET____DOT__u_adder1__Cin))) 
-                                             << 0x1aU)) 
-                                         | ((0x2000000U 
-                                             & (((vlSelf->top__DOT__rdata 
-                                                  >> 0x19U) 
+                                                 (vlSelf->top__DOT__imm 
+                                                  >> 0x18U))) 
+                                             << 0x18U)) 
+                                         | ((0x800000U 
+                                             & (((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__23__KET____DOT__u_adder1__a) 
                                                  + 
-                                                 ((vlSelf->inst 
-                                                   >> 0x1fU) 
-                                                  + (IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__25__KET____DOT__u_adder1__Cin))) 
-                                                << 0x19U)) 
-                                            | ((0x1000000U 
-                                                & (((vlSelf->top__DOT__rdata 
-                                                     >> 0x18U) 
+                                                 ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__23__KET____DOT__u_adder1__Cin) 
+                                                  + 
+                                                  (vlSelf->top__DOT__imm 
+                                                   >> 0x17U))) 
+                                                << 0x17U)) 
+                                            | ((0x400000U 
+                                                & (((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__22__KET____DOT__u_adder1__a) 
                                                     + 
-                                                    ((vlSelf->inst 
-                                                      >> 0x1fU) 
-                                                     + (IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__24__KET____DOT__u_adder1__Cin))) 
-                                                   << 0x18U)) 
-                                               | ((0x800000U 
-                                                   & (((vlSelf->top__DOT__rdata 
-                                                        >> 0x17U) 
+                                                    ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__22__KET____DOT__u_adder1__Cin) 
+                                                     + 
+                                                     (vlSelf->top__DOT__imm 
+                                                      >> 0x16U))) 
+                                                   << 0x16U)) 
+                                               | ((0x200000U 
+                                                   & (((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__21__KET____DOT__u_adder1__a) 
                                                        + 
-                                                       ((vlSelf->inst 
-                                                         >> 0x1fU) 
-                                                        + (IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__23__KET____DOT__u_adder1__Cin))) 
-                                                      << 0x17U)) 
-                                                  | ((0x400000U 
-                                                      & (((vlSelf->top__DOT__rdata 
-                                                           >> 0x16U) 
+                                                       ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__21__KET____DOT__u_adder1__Cin) 
+                                                        + 
+                                                        (vlSelf->top__DOT__imm 
+                                                         >> 0x15U))) 
+                                                      << 0x15U)) 
+                                                  | ((0x100000U 
+                                                      & (((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__20__KET____DOT__u_adder1__a) 
                                                           + 
-                                                          ((vlSelf->inst 
-                                                            >> 0x1fU) 
-                                                           + (IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__22__KET____DOT__u_adder1__Cin))) 
-                                                         << 0x16U)) 
-                                                     | ((0x200000U 
-                                                         & (((vlSelf->top__DOT__rdata 
-                                                              >> 0x15U) 
+                                                          ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__20__KET____DOT__u_adder1__Cin) 
+                                                           + 
+                                                           (vlSelf->top__DOT__imm 
+                                                            >> 0x14U))) 
+                                                         << 0x14U)) 
+                                                     | ((0x80000U 
+                                                         & (((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__19__KET____DOT__u_adder1__a) 
                                                              + 
-                                                             ((vlSelf->inst 
-                                                               >> 0x1fU) 
-                                                              + (IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__21__KET____DOT__u_adder1__Cin))) 
-                                                            << 0x15U)) 
-                                                        | ((0x100000U 
-                                                            & (((vlSelf->top__DOT__rdata 
-                                                                 >> 0x14U) 
+                                                             ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__19__KET____DOT__u_adder1__Cin) 
+                                                              + 
+                                                              (vlSelf->top__DOT__imm 
+                                                               >> 0x13U))) 
+                                                            << 0x13U)) 
+                                                        | ((0x40000U 
+                                                            & (((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__18__KET____DOT__u_adder1__a) 
                                                                 + 
-                                                                ((vlSelf->inst 
-                                                                  >> 0x1fU) 
-                                                                 + (IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__20__KET____DOT__u_adder1__Cin))) 
-                                                               << 0x14U)) 
-                                                           | ((0x80000U 
-                                                               & (((vlSelf->top__DOT__rdata 
-                                                                    >> 0x13U) 
+                                                                ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__18__KET____DOT__u_adder1__Cin) 
+                                                                 + 
+                                                                 (vlSelf->top__DOT__imm 
+                                                                  >> 0x12U))) 
+                                                               << 0x12U)) 
+                                                           | ((0x20000U 
+                                                               & (((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__17__KET____DOT__u_adder1__a) 
                                                                    + 
-                                                                   ((vlSelf->inst 
-                                                                     >> 0x1fU) 
-                                                                    + (IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__19__KET____DOT__u_adder1__Cin))) 
-                                                                  << 0x13U)) 
-                                                              | ((0x40000U 
-                                                                  & (((vlSelf->top__DOT__rdata 
-                                                                       >> 0x12U) 
+                                                                   ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__17__KET____DOT__u_adder1__Cin) 
+                                                                    + 
+                                                                    (vlSelf->top__DOT__imm 
+                                                                     >> 0x11U))) 
+                                                                  << 0x11U)) 
+                                                              | ((0x10000U 
+                                                                  & (((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__16__KET____DOT__u_adder1__a) 
                                                                       + 
-                                                                      ((vlSelf->inst 
-                                                                        >> 0x1fU) 
-                                                                       + (IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__18__KET____DOT__u_adder1__Cin))) 
-                                                                     << 0x12U)) 
-                                                                 | ((0x20000U 
-                                                                     & (((vlSelf->top__DOT__rdata 
-                                                                          >> 0x11U) 
+                                                                      ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__16__KET____DOT__u_adder1__Cin) 
+                                                                       + 
+                                                                       (vlSelf->top__DOT__imm 
+                                                                        >> 0x10U))) 
+                                                                     << 0x10U)) 
+                                                                 | ((0x8000U 
+                                                                     & (((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__15__KET____DOT__u_adder1__a) 
                                                                          + 
-                                                                         ((vlSelf->inst 
-                                                                           >> 0x1fU) 
-                                                                          + (IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__17__KET____DOT__u_adder1__Cin))) 
-                                                                        << 0x11U)) 
-                                                                    | ((0x10000U 
-                                                                        & (((vlSelf->top__DOT__rdata 
-                                                                             >> 0x10U) 
+                                                                         ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__15__KET____DOT__u_adder1__Cin) 
+                                                                          + 
+                                                                          (vlSelf->top__DOT__imm 
+                                                                           >> 0xfU))) 
+                                                                        << 0xfU)) 
+                                                                    | ((0x4000U 
+                                                                        & (((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__14__KET____DOT__u_adder1__a) 
                                                                             + 
-                                                                            ((vlSelf->inst 
-                                                                              >> 0x1fU) 
-                                                                             + (IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__16__KET____DOT__u_adder1__Cin))) 
-                                                                           << 0x10U)) 
-                                                                       | ((0x8000U 
-                                                                           & (((vlSelf->top__DOT__rdata 
-                                                                                >> 0xfU) 
+                                                                            ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__14__KET____DOT__u_adder1__Cin) 
+                                                                             + 
+                                                                             (vlSelf->top__DOT__imm 
+                                                                              >> 0xeU))) 
+                                                                           << 0xeU)) 
+                                                                       | ((0x2000U 
+                                                                           & (((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__13__KET____DOT__u_adder1__a) 
                                                                                + 
-                                                                               ((vlSelf->inst 
-                                                                                >> 0x1fU) 
-                                                                                + (IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__15__KET____DOT__u_adder1__Cin))) 
-                                                                              << 0xfU)) 
-                                                                          | ((0x4000U 
-                                                                              & (((vlSelf->top__DOT__rdata 
-                                                                                >> 0xeU) 
+                                                                               ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__13__KET____DOT__u_adder1__Cin) 
                                                                                 + 
-                                                                                ((vlSelf->inst 
-                                                                                >> 0x1fU) 
-                                                                                + (IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__14__KET____DOT__u_adder1__Cin))) 
-                                                                                << 0xeU)) 
-                                                                             | ((0x2000U 
-                                                                                & (((vlSelf->top__DOT__rdata 
-                                                                                >> 0xdU) 
+                                                                                (vlSelf->top__DOT__imm 
+                                                                                >> 0xdU))) 
+                                                                              << 0xdU)) 
+                                                                          | ((0x1000U 
+                                                                              & (((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__12__KET____DOT__u_adder1__a) 
                                                                                 + 
-                                                                                ((vlSelf->inst 
-                                                                                >> 0x1fU) 
-                                                                                + (IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__13__KET____DOT__u_adder1__Cin))) 
-                                                                                << 0xdU)) 
-                                                                                | ((0x1000U 
-                                                                                & (((vlSelf->top__DOT__rdata 
-                                                                                >> 0xcU) 
+                                                                                ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__12__KET____DOT__u_adder1__Cin) 
                                                                                 + 
-                                                                                ((vlSelf->inst 
-                                                                                >> 0x1fU) 
-                                                                                + (IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__12__KET____DOT__u_adder1__Cin))) 
+                                                                                (vlSelf->top__DOT__imm 
+                                                                                >> 0xcU))) 
                                                                                 << 0xcU)) 
-                                                                                | ((0x800U 
-                                                                                & (((vlSelf->top__DOT__rdata 
-                                                                                >> 0xbU) 
+                                                                             | ((0x800U 
+                                                                                & (((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__11__KET____DOT__u_adder1__a) 
                                                                                 + 
-                                                                                ((IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__11__KET____DOT__u_adder1__Cin) 
+                                                                                ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__11__KET____DOT__u_adder1__Cin) 
                                                                                 + 
-                                                                                (vlSelf->inst 
-                                                                                >> 0x1fU))) 
+                                                                                (vlSelf->top__DOT__imm 
+                                                                                >> 0xbU))) 
                                                                                 << 0xbU)) 
                                                                                 | ((0x400U 
-                                                                                & (((vlSelf->top__DOT__rdata 
-                                                                                >> 0xaU) 
+                                                                                & (((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__10__KET____DOT__u_adder1__a) 
                                                                                 + 
-                                                                                ((IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__10__KET____DOT__u_adder1__Cin) 
+                                                                                ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__10__KET____DOT__u_adder1__Cin) 
                                                                                 + 
-                                                                                (vlSelf->inst 
-                                                                                >> 0x1eU))) 
+                                                                                (vlSelf->top__DOT__imm 
+                                                                                >> 0xaU))) 
                                                                                 << 0xaU)) 
                                                                                 | ((0x200U 
-                                                                                & (((vlSelf->top__DOT__rdata 
-                                                                                >> 9U) 
+                                                                                & (((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__9__KET____DOT__u_adder1__a) 
                                                                                 + 
-                                                                                ((IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__9__KET____DOT__u_adder1__Cin) 
+                                                                                ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__9__KET____DOT__u_adder1__Cin) 
                                                                                 + 
-                                                                                (vlSelf->inst 
-                                                                                >> 0x1dU))) 
+                                                                                (vlSelf->top__DOT__imm 
+                                                                                >> 9U))) 
                                                                                 << 9U)) 
                                                                                 | ((0x100U 
-                                                                                & (((vlSelf->top__DOT__rdata 
-                                                                                >> 8U) 
+                                                                                & (((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__8__KET____DOT__u_adder1__a) 
                                                                                 + 
-                                                                                ((IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__8__KET____DOT__u_adder1__Cin) 
+                                                                                ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__8__KET____DOT__u_adder1__Cin) 
                                                                                 + 
-                                                                                (vlSelf->inst 
-                                                                                >> 0x1cU))) 
+                                                                                (vlSelf->top__DOT__imm 
+                                                                                >> 8U))) 
                                                                                 << 8U)) 
                                                                                 | ((0x80U 
-                                                                                & (((vlSelf->top__DOT__rdata 
-                                                                                >> 7U) 
+                                                                                & (((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__7__KET____DOT__u_adder1__a) 
                                                                                 + 
-                                                                                ((IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__7__KET____DOT__u_adder1__Cin) 
+                                                                                ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__7__KET____DOT__u_adder1__Cin) 
                                                                                 + 
-                                                                                (vlSelf->inst 
-                                                                                >> 0x1bU))) 
+                                                                                (vlSelf->top__DOT__imm 
+                                                                                >> 7U))) 
                                                                                 << 7U)) 
                                                                                 | ((0x40U 
-                                                                                & (((vlSelf->top__DOT__rdata 
-                                                                                >> 6U) 
+                                                                                & (((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__6__KET____DOT__u_adder1__a) 
                                                                                 + 
-                                                                                ((IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__6__KET____DOT__u_adder1__Cin) 
+                                                                                ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__6__KET____DOT__u_adder1__Cin) 
                                                                                 + 
-                                                                                (vlSelf->inst 
-                                                                                >> 0x1aU))) 
+                                                                                (vlSelf->top__DOT__imm 
+                                                                                >> 6U))) 
                                                                                 << 6U)) 
                                                                                 | ((0x20U 
-                                                                                & (((vlSelf->top__DOT__rdata 
-                                                                                >> 5U) 
+                                                                                & (((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__5__KET____DOT__u_adder1__a) 
                                                                                 + 
-                                                                                ((IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__5__KET____DOT__u_adder1__Cin) 
+                                                                                ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__5__KET____DOT__u_adder1__Cin) 
                                                                                 + 
-                                                                                (vlSelf->inst 
-                                                                                >> 0x19U))) 
+                                                                                (vlSelf->top__DOT__imm 
+                                                                                >> 5U))) 
                                                                                 << 5U)) 
                                                                                 | ((0x10U 
-                                                                                & (((vlSelf->top__DOT__rdata 
-                                                                                >> 4U) 
+                                                                                & (((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__4__KET____DOT__u_adder1__a) 
                                                                                 + 
-                                                                                ((IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__4__KET____DOT__u_adder1__Cin) 
+                                                                                ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__4__KET____DOT__u_adder1__Cin) 
                                                                                 + 
-                                                                                (vlSelf->inst 
-                                                                                >> 0x18U))) 
+                                                                                (vlSelf->top__DOT__imm 
+                                                                                >> 4U))) 
                                                                                 << 4U)) 
                                                                                 | ((8U 
-                                                                                & (((vlSelf->top__DOT__rdata 
-                                                                                >> 3U) 
+                                                                                & (((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__3__KET____DOT__u_adder1__a) 
                                                                                 + 
-                                                                                ((IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__3__KET____DOT__u_adder1__Cin) 
+                                                                                ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__3__KET____DOT__u_adder1__Cin) 
                                                                                 + 
-                                                                                (vlSelf->inst 
-                                                                                >> 0x17U))) 
+                                                                                (vlSelf->top__DOT__imm 
+                                                                                >> 3U))) 
                                                                                 << 3U)) 
                                                                                 | ((4U 
-                                                                                & (((vlSelf->top__DOT__rdata 
-                                                                                >> 2U) 
+                                                                                & (((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__2__KET____DOT__u_adder1__a) 
                                                                                 + 
-                                                                                ((IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__2__KET____DOT__u_adder1__Cin) 
+                                                                                ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__2__KET____DOT__u_adder1__Cin) 
                                                                                 + 
-                                                                                (vlSelf->inst 
-                                                                                >> 0x16U))) 
+                                                                                (vlSelf->top__DOT__imm 
+                                                                                >> 2U))) 
                                                                                 << 2U)) 
                                                                                 | ((2U 
-                                                                                & (((vlSelf->top__DOT__rdata 
-                                                                                >> 1U) 
+                                                                                & (((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__1__KET____DOT__u_adder1__a) 
                                                                                 + 
-                                                                                ((IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__1__KET____DOT__u_adder1__Cin) 
+                                                                                ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__1__KET____DOT__u_adder1__Cin) 
                                                                                 + 
-                                                                                (vlSelf->inst 
-                                                                                >> 0x15U))) 
+                                                                                (vlSelf->top__DOT__imm 
+                                                                                >> 1U))) 
                                                                                 << 1U)) 
                                                                                 | (1U 
-                                                                                & (vlSelf->top__DOT__rdata 
-                                                                                + 
-                                                                                (vlSelf->inst 
-                                                                                >> 0x14U))))))))))))))))))))))))))))))))));
-        __Vdlyvset__top__DOT__u_GPR__DOT__general_reg__DOT__rf__v0 = 1U;
-        __Vdlyvdim0__top__DOT__u_GPR__DOT__general_reg__DOT__rf__v0 
-            = (0x1fU & (vlSelf->inst >> 7U));
-    }
-    vlSelf->top__DOT__u_PC__DOT__pc = __Vdly__top__DOT__u_PC__DOT__pc;
-    if (__Vdlyvset__top__DOT__u_GPR__DOT__general_reg__DOT__rf__v0) {
-        vlSelf->top__DOT__u_GPR__DOT__general_reg__DOT__rf[__Vdlyvdim0__top__DOT__u_GPR__DOT__general_reg__DOT__rf__v0] 
-            = __Vdlyvval__top__DOT__u_GPR__DOT__general_reg__DOT__rf__v0;
-    }
-    vlSelf->pc = vlSelf->top__DOT__u_PC__DOT__pc;
-    vlSelf->top__DOT__rdata = vlSelf->top__DOT__u_GPR__DOT__general_reg__DOT__rf
+                                                                                & ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__u_adder0__a) 
+                                                                                + vlSelf->top__DOT__imm)))))))))))))))))))))))))))))))));
+    __Vdlyvdim0__top__DOT__u_GPR__DOT__general_reg__DOT__rf__v0 
+        = (0x1fU & (vlSelf->inst >> 7U));
+    vlSelf->pc = ((IData)(vlSelf->rst) ? 0x80000000U
+                   : vlSelf->top__DOT__npc);
+    vlSelf->top__DOT__u_GPR__DOT__general_reg__DOT__rf[__Vdlyvdim0__top__DOT__u_GPR__DOT__general_reg__DOT__rf__v0] 
+        = __Vdlyvval__top__DOT__u_GPR__DOT__general_reg__DOT__rf__v0;
+    vlSelf->top__DOT__src1 = vlSelf->top__DOT__u_GPR__DOT__general_reg__DOT__rf
         [(0x1fU & (vlSelf->inst >> 0xfU))];
-    vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__1__KET____DOT__u_adder1__Cin 
-        = (1U & (vlSelf->top__DOT__rdata & (vlSelf->inst 
-                                            >> 0x14U)));
-    vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__2__KET____DOT__u_adder1__Cin 
-        = (1U & (((vlSelf->top__DOT__rdata >> 1U) & 
-                  ((IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__1__KET____DOT__u_adder1__Cin) 
-                   | (vlSelf->inst >> 0x15U))) | ((IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__1__KET____DOT__u_adder1__Cin) 
-                                                  & (vlSelf->inst 
-                                                     >> 0x15U))));
-    vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__3__KET____DOT__u_adder1__Cin 
-        = (1U & (((vlSelf->top__DOT__rdata >> 2U) & 
-                  ((IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__2__KET____DOT__u_adder1__Cin) 
-                   | (vlSelf->inst >> 0x16U))) | ((IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__2__KET____DOT__u_adder1__Cin) 
-                                                  & (vlSelf->inst 
-                                                     >> 0x16U))));
-    vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__4__KET____DOT__u_adder1__Cin 
-        = (1U & (((vlSelf->top__DOT__rdata >> 3U) & 
-                  ((IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__3__KET____DOT__u_adder1__Cin) 
-                   | (vlSelf->inst >> 0x17U))) | ((IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__3__KET____DOT__u_adder1__Cin) 
-                                                  & (vlSelf->inst 
-                                                     >> 0x17U))));
-    vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__5__KET____DOT__u_adder1__Cin 
-        = (1U & (((vlSelf->top__DOT__rdata >> 4U) & 
-                  ((IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__4__KET____DOT__u_adder1__Cin) 
-                   | (vlSelf->inst >> 0x18U))) | ((IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__4__KET____DOT__u_adder1__Cin) 
-                                                  & (vlSelf->inst 
-                                                     >> 0x18U))));
-    vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__6__KET____DOT__u_adder1__Cin 
-        = (1U & (((vlSelf->top__DOT__rdata >> 5U) & 
-                  ((IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__5__KET____DOT__u_adder1__Cin) 
-                   | (vlSelf->inst >> 0x19U))) | ((IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__5__KET____DOT__u_adder1__Cin) 
-                                                  & (vlSelf->inst 
-                                                     >> 0x19U))));
-    vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__7__KET____DOT__u_adder1__Cin 
-        = (1U & (((vlSelf->top__DOT__rdata >> 6U) & 
-                  ((IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__6__KET____DOT__u_adder1__Cin) 
-                   | (vlSelf->inst >> 0x1aU))) | ((IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__6__KET____DOT__u_adder1__Cin) 
-                                                  & (vlSelf->inst 
-                                                     >> 0x1aU))));
-    vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__8__KET____DOT__u_adder1__Cin 
-        = (1U & (((vlSelf->top__DOT__rdata >> 7U) & 
-                  ((IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__7__KET____DOT__u_adder1__Cin) 
-                   | (vlSelf->inst >> 0x1bU))) | ((IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__7__KET____DOT__u_adder1__Cin) 
-                                                  & (vlSelf->inst 
-                                                     >> 0x1bU))));
-    vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__9__KET____DOT__u_adder1__Cin 
-        = (1U & (((vlSelf->top__DOT__rdata >> 8U) & 
-                  ((IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__8__KET____DOT__u_adder1__Cin) 
-                   | (vlSelf->inst >> 0x1cU))) | ((IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__8__KET____DOT__u_adder1__Cin) 
-                                                  & (vlSelf->inst 
-                                                     >> 0x1cU))));
-    vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__10__KET____DOT__u_adder1__Cin 
-        = (1U & (((vlSelf->top__DOT__rdata >> 9U) & 
-                  ((IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__9__KET____DOT__u_adder1__Cin) 
-                   | (vlSelf->inst >> 0x1dU))) | ((IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__9__KET____DOT__u_adder1__Cin) 
-                                                  & (vlSelf->inst 
-                                                     >> 0x1dU))));
-    vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__11__KET____DOT__u_adder1__Cin 
-        = (1U & (((vlSelf->top__DOT__rdata >> 0xaU) 
-                  & ((IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__10__KET____DOT__u_adder1__Cin) 
-                     | (vlSelf->inst >> 0x1eU))) | 
-                 ((IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__10__KET____DOT__u_adder1__Cin) 
-                  & (vlSelf->inst >> 0x1eU))));
-    vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__12__KET____DOT__u_adder1__Cin 
-        = (1U & (((vlSelf->top__DOT__rdata >> 0xbU) 
-                  & ((IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__11__KET____DOT__u_adder1__Cin) 
-                     | (vlSelf->inst >> 0x1fU))) | 
-                 ((IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__11__KET____DOT__u_adder1__Cin) 
-                  & (vlSelf->inst >> 0x1fU))));
-    vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__13__KET____DOT__u_adder1__Cin 
-        = (1U & (((vlSelf->top__DOT__rdata >> 0xcU) 
-                  & ((vlSelf->inst >> 0x1fU) | (IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__12__KET____DOT__u_adder1__Cin))) 
-                 | ((vlSelf->inst >> 0x1fU) & (IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__12__KET____DOT__u_adder1__Cin))));
-    vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__14__KET____DOT__u_adder1__Cin 
-        = (1U & (((vlSelf->top__DOT__rdata >> 0xdU) 
-                  & ((vlSelf->inst >> 0x1fU) | (IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__13__KET____DOT__u_adder1__Cin))) 
-                 | ((vlSelf->inst >> 0x1fU) & (IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__13__KET____DOT__u_adder1__Cin))));
-    vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__15__KET____DOT__u_adder1__Cin 
-        = (1U & (((vlSelf->top__DOT__rdata >> 0xeU) 
-                  & ((vlSelf->inst >> 0x1fU) | (IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__14__KET____DOT__u_adder1__Cin))) 
-                 | ((vlSelf->inst >> 0x1fU) & (IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__14__KET____DOT__u_adder1__Cin))));
-    vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__16__KET____DOT__u_adder1__Cin 
-        = (1U & (((vlSelf->top__DOT__rdata >> 0xfU) 
-                  & ((vlSelf->inst >> 0x1fU) | (IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__15__KET____DOT__u_adder1__Cin))) 
-                 | ((vlSelf->inst >> 0x1fU) & (IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__15__KET____DOT__u_adder1__Cin))));
-    vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__17__KET____DOT__u_adder1__Cin 
-        = (1U & (((vlSelf->top__DOT__rdata >> 0x10U) 
-                  & ((vlSelf->inst >> 0x1fU) | (IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__16__KET____DOT__u_adder1__Cin))) 
-                 | ((vlSelf->inst >> 0x1fU) & (IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__16__KET____DOT__u_adder1__Cin))));
-    vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__18__KET____DOT__u_adder1__Cin 
-        = (1U & (((vlSelf->top__DOT__rdata >> 0x11U) 
-                  & ((vlSelf->inst >> 0x1fU) | (IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__17__KET____DOT__u_adder1__Cin))) 
-                 | ((vlSelf->inst >> 0x1fU) & (IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__17__KET____DOT__u_adder1__Cin))));
-    vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__19__KET____DOT__u_adder1__Cin 
-        = (1U & (((vlSelf->top__DOT__rdata >> 0x12U) 
-                  & ((vlSelf->inst >> 0x1fU) | (IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__18__KET____DOT__u_adder1__Cin))) 
-                 | ((vlSelf->inst >> 0x1fU) & (IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__18__KET____DOT__u_adder1__Cin))));
-    vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__20__KET____DOT__u_adder1__Cin 
-        = (1U & (((vlSelf->top__DOT__rdata >> 0x13U) 
-                  & ((vlSelf->inst >> 0x1fU) | (IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__19__KET____DOT__u_adder1__Cin))) 
-                 | ((vlSelf->inst >> 0x1fU) & (IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__19__KET____DOT__u_adder1__Cin))));
-    vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__21__KET____DOT__u_adder1__Cin 
-        = (1U & (((vlSelf->top__DOT__rdata >> 0x14U) 
-                  & ((vlSelf->inst >> 0x1fU) | (IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__20__KET____DOT__u_adder1__Cin))) 
-                 | ((vlSelf->inst >> 0x1fU) & (IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__20__KET____DOT__u_adder1__Cin))));
-    vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__22__KET____DOT__u_adder1__Cin 
-        = (1U & (((vlSelf->top__DOT__rdata >> 0x15U) 
-                  & ((vlSelf->inst >> 0x1fU) | (IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__21__KET____DOT__u_adder1__Cin))) 
-                 | ((vlSelf->inst >> 0x1fU) & (IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__21__KET____DOT__u_adder1__Cin))));
-    vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__23__KET____DOT__u_adder1__Cin 
-        = (1U & (((vlSelf->top__DOT__rdata >> 0x16U) 
-                  & ((vlSelf->inst >> 0x1fU) | (IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__22__KET____DOT__u_adder1__Cin))) 
-                 | ((vlSelf->inst >> 0x1fU) & (IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__22__KET____DOT__u_adder1__Cin))));
-    vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__24__KET____DOT__u_adder1__Cin 
-        = (1U & (((vlSelf->top__DOT__rdata >> 0x17U) 
-                  & ((vlSelf->inst >> 0x1fU) | (IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__23__KET____DOT__u_adder1__Cin))) 
-                 | ((vlSelf->inst >> 0x1fU) & (IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__23__KET____DOT__u_adder1__Cin))));
-    vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__25__KET____DOT__u_adder1__Cin 
-        = (1U & (((vlSelf->top__DOT__rdata >> 0x18U) 
-                  & ((vlSelf->inst >> 0x1fU) | (IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__24__KET____DOT__u_adder1__Cin))) 
-                 | ((vlSelf->inst >> 0x1fU) & (IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__24__KET____DOT__u_adder1__Cin))));
-    vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__26__KET____DOT__u_adder1__Cin 
-        = (1U & (((vlSelf->top__DOT__rdata >> 0x19U) 
-                  & ((vlSelf->inst >> 0x1fU) | (IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__25__KET____DOT__u_adder1__Cin))) 
-                 | ((vlSelf->inst >> 0x1fU) & (IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__25__KET____DOT__u_adder1__Cin))));
-    vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__27__KET____DOT__u_adder1__Cin 
-        = (1U & (((vlSelf->top__DOT__rdata >> 0x1aU) 
-                  & ((vlSelf->inst >> 0x1fU) | (IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__26__KET____DOT__u_adder1__Cin))) 
-                 | ((vlSelf->inst >> 0x1fU) & (IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__26__KET____DOT__u_adder1__Cin))));
-    vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__28__KET____DOT__u_adder1__Cin 
-        = (1U & (((vlSelf->top__DOT__rdata >> 0x1bU) 
-                  & ((vlSelf->inst >> 0x1fU) | (IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__27__KET____DOT__u_adder1__Cin))) 
-                 | ((vlSelf->inst >> 0x1fU) & (IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__27__KET____DOT__u_adder1__Cin))));
-    vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__29__KET____DOT__u_adder1__Cin 
-        = (1U & (((vlSelf->top__DOT__rdata >> 0x1cU) 
-                  & ((vlSelf->inst >> 0x1fU) | (IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__28__KET____DOT__u_adder1__Cin))) 
-                 | ((vlSelf->inst >> 0x1fU) & (IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__28__KET____DOT__u_adder1__Cin))));
-    vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__30__KET____DOT__u_adder1__Cin 
-        = (1U & (((vlSelf->top__DOT__rdata >> 0x1dU) 
-                  & ((vlSelf->inst >> 0x1fU) | (IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__29__KET____DOT__u_adder1__Cin))) 
-                 | ((vlSelf->inst >> 0x1fU) & (IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__29__KET____DOT__u_adder1__Cin))));
-    vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__31__KET____DOT__u_adder1__Cin 
-        = (1U & (((vlSelf->top__DOT__rdata >> 0x1eU) 
-                  & ((vlSelf->inst >> 0x1fU) | (IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__30__KET____DOT__u_adder1__Cin))) 
-                 | ((vlSelf->inst >> 0x1fU) & (IData)(vlSelf->top__DOT__u_ADDI__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__30__KET____DOT__u_adder1__Cin))));
+}
+
+VL_INLINE_OPT void Vtop___024root___nba_sequent__TOP__1(Vtop___024root* vlSelf) {
+    if (false && vlSelf) {}  // Prevent unused
+    Vtop__Syms* const __restrict vlSymsp VL_ATTR_UNUSED = vlSelf->vlSymsp;
+    VL_DEBUG_IF(VL_DBG_MSGF("+    Vtop___024root___nba_sequent__TOP__1\n"); );
+    // Body
+    vlSelf->__VdfgTmp_h1bde3cb9__0 = ((1U == (IData)(vlSelf->top__DOT__src1_sel))
+                                       ? vlSelf->pc
+                                       : ((2U == (IData)(vlSelf->top__DOT__src1_sel))
+                                           ? vlSelf->top__DOT__src1
+                                           : 0U));
+    vlSelf->top__DOT__npc = ((((~ ((IData)(vlSelf->top__DOT__u_Decode__DOT____VdfgTmp_h8e5fb8c0__0) 
+                                   | ((0x37U == (0x7fU 
+                                                 & vlSelf->inst)) 
+                                      | (0x17U == (0x7fU 
+                                                   & vlSelf->inst))))) 
+                               & ((0x6fU != (0x7fU 
+                                             & vlSelf->inst)) 
+                                  & (IData)(vlSelf->top__DOT__u_Decode__DOT____VdfgTmp_he6c9fe4d__0)))
+                               ? vlSelf->top__DOT__src1
+                               : vlSelf->pc) + (((~ 
+                                                  ((IData)(vlSelf->top__DOT__u_Decode__DOT____VdfgTmp_h8e5fb8c0__0) 
+                                                   | ((0x37U 
+                                                       == 
+                                                       (0x7fU 
+                                                        & vlSelf->inst)) 
+                                                      | (0x17U 
+                                                         == 
+                                                         (0x7fU 
+                                                          & vlSelf->inst))))) 
+                                                 & ((0x6fU 
+                                                     == 
+                                                     (0x7fU 
+                                                      & vlSelf->inst)) 
+                                                    | (IData)(vlSelf->top__DOT__u_Decode__DOT____VdfgTmp_he6c9fe4d__0)))
+                                                 ? vlSelf->top__DOT__imm
+                                                 : 4U));
+    vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__31__KET____DOT__u_adder1__a 
+        = ((0U != (IData)(vlSelf->top__DOT__src1_sel)) 
+           & (vlSelf->__VdfgTmp_h1bde3cb9__0 >> 0x1fU));
+    vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__30__KET____DOT__u_adder1__a 
+        = ((0U != (IData)(vlSelf->top__DOT__src1_sel)) 
+           & (vlSelf->__VdfgTmp_h1bde3cb9__0 >> 0x1eU));
+    vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__29__KET____DOT__u_adder1__a 
+        = ((0U != (IData)(vlSelf->top__DOT__src1_sel)) 
+           & (vlSelf->__VdfgTmp_h1bde3cb9__0 >> 0x1dU));
+    vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__28__KET____DOT__u_adder1__a 
+        = ((0U != (IData)(vlSelf->top__DOT__src1_sel)) 
+           & (vlSelf->__VdfgTmp_h1bde3cb9__0 >> 0x1cU));
+    vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__27__KET____DOT__u_adder1__a 
+        = ((0U != (IData)(vlSelf->top__DOT__src1_sel)) 
+           & (vlSelf->__VdfgTmp_h1bde3cb9__0 >> 0x1bU));
+    vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__26__KET____DOT__u_adder1__a 
+        = ((0U != (IData)(vlSelf->top__DOT__src1_sel)) 
+           & (vlSelf->__VdfgTmp_h1bde3cb9__0 >> 0x1aU));
+    vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__25__KET____DOT__u_adder1__a 
+        = ((0U != (IData)(vlSelf->top__DOT__src1_sel)) 
+           & (vlSelf->__VdfgTmp_h1bde3cb9__0 >> 0x19U));
+    vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__24__KET____DOT__u_adder1__a 
+        = ((0U != (IData)(vlSelf->top__DOT__src1_sel)) 
+           & (vlSelf->__VdfgTmp_h1bde3cb9__0 >> 0x18U));
+    vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__23__KET____DOT__u_adder1__a 
+        = ((0U != (IData)(vlSelf->top__DOT__src1_sel)) 
+           & (vlSelf->__VdfgTmp_h1bde3cb9__0 >> 0x17U));
+    vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__22__KET____DOT__u_adder1__a 
+        = ((0U != (IData)(vlSelf->top__DOT__src1_sel)) 
+           & (vlSelf->__VdfgTmp_h1bde3cb9__0 >> 0x16U));
+    vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__21__KET____DOT__u_adder1__a 
+        = ((0U != (IData)(vlSelf->top__DOT__src1_sel)) 
+           & (vlSelf->__VdfgTmp_h1bde3cb9__0 >> 0x15U));
+    vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__20__KET____DOT__u_adder1__a 
+        = ((0U != (IData)(vlSelf->top__DOT__src1_sel)) 
+           & (vlSelf->__VdfgTmp_h1bde3cb9__0 >> 0x14U));
+    vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__19__KET____DOT__u_adder1__a 
+        = ((0U != (IData)(vlSelf->top__DOT__src1_sel)) 
+           & (vlSelf->__VdfgTmp_h1bde3cb9__0 >> 0x13U));
+    vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__18__KET____DOT__u_adder1__a 
+        = ((0U != (IData)(vlSelf->top__DOT__src1_sel)) 
+           & (vlSelf->__VdfgTmp_h1bde3cb9__0 >> 0x12U));
+    vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__17__KET____DOT__u_adder1__a 
+        = ((0U != (IData)(vlSelf->top__DOT__src1_sel)) 
+           & (vlSelf->__VdfgTmp_h1bde3cb9__0 >> 0x11U));
+    vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__16__KET____DOT__u_adder1__a 
+        = ((0U != (IData)(vlSelf->top__DOT__src1_sel)) 
+           & (vlSelf->__VdfgTmp_h1bde3cb9__0 >> 0x10U));
+    vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__15__KET____DOT__u_adder1__a 
+        = ((0U != (IData)(vlSelf->top__DOT__src1_sel)) 
+           & (vlSelf->__VdfgTmp_h1bde3cb9__0 >> 0xfU));
+    vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__14__KET____DOT__u_adder1__a 
+        = ((0U != (IData)(vlSelf->top__DOT__src1_sel)) 
+           & (vlSelf->__VdfgTmp_h1bde3cb9__0 >> 0xeU));
+    vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__13__KET____DOT__u_adder1__a 
+        = ((0U != (IData)(vlSelf->top__DOT__src1_sel)) 
+           & (vlSelf->__VdfgTmp_h1bde3cb9__0 >> 0xdU));
+    vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__12__KET____DOT__u_adder1__a 
+        = ((0U != (IData)(vlSelf->top__DOT__src1_sel)) 
+           & (vlSelf->__VdfgTmp_h1bde3cb9__0 >> 0xcU));
+    vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__11__KET____DOT__u_adder1__a 
+        = ((0U != (IData)(vlSelf->top__DOT__src1_sel)) 
+           & (vlSelf->__VdfgTmp_h1bde3cb9__0 >> 0xbU));
+    vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__10__KET____DOT__u_adder1__a 
+        = ((0U != (IData)(vlSelf->top__DOT__src1_sel)) 
+           & (vlSelf->__VdfgTmp_h1bde3cb9__0 >> 0xaU));
+    vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__9__KET____DOT__u_adder1__a 
+        = ((0U != (IData)(vlSelf->top__DOT__src1_sel)) 
+           & (vlSelf->__VdfgTmp_h1bde3cb9__0 >> 9U));
+    vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__8__KET____DOT__u_adder1__a 
+        = ((0U != (IData)(vlSelf->top__DOT__src1_sel)) 
+           & (vlSelf->__VdfgTmp_h1bde3cb9__0 >> 8U));
+    vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__7__KET____DOT__u_adder1__a 
+        = ((0U != (IData)(vlSelf->top__DOT__src1_sel)) 
+           & (vlSelf->__VdfgTmp_h1bde3cb9__0 >> 7U));
+    vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__6__KET____DOT__u_adder1__a 
+        = ((0U != (IData)(vlSelf->top__DOT__src1_sel)) 
+           & (vlSelf->__VdfgTmp_h1bde3cb9__0 >> 6U));
+    vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__5__KET____DOT__u_adder1__a 
+        = ((0U != (IData)(vlSelf->top__DOT__src1_sel)) 
+           & (vlSelf->__VdfgTmp_h1bde3cb9__0 >> 5U));
+    vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__4__KET____DOT__u_adder1__a 
+        = ((0U != (IData)(vlSelf->top__DOT__src1_sel)) 
+           & (vlSelf->__VdfgTmp_h1bde3cb9__0 >> 4U));
+    vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__3__KET____DOT__u_adder1__a 
+        = ((0U != (IData)(vlSelf->top__DOT__src1_sel)) 
+           & (vlSelf->__VdfgTmp_h1bde3cb9__0 >> 3U));
+    vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__2__KET____DOT__u_adder1__a 
+        = ((0U != (IData)(vlSelf->top__DOT__src1_sel)) 
+           & (vlSelf->__VdfgTmp_h1bde3cb9__0 >> 2U));
+    vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__1__KET____DOT__u_adder1__a 
+        = ((0U != (IData)(vlSelf->top__DOT__src1_sel)) 
+           & (vlSelf->__VdfgTmp_h1bde3cb9__0 >> 1U));
+    vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__u_adder0__a 
+        = ((0U != (IData)(vlSelf->top__DOT__src1_sel)) 
+           & vlSelf->__VdfgTmp_h1bde3cb9__0);
+    vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__1__KET____DOT__u_adder1__Cin 
+        = ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__u_adder0__a) 
+           & vlSelf->top__DOT__imm);
+    vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__2__KET____DOT__u_adder1__Cin 
+        = (((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__1__KET____DOT__u_adder1__a) 
+            & ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__1__KET____DOT__u_adder1__Cin) 
+               | (vlSelf->top__DOT__imm >> 1U))) | 
+           ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__1__KET____DOT__u_adder1__Cin) 
+            & (vlSelf->top__DOT__imm >> 1U)));
+    vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__3__KET____DOT__u_adder1__Cin 
+        = (((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__2__KET____DOT__u_adder1__a) 
+            & ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__2__KET____DOT__u_adder1__Cin) 
+               | (vlSelf->top__DOT__imm >> 2U))) | 
+           ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__2__KET____DOT__u_adder1__Cin) 
+            & (vlSelf->top__DOT__imm >> 2U)));
+    vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__4__KET____DOT__u_adder1__Cin 
+        = (((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__3__KET____DOT__u_adder1__a) 
+            & ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__3__KET____DOT__u_adder1__Cin) 
+               | (vlSelf->top__DOT__imm >> 3U))) | 
+           ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__3__KET____DOT__u_adder1__Cin) 
+            & (vlSelf->top__DOT__imm >> 3U)));
+    vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__5__KET____DOT__u_adder1__Cin 
+        = (((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__4__KET____DOT__u_adder1__a) 
+            & ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__4__KET____DOT__u_adder1__Cin) 
+               | (vlSelf->top__DOT__imm >> 4U))) | 
+           ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__4__KET____DOT__u_adder1__Cin) 
+            & (vlSelf->top__DOT__imm >> 4U)));
+    vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__6__KET____DOT__u_adder1__Cin 
+        = (((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__5__KET____DOT__u_adder1__a) 
+            & ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__5__KET____DOT__u_adder1__Cin) 
+               | (vlSelf->top__DOT__imm >> 5U))) | 
+           ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__5__KET____DOT__u_adder1__Cin) 
+            & (vlSelf->top__DOT__imm >> 5U)));
+    vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__7__KET____DOT__u_adder1__Cin 
+        = (((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__6__KET____DOT__u_adder1__a) 
+            & ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__6__KET____DOT__u_adder1__Cin) 
+               | (vlSelf->top__DOT__imm >> 6U))) | 
+           ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__6__KET____DOT__u_adder1__Cin) 
+            & (vlSelf->top__DOT__imm >> 6U)));
+    vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__8__KET____DOT__u_adder1__Cin 
+        = (((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__7__KET____DOT__u_adder1__a) 
+            & ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__7__KET____DOT__u_adder1__Cin) 
+               | (vlSelf->top__DOT__imm >> 7U))) | 
+           ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__7__KET____DOT__u_adder1__Cin) 
+            & (vlSelf->top__DOT__imm >> 7U)));
+    vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__9__KET____DOT__u_adder1__Cin 
+        = (((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__8__KET____DOT__u_adder1__a) 
+            & ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__8__KET____DOT__u_adder1__Cin) 
+               | (vlSelf->top__DOT__imm >> 8U))) | 
+           ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__8__KET____DOT__u_adder1__Cin) 
+            & (vlSelf->top__DOT__imm >> 8U)));
+    vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__10__KET____DOT__u_adder1__Cin 
+        = (((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__9__KET____DOT__u_adder1__a) 
+            & ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__9__KET____DOT__u_adder1__Cin) 
+               | (vlSelf->top__DOT__imm >> 9U))) | 
+           ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__9__KET____DOT__u_adder1__Cin) 
+            & (vlSelf->top__DOT__imm >> 9U)));
+    vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__11__KET____DOT__u_adder1__Cin 
+        = (((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__10__KET____DOT__u_adder1__a) 
+            & ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__10__KET____DOT__u_adder1__Cin) 
+               | (vlSelf->top__DOT__imm >> 0xaU))) 
+           | ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__10__KET____DOT__u_adder1__Cin) 
+              & (vlSelf->top__DOT__imm >> 0xaU)));
+    vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__12__KET____DOT__u_adder1__Cin 
+        = (((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__11__KET____DOT__u_adder1__a) 
+            & ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__11__KET____DOT__u_adder1__Cin) 
+               | (vlSelf->top__DOT__imm >> 0xbU))) 
+           | ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__11__KET____DOT__u_adder1__Cin) 
+              & (vlSelf->top__DOT__imm >> 0xbU)));
+    vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__13__KET____DOT__u_adder1__Cin 
+        = (((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__12__KET____DOT__u_adder1__a) 
+            & ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__12__KET____DOT__u_adder1__Cin) 
+               | (vlSelf->top__DOT__imm >> 0xcU))) 
+           | ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__12__KET____DOT__u_adder1__Cin) 
+              & (vlSelf->top__DOT__imm >> 0xcU)));
+    vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__14__KET____DOT__u_adder1__Cin 
+        = (((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__13__KET____DOT__u_adder1__a) 
+            & ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__13__KET____DOT__u_adder1__Cin) 
+               | (vlSelf->top__DOT__imm >> 0xdU))) 
+           | ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__13__KET____DOT__u_adder1__Cin) 
+              & (vlSelf->top__DOT__imm >> 0xdU)));
+    vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__15__KET____DOT__u_adder1__Cin 
+        = (((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__14__KET____DOT__u_adder1__a) 
+            & ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__14__KET____DOT__u_adder1__Cin) 
+               | (vlSelf->top__DOT__imm >> 0xeU))) 
+           | ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__14__KET____DOT__u_adder1__Cin) 
+              & (vlSelf->top__DOT__imm >> 0xeU)));
+    vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__16__KET____DOT__u_adder1__Cin 
+        = (((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__15__KET____DOT__u_adder1__a) 
+            & ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__15__KET____DOT__u_adder1__Cin) 
+               | (vlSelf->top__DOT__imm >> 0xfU))) 
+           | ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__15__KET____DOT__u_adder1__Cin) 
+              & (vlSelf->top__DOT__imm >> 0xfU)));
+    vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__17__KET____DOT__u_adder1__Cin 
+        = (((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__16__KET____DOT__u_adder1__a) 
+            & ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__16__KET____DOT__u_adder1__Cin) 
+               | (vlSelf->top__DOT__imm >> 0x10U))) 
+           | ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__16__KET____DOT__u_adder1__Cin) 
+              & (vlSelf->top__DOT__imm >> 0x10U)));
+    vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__18__KET____DOT__u_adder1__Cin 
+        = (((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__17__KET____DOT__u_adder1__a) 
+            & ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__17__KET____DOT__u_adder1__Cin) 
+               | (vlSelf->top__DOT__imm >> 0x11U))) 
+           | ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__17__KET____DOT__u_adder1__Cin) 
+              & (vlSelf->top__DOT__imm >> 0x11U)));
+    vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__19__KET____DOT__u_adder1__Cin 
+        = (((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__18__KET____DOT__u_adder1__a) 
+            & ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__18__KET____DOT__u_adder1__Cin) 
+               | (vlSelf->top__DOT__imm >> 0x12U))) 
+           | ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__18__KET____DOT__u_adder1__Cin) 
+              & (vlSelf->top__DOT__imm >> 0x12U)));
+    vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__20__KET____DOT__u_adder1__Cin 
+        = (((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__19__KET____DOT__u_adder1__a) 
+            & ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__19__KET____DOT__u_adder1__Cin) 
+               | (vlSelf->top__DOT__imm >> 0x13U))) 
+           | ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__19__KET____DOT__u_adder1__Cin) 
+              & (vlSelf->top__DOT__imm >> 0x13U)));
+    vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__21__KET____DOT__u_adder1__Cin 
+        = (((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__20__KET____DOT__u_adder1__a) 
+            & ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__20__KET____DOT__u_adder1__Cin) 
+               | (vlSelf->top__DOT__imm >> 0x14U))) 
+           | ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__20__KET____DOT__u_adder1__Cin) 
+              & (vlSelf->top__DOT__imm >> 0x14U)));
+    vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__22__KET____DOT__u_adder1__Cin 
+        = (((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__21__KET____DOT__u_adder1__a) 
+            & ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__21__KET____DOT__u_adder1__Cin) 
+               | (vlSelf->top__DOT__imm >> 0x15U))) 
+           | ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__21__KET____DOT__u_adder1__Cin) 
+              & (vlSelf->top__DOT__imm >> 0x15U)));
+    vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__23__KET____DOT__u_adder1__Cin 
+        = (((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__22__KET____DOT__u_adder1__a) 
+            & ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__22__KET____DOT__u_adder1__Cin) 
+               | (vlSelf->top__DOT__imm >> 0x16U))) 
+           | ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__22__KET____DOT__u_adder1__Cin) 
+              & (vlSelf->top__DOT__imm >> 0x16U)));
+    vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__24__KET____DOT__u_adder1__Cin 
+        = (((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__23__KET____DOT__u_adder1__a) 
+            & ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__23__KET____DOT__u_adder1__Cin) 
+               | (vlSelf->top__DOT__imm >> 0x17U))) 
+           | ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__23__KET____DOT__u_adder1__Cin) 
+              & (vlSelf->top__DOT__imm >> 0x17U)));
+    vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__25__KET____DOT__u_adder1__Cin 
+        = (((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__24__KET____DOT__u_adder1__a) 
+            & ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__24__KET____DOT__u_adder1__Cin) 
+               | (vlSelf->top__DOT__imm >> 0x18U))) 
+           | ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__24__KET____DOT__u_adder1__Cin) 
+              & (vlSelf->top__DOT__imm >> 0x18U)));
+    vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__26__KET____DOT__u_adder1__Cin 
+        = (((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__25__KET____DOT__u_adder1__a) 
+            & ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__25__KET____DOT__u_adder1__Cin) 
+               | (vlSelf->top__DOT__imm >> 0x19U))) 
+           | ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__25__KET____DOT__u_adder1__Cin) 
+              & (vlSelf->top__DOT__imm >> 0x19U)));
+    vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__27__KET____DOT__u_adder1__Cin 
+        = (((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__26__KET____DOT__u_adder1__a) 
+            & ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__26__KET____DOT__u_adder1__Cin) 
+               | (vlSelf->top__DOT__imm >> 0x1aU))) 
+           | ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__26__KET____DOT__u_adder1__Cin) 
+              & (vlSelf->top__DOT__imm >> 0x1aU)));
+    vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__28__KET____DOT__u_adder1__Cin 
+        = (((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__27__KET____DOT__u_adder1__a) 
+            & ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__27__KET____DOT__u_adder1__Cin) 
+               | (vlSelf->top__DOT__imm >> 0x1bU))) 
+           | ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__27__KET____DOT__u_adder1__Cin) 
+              & (vlSelf->top__DOT__imm >> 0x1bU)));
+    vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__29__KET____DOT__u_adder1__Cin 
+        = (((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__28__KET____DOT__u_adder1__a) 
+            & ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__28__KET____DOT__u_adder1__Cin) 
+               | (vlSelf->top__DOT__imm >> 0x1cU))) 
+           | ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__28__KET____DOT__u_adder1__Cin) 
+              & (vlSelf->top__DOT__imm >> 0x1cU)));
+    vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__30__KET____DOT__u_adder1__Cin 
+        = (((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__29__KET____DOT__u_adder1__a) 
+            & ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__29__KET____DOT__u_adder1__Cin) 
+               | (vlSelf->top__DOT__imm >> 0x1dU))) 
+           | ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__29__KET____DOT__u_adder1__Cin) 
+              & (vlSelf->top__DOT__imm >> 0x1dU)));
+    vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__31__KET____DOT__u_adder1__Cin 
+        = (((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__30__KET____DOT__u_adder1__a) 
+            & ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__30__KET____DOT__u_adder1__Cin) 
+               | (vlSelf->top__DOT__imm >> 0x1eU))) 
+           | ((IData)(vlSelf->top__DOT__u_ADD__DOT__u_adder32__DOT____Vcellinp__gen_add__BRA__30__KET____DOT__u_adder1__Cin) 
+              & (vlSelf->top__DOT__imm >> 0x1eU)));
 }
 
 void Vtop___024root___eval_nba(Vtop___024root* vlSelf) {
@@ -629,6 +1005,7 @@ void Vtop___024root___eval_nba(Vtop___024root* vlSelf) {
     if (vlSelf->__VnbaTriggered.at(0U)) {
         Vtop___024root___nba_sequent__TOP__0(vlSelf);
         vlSelf->__Vm_traceActivity[2U] = 1U;
+        Vtop___024root___nba_sequent__TOP__1(vlSelf);
     }
 }
 

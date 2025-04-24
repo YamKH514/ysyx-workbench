@@ -9,6 +9,7 @@
 
 void init_npcmem(int argc, char *argv[]);
 uint32_t mem_read(uint32_t pc);
+void mem_end();
 
 static void single_cycle(std::unique_ptr<Vtop>& top, VerilatedContext* contextp, VerilatedFstC* tfp)
 {
@@ -31,6 +32,7 @@ static void reset(std::unique_ptr<Vtop>& top, VerilatedContext* contextp, Verila
 }
 
 int clk = 1;
+int cnt = 0;
 
 int main(int argc, char *argv[])
 {
@@ -53,13 +55,17 @@ int main(int argc, char *argv[])
     {
         contextp->timeInc(1);
         top->clk = clk;
+        printf("PC: 0x%x, inst: 0x%x\n", top->pc, mem_read(top->pc));
         top->inst = mem_read(top->pc);
         top->eval();
         tfp->dump(contextp->time());
         clk = !clk;
+        cnt ++;
+        if(cnt == 100) break;
     }
     tfp->close();
     top->final();
+    mem_end();
 
     return 0;
 }

@@ -16,7 +16,7 @@ extern "C" {
 
 
     // DPI IMPORTS
-    // DPI import at /home/renkh/ysyx-workbench/npc/vsrc/EBREAK.v:6:34
+    // DPI import at /home/renkh/ysyx-workbench/npc/vsrc/Decode.v:12:34
     extern void ebreak_trigger();
 
 #ifdef __cplusplus

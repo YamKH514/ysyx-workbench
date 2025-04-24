@@ -1,6 +1,8 @@
 module GPR(
-  input clk, wen,
-  input [4:0] waddr, raddr,
+  input clk,
+  input wen,
+  input [4:0] waddr,
+  input [4:0] raddr,
   input [31:0] wdata,
   output [31:0] rdata
 );

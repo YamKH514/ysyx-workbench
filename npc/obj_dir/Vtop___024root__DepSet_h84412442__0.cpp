@@ -10,8 +10,8 @@
 
 extern "C" void ebreak_trigger();
 
-VL_INLINE_OPT void Vtop___024root____Vdpiimwrap_top__DOT__u_EBREAK__DOT__ebreak_trigger_TOP() {
-    VL_DEBUG_IF(VL_DBG_MSGF("+    Vtop___024root____Vdpiimwrap_top__DOT__u_EBREAK__DOT__ebreak_trigger_TOP\n"); );
+VL_INLINE_OPT void Vtop___024root____Vdpiimwrap_top__DOT__u_Decode__DOT__ebreak_trigger_TOP() {
+    VL_DEBUG_IF(VL_DBG_MSGF("+    Vtop___024root____Vdpiimwrap_top__DOT__u_Decode__DOT__ebreak_trigger_TOP\n"); );
     // Body
     ebreak_trigger();
 }
