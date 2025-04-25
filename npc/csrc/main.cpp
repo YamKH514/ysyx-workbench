@@ -68,7 +68,7 @@ int main(int argc, char *argv[])
     }
     else
     {
-        printf("\033[1;31;40mHIT BAD TRAP\033[0m, PC: 0x%8x\n", top->pc);
+        printf("\033[1;31;40mHIT BAD TRAP\033[0m at pc = 0x%8x\n", top->pc);
     }
 
     tfp->close();
