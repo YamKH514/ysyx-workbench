@@ -1,6 +1,4 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <assert.h>
+#include "utils.h"
 // #include <nvboard.h>
 #include "Vtop.h"
 #include "Vtop__Dpi.h"
@@ -32,7 +30,7 @@ static void reset(std::unique_ptr<Vtop>& top, VerilatedContext* contextp, Verila
 }
 
 int clk = 1;
-int cnt = 0;
+int npc_state = NPC_STOP;
 
 int main(int argc, char *argv[])
 {
@@ -55,14 +53,21 @@ int main(int argc, char *argv[])
     {
         contextp->timeInc(1);
         top->clk = clk;
-        printf("PC: 0x%x, inst: 0x%x\n", top->pc, mem_read(top->pc));
         top->inst = mem_read(top->pc);
         top->eval();
         tfp->dump(contextp->time());
         clk = !clk;
-        cnt ++;
-        if(cnt == 100) break;
     }
+
+    if(npc_state == NPC_END)
+    {
+        printf("\033[1;32;40mHIT GOOD TRAP\033[0m\n");
+    }
+    else
+    {
+        printf("\033[1;31;40mHIT BAD TRAP\033[0m, PC: 0x%8x\n", top->pc);
+    }
+
     tfp->close();
     top->final();
     mem_end();

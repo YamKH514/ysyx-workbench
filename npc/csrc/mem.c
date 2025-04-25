@@ -2,7 +2,6 @@
 #include <assert.h>
 #include <stddef.h>
 #include <stdlib.h>
-#include <stdio.h>
 
 #define INST_BASE 0x80000000
 
@@ -17,7 +16,6 @@ void init_mem(uint32_t *img, long size)
 }
 
 uint32_t mem_read(uint32_t pc) {
-  printf("mem_read pc: 0x%x\n", pc);
   assert(pc >= INST_BASE);
   uint32_t index = (pc - INST_BASE) >> 2;
   assert(index < mem_size);

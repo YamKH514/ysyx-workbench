@@ -11,7 +11,7 @@ module Decode(
 );
     import "DPI-C" function void ebreak_trigger();
     always @(*) begin
-        if((opcode == 7'b1110011) && (funct3 == 3'b000)) begin
+        if((opcode == 7'b1101111)) begin
             ebreak_trigger();
         end
     end
