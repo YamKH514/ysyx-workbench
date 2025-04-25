@@ -30,6 +30,7 @@ static void reset(std::unique_ptr<Vtop>& top, VerilatedContext* contextp, Verila
 }
 
 int clk = 1;
+int cnt = 0;
 int npc_state = NPC_STOP;
 
 int main(int argc, char *argv[])
@@ -57,6 +58,8 @@ int main(int argc, char *argv[])
         top->eval();
         tfp->dump(contextp->time());
         clk = !clk;
+        cnt ++;
+        if(cnt > 50) break;
     }
 
     if(npc_state == NPC_END)
