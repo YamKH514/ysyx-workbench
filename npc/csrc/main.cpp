@@ -1,13 +1,12 @@
+#include "common.h"
 #include "utils.h"
 // #include <nvboard.h>
 #include "Vtop.h"
+#include "verilated_fst_c.h"
 #include "Vtop__Dpi.h"
 #include "verilated.h"
-#include "verilated_fst_c.h"
 
-void init_npcmem(int argc, char *argv[]);
-uint32_t mem_read(uint32_t pc);
-void mem_end();
+// void init_npcmem(int argc, char *argv[]);
 
 static void single_cycle(std::unique_ptr<Vtop>& top, VerilatedContext* contextp, VerilatedFstC* tfp)
 {
@@ -30,8 +29,7 @@ static void reset(std::unique_ptr<Vtop>& top, VerilatedContext* contextp, Verila
 }
 
 int clk = 1;
-int cnt = 0;
-int npc_state = NPC_STOP;
+int a0_value = -1;
 
 int main(int argc, char *argv[])
 {
@@ -52,28 +50,34 @@ int main(int argc, char *argv[])
 
     while (!contextp->gotFinish())
     {
+        clk = 1;
         contextp->timeInc(1);
         top->clk = clk;
         top->inst = mem_read(top->pc);
         top->eval();
         tfp->dump(contextp->time());
-        clk = !clk;
-        cnt ++;
-        if(cnt > 50) break;
+        clk = 0;
+        contextp->timeInc(1);
+        top->clk = clk;
+        top->eval();
+        tfp->dump(contextp->time());
+        npc_state.halt_ret = top->ReadData_a0;
     }
 
-    if(npc_state == NPC_END)
+    if(npc_state.halt_ret == 0)
     {
-        printf("\033[1;32;40mHIT GOOD TRAP\033[0m\n");
+        printf("\033[1;32;40mHIT GOOD TRAP\033[0m");
     }
     else
     {
-        printf("\033[1;31;40mHIT BAD TRAP\033[0m at pc = 0x%8x\n", top->pc);
+        printf("\033[1;31;40mHIT BAD TRAP\033[0m");
     }
+    printf(" at pc = 0x%8x\n", npc_state.halt_pc);
 
     tfp->close();
     top->final();
     mem_end();
 
+    // return is_exit_status_bad();
     return 0;
 }

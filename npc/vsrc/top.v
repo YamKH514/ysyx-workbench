@@ -1,62 +1,69 @@
 module top(
     input clk, rst,
     input [31:0] inst,
-    output [31:0] pc
+    output [31:0] pc,
+    output [31:0] ReadData_a0
 );
-    wire [31:0] npc;
-    wire [2:0] imm_type;
-    wire wen;
-    wire [1:0] pc_sel;
-    wire [1:0] src1_sel;
-    wire [31:0] imm;
-    wire [31:0] src1;
-    wire [31:0] src;
-    wire [31:0] res;
+wire RegWriteEn;
+wire [2:0] ImmType;
+wire [1:0] NPCSrcSel;
+wire [1:0] ALUSrcSel1;
+wire [1:0] ALUSrcSel2;
+wire [31:0] ImmExt;
+wire [31:0] ReadData1;
+wire [31:0] ReadData2;
+wire [31:0] ALURes;
 
-    assign npc = ((pc_sel[1] == 0) ? pc : src1) + ((pc_sel[0] == 0) ? 4 : imm);
 
-    PC u_PC(
-        .clk 	(clk  ),
-        .rst 	(rst  ),
-        .npc 	(npc  ),
-        .pc  	(pc   )
-    );
-    
-    Decode u_Decode(
-        .opcode   	(inst[6:0]      ),
-        .funct3   	(inst[14:12]    ),
-        .funct7   	(inst[31:25]    ),
-        .imm_type 	(imm_type       ),
-        .wen      	(wen            ),
-        .src1_sel 	(src1_sel       ),
-        .pc_sel     (pc_sel         )
-    );
-    
-    ImmDecode u_ImmDecode(
-        .imm_type 	(imm_type       ),
-        .imm_in   	(inst[31:7]     ),
-        .imm_out  	(imm            )
-    );
-    
-    assign src =
-            (src1_sel == 2'b00) ? 32'b0 :
-            (src1_sel == 2'b01) ? pc    :
-            (src1_sel == 2'b10) ? src1  :
-            32'b0;
+PCCnt u_PCCnt(
+    .clk       	(clk        ),
+    .rst       	(rst        ),
+    .ReadData1 	(ReadData1  ),
+    .ImmExt    	(ImmExt     ),
+    .NPCSrcSel 	(NPCSrcSel  ),
+    .PC        	(pc         )
+);
 
-    ADD u_ADD(
-        .imm 	(imm  ),
-        .src 	(src  ),
-        .res 	(res  )
-    );
-    
-    GPR u_GPR(
-        .clk   	(clk            ),
-        .wen   	(wen            ),
-        .waddr 	(inst[11:7]     ),
-        .raddr 	(inst[19:15]    ),
-        .wdata 	(res            ),
-        .rdata 	(src1           )
-    );
-    
+
+Decode u_Decode(
+    .pc         (pc             ),
+    .opcode   	(inst[6:0]      ),
+    .funct3   	(inst[14:12]    ),
+    .funct7   	(inst[31:25]    ),
+    .a0_value   (ReadData_a0    ),
+    .inst_type 	(ImmType        ),
+    .wen      	(RegWriteEn     ),
+    .src1_sel 	(ALUSrcSel1     ),
+    .pc_sel     (NPCSrcSel      )
+);
+
+ImmDecode u_ImmDecode(
+    .ImmType 	(ImmType        ),
+    .Imm   	    (inst[31:7]     ),
+    .ImmExt  	(ImmExt         )
+);
+
+ALU u_ALU(
+    .PC         	(pc          ),
+    .ReadData1  	(ReadData1   ),
+    .ReadData2  	(ReadData2   ),
+    .ImmExt     	(ImmExt      ),
+    .ALUSrcSel1 	(ALUSrcSel1  ),
+    .ALUSrcSel2 	(ALUSrcSel2  ),
+    .ALURes     	(ALURes      )
+);
+
+
+GPR u_GPR(
+    .clk         	(clk          ),
+    .RegWrite    	(RegWriteEn   ),
+    .ReadAddr1   	(inst[19:15]  ),
+    .ReadAddr2   	(inst[24:20]  ),
+    .WriteAddr   	(inst[11:7]   ),
+    .WriteData   	(ALURes       ),
+    .ReadData1   	(ReadData1    ),
+    .ReadData2   	(ReadData2    ),
+    .ReadData_a0 	(ReadData_a0  )
+);
+
 endmodule

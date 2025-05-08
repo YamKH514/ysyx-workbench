@@ -1,10 +1,10 @@
 TOPNAME = top
 NXDC_FILES = constr/top.nxdc
-INC_PATH ?= $(shell find $(abspath ./csrc) -name "*.h")
+INC_PATH ?= $(NPC_HOME)/include
 
 VERILATOR = verilator
 VERILATOR_COVERAGE = verilator_coverage
-VERILATOR_FLAGS += --cc --trace-fst -j 0 -Wall --top-module top
+VERILATOR_FLAGS += --cc --trace-fst -j 0 --top-module top
 
 BUILD_DIR = build
 OBJ_DIR = $(BUILD_DIR)/obj_dir
@@ -48,20 +48,20 @@ nvb: $(BIN)
 	@echo "--RUN--"
 	@$^
 
-sim:
+sim: $(VSRCS) $(CSRCS)
 	@echo
-	@echo "-- VERILATE ----------------"
-	$(VERILATOR) $(VERILATOR_FLAGS) --exe --build $(VSRCS) $(CSRCS)
-	
-	# @echo
-	# @echo "-- BUILD -------------------"
-	# $(MAKE) -j -C obj_dir -f Vtop.mk
+	@echo "-- BUILD ----------------"
+	@rm -rf $(OBJ_DIR)
+	$(VERILATOR) $(VERILATOR_FLAGS) --build \
+		--top-module $(TOPNAME) $^ \
+		$(addprefix -CFLAGS , $(CXXFLAGS)) $(addprefix -LDFLAGS , $(LDFLAGS)) \
+		--Mdir $(OBJ_DIR) --exe -o $(abspath $(BIN))
 
 	@echo
 	@echo "-- RUN ---------------------"
 	@rm -rf logs
 	@mkdir -p logs
-	obj_dir/Vtop -i $(IMG) +trace
+	$(BIN) -i $(IMG) +trace
 
 run: sim
 
