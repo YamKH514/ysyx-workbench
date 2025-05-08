@@ -1,13 +1,6 @@
-#include <stddef.h>
-#include <getopt.h>
-#include <stdio.h>
-#include <stdint.h>
-#include <assert.h>
-#include <stdlib.h>
+#include "common.h"
 
 static char *img_file = NULL;
-
-void init_mem(uint32_t *img, long size);
 
 void load_img()
 {

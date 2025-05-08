@@ -1,18 +1,26 @@
 module GPR(
-  input clk, wen,
-  input [4:0] waddr, raddr,
-  input [31:0] wdata,
-  output [31:0] rdata
+    input clk,
+    input RegWrite,
+    input [4:0] ReadAddr1,
+    input [4:0] ReadAddr2,
+    input [4:0] WriteAddr,
+    input [31:0] WriteData,
+    output [31:0] ReadData1,
+    output [31:0] ReadData2,
+    output [31:0] ReadData_a0
 );
 
-    RegisterFile #(5, 32) general_reg
-    (
-        .clk   	(clk    ),
-        .wdata 	(wdata  ),
-        .waddr 	(waddr  ),
-        .wen   	(wen    ),
-        .rdata  (rdata  ),
-        .raddr  (raddr  )
-    );
+RegisterFile #(5, 32) u_RegisterFile
+(
+    .clk         	(clk          ),
+    .ReadAddr1   	(ReadAddr1    ),
+    .ReadAddr2   	(ReadAddr2    ),
+    .WriteAddr   	(WriteAddr    ),
+    .WriteData   	(WriteData    ),
+    .RegWrite    	(RegWrite     ),
+    .ReadData1   	(ReadData1    ),
+    .ReadData2   	(ReadData2    ),
+    .ReadData_a0 	(ReadData_a0  )
+);
 
 endmodule

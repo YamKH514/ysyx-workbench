@@ -1,15 +1,10 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <assert.h>
+#include "common.h"
+#include "utils.h"
 // #include <nvboard.h>
 #include "Vtop.h"
+#include "verilated_fst_c.h"
 #include "Vtop__Dpi.h"
 #include "verilated.h"
-#include "verilated_fst_c.h"
-
-void init_npcmem(int argc, char *argv[]);
-uint32_t mem_read(uint32_t pc);
-void mem_end();
 
 static void single_cycle(std::unique_ptr<Vtop>& top, VerilatedContext* contextp, VerilatedFstC* tfp)
 {
@@ -52,15 +47,31 @@ int main(int argc, char *argv[])
 
     while (!contextp->gotFinish())
     {
+        npc_state.halt_pc = top->pc;
+        npc_state.halt_ret = top->ReadData_a0;
         contextp->timeInc(1);
         top->clk = clk;
         top->inst = mem_read(top->pc);
-        printf("END\n");
-        break;
         top->eval();
         tfp->dump(contextp->time());
+        // clk = 0;
+        // contextp->timeInc(1);
+        // top->clk = clk;
+        // top->eval();
+        // tfp->dump(contextp->time());
         clk = !clk;
     }
+    
+    if(npc_state.halt_ret == 0)
+    {
+        printf("\033[1;32;40mHIT GOOD TRAP\033[0m");
+    }
+    else
+    {
+        printf("\033[1;31;40mHIT BAD TRAP\033[0m");
+    }
+    printf(" at pc = 0x%8x\n", npc_state.halt_pc);
+
     tfp->close();
     top->final();
     mem_end();
