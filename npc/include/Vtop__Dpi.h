@@ -4,5 +4,6 @@
 #include "common.h"
 
 extern void ebreak_trigger();
+extern int get_inst(int pc);
 
 #endif

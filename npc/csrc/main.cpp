@@ -51,14 +51,8 @@ int main(int argc, char *argv[])
         npc_state.halt_ret = top->ReadData_a0;
         contextp->timeInc(1);
         top->clk = clk;
-        top->inst = mem_read(top->pc);
         top->eval();
         tfp->dump(contextp->time());
-        // clk = 0;
-        // contextp->timeInc(1);
-        // top->clk = clk;
-        // top->eval();
-        // tfp->dump(contextp->time());
         clk = !clk;
     }
     

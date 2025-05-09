@@ -1,10 +1,11 @@
 module top(
     input clk, rst,
-    input [31:0] inst,
+    // input [31:0] inst,
     output [31:0] pc,
     output [31:0] ReadData_a0
 );
 
+wire [31:0] inst;
 wire RegWriteEn;
 wire [2:0] ImmType;
 wire [1:0] NPCSrcSel;
@@ -24,6 +25,12 @@ PCCnt u_PCCnt(
     .NPCSrcSel 	(NPCSrcSel  ),
     .PC        	(pc         )
 );
+
+Inst u_Inst(
+    .PC   	(pc    ),
+    .inst 	(inst  )
+);
+
 
 Decode u_Decode(
     .clk            (clk         ),
