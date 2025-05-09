@@ -16,7 +16,8 @@ uint32_t mem_read(uint32_t pc) {
   assert(pc >= INST_BASE);
   uint32_t index = (pc - INST_BASE) >> 2;
   assert(index < mem_size);
-  // printf("mem_read, inst: 0x%0.8x at pc = 0x%8x\n", inst_mem[index], pc);
+  printf("mem_read, pc = 0x%08x, ", pc);
+  printf("inst: 0x%08x\n", inst_mem[index]);
   return inst_mem[index];
 }
 

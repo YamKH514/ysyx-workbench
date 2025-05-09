@@ -7,7 +7,9 @@ module PCCnt(
     output reg [31:0] PC
 );
 
-wire [31:0] NPC = ((NPCSrcSel[0] == 1'b0) ? PC : ReadData1) + ((NPCSrcSel[1] == 1'b0) ? 32'd4 : ImmExt);
+wire [31:0] NPC;
+
+assign NPC = ((NPCSrcSel[1] == 1'b0) ? PC : ReadData1) + ((NPCSrcSel[0] == 1'b0) ? 32'd4 : ImmExt);
 
 always @(posedge clk) begin
     if(rst) PC <= 32'h80000000;

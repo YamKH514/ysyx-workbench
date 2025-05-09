@@ -17,6 +17,4 @@ void init_mem(uint32_t *img, long size);
 uint32_t mem_read(uint32_t pc);
 void mem_end();
 
-int is_exit_status_bad();
-
 #endif

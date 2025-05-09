@@ -1,9 +1,11 @@
 module top(
     input clk, rst,
-    input [31:0] inst,
+    // input [31:0] inst,
     output [31:0] pc,
     output [31:0] ReadData_a0
 );
+
+wire [31:0] inst;
 wire RegWriteEn;
 wire [2:0] ImmType;
 wire [1:0] NPCSrcSel;
@@ -24,18 +26,25 @@ PCCnt u_PCCnt(
     .PC        	(pc         )
 );
 
+Inst u_Inst(
+    .PC   	(pc    ),
+    .inst 	(inst  )
+);
+
 
 Decode u_Decode(
-    .pc         (pc             ),
-    .opcode   	(inst[6:0]      ),
-    .funct3   	(inst[14:12]    ),
-    .funct7   	(inst[31:25]    ),
-    .a0_value   (ReadData_a0    ),
-    .inst_type 	(ImmType        ),
-    .wen      	(RegWriteEn     ),
-    .src1_sel 	(ALUSrcSel1     ),
-    .pc_sel     (NPCSrcSel      )
+    .clk            (clk         ),
+    .inst       	(inst        ),
+    .Opcode     	(inst[6:0]   ),
+    .Funct3     	(inst[14:12] ),
+    .Funct7     	(inst[31:25] ),
+    .ImmType    	(ImmType     ),
+    .RegWriteEn 	(RegWriteEn  ),
+    .ALUSrcSel1 	(ALUSrcSel1  ),
+    .ALUSrcSel2 	(ALUSrcSel2  ),
+    .NPCSrcSel  	(NPCSrcSel   )
 );
+
 
 ImmDecode u_ImmDecode(
     .ImmType 	(ImmType        ),

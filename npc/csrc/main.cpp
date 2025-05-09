@@ -6,8 +6,6 @@
 #include "Vtop__Dpi.h"
 #include "verilated.h"
 
-// void init_npcmem(int argc, char *argv[]);
-
 static void single_cycle(std::unique_ptr<Vtop>& top, VerilatedContext* contextp, VerilatedFstC* tfp)
 {
     contextp->timeInc(1);
@@ -29,7 +27,6 @@ static void reset(std::unique_ptr<Vtop>& top, VerilatedContext* contextp, Verila
 }
 
 int clk = 1;
-int a0_value = -1;
 
 int main(int argc, char *argv[])
 {
@@ -50,20 +47,15 @@ int main(int argc, char *argv[])
 
     while (!contextp->gotFinish())
     {
-        clk = 1;
-        contextp->timeInc(1);
-        top->clk = clk;
-        top->inst = mem_read(top->pc);
-        top->eval();
-        tfp->dump(contextp->time());
-        clk = 0;
-        contextp->timeInc(1);
-        top->clk = clk;
-        top->eval();
-        tfp->dump(contextp->time());
+        npc_state.halt_pc = top->pc;
         npc_state.halt_ret = top->ReadData_a0;
+        contextp->timeInc(1);
+        top->clk = clk;
+        top->eval();
+        tfp->dump(contextp->time());
+        clk = !clk;
     }
-
+    
     if(npc_state.halt_ret == 0)
     {
         printf("\033[1;32;40mHIT GOOD TRAP\033[0m");
@@ -78,6 +70,5 @@ int main(int argc, char *argv[])
     top->final();
     mem_end();
 
-    // return is_exit_status_bad();
     return 0;
 }

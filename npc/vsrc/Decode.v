@@ -1,4 +1,5 @@
 module Decode(
+    input clk,
     input [31:0] inst,
     input [6:0] Opcode,
     input [2:0] Funct3,
@@ -27,6 +28,14 @@ assign inst_jalr  = (Opcode == 7'b1100111) & (Funct3 == 3'b000);
 assign inst_sw    = (Opcode == 7'b0100011) & (Funct3 == 3'b010);
 assign inst_addi  = (Opcode == 7'b0010011) & (Funct3 == 3'b000);
 assign inst_ebreak = inst == 32'b00000000000100000000000001110011;
+
+import "DPI-C" function void ebreak_trigger();
+
+always @(posedge clk) begin
+    if(inst_ebreak) begin
+        ebreak_trigger();
+    end
+end
 
 assign ImmType =    {3{inst_jalr | inst_addi}} & 3'd0 |
                     {3{inst_sw}} & 3'd1 |

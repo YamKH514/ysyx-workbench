@@ -18,6 +18,6 @@ end
 
 assign ReadData1 = (ReadAddr1 == 0) ? 0 : rf[ReadAddr1];
 assign ReadData2 = (ReadAddr2 == 0) ? 0 : rf[ReadAddr2];
-assign ReadData_a0 = rf[1];
+assign ReadData_a0 = rf[10];
 
 endmodule
