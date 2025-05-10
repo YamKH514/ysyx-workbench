@@ -1,5 +1,6 @@
 #include "common.h"
 #include "npc.h"
+#include "mem.h"
 #include <readline/readline.h>
 #include <readline/history.h>
 #include "Vtop.h"
@@ -16,8 +17,7 @@ char str[1024] = "\0";
 int gpr_value[16];
 const char *regs[] = {
     "$0", "ra", "sp", "gp", "tp", "t0", "t1", "t2",
-    "s0", "s1", "a0", "a1", "a2", "a3", "a4", "a5"
-};
+    "s0", "s1", "a0", "a1", "a2", "a3", "a4", "a5"};
 
 static char *rl_gets()
 {
@@ -59,7 +59,7 @@ static int cmd_info(char *args)
         // TODO
         svSetScope(svGetScopeFromName("TOP.top.u_GPR.u_RegisterFile"));
         get_gpr(gpr_value);
-        for(int i = 0; i < 16; i++)
+        for (int i = 0; i < 16; i++)
         {
             printf("%-10s 0x%08x  %-10u\n", regs[i], (uint32_t)gpr_value[i], (uint32_t)gpr_value[i]);
         }
@@ -71,6 +71,21 @@ static int cmd_info(char *args)
     else
     {
         printf("Unknown argument\n");
+    }
+    return 0;
+}
+
+static int cmd_x(char *args)
+{
+    int n = atoi(strtok(args, " "));
+    char *expr = strtok(NULL, " ");
+    uint32_t addr = 0;
+
+    addr = strtoul(expr, NULL, 16);
+    for (int i = 0; i < n; i++)
+    {
+        printf("0x%08x  0x%08x\n", addr, mem_read(addr));
+        addr += 4;
     }
     return 0;
 }
