@@ -1,5 +1,6 @@
 #include "common.h"
 #include "utils.h"
+#include "mem.h"
 
 extern "C" int get_inst(int pc)
 {

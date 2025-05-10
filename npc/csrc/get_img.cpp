@@ -1,4 +1,5 @@
 #include "common.h"
+#include "mem.h"
 
 static char *img_file = NULL;
 

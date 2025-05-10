@@ -4,7 +4,7 @@ INC_PATH ?= $(NPC_HOME)/include
 
 VERILATOR = verilator
 VERILATOR_COVERAGE = verilator_coverage
-VERILATOR_FLAGS += --cc --trace-fst -j 0 --top-module top
+VERILATOR_FLAGS += --cc --trace -j 0 --top-module top
 
 BUILD_DIR = build
 OBJ_DIR = $(BUILD_DIR)/obj_dir
@@ -29,6 +29,8 @@ include $(NVBOARD_HOME)/scripts/nvboard.mk
 # rules for verilator
 INCFLAGS = $(addprefix -I, $(INC_PATH))
 CXXFLAGS += $(INCFLAGS) -DTOP_NAME="\"V$(TOPNAME)\""
+
+LDFLAGS += -lreadline -lncurses
 
 # am img
 IMG ?=
