@@ -108,6 +108,7 @@ static struct
     {"c", "Continue the execution of the program", cmd_c},
     {"si", "Let's the programepause after executing N instructions in a single step. N defaults to 1", cmd_si},
     {"info", "Type r to print the register, type w for status watchpoint information", cmd_info},
+    {"x", "x N EXPR, Scanning Memory, Outputs N consecutive 4 bytes starting from EXPR", cmd_x},
     {"q", "Exit NEMU", cmd_q},
 };
 
