@@ -19,7 +19,7 @@ void load_img()
     fseek(fp, 0, SEEK_END);
     long size = ftell(fp);
 
-    printf("The image is %s, size = %ld\n", img_file, size);
+    Log("The image is %s, size = %ld", img_file, size);
 
     uint32_t *img_bin = (uint32_t *)malloc(size);
     fseek(fp, 0, SEEK_SET);
