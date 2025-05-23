@@ -1,4 +1,5 @@
 #include "common.h"
+#include "mem.h"
 
 #define INST_BASE 0x80000000
 

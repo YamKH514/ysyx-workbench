@@ -11,4 +11,7 @@
 #include <getopt.h>
 #include <stdio.h>
 
+#include "log.h"
+#include "debug.h"
+
 #endif

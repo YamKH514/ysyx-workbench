@@ -1,6 +1,7 @@
 #include "common.h"
 #include "utils.h"
 #include "mem.h"
+#include "npc-init.h"
 #include "npc.h"
 #include "sdb.h"
 // #include <nvboard.h>
@@ -10,19 +11,19 @@
 
 int main(int argc, char *argv[])
 {
-    init_npcmem(argc, argv);
-
+    
     Verilated::mkdir("logs");
     VerilatedContext* contextp = new VerilatedContext;
     contextp->debug(0);
     contextp->traceEverOn(true);
     contextp->commandArgs(argc, argv);
-
+    
     Vtop* top = new Vtop{contextp, "TOP"};
     VerilatedVcdC *tfp = new VerilatedVcdC;
     top->trace(tfp, 5);
     tfp->open("logs/sim_wave.vcd");
-
+    
+    init_npc(argc, argv);
     init_sdb(top, contextp, tfp);
 
     while (!contextp->gotFinish())
