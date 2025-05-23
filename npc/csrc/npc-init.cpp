@@ -10,7 +10,7 @@ void load_img()
 {
     if (img_file == NULL)
     {
-        printf("No image is given. Use the default build-in image.\n");
+        Log("No image is given.\n");
     }
 
     FILE *fp = fopen(img_file, "rb");

@@ -4,7 +4,7 @@
 #include "mem.h"
 #include "disasm.h"
 
-int g_nr_guest_inst = 0;
+// uint64_t g_nr_guest_inst = 0;
 int npc_init_num = 2;
 int inited = 0;
 
@@ -56,7 +56,6 @@ static void single_cycle(Vtop *top, VerilatedContext *contextp, VerilatedVcdC *t
         p += space_len;
 
         disassemble(p, logbuf + sizeof(logbuf) - p, npc_state.halt_pc, inst, ilen);
-        // printf("disassemble: %s\n", logbuf);
     }
 }
 
@@ -85,7 +84,7 @@ void npc_exec(Vtop *top, VerilatedContext *contextp, VerilatedVcdC *tfp, uint64_
             }
             inited = 1;
         }
-        g_nr_guest_inst++;
+        // g_nr_guest_inst++;
         if (contextp->gotFinish())
             break;
     }
