@@ -4,7 +4,7 @@ INC_PATH ?= $(NPC_HOME)/include
 
 VERILATOR = verilator
 VERILATOR_COVERAGE = verilator_coverage
-VERILATOR_FLAGS += --cc --trace-fst -j 0 --top-module top
+VERILATOR_FLAGS += --cc --trace -j 0 --top-module top
 
 BUILD_DIR = build
 OBJ_DIR = $(BUILD_DIR)/obj_dir
@@ -26,9 +26,17 @@ CSRCS = $(shell find $(abspath ./csrc) -name "*.c" -or -name "*.cc" -or -name "*
 # rules for NVBoard
 include $(NVBOARD_HOME)/scripts/nvboard.mk
 
+# Include all filelist.mk to merge file lists
+FILELIST_MK = $(shell find -L ./csrc -name "filelist.mk")
+include $(FILELIST_MK)
+
 # rules for verilator
 INCFLAGS = $(addprefix -I, $(INC_PATH))
 CXXFLAGS += $(INCFLAGS) -DTOP_NAME="\"V$(TOPNAME)\""
+
+LDFLAGS += -lreadline -lncurses
+
+override ARGS ?= --log=$(BUILD_DIR)/npc-log.txt
 
 # am img
 IMG ?=
@@ -61,7 +69,7 @@ sim: $(VSRCS) $(CSRCS)
 	@echo "-- RUN ---------------------"
 	@rm -rf logs
 	@mkdir -p logs
-	$(BIN) -i $(IMG) +trace
+	$(BIN) $(ARGS) $(IMG) +trace
 
 run: sim
 

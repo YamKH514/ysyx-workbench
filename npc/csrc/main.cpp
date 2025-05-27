@@ -1,70 +1,37 @@
 #include "common.h"
 #include "utils.h"
+#include "mem.h"
+#include "npc-init.h"
+#include "npc.h"
+#include "sdb.h"
 // #include <nvboard.h>
 #include "Vtop.h"
-#include "verilated_fst_c.h"
+#include "verilated_vcd_c.h"
 #include "Vtop__Dpi.h"
-#include "verilated.h"
-
-static void single_cycle(std::unique_ptr<Vtop>& top, VerilatedContext* contextp, VerilatedFstC* tfp)
-{
-    contextp->timeInc(1);
-    top->clk = 1;
-    top->eval();
-    tfp->dump(contextp->time());
-    contextp->timeInc(1);
-    top->clk = 0;
-    top->eval();
-    tfp->dump(contextp->time());
-}
-
-static void reset(std::unique_ptr<Vtop>& top, VerilatedContext* contextp, VerilatedFstC* tfp, int n)
-{
-    top->rst = 1;
-    while (n-- > 0)
-        single_cycle(top, contextp, tfp);
-    top->rst = 0;
-}
-
-int clk = 1;
 
 int main(int argc, char *argv[])
 {
-    init_npcmem(argc, argv);
 
     Verilated::mkdir("logs");
-    const std::unique_ptr<VerilatedContext> contextp{new VerilatedContext};
+    VerilatedContext *contextp = new VerilatedContext;
     contextp->debug(0);
     contextp->traceEverOn(true);
     contextp->commandArgs(argc, argv);
 
-    std::unique_ptr<Vtop> top{new Vtop{contextp.get(), "TOP"}};
-    VerilatedFstC *tfp = new VerilatedFstC;
+    Vtop *top = new Vtop{contextp, "TOP"};
+    VerilatedVcdC *tfp = new VerilatedVcdC;
     top->trace(tfp, 5);
-    tfp->open("logs/sim_wave.fst");
+    tfp->open("logs/sim_wave.vcd");
 
-    reset(top, contextp.get(), tfp, 5);
+    init_npc(argc, argv);
+    init_sdb(top, contextp, tfp);
 
     while (!contextp->gotFinish())
     {
-        npc_state.halt_pc = top->pc;
-        npc_state.halt_ret = top->ReadData_a0;
-        contextp->timeInc(1);
-        top->clk = clk;
-        top->eval();
-        tfp->dump(contextp->time());
-        clk = !clk;
+        sdb_mainloop();
     }
-    
-    if(npc_state.halt_ret == 0)
-    {
-        printf("\033[1;32;40mHIT GOOD TRAP\033[0m");
-    }
-    else
-    {
-        printf("\033[1;31;40mHIT BAD TRAP\033[0m");
-    }
-    printf(" at pc = 0x%8x\n", npc_state.halt_pc);
+
+    Log("npc: %s at pc = 0x%08x", (npc_state.halt_ret == 0 ? ANSI_FMT("HIT GOOD TRAP", ANSI_FG_GREEN) : ANSI_FMT("HIT BAD TRAP", ANSI_FG_RED)), npc_state.halt_pc);
 
     tfp->close();
     top->final();

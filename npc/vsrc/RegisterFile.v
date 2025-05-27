@@ -20,4 +20,12 @@ assign ReadData1 = (ReadAddr1 == 0) ? 0 : rf[ReadAddr1];
 assign ReadData2 = (ReadAddr2 == 0) ? 0 : rf[ReadAddr2];
 assign ReadData_a0 = rf[10];
 
+export "DPI-C" function get_gpr;
+function void get_gpr(output int out_gpr[16]);
+    out_gpr[0] = 0;
+    for (int i = 1; i < 16; i++) begin
+        out_gpr[i] = rf[i];
+    end
+endfunction
+
 endmodule

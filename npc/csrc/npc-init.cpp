@@ -1,12 +1,16 @@
 #include "common.h"
+#include "mem.h"
+#include "npc-init.h"
+#include "disasm.h"
 
+static char *log_file = NULL;
 static char *img_file = NULL;
 
 void load_img()
 {
     if (img_file == NULL)
     {
-        printf("No image is given. Use the default build-in image.\n");
+        Log("No image is given.\n");
     }
 
     FILE *fp = fopen(img_file, "rb");
@@ -15,7 +19,7 @@ void load_img()
     fseek(fp, 0, SEEK_END);
     long size = ftell(fp);
 
-    printf("The image is %s, size = %ld\n", img_file, size);
+    Log("The image is %s, size = %ld", img_file, size);
 
     uint32_t *img_bin = (uint32_t *)malloc(size);
     fseek(fp, 0, SEEK_SET);
@@ -29,20 +33,23 @@ void load_img()
 static int parse_args(int argc, char *argv[])
 {
     const struct option table[] = {
-        {"get_img", required_argument, NULL, 'i'},
-        {0, 0, NULL, 0},
+        {"log"      , required_argument, NULL, 'l'},
+        {0          , 0                , NULL,  0 },
     };
     int o;
-    while ((o = getopt_long(argc, argv, "-i:", table, NULL)) != -1)
+    while ((o = getopt_long(argc, argv, "-l:i:", table, NULL)) != -1)
     {
         switch (o)
         {
-        case 'i':
+        case 'l':
+            log_file = optarg;
+            break;
+        case 1:
             img_file = optarg;
             return 0;
         default:
             printf("Usage: %s [OPTION...] IMAGE [args]\n\n", argv[0]);
-            printf("\t-i,--img=FILE           get img file\n");
+            printf("\t-l,--log=FILE           output log to FILE\n");
             printf("\n");
             exit(0);
         }
@@ -50,9 +57,13 @@ static int parse_args(int argc, char *argv[])
     return 0;
 }
 
-void init_npcmem(int argc, char *argv[])
+void init_npc(int argc, char *argv[])
 {
     parse_args(argc, argv);
 
+    init_log(log_file);
+
     load_img();
+
+    init_disasm();
 }
