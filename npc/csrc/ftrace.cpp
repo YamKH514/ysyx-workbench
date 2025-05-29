@@ -21,28 +21,28 @@ size_t get_elf_header(FILE *file, Elf32_Ehdr *ehdr)
 
 size_t get_section_header(FILE *file, Elf32_Ehdr *ehdr, Elf32_Shdr **shdr)
 {
-    *shdr = malloc((ehdr->e_shnum) * sizeof(Elf32_Shdr));
+    *shdr = (Elf32_Shdr *)malloc((ehdr->e_shnum) * sizeof(Elf32_Shdr));
     fseek(file, ehdr->e_shoff, SEEK_SET);
     return fread(*shdr, sizeof(Elf32_Shdr), ehdr->e_shnum, file);
 }
 
 size_t get_shstrtab(FILE *file, Elf32_Shdr *shstrhdr, char **shstrtab_name)
 {
-    *shstrtab_name = malloc(shstrhdr->sh_size);
+    *shstrtab_name = (char *)malloc(shstrhdr->sh_size);
     fseek(file, shstrhdr->sh_offset, SEEK_SET);
     return fread(*shstrtab_name, 1, shstrhdr->sh_size, file);
 }
 
 size_t get_symtab(FILE *file, Elf32_Shdr *symtab_header, Elf32_Sym **symtab)
 {
-    *symtab = malloc(symtab_header->sh_size);
+    *symtab = (Elf32_Sym *)malloc(symtab_header->sh_size);
     fseek(file, symtab_header->sh_offset, SEEK_SET);
     return fread(*symtab, 1, symtab_header->sh_size, file);
 }
 
 size_t get_strtab(FILE *file, Elf32_Shdr *strtab_header, char **strtab)
 {
-    *strtab = malloc(strtab_header->sh_size);
+    *strtab = (char *)malloc(strtab_header->sh_size);
     fseek(file, strtab_header->sh_offset, SEEK_SET);
     return fread(*strtab, 1, strtab_header->sh_size, file);
 }
@@ -71,7 +71,7 @@ size_t extract_func(FILE *file, Elf32_Shdr *symtab_header, Elf32_Shdr *strtab_he
         }
     }
 
-    *funcs = malloc(func_cnt * sizeof(Symtab_func));
+    *funcs = (Symtab_func *)malloc(func_cnt * sizeof(Symtab_func));
 
     int j = 0;
     for(int i = 0; i < sym_num; i++)
