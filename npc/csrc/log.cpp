@@ -1,9 +1,6 @@
 #include "common.h"
 #include "utils.h"
 
-#define TRACE_START 0
-#define TRACE_END   10000
-
 extern uint64_t g_nr_guest_inst;
 
 FILE *log_fp = NULL;
@@ -22,5 +19,5 @@ void init_log(const char *log_file)
 
 bool log_enable()
 {
-    return (g_nr_guest_inst >= TRACE_START) && (g_nr_guest_inst <= TRACE_END);
+    return (g_nr_guest_inst >= CONFIG_TRACE_START) && (g_nr_guest_inst <= CONFIG_TRACE_END);
 }

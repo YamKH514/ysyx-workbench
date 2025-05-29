@@ -10,11 +10,19 @@ uint64_t g_nr_guest_inst = 0;
 bool g_print_step = false;
 int npc_init_num = 2;
 
-static void trace(char *logbuf) {
-    log_write("%s\n", logbuf);
-    if(g_print_step)
+static void trace(char *logbuf)
+{
+#ifdef CONFIG_ITRACE_COND
+    if (ITRACE_COND)
     {
+        log_write("%s\n", logbuf);
+    }
+#endif
+    if (g_print_step)
+    {
+#ifdef CONFIG_ITRACE
         puts(logbuf);
+#endif
     }
 }
 
@@ -72,15 +80,15 @@ static void single_cycle(Vtop *top, VerilatedContext *contextp, VerilatedVcdC *t
 
 static void execute(Vtop *top, VerilatedContext *contextp, VerilatedVcdC *tfp, uint64_t n)
 {
-    for(; n > 0; n--)
+    for (; n > 0; n--)
     {
         single_cycle(top, contextp, tfp);
-        if(!(npc_state.inited))
+        if (!(npc_state.inited))
         {
             single_cycle(top, contextp, tfp);
             npc_state.inited = true;
         }
-        g_nr_guest_inst ++;
+        g_nr_guest_inst++;
         if (contextp->gotFinish())
             break;
     }
