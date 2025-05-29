@@ -34,7 +34,6 @@ static int parse_args(int argc, char *argv[])
 {
     const struct option table[] = {
         {"log"      , required_argument, NULL, 'l'},
-        // {"get_img", required_argument, NULL, 'i'},
         {0          , 0                , NULL,  0 },
     };
     int o;
@@ -51,7 +50,6 @@ static int parse_args(int argc, char *argv[])
         default:
             printf("Usage: %s [OPTION...] IMAGE [args]\n\n", argv[0]);
             printf("\t-l,--log=FILE           output log to FILE\n");
-            // printf("\t-i,--img=FILE           get img file\n");
             printf("\n");
             exit(0);
         }

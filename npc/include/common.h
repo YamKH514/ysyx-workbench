@@ -11,6 +11,7 @@
 #include <getopt.h>
 #include <stdio.h>
 
+#include "generated/autoconf.h"
 #include "log.h"
 #include "debug.h"
 

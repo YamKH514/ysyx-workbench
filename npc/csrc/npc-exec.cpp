@@ -4,21 +4,39 @@
 #include "mem.h"
 #include "disasm.h"
 
-// uint64_t g_nr_guest_inst = 0;
+#define MAX_INST_TO_PRINT 10
+
+uint64_t g_nr_guest_inst = 0;
+bool g_print_step = false;
 int npc_init_num = 2;
-int inited = 0;
+
+static void trace(char *logbuf)
+{
+#ifdef CONFIG_ITRACE_COND
+    if (ITRACE_COND)
+    {
+        log_write("%s\n", logbuf);
+    }
+#endif
+    if (g_print_step)
+    {
+#ifdef CONFIG_ITRACE
+        puts(logbuf);
+#endif
+    }
+}
 
 static void single_cycle(Vtop *top, VerilatedContext *contextp, VerilatedVcdC *tfp)
 {
     char logbuf[128];
 
-    if (!inited)
+    if (npc_state.inited)
     {
-        top->rst = 1;
+        top->rst = 0;
     }
     else
     {
-        top->rst = 0;
+        top->rst = 1;
     }
     npc_state.halt_pc = top->pc;
     npc_state.halt_ret = top->ReadData_a0;
@@ -56,6 +74,23 @@ static void single_cycle(Vtop *top, VerilatedContext *contextp, VerilatedVcdC *t
         p += space_len;
 
         disassemble(p, logbuf + sizeof(logbuf) - p, npc_state.halt_pc, inst, ilen);
+        trace(logbuf);
+    }
+}
+
+static void execute(Vtop *top, VerilatedContext *contextp, VerilatedVcdC *tfp, uint64_t n)
+{
+    for (; n > 0; n--)
+    {
+        single_cycle(top, contextp, tfp);
+        if (!(npc_state.inited))
+        {
+            single_cycle(top, contextp, tfp);
+            npc_state.inited = true;
+        }
+        g_nr_guest_inst++;
+        if (contextp->gotFinish())
+            break;
     }
 }
 
@@ -65,27 +100,11 @@ void assert_fail_msg()
 
 void npc_exec(Vtop *top, VerilatedContext *contextp, VerilatedVcdC *tfp, uint64_t n)
 {
+    g_print_step = (n < MAX_INST_TO_PRINT);
     if (contextp->gotFinish())
     {
         printf("EBREAK, input q to quit\n");
         return;
     }
-    for (; n > 0; n--)
-    {
-        if (inited)
-        {
-            single_cycle(top, contextp, tfp);
-        }
-        else
-        {
-            for (; npc_init_num > 0; npc_init_num--)
-            {
-                single_cycle(top, contextp, tfp);
-            }
-            inited = 1;
-        }
-        // g_nr_guest_inst++;
-        if (contextp->gotFinish())
-            break;
-    }
+    execute(top, contextp, tfp, n);
 }

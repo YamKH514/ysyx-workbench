@@ -1,7 +1,7 @@
 #include "common.h"
 #include "utils.h"
 
-// extern uint64_t g_nr_guest_inst;
+extern uint64_t g_nr_guest_inst;
 
 FILE *log_fp = NULL;
 
@@ -19,6 +19,5 @@ void init_log(const char *log_file)
 
 bool log_enable()
 {
-    return true;
-    // return (g_nr_guest_inst >= 0) && (g_nr_guest_inst <= 10000);
+    return (g_nr_guest_inst >= CONFIG_TRACE_START) && (g_nr_guest_inst <= CONFIG_TRACE_END);
 }

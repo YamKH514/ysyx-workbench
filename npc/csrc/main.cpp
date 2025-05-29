@@ -33,16 +33,6 @@ int main(int argc, char *argv[])
 
     Log("npc: %s at pc = 0x%08x", (npc_state.halt_ret == 0 ? ANSI_FMT("HIT GOOD TRAP", ANSI_FG_GREEN) : ANSI_FMT("HIT BAD TRAP", ANSI_FG_RED)), npc_state.halt_pc);
 
-    // if (npc_state.halt_ret == 0)
-    // {
-    //     printf("\033[1;32;40mHIT GOOD TRAP\033[0m");
-    // }
-    // else
-    // {
-    //     printf("\033[1;31;40mHIT BAD TRAP\033[0m");
-    // }
-    // printf(" at pc = 0x%08x\n", npc_state.halt_pc);
-
     tfp->close();
     top->final();
     mem_end();
