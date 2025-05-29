@@ -152,7 +152,7 @@ void ftrace_call(uint32_t pc, uint32_t dnpc)
     ++call_deep;
 
     int i = find_func(dnpc);
-    printf(FMT_PADDR ": %*scall [%s@" FMT_PADDR "]\n", pc, call_deep * 2, "", i>=0?funcs[i].name:"???",dnpc);
+    printf("0x%08x : %*scall [%s@0x%08x]\n", pc, call_deep * 2, "", i>=0?funcs[i].name:"???",dnpc);
 }
 
 void ftrace_ret(uint32_t pc)
@@ -161,7 +161,7 @@ void ftrace_ret(uint32_t pc)
     --call_deep;
 
     int i = find_func(pc);
-    printf(FMT_PADDR ": %*sret [%s]\n", pc, call_deep * 2, "", i>=0?funcs[i].name:"???");
+    printf("0x%08x : %*sret [%s]\n", pc, call_deep * 2, "", i>=0?funcs[i].name:"???");
 }
 
 void ftrace_end()

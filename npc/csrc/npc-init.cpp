@@ -1,5 +1,6 @@
 #include "common.h"
 #include "mem.h"
+#include "ftrace.h"
 #include "npc-init.h"
 #include "disasm.h"
 
@@ -68,6 +69,10 @@ void init_npc(int argc, char *argv[])
     parse_args(argc, argv);
 
     init_log(log_file);
+
+    #ifdef CONFIG_FTRACE
+        parse_elf(elf_file);
+    #endif
 
     load_img();
 
