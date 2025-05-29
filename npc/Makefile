@@ -70,6 +70,7 @@ nvb: $(BIN)
 	@$^
 
 sim: $(VSRCS) $(CSRCS)
+	$(call git_commit, "sim RTL") # DO NOT REMOVE THIS LINE!!!
 	@echo
 	@echo "-- BUILD ----------------"
 	@rm -rf $(OBJ_DIR)
