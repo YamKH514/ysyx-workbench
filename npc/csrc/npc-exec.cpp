@@ -89,7 +89,7 @@ static void single_cycle(Vtop *top, VerilatedContext *contextp, VerilatedVcdC *t
         disassemble(p, logbuf + sizeof(logbuf) - p, npc_state.halt_pc, inst, ilen);
         trace(logbuf);
 
-// TODO 函数调用 ftrace
+// 函数调用 ftrace
 #ifdef CONFIG_FTRACE
         uint8_t opcode = BITS(inst_val, 6, 0);
         int rd = BITS(inst_val, 11, 7);
@@ -98,7 +98,6 @@ static void single_cycle(Vtop *top, VerilatedContext *contextp, VerilatedVcdC *t
         if (opcode == inst_jar)
         {
             uint32_t imm = (SEXT((BITS(inst_val, 31, 31) << 20) | (BITS(inst_val, 19, 12) << 12) | (BITS(inst_val, 20, 20) << 11) | (BITS(inst_val, 30, 21) << 1), 21));
-            printf("IMM = %lu\n", imm);
             dnpc = npc_state.halt_pc + imm;
             if (rd == 1)
             {
