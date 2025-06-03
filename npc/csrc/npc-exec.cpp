@@ -93,11 +93,11 @@ static void single_cycle(Vtop *top, VerilatedContext *contextp, VerilatedVcdC *t
 #ifdef CONFIG_FTRACE
         uint8_t opcode = BITS(inst_val, 6, 0);
         int rd = BITS(inst_val, 11, 7);
-        int rs1 = BITS(i, 19, 15);
+        int rs1 = BITS(inst_val, 19, 15);
         uint32_t dnpc = 0x0;
         if (opcode == inst_jar)
         {
-            uint32_t imm = (SEXT((BITS(i, 31, 31) << 20) | (BITS(i, 19, 12) << 12) | (BITS(i, 20, 20) << 11) | (BITS(i, 30, 21) << 1), 21));
+            uint32_t imm = (SEXT((BITS(inst_val, 31, 31) << 20) | (BITS(inst_val, 19, 12) << 12) | (BITS(inst_val, 20, 20) << 11) | (BITS(inst_val, 30, 21) << 1), 21));
             printf("IMM = %lu\n", imm);
             dnpc = npc_state.halt_pc + imm;
             if (rd == 1)
