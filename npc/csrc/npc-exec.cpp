@@ -19,10 +19,6 @@ uint64_t g_nr_guest_inst = 0;
 bool g_print_step = false;
 int npc_init_num = 2;
 
-#ifdef CONFIG_FTRACE
-int gpr_value[16];
-#endif
-
 static void trace(char *logbuf)
 {
 #ifdef CONFIG_ITRACE_COND
@@ -62,6 +58,10 @@ static void single_cycle(Vtop *top, VerilatedContext *contextp, VerilatedVcdC *t
     top->eval();
     tfp->dump(contextp->time());
 
+    svSetScope(svGetScopeFromName("TOP.top.u_GPR.u_RegisterFile"));
+    get_gpr(npc_state.gpr_value);
+
+    // 反汇编 itrace
     if (npc_state.halt_pc >= 0x80000000)
     {
         char *p = logbuf;
@@ -89,7 +89,7 @@ static void single_cycle(Vtop *top, VerilatedContext *contextp, VerilatedVcdC *t
         disassemble(p, logbuf + sizeof(logbuf) - p, npc_state.halt_pc, inst, ilen);
         trace(logbuf);
 
-// TODO opcode判断命令为jar、jarl
+// TODO 函数调用 ftrace
 #ifdef CONFIG_FTRACE
         uint8_t opcode = BITS(inst_val, 6, 0);
         int rd = BITS(inst_val, 11, 7);
@@ -106,16 +106,14 @@ static void single_cycle(Vtop *top, VerilatedContext *contextp, VerilatedVcdC *t
         }
         else if (opcode == inst_jarl)
         {
-            svSetScope(svGetScopeFromName("TOP.top.u_GPR.u_RegisterFile"));
-            get_gpr(gpr_value);
             uint32_t imm = SEXT(BITS(i, 31, 20), 12);
-            uint32_t src1 = gpr_value[rs1];
+            uint32_t src1 = npc_state.gpr_value[rs1];
             dnpc = src1 + imm;
-            if(inst_val == 0x00008067)
+            if (inst_val == 0x00008067)
             {
                 ftrace_ret(npc_state.halt_pc);
             }
-            else if((rd == 1) || (imm == 0 && rd == 0))
+            else if ((rd == 1) || (imm == 0 && rd == 0))
             {
                 ftrace_call(npc_state.halt_pc, dnpc);
             }

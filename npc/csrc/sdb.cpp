@@ -14,7 +14,6 @@ VerilatedContext *contextp;
 VerilatedVcdC *tfp;
 char str[1024] = "\0";
 
-int gpr_value[16];
 const char *regs[] = {
     "$0", "ra", "sp", "gp", "tp", "t0", "t1", "t2",
     "s0", "s1", "a0", "a1", "a2", "a3", "a4", "a5"};
@@ -56,12 +55,9 @@ static int cmd_info(char *args)
 {
     if (strcmp(args, "r") == 0)
     {
-        // TODO
-        svSetScope(svGetScopeFromName("TOP.top.u_GPR.u_RegisterFile"));
-        get_gpr(gpr_value);
         for (int i = 0; i < 16; i++)
         {
-            printf("%-10s 0x%08x  %-10u\n", regs[i], (uint32_t)gpr_value[i], (uint32_t)gpr_value[i]);
+            printf("%-10s 0x%08x  %-10u\n", regs[i], (uint32_t)npc_state.gpr_value[i], (uint32_t)npc_state.gpr_value[i]);
         }
     }
     else if (strcmp(args, "w") == 0)
