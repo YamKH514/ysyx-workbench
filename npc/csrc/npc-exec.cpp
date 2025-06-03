@@ -98,6 +98,7 @@ static void single_cycle(Vtop *top, VerilatedContext *contextp, VerilatedVcdC *t
         if (opcode == inst_jar)
         {
             uint32_t imm = (SEXT((BITS(i, 31, 31) << 20) | (BITS(i, 19, 12) << 12) | (BITS(i, 20, 20) << 11) | (BITS(i, 30, 21) << 1), 21));
+            printf("IMM = %d\n", imm);
             dnpc = npc_state.halt_pc + imm;
             if (rd == 1)
             {
