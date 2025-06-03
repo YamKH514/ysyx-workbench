@@ -13,11 +13,23 @@ void init_mem(uint32_t *img, long size)
   mem_size = size / sizeof(inst_mem[0]);
 }
 
+void print_mem_read(uint32_t addr, int len)
+{
+  printf("MEM_READ at 0x%08x , len = %d\n", addr, len);
+}
+
+void print_mem_write(uint32_t addr, int len, uint32_t data)
+{
+  printf("MEM_WRITE at 0x%08x , len = %d, write data: 0x%08x \n", addr, len, data);
+}
+
 uint32_t mem_read(uint32_t pc) {
+  #ifdef CONFIG_MTRACE
+    print_mem_read(pc, 4);
+  #endif
   assert(pc >= INST_BASE);
   uint32_t index = (pc - INST_BASE) >> 2;
   assert(index < mem_size);
-  // printf("mem_read, inst: 0x%08x at the pc = 0x%08x\n", inst_mem[index], pc);
   return inst_mem[index];
 }
 

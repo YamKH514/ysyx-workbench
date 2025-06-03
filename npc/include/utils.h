@@ -7,6 +7,7 @@ typedef struct {
     uint32_t halt_pc;
     int32_t halt_ret;
     bool inited;
+    int gpr_value[16];
   } NPCState;
 
 extern NPCState npc_state;

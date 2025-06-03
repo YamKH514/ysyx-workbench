@@ -3,8 +3,17 @@
 #include "npc.h"
 #include "mem.h"
 #include "disasm.h"
+#include "ftrace.h"
+#include "Vtop.h"
+#include "Vtop__Dpi.h"
+
+#define BITMASK(bits) ((1ull << (bits)) - 1)
+#define BITS(x, hi, lo) (((x) >> (lo)) & BITMASK((hi) - (lo) + 1)) // similar to x[hi:lo] in verilog
+#define SEXT(x, len) ({ struct { int64_t n : len; } __x = { .n = (int64_t)(x) }; (uint64_t)__x.n; })
 
 #define MAX_INST_TO_PRINT 10
+#define inst_jar 0x6f
+#define inst_jarl 0x67
 
 uint64_t g_nr_guest_inst = 0;
 bool g_print_step = false;
@@ -49,6 +58,10 @@ static void single_cycle(Vtop *top, VerilatedContext *contextp, VerilatedVcdC *t
     top->eval();
     tfp->dump(contextp->time());
 
+    svSetScope(svGetScopeFromName("TOP.top.u_GPR.u_RegisterFile"));
+    get_gpr(npc_state.gpr_value);
+
+    // 反汇编 itrace
     if (npc_state.halt_pc >= 0x80000000)
     {
         char *p = logbuf;
@@ -75,6 +88,37 @@ static void single_cycle(Vtop *top, VerilatedContext *contextp, VerilatedVcdC *t
 
         disassemble(p, logbuf + sizeof(logbuf) - p, npc_state.halt_pc, inst, ilen);
         trace(logbuf);
+
+// 函数调用 ftrace
+#ifdef CONFIG_FTRACE
+        uint8_t opcode = BITS(inst_val, 6, 0);
+        int rd = BITS(inst_val, 11, 7);
+        int rs1 = BITS(inst_val, 19, 15);
+        uint32_t dnpc = 0x0;
+        if (opcode == inst_jar)
+        {
+            uint32_t imm = (SEXT((BITS(inst_val, 31, 31) << 20) | (BITS(inst_val, 19, 12) << 12) | (BITS(inst_val, 20, 20) << 11) | (BITS(inst_val, 30, 21) << 1), 21));
+            dnpc = npc_state.halt_pc + imm;
+            if (rd == 1)
+            {
+                ftrace_call(npc_state.halt_pc, dnpc);
+            }
+        }
+        else if (opcode == inst_jarl)
+        {
+            uint32_t imm = SEXT(BITS(i, 31, 20), 12);
+            uint32_t src1 = npc_state.gpr_value[rs1];
+            dnpc = src1 + imm;
+            if (inst_val == 0x00008067)
+            {
+                ftrace_ret(npc_state.halt_pc);
+            }
+            else if ((rd == 1) || (imm == 0 && rd == 0))
+            {
+                ftrace_call(npc_state.halt_pc, dnpc);
+            }
+        }
+#endif
     }
 }
 
