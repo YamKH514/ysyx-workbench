@@ -2,7 +2,7 @@
 #define DIFFTEST_DEF_H__
 
 #include <stdint.h>
-#include <macro.h>
+#include "macro.h"
 #include "generated/autoconf.h"
 
 #define __EXPORT __attribute__((visibility("default")))
