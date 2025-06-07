@@ -5,10 +5,11 @@
 #include "disasm.h"
 
 static char *log_file = NULL;
+static char *diff_so_file = NULL;
 static char *img_file = NULL;
 static char *elf_file = NULL;
 
-void load_img()
+static long load_img()
 {
     if (img_file == NULL)
     {
@@ -30,22 +31,27 @@ void load_img()
     init_mem(img_bin, size);
 
     fclose(fp);
+    return size;
 }
 
 static int parse_args(int argc, char *argv[])
 {
     const struct option table[] = {
-        {"log", required_argument, NULL, 'l'},
-        {"elf", required_argument, NULL, 'e'},
+        {"log",     required_argument, NULL, 'l'},
+        {"diff",    required_argument, NULL, 'd'},
+        {"elf",     required_argument, NULL, 'e'},
         {0, 0, NULL, 0},
     };
     int o;
-    while ((o = getopt_long(argc, argv, "-l:e:", table, NULL)) != -1)
+    while ((o = getopt_long(argc, argv, "-l:d:e:", table, NULL)) != -1)
     {
         switch (o)
         {
         case 'l':
             log_file = optarg;
+            break;
+        case 'd':
+            diff_so_file = optarg;
             break;
         case 'e':
             elf_file = optarg;
@@ -56,6 +62,7 @@ static int parse_args(int argc, char *argv[])
         default:
             printf("Usage: %s [OPTION...] IMAGE [args]\n\n", argv[0]);
             printf("\t-l,--log=FILE           output log to FILE\n");
+            printf("\t-d,--diff=REF_SO        run DiffTest with reference REF_SO\n");
             printf("\t-e,--elf=FILE           get ELF file\n");
             printf("\n");
             exit(0);
@@ -70,11 +77,11 @@ void init_npc(int argc, char *argv[])
 
     init_log(log_file);
 
-    #ifdef CONFIG_FTRACE
-        parse_elf(elf_file);
-    #endif
+#ifdef CONFIG_FTRACE
+    parse_elf(elf_file);
+#endif
 
-    load_img();
+    long img_size = load_img();
 
     init_disasm();
 }
