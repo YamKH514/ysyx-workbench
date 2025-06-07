@@ -111,6 +111,6 @@ void difftest_step(uint32_t pc, uint32_t npc) {
 }
 #else
 void init_difftest(char *ref_so_file, long img_size, int port) {
-    assert(ref_so_file != NULL);
+    printf("diff: %c\n", ref_so_file[2]);
 }
 #endif
