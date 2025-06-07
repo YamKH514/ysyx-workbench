@@ -51,6 +51,9 @@ LDFLAGS += -lreadline -lncurses
 
 override ARGS ?= --log=$(BUILD_DIR)/npc-log.txt
 
+include $(NPC_HOME)/tools/difftest.mk
+override ARGS += $(ARGS_DIFF)
+
 # am img
 IMG ?=
 
