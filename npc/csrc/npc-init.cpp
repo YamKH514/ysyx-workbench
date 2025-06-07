@@ -3,11 +3,13 @@
 #include "ftrace.h"
 #include "npc-init.h"
 #include "disasm.h"
+#include "difftest-def.h"
 
 static char *log_file = NULL;
 static char *diff_so_file = NULL;
 static char *img_file = NULL;
 static char *elf_file = NULL;
+static int difftest_port = 1234;
 
 static long load_img()
 {
@@ -82,6 +84,8 @@ void init_npc(int argc, char *argv[])
 #endif
 
     long img_size = load_img();
+
+    init_difftest(diff_so_file, img_size, difftest_port);
 
     init_disasm();
 }
