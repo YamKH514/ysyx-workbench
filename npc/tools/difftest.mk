@@ -1,5 +1,5 @@
 ifdef CONFIG_DIFFTEST
-DIFF_REF_PATH = $(NEMU_HOME)/build
+DIFF_REF_PATH = $(NEMU_HOME)/build/test
 ifeq ($(wildcard $(DIFF_REF_PATH)),)
 	$(error $(DIFF_REF_PATH) 路径不存在)
 endif
