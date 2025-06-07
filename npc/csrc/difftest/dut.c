@@ -113,5 +113,9 @@ void difftest_step(uint32_t pc, uint32_t npc) {
 #else
 void init_difftest(char *ref_so_file, long img_size, int port) {
     printf("diff: %s\n", ref_so_file);
+    struct stat st;
+if (stat(ref_so_file, &st) == 0) {
+  printf("SO file size: %ld bytes\n", st.st_size);
+}
 }
 #endif
