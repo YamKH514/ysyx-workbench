@@ -110,7 +110,5 @@ void difftest_step(uint32_t pc, uint32_t npc) {
   checkregs(&ref_r, pc);
 }
 #else
-void init_difftest(char *ref_so_file, long img_size, int port) {
-    printf("diff: %c\n", ref_so_file[2]);
-}
+void init_difftest(char *ref_so_file, long img_size, int port) { }
 #endif
