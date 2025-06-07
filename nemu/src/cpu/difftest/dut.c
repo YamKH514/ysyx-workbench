@@ -20,7 +20,7 @@
 #include <memory/paddr.h>
 #include <utils.h>
 #include <difftest-def.h>
-
+#include <sys/stat.h>
 void (*ref_difftest_memcpy)(paddr_t addr, void *buf, size_t n, bool direction) = NULL;
 void (*ref_difftest_regcpy)(void *dut, bool direction) = NULL;
 void (*ref_difftest_exec)(uint64_t n) = NULL;
@@ -128,5 +128,8 @@ void difftest_step(vaddr_t pc, vaddr_t npc) {
   checkregs(&ref_r, pc);
 }
 #else
-void init_difftest(char *ref_so_file, long img_size, int port) {printf("diff: %s\n", ref_so_file); }
+void init_difftest(char *ref_so_file, long img_size, int port) {printf("diff: %s\n", ref_so_file); struct stat st;
+if (stat(ref_so_file, &st) == 0) {
+  printf("SO file size: %ld bytes\n", st.st_size);
+}}
 #endif
