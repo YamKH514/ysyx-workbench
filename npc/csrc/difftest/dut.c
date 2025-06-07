@@ -1,5 +1,4 @@
 #include <dlfcn.h>
-#include <sys/stat.h>
 
 #include "utils.h"
 #include "difftest-def.h"
@@ -112,6 +111,6 @@ void difftest_step(uint32_t pc, uint32_t npc) {
 }
 #else
 void init_difftest(char *ref_so_file, long img_size, int port) {
-    printf("diff: %s\n", ref_so_file);
+    assert(ref_so_file != NULL);
 }
 #endif
