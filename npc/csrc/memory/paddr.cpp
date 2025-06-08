@@ -1,47 +1,28 @@
+#include "memory/host.h"
 #include "memory/paddr.h"
 #include "macro.h"
+#include "utils.h"
 
-uint8_t mem[MEM_MSIZE] PG_ALIGN = {};
+static uint8_t pmem[MEM_MSIZE] PG_ALIGN = {};
 
-uint32_t *inst_mem = NULL;
-long mem_size = 0;
-
-uint8_t *guest_to_host(uint32_t paddr) { return mem + paddr - MEM_BASE; }
-uint32_t host_to_guest(uint8_t *haddr) { return haddr - mem + MEM_BASE; }
+uint8_t *guest_to_host(uint32_t paddr) { return pmem + paddr - MEM_BASE; }
+uint32_t host_to_guest(uint8_t *haddr) { return haddr - pmem + MEM_BASE; }
 
 static uint32_t pmem_read(uint32_t addr, int len)
 {
-    uint32_t ret = 0;
-    switch (len)
-    {
-    case 1:
-        ret = *(uint8_t *)addr;
-    case 2:
-        ret = *(uint16_t *)addr;
-    case 4:
-        ret = *(uint32_t *)addr;
-    default:
-        ret = 0;
-    }
+    uint32_t ret = host_read(guest_to_host(addr), len);
     return ret;
 }
 
 static void pmem_write(uint32_t addr, int len, uint32_t data)
 {
-    switch (len)
-    {
-    case 1:
-        *(uint8_t *)addr = data;
-        return;
-    case 2:
-        *(uint16_t *)addr = data;
-        return;
-    case 4:
-        *(uint32_t *)addr = data;
-        return;
-    default:
-        assert(0);
-    }
+    host_write(guest_to_host(addr), len, data);
+}
+
+static void out_of_bound(uint32_t addr)
+{
+    panic("address = 0x%08x is out of bound of pmem [ 0x%08x , 0x%08x ] at pc = 0x%08x",
+          addr, PMEM_LEFT, PMEM_RIGHT, npc_state.halt_pc);
 }
 
 void init_mem()
@@ -64,9 +45,23 @@ uint32_t paddr_read(uint32_t addr, int len)
 #ifdef CONFIG_MTRACE
     print_paddr_read(pc, len);
 #endif
-    return pmem_read(addr, len);
+    if(likely(in_pmem(addr)))
+    {
+        return pmem_read(addr, len);
+    }
+    out_of_bound(addr);
+    return 0;
 }
 
 void paddr_write(uint32_t addr, int len, uint32_t data)
 {
+#ifdef CONFIG_MTRACE
+    print_paddr_write(pc, len, data);
+#endif
+    if(likely(in_pmem(addr)))
+    {
+        pmem_write(addr, len, data);
+        return;
+    }
+    out_of_bound(addr);
 }
