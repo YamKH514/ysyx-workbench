@@ -1,6 +1,6 @@
 #include "common.h"
 #include "npc.h"
-#include "mem.h"
+#include "memory/paddr.h"
 #include <readline/readline.h>
 #include <readline/history.h>
 #include "Vtop.h"
@@ -80,7 +80,7 @@ static int cmd_x(char *args)
     addr = strtoul(expr, NULL, 16);
     for (int i = 0; i < n; i++)
     {
-        printf("0x%08x  0x%08x\n", addr, mem_read(addr));
+        printf("0x%08x  0x%08x\n", addr, paddr_read(addr, 4));
         addr += 4;
     }
     return 0;
