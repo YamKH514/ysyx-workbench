@@ -64,6 +64,7 @@ static void single_cycle(Vtop *top, VerilatedContext *contextp, VerilatedVcdC *t
     // 反汇编 itrace
     if (npc_state.halt_pc >= 0x80000000)
     {
+#ifdef CONFIG_ITRACE
         char *p = logbuf;
         p += snprintf(p, sizeof(logbuf), "0x%08x:", npc_state.halt_pc);
         int ilen = 4;
@@ -88,6 +89,7 @@ static void single_cycle(Vtop *top, VerilatedContext *contextp, VerilatedVcdC *t
 
         disassemble(p, logbuf + sizeof(logbuf) - p, npc_state.halt_pc, inst, ilen);
         trace(logbuf);
+#endif
 
 // 函数调用 ftrace
 #ifdef CONFIG_FTRACE
