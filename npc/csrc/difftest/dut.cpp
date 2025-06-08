@@ -2,6 +2,7 @@
 
 #include "common.h"
 #include "utils.h"
+#include "memory/paddr.h"
 #include "difftest-def.h"
 
 void (*ref_difftest_memcpy)(uint32_t addr, void *buf, size_t n, bool direction) = NULL;
@@ -42,8 +43,8 @@ void init_difftest(char *ref_so_file, long img_size, int port) {
       "If it is not necessary, you can turn it off in menuconfig.", ref_so_file);
 
   ref_difftest_init(port);
-  ref_difftest_memcpy(0x80000000, /*get_img*/, img_size, DIFFTEST_TO_REF);
-  ref_difftest_regcpy(&npc_state, DIFFTEST_TO_REF);
+  ref_difftest_memcpy(RESET_VECTOR, guest_to_host(RESET_VECTOR), img_size, DIFFTEST_TO_REF);
+  ref_difftest_regcpy(, DIFFTEST_TO_REF);
 }
 
 static void checkregs(NPCState *ref, uint32_t pc) {

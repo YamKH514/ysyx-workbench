@@ -21,8 +21,10 @@
 
 typedef struct
 {
-  int gpr_value[RISCV_GPR_NUM];
-  uint32_t halt_pc;
+    uint32_t halt_pc;
+    int32_t halt_ret;
+    bool inited;
+    int gpr_value[16];
 } diff_context_t;
 
 // 获取REF的寄存器状态到`dut`
