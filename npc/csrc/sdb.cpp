@@ -1,6 +1,7 @@
 #include "common.h"
 #include "npc.h"
 #include "memory/paddr.h"
+#include "reg.h"
 #include <readline/readline.h>
 #include <readline/history.h>
 #include "Vtop.h"
@@ -14,9 +15,6 @@ VerilatedContext *contextp;
 VerilatedVcdC *tfp;
 char str[1024] = "\0";
 
-const char *regs[] = {
-    "$0", "ra", "sp", "gp", "tp", "t0", "t1", "t2",
-    "s0", "s1", "a0", "a1", "a2", "a3", "a4", "a5"};
 
 static char *rl_gets()
 {
