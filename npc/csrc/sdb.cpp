@@ -53,10 +53,7 @@ static int cmd_info(char *args)
 {
     if (strcmp(args, "r") == 0)
     {
-        for (int i = 0; i < 16; i++)
-        {
-            printf("%-10s 0x%08x  %-10u\n", regs[i], (uint32_t)npc_state.gpr_value[i], (uint32_t)npc_state.gpr_value[i]);
-        }
+        reg_display();
     }
     else if (strcmp(args, "w") == 0)
     {
