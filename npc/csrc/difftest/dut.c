@@ -1,5 +1,6 @@
 #include <dlfcn.h>
 
+#include "common.h"
 #include "utils.h"
 #include "difftest-def.h"
 
