@@ -1,5 +1,5 @@
 #include "common.h"
-#include "mem.h"
+#include "memory/paddr.h"
 #include "ftrace.h"
 #include "npc-init.h"
 #include "disasm.h"
@@ -13,24 +13,19 @@ static int difftest_port = 1234;
 
 static long load_img()
 {
-    if (img_file == NULL)
-    {
-        Log("No image is given.\n");
-    }
+    Assert(img_file, "No image is given.");
 
     FILE *fp = fopen(img_file, "rb");
-    assert(fp);
+    Assert(fp, "Can not open '%s'", img_file);
 
     fseek(fp, 0, SEEK_END);
     long size = ftell(fp);
 
     Log("The image is %s, size = %ld", img_file, size);
 
-    uint32_t *img_bin = (uint32_t *)malloc(size);
     fseek(fp, 0, SEEK_SET);
-    int ret = fread(img_bin, size, 1, fp);
+    int ret = fread(guest_to_host(RESET_VECTOR), size, 1, fp);
     assert(ret == 1);
-    init_mem(img_bin, size);
 
     fclose(fp);
     return size;
@@ -82,6 +77,8 @@ void init_npc(int argc, char *argv[])
 #ifdef CONFIG_FTRACE
     parse_elf(elf_file);
 #endif
+
+    init_mem();
 
     long img_size = load_img();
 

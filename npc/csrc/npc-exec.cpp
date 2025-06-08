@@ -1,7 +1,7 @@
 #include "common.h"
 #include "utils.h"
 #include "npc.h"
-#include "mem.h"
+#include "memory/paddr.h"
 #include "disasm.h"
 #include "ftrace.h"
 #include "Vtop.h"
@@ -68,7 +68,7 @@ static void single_cycle(Vtop *top, VerilatedContext *contextp, VerilatedVcdC *t
         p += snprintf(p, sizeof(logbuf), "0x%08x:", npc_state.halt_pc);
         int ilen = 4;
         int i;
-        uint32_t inst_val = mem_read(npc_state.halt_pc);
+        uint32_t inst_val = paddr_read(npc_state.halt_pc, 4);
         uint8_t inst[4];
         for (int j = 0; j < 4; j++)
         {

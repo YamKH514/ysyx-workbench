@@ -1,6 +1,5 @@
 #include "common.h"
 #include "utils.h"
-#include "mem.h"
 #include "npc-init.h"
 #include "npc.h"
 #include "sdb.h"
@@ -35,7 +34,6 @@ int main(int argc, char *argv[])
 
     tfp->close();
     top->final();
-    mem_end();
 
     return 0;
 }
