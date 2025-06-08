@@ -71,23 +71,22 @@ void init_difftest(char *ref_so_file, long img_size, int port) {
 
   ref_difftest_init(port);
   ref_difftest_memcpy(RESET_VECTOR, guest_to_host(RESET_VECTOR), img_size, DIFFTEST_TO_REF);
-  ref_difftest_regcpy(&cpu, DIFFTEST_TO_REF);
+  ref_difftest_regcpy(&npc_state, DIFFTEST_TO_REF);
 }
 
-static void checkregs(CPU_state *ref, uint32_t pc) {
+static void checkregs(NPCState *ref, uint32_t pc) {
   if (!isa_difftest_checkregs(ref, pc)) {
-    nemu_state.state = NEMU_ABORT;
-    nemu_state.halt_pc = pc;
+    npc_state.halt_pc = pc;
     isa_reg_display();
   }
 }
 
 void difftest_step(uint32_t pc, uint32_t npc) {
-  CPU_state ref_r;
+  NPCState ref_r;
 
   if (skip_dut_nr_inst > 0) {
     ref_difftest_regcpy(&ref_r, DIFFTEST_TO_DUT);
-    if (ref_r.pc == npc) {
+    if (ref_r.halt_pc == npc) {
       skip_dut_nr_inst = 0;
       checkregs(&ref_r, npc);
       return;
