@@ -75,10 +75,7 @@ static void checkregs(NPCState *ref, uint32_t pc)
   if (!difftest_checkregs(ref, pc))
   {
     npc_state.halt_pc = pc;
-    for (int i = 0; i < 16; i++)
-        {
-            printf("%-10s 0x%08x  %-10u\n", regs[i], (uint32_t)npc_state.gpr_value[i], (uint32_t)npc_state.gpr_value[i]);
-        }
+    reg_display();
   }
 }
 

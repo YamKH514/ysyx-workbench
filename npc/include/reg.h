@@ -1,8 +1,22 @@
 #ifndef REG_H__
 #define REG_H__
 
-const char *regs[] = {
-    "$0", "ra", "sp", "gp", "tp", "t0", "t1", "t2",
-    "s0", "s1", "a0", "a1", "a2", "a3", "a4", "a5"};
+#include "common.h"
+
+static inline int check_reg_idx(int idx) {
+  assert(idx >= 0 && idx < 16);
+  return idx;
+}
+
+#define gpr(idx) (npc_state.gpr_value[check_reg_idx(idx)])
+
+#define pc_addr npc_state.halt_pc
+
+static inline const char* reg_name(int idx) {
+  extern const char* regs[];
+  return regs[check_reg_idx(idx)];
+}
+
+void reg_display();
 
 #endif
