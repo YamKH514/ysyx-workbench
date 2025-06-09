@@ -32,6 +32,9 @@ include $(NVBOARD_HOME)/scripts/nvboard.mk
 
 remove_quote = $(patsubst "%",%,$(1))
 
+CXXFLAGS += -fsanitize=address
+LDFLAGS  += -fsanitize=address
+
 # Extract compiler and options from menuconfig
 CFLAGS_TRACE += -DITRACE_COND=$(if $(CONFIG_ITRACE_COND),$(call remove_quote,$(CONFIG_ITRACE_COND)),true)
 CXXFLAGS  += $(CFLAGS_TRACE)
