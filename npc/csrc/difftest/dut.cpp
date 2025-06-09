@@ -18,6 +18,7 @@ static int skip_dut_nr_inst = 0;
 
 void init_difftest(char *ref_so_file, long img_size, int port)
 {
+  printf("Try to open so: %s\n", ref_so_file);
   assert(ref_so_file != NULL);
 
   void *handle;
