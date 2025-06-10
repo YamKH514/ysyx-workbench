@@ -31,7 +31,7 @@ typedef struct
 void diff_get_regs(void *diff_context)
 {
   diff_context_t *ctx = (diff_context_t *)diff_context;
-  for(int i = 0; i < RISCV_GPR_NUM; i++)
+  for(int i = 0; i < 16; i++)
   {
     ctx->gpr_value[i] = gpr(i);
   }
@@ -42,7 +42,7 @@ void diff_get_regs(void *diff_context)
 void diff_set_regs(void *diff_context)
 {
   diff_context_t *ctx = (diff_context_t *)diff_context;
-  for(int i = 0; i < RISCV_GPR_NUM; i++)
+  for(int i = 0; i < 16; i++)
   {
     gpr(i) = ctx->gpr_value[i];
   }
