@@ -20,6 +20,9 @@ void init_difftest(char *ref_so_file, long img_size, int port)
 {
   assert(ref_so_file != NULL);
 
+  NPCState npc_state_init = npc_state;
+  npc_state_init.halt_pc = 0x80000000;
+
   void *handle;
   handle = dlopen(ref_so_file, RTLD_LAZY);
   if (!handle)
@@ -48,7 +51,7 @@ void init_difftest(char *ref_so_file, long img_size, int port)
 
   ref_difftest_init(port);
   ref_difftest_memcpy(RESET_VECTOR, guest_to_host(RESET_VECTOR), img_size, DIFFTEST_TO_REF);
-  ref_difftest_regcpy(&npc_state, DIFFTEST_TO_REF);
+  ref_difftest_regcpy(&npc_state_init, DIFFTEST_TO_REF);
 }
 
 bool difftest_checkregs(NPCState *ref_r, uint32_t pc)
