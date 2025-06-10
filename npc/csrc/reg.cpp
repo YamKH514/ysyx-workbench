@@ -9,6 +9,6 @@ void reg_display()
 {
     for (int i = 0; i < reg_length; i++)
     {
-        printf("%-10s 0x%-08x  %-10u\n", regs[i], gpr(i), gpr(i));
+        printf("%-10s 0x%0-8x  %-10u\n", regs[i], gpr(i), gpr(i));
     }
 }
