@@ -20,7 +20,7 @@ uint64_t g_nr_guest_inst = 0;
 bool g_print_step = false;
 int npc_init_num = 2;
 
-static void trace_and_difftest(char *logbuf, uint32_t pc)
+static void trace(char *logbuf)
 {
 #ifdef CONFIG_ITRACE_COND
     if (ITRACE_COND)
@@ -33,13 +33,7 @@ static void trace_and_difftest(char *logbuf, uint32_t pc)
 #ifdef CONFIG_ITRACE
         puts(logbuf);
 #endif
-}
-#ifdef CONFIG_DIFFTEST
-    if(pc >= 0x80000000)
-    {
-        difftest_step(pc);
     }
-#endif
 }
 
 static void single_cycle(Vtop *top, VerilatedContext *contextp, VerilatedVcdC *tfp)
@@ -91,7 +85,7 @@ static void single_cycle(Vtop *top, VerilatedContext *contextp, VerilatedVcdC *t
         p += space_len;
 
         disassemble(p, logbuf + sizeof(logbuf) - p, npc_state.halt_pc, inst, ilen);
-        trace_and_difftest(logbuf, npc_state.halt_pc);
+        trace(logbuf);
 #endif
 
 // 函数调用 ftrace
@@ -138,6 +132,9 @@ static void execute(Vtop *top, VerilatedContext *contextp, VerilatedVcdC *tfp, u
             npc_state.inited = true;
         }
         g_nr_guest_inst++;
+#ifdef CONFIG_DIFFTEST
+        difftest_step(npc_state.halt_pc);
+#endif
         if (contextp->gotFinish())
             break;
     }
