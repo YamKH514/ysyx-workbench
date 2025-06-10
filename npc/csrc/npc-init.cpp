@@ -86,5 +86,5 @@ void init_npc(int argc, char *argv[])
 
     init_disasm();
 
-    printf("init_npc has done.\n");
+    Log("init_npc has done.");
 }
