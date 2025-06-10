@@ -85,4 +85,6 @@ void init_npc(int argc, char *argv[])
     init_difftest(diff_so_file, img_size, difftest_port);
 
     init_disasm();
+
+    Log("init_npc has done.");
 }
