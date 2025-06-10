@@ -86,6 +86,9 @@ static void single_cycle(Vtop *top, VerilatedContext *contextp, VerilatedVcdC *t
 
         disassemble(p, logbuf + sizeof(logbuf) - p, npc_state.halt_pc, inst, ilen);
         trace(logbuf);
+#ifdef CONFIG_DIFFTEST
+        difftest_step(npc_state.halt_pc);
+#endif
 #endif
 
 // 函数调用 ftrace
@@ -132,9 +135,6 @@ static void execute(Vtop *top, VerilatedContext *contextp, VerilatedVcdC *tfp, u
             npc_state.inited = true;
         }
         g_nr_guest_inst++;
-#ifdef CONFIG_DIFFTEST
-        difftest_step(npc_state.halt_pc);
-#endif
         if (contextp->gotFinish())
             break;
     }
