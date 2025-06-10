@@ -62,7 +62,8 @@ bool difftest_checkregs(NPCState *ref_r, uint32_t pc)
     if (ref_r->gpr_value[i] != npc_state.gpr_value[i])
     {
       printf("Difftest: Inconsistent register values, pc = 0x%x\n", pc);
-      printf("wrong reg: reg[%d] val: 0x%08x\n", i, ref_r->gpr_value[i]);
+      printf("wrong ref reg: reg[%d] val: 0x%08x\n", i, ref_r->gpr_value[i]);
+      printf("wrong dut reg: reg[%d] val: 0x%08x\n", i, npc_state->gpr_value[i]);
       return false;
     }
   }
