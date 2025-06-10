@@ -2,6 +2,7 @@
 #include "utils.h"
 #include "npc.h"
 #include "memory/paddr.h"
+#include "difftest-def.h"
 #include "disasm.h"
 #include "ftrace.h"
 #include "Vtop.h"
@@ -19,7 +20,7 @@ uint64_t g_nr_guest_inst = 0;
 bool g_print_step = false;
 int npc_init_num = 2;
 
-static void trace(char *logbuf)
+static void trace_and_difftest(char *logbuf, uint32_t pc)
 {
 #ifdef CONFIG_ITRACE_COND
     if (ITRACE_COND)
@@ -32,7 +33,10 @@ static void trace(char *logbuf)
 #ifdef CONFIG_ITRACE
         puts(logbuf);
 #endif
-    }
+}
+#ifdef CONFIG_DIFFTEST
+    difftest_step(pc);
+#endif
 }
 
 static void single_cycle(Vtop *top, VerilatedContext *contextp, VerilatedVcdC *tfp)
@@ -84,7 +88,7 @@ static void single_cycle(Vtop *top, VerilatedContext *contextp, VerilatedVcdC *t
         p += space_len;
 
         disassemble(p, logbuf + sizeof(logbuf) - p, npc_state.halt_pc, inst, ilen);
-        trace(logbuf);
+        trace_and_difftest(logbuf, npc_state.halt_pc);
 #endif
 
 // 函数调用 ftrace

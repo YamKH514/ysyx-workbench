@@ -13,5 +13,6 @@ enum { DIFFTEST_TO_DUT, DIFFTEST_TO_REF };
 #define DIFFTEST_REG_SIZE (sizeof(RISCV_GPR_TYPE) * (RISCV_GPR_NUM + 1)) // GPRs + pc
 
 void init_difftest(char *ref_so_file, long img_size, int port);
+void difftest_step(uint32_t pc);
 
 #endif
