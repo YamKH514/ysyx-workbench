@@ -79,6 +79,7 @@ static void checkregs(NPCState *ref, uint32_t pc)
   if (!difftest_checkregs(ref, pc))
   {
     npc_state.halt_pc = pc;
+    printf("NPC regs:\n");
     reg_display();
   }
 }
