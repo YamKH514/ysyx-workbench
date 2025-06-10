@@ -35,7 +35,10 @@ static void trace_and_difftest(char *logbuf, uint32_t pc)
 #endif
 }
 #ifdef CONFIG_DIFFTEST
-    difftest_step(pc);
+    if(pc >= 0x80000000)
+    {
+        difftest_step(pc);
+    }
 #endif
 }
 
