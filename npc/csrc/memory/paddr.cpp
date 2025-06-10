@@ -43,7 +43,7 @@ void print_paddr_write(uint32_t addr, int len, uint32_t data)
 uint32_t paddr_read(uint32_t addr, int len)
 {
 #ifdef CONFIG_MTRACE
-    print_paddr_read(pc, len);
+    print_paddr_read(addr, len);
 #endif
     if(likely(in_pmem(addr)))
     {
@@ -56,7 +56,7 @@ uint32_t paddr_read(uint32_t addr, int len)
 void paddr_write(uint32_t addr, int len, uint32_t data)
 {
 #ifdef CONFIG_MTRACE
-    print_paddr_write(pc, len, data);
+    print_paddr_write(addr, len, data);
 #endif
     if(likely(in_pmem(addr)))
     {
