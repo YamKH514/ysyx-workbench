@@ -88,8 +88,8 @@ static void checkregs(NPCState *ref, uint32_t pc)
 void difftest_step(uint32_t pc)
 {
   NPCState ref_r;
-  ref_difftest_regcpy(&ref_r, DIFFTEST_TO_DUT);
   ref_difftest_exec(1);
+  ref_difftest_regcpy(&ref_r, DIFFTEST_TO_DUT);
   
   printf("NPC regs:\n");
   checkregs(&ref_r, pc);
