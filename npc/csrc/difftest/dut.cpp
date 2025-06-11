@@ -92,7 +92,7 @@ void difftest_step(uint32_t pc)
   ref_difftest_regcpy(&ref_r, DIFFTEST_TO_DUT);
   
   checkregs(&ref_r, pc);
-  printf("NEMU pc = 0x%08x\n", ref_r.halt_pc);
+  // printf("NEMU pc = 0x%08x\n", ref_r.halt_pc);
 }
 
 #else
