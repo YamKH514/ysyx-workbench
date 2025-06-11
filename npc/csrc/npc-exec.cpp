@@ -62,9 +62,9 @@ static void single_cycle(Vtop *top, VerilatedContext *contextp, VerilatedVcdC *t
     svSetScope(svGetScopeFromName("TOP.top.u_GPR.u_RegisterFile"));
     get_gpr(npc_state.gpr_value);
 
-    // 反汇编 itrace
     if (npc_state.halt_pc >= 0x80000000)
     {
+        // 反汇编 itrace
 #ifdef CONFIG_ITRACE
         char *p = logbuf;
         p += snprintf(p, sizeof(logbuf), "0x%08x:", npc_state.halt_pc);
@@ -86,13 +86,9 @@ static void single_cycle(Vtop *top, VerilatedContext *contextp, VerilatedVcdC *t
 
         disassemble(p, logbuf + sizeof(logbuf) - p, npc_state.halt_pc, inst, ilen);
         trace(logbuf);
-#ifdef CONFIG_DIFFTEST
-        difftest_step(npc_state.halt_pc);
-#endif
 #endif
 
-// 函数调用 ftrace
-#ifdef CONFIG_FTRACE
+        // 函数调用 ftrace
         uint8_t opcode = BITS(inst_val, 6, 0);
         int rd = BITS(inst_val, 11, 7);
         int rs1 = BITS(inst_val, 19, 15);
@@ -101,16 +97,19 @@ static void single_cycle(Vtop *top, VerilatedContext *contextp, VerilatedVcdC *t
         {
             uint32_t imm = (SEXT((BITS(inst_val, 31, 31) << 20) | (BITS(inst_val, 19, 12) << 12) | (BITS(inst_val, 20, 20) << 11) | (BITS(inst_val, 30, 21) << 1), 21));
             dnpc = npc_state.halt_pc + imm;
+#ifdef CONFIG_FTRACE
             if (rd == 1)
             {
                 ftrace_call(npc_state.halt_pc, dnpc);
             }
+#endif
         }
         else if (opcode == inst_jarl)
         {
             uint32_t imm = SEXT(BITS(i, 31, 20), 12);
             uint32_t src1 = npc_state.gpr_value[rs1];
             dnpc = src1 + imm;
+#ifdef CONFIG_FTRACE
             if (inst_val == 0x00008067)
             {
                 ftrace_ret(npc_state.halt_pc);
@@ -119,7 +118,10 @@ static void single_cycle(Vtop *top, VerilatedContext *contextp, VerilatedVcdC *t
             {
                 ftrace_call(npc_state.halt_pc, dnpc);
             }
+#endif
         }
+#ifdef CONFIG_DIFFTEST
+        difftest_step(dnpc);
 #endif
     }
 }
