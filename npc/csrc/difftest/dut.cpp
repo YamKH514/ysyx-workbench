@@ -69,7 +69,7 @@ bool difftest_checkregs(NPCState *ref_r, uint32_t pc)
   }
   if (ref_r->halt_pc != npc_state.halt_pc)
   {
-    printf("Difftest: Inconsistent pc register values, pc = 0x%x\n", pc);
+    printf("Difftest: Inconsistent PC register values, pc = 0x%x\n", pc);
     return false;
   }
 
