@@ -2,6 +2,7 @@ module top(
     input clk, rst,
     // input [31:0] inst,
     output [31:0] pc,
+    output [31:0] npc,
     output [31:0] ReadData_a0
 );
 
@@ -23,7 +24,8 @@ PCCnt u_PCCnt(
     .ReadData1 	(ReadData1  ),
     .ImmExt    	(ImmExt     ),
     .NPCSrcSel 	(NPCSrcSel  ),
-    .PC        	(pc         )
+    .PC        	(pc         ),
+    .NPC        (npc        )
 );
 
 Inst u_Inst(
