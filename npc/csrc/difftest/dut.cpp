@@ -80,7 +80,7 @@ static void checkregs(NPCState *ref, uint32_t pc)
 {
   if (!difftest_checkregs(ref, pc))
   {
-    npc_state.halt_pc = pc;
+    npc_state = {.state = NPC_ABORT, .halt_pc = pc};
     reg_display();
   }
 }
