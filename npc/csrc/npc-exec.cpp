@@ -138,7 +138,7 @@ static void execute(Vtop *top, VerilatedContext *contextp, VerilatedVcdC *tfp, u
             npc_state.inited = true;
         }
         g_nr_guest_inst++;
-        if (contextp->gotFinish())
+        if ((contextp->gotFinish()) && (npc_state.state == NPC_ABORT))
             break;
     }
 }
@@ -150,9 +150,9 @@ void assert_fail_msg()
 void npc_exec(Vtop *top, VerilatedContext *contextp, VerilatedVcdC *tfp, uint64_t n)
 {
     g_print_step = (n < MAX_INST_TO_PRINT);
-    if (contextp->gotFinish())
+    if ((contextp->gotFinish()) && (npc_state.state == NPC_ABORT))
     {
-        printf("EBREAK, input q to quit\n");
+        printf("Program execution has ended. To restart the program, exit NPC and run again.\n");
         return;
     }
     execute(top, contextp, tfp, n);
