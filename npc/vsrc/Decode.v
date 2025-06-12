@@ -46,7 +46,7 @@ assign ImmType =    {3{inst_jalr | inst_addi}} & 3'd0 |
 assign RegWriteEn = inst_lui | inst_auipc | inst_jal | inst_jalr | inst_addi;
 
 assign ALUSrcSel1 = {2{inst_lui}} & 2'd0 |
-                    {2{inst_jal | inst_jalr}} & 2'd1 |
+                    {2{inst_jal | inst_jalr | inst_auipc}} & 2'd1 |
                     {2{inst_addi}} & 2'd2;
 
 assign ALUSrcSel2 = {2{1'b0}} & 2'd0 |
