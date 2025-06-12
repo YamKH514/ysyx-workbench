@@ -3,7 +3,10 @@
 
 #include "common.h"
 
+enum { NPC_RUNNING, NPC_STOP, NPC_END, NPC_ABORT, NPC_QUIT };
+
 typedef struct {
+    int state;
     uint32_t halt_pc;
     int32_t halt_ret;
     bool inited;
