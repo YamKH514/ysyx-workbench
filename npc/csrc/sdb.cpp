@@ -1,6 +1,7 @@
 #include "common.h"
 #include "npc.h"
-#include "mem.h"
+#include "memory/paddr.h"
+#include "reg.h"
 #include <readline/readline.h>
 #include <readline/history.h>
 #include "Vtop.h"
@@ -14,9 +15,6 @@ VerilatedContext *contextp;
 VerilatedVcdC *tfp;
 char str[1024] = "\0";
 
-const char *regs[] = {
-    "$0", "ra", "sp", "gp", "tp", "t0", "t1", "t2",
-    "s0", "s1", "a0", "a1", "a2", "a3", "a4", "a5"};
 
 static char *rl_gets()
 {
@@ -55,10 +53,7 @@ static int cmd_info(char *args)
 {
     if (strcmp(args, "r") == 0)
     {
-        for (int i = 0; i < 16; i++)
-        {
-            printf("%-10s 0x%08x  %-10u\n", regs[i], (uint32_t)npc_state.gpr_value[i], (uint32_t)npc_state.gpr_value[i]);
-        }
+        reg_display();
     }
     else if (strcmp(args, "w") == 0)
     {
@@ -80,7 +75,7 @@ static int cmd_x(char *args)
     addr = strtoul(expr, NULL, 16);
     for (int i = 0; i < n; i++)
     {
-        printf("0x%08x  0x%08x\n", addr, mem_read(addr));
+        printf("0x%08x  0x%08x\n", addr, paddr_read(addr, 4));
         addr += 4;
     }
     return 0;

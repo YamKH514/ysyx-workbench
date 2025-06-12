@@ -32,6 +32,9 @@ include $(NVBOARD_HOME)/scripts/nvboard.mk
 
 remove_quote = $(patsubst "%",%,$(1))
 
+CXXFLAGS += -fsanitize=address
+LDFLAGS  += -fsanitize=address
+
 # Extract compiler and options from menuconfig
 CFLAGS_TRACE += -DITRACE_COND=$(if $(CONFIG_ITRACE_COND),$(call remove_quote,$(CONFIG_ITRACE_COND)),true)
 CXXFLAGS  += $(CFLAGS_TRACE)
@@ -49,7 +52,10 @@ CXXFLAGS += $(INCFLAGS) -DTOP_NAME="\"V$(TOPNAME)\""
 
 LDFLAGS += -lreadline -lncurses
 
+include $(NPC_HOME)/tools/difftest.mk
+
 override ARGS ?= --log=$(BUILD_DIR)/npc-log.txt
+override ARGS += $(ARGS_DIFF)
 
 # am img
 IMG ?=

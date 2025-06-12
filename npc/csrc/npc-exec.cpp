@@ -1,7 +1,8 @@
 #include "common.h"
 #include "utils.h"
 #include "npc.h"
-#include "mem.h"
+#include "memory/paddr.h"
+#include "difftest-def.h"
 #include "disasm.h"
 #include "ftrace.h"
 #include "Vtop.h"
@@ -48,6 +49,7 @@ static void single_cycle(Vtop *top, VerilatedContext *contextp, VerilatedVcdC *t
         top->rst = 1;
     }
     npc_state.halt_pc = top->pc;
+    uint32_t npc = top->npc;
     npc_state.halt_ret = top->ReadData_a0;
     contextp->timeInc(1);
     top->clk = 1;
@@ -61,19 +63,16 @@ static void single_cycle(Vtop *top, VerilatedContext *contextp, VerilatedVcdC *t
     svSetScope(svGetScopeFromName("TOP.top.u_GPR.u_RegisterFile"));
     get_gpr(npc_state.gpr_value);
 
-    // 反汇编 itrace
     if (npc_state.halt_pc >= 0x80000000)
     {
+        // 反汇编 itrace
+#ifdef CONFIG_ITRACE
         char *p = logbuf;
         p += snprintf(p, sizeof(logbuf), "0x%08x:", npc_state.halt_pc);
         int ilen = 4;
         int i;
-        uint32_t inst_val = mem_read(npc_state.halt_pc);
-        uint8_t inst[4];
-        for (int j = 0; j < 4; j++)
-        {
-            inst[j] = (inst_val >> (8 * j)) & 0xff;
-        }
+        uint32_t inst_val = paddr_read(npc_state.halt_pc, 4);
+        uint8_t *inst = (uint8_t *)&inst_val;
         for (i = ilen - 1; i >= 0; i--)
         {
             p += snprintf(p, 4, " %02x", inst[i]);
@@ -88,9 +87,9 @@ static void single_cycle(Vtop *top, VerilatedContext *contextp, VerilatedVcdC *t
 
         disassemble(p, logbuf + sizeof(logbuf) - p, npc_state.halt_pc, inst, ilen);
         trace(logbuf);
+#endif
 
-// 函数调用 ftrace
-#ifdef CONFIG_FTRACE
+        // 函数调用 ftrace
         uint8_t opcode = BITS(inst_val, 6, 0);
         int rd = BITS(inst_val, 11, 7);
         int rs1 = BITS(inst_val, 19, 15);
@@ -99,16 +98,19 @@ static void single_cycle(Vtop *top, VerilatedContext *contextp, VerilatedVcdC *t
         {
             uint32_t imm = (SEXT((BITS(inst_val, 31, 31) << 20) | (BITS(inst_val, 19, 12) << 12) | (BITS(inst_val, 20, 20) << 11) | (BITS(inst_val, 30, 21) << 1), 21));
             dnpc = npc_state.halt_pc + imm;
+#ifdef CONFIG_FTRACE
             if (rd == 1)
             {
                 ftrace_call(npc_state.halt_pc, dnpc);
             }
+#endif
         }
         else if (opcode == inst_jarl)
         {
             uint32_t imm = SEXT(BITS(i, 31, 20), 12);
             uint32_t src1 = npc_state.gpr_value[rs1];
             dnpc = src1 + imm;
+#ifdef CONFIG_FTRACE
             if (inst_val == 0x00008067)
             {
                 ftrace_ret(npc_state.halt_pc);
@@ -117,7 +119,10 @@ static void single_cycle(Vtop *top, VerilatedContext *contextp, VerilatedVcdC *t
             {
                 ftrace_call(npc_state.halt_pc, dnpc);
             }
+#endif
         }
+#ifdef CONFIG_DIFFTEST
+        difftest_step(npc);
 #endif
     }
 }
@@ -133,7 +138,7 @@ static void execute(Vtop *top, VerilatedContext *contextp, VerilatedVcdC *tfp, u
             npc_state.inited = true;
         }
         g_nr_guest_inst++;
-        if (contextp->gotFinish())
+        if ((contextp->gotFinish()) || (npc_state.state == NPC_ABORT))
             break;
     }
 }
@@ -145,9 +150,9 @@ void assert_fail_msg()
 void npc_exec(Vtop *top, VerilatedContext *contextp, VerilatedVcdC *tfp, uint64_t n)
 {
     g_print_step = (n < MAX_INST_TO_PRINT);
-    if (contextp->gotFinish())
+    if ((contextp->gotFinish()) || (npc_state.state == NPC_ABORT))
     {
-        printf("EBREAK, input q to quit\n");
+        printf("Program execution has ended. To restart the program, exit NPC and run again.\n");
         return;
     }
     execute(top, contextp, tfp, n);

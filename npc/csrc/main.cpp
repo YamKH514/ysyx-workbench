@@ -1,6 +1,5 @@
 #include "common.h"
 #include "utils.h"
-#include "mem.h"
 #include "npc-init.h"
 #include "npc.h"
 #include "sdb.h"
@@ -31,11 +30,12 @@ int main(int argc, char *argv[])
         sdb_mainloop();
     }
 
-    Log("npc: %s at pc = 0x%08x", (npc_state.halt_ret == 0 ? ANSI_FMT("HIT GOOD TRAP", ANSI_FG_GREEN) : ANSI_FMT("HIT BAD TRAP", ANSI_FG_RED)), npc_state.halt_pc);
+    Log("npc: %s at pc = 0x%08x", (
+        npc_state.state == NPC_ABORT ? ANSI_FMT("ABORT", ANSI_FG_RED) :
+        npc_state.halt_ret == 0 ? ANSI_FMT("HIT GOOD TRAP", ANSI_FG_GREEN) : ANSI_FMT("HIT BAD TRAP", ANSI_FG_RED)), npc_state.halt_pc);
 
     tfp->close();
     top->final();
-    mem_end();
 
     return 0;
 }

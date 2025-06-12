@@ -1,0 +1,50 @@
+mainmenu "NPC Configuration Menu"
+
+menu "Testing and Debugging"
+
+config WATCHPOINT
+  bool "Enable watchpoint"
+  default n
+
+config TRACE
+  bool "Enable tracer"
+  default y
+
+config TRACE_START
+  depends on TRACE
+  int "When tracing is enabled (unit: number of instructions)"
+  default 0
+
+config TRACE_END
+  depends on TRACE
+  int "When tracing is disabled (unit: number of instructions)"
+  default 10000
+
+config ITRACE
+  depends on TRACE
+  bool "Enable instruction tracer"
+  default y
+
+config ITRACE_COND
+  depends on ITRACE
+  string "Only trace instructions when the condition is true"
+  default "true"
+
+config MTRACE
+  depends on TRACE
+  bool "Enable memory tracer"
+  default n
+
+config FTRACE
+  depends on TRACE
+  bool "Enable func tracer"
+  default y
+
+config DIFFTEST
+  bool "Enable differential testing"
+  default n
+  help
+    Enable differential testing with a reference design.
+    Note that this will significantly reduce the performance of NPC.
+
+endmenu

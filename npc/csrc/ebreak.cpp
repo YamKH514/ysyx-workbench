@@ -4,6 +4,6 @@
 
 extern "C" void ebreak_trigger()
 {
-    printf("EBREAK, stopping simulation.\n");
+    Log("EBREAK, stopping simulation.");
     Verilated::gotFinish(true);
 }

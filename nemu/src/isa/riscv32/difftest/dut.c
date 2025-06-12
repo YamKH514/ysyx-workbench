@@ -29,7 +29,7 @@ bool isa_difftest_checkregs(CPU_state *ref_r, vaddr_t pc) {
   }
   if(ref_r->pc != cpu.pc)
   {
-    printf("Difftest: Inconsistent register values, pc = 0x%x\n", pc);
+    printf("Difftest: Inconsistent PC register values, pc = 0x%08x\n", pc);
     return false;
   }
 

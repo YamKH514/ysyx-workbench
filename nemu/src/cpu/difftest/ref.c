@@ -17,17 +17,59 @@
 #include <cpu/cpu.h>
 #include <difftest-def.h>
 #include <memory/paddr.h>
+#include "../../isa/riscv32/local-include/reg.h"
+
+typedef struct
+{
+    int state;
+    uint32_t halt_pc;
+    int32_t halt_ret;
+    bool inited;
+    int gpr_value[16];
+} diff_context_t;
+
+// 获取REF的寄存器状态到`dut`
+void diff_get_regs(void *diff_context)
+{
+  diff_context_t *ctx = (diff_context_t *)diff_context;
+  for(int i = 0; i < 16; i++)
+  {
+    ctx->gpr_value[i] = gpr(i);
+  }
+  ctx->halt_pc = cpu.pc;
+}
+
+// 设置REF的寄存器状态为`dut`
+void diff_set_regs(void *diff_context)
+{
+  diff_context_t *ctx = (diff_context_t *)diff_context;
+  for(int i = 0; i < 16; i++)
+  {
+    gpr(i) = ctx->gpr_value[i];
+  }
+  cpu.pc = ctx->halt_pc;
+}
+
+void diff_step(uint64_t n)
+{
+  cpu_exec(n);
+}
 
 __EXPORT void difftest_memcpy(paddr_t addr, void *buf, size_t n, bool direction) {
-  assert(0);
+  if (direction == DIFFTEST_TO_REF) memcpy(guest_to_host(addr), buf, n);
+  else memcpy(buf, guest_to_host(addr), n);
 }
 
 __EXPORT void difftest_regcpy(void *dut, bool direction) {
-  assert(0);
+  if (direction == DIFFTEST_TO_REF) {
+    diff_set_regs(dut);
+  } else {
+    diff_get_regs(dut);
+  }
 }
 
 __EXPORT void difftest_exec(uint64_t n) {
-  assert(0);
+  diff_step(n);
 }
 
 __EXPORT void difftest_raise_intr(word_t NO) {
