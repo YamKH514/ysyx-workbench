@@ -1,5 +1,6 @@
 module ALU(
     input [31:0] PC,
+    input [5:0] ALUFunc, // add(00---0) sub(00---1) A==B(01-011) A<B(01-101) A<=B(01-111)
     input [31:0] ReadData1,
     input [31:0] ReadData2,
     input [31:0] ImmExt,
@@ -18,10 +19,10 @@ wire [31:0] Src2 =  ({32{ALUSrcSel2 == 2'd0}} & ReadData2) |
                     ({32{ALUSrcSel2 == 2'd1}} & ImmExt   ) |
                     ({32{ALUSrcSel2 == 2'd2}} & 32'd4    ) ;
 wire [31:0] AdderRes;
-assign ALURes = AdderRes;
+wire CMPRes;
 
 adder32 u_adder32(
-            .mode       (0         ),
+            .mode       (ALUFunc[0]),
             .a          (Src1      ),
             .b          (Src2      ),
             .result     (AdderRes  ),
@@ -29,5 +30,16 @@ adder32 u_adder32(
             .overflow 	(overflow  ),
             .zero     	(zero      )
         );
+
+Comparison u_Comparison(
+    .Func     	(ALUFunc[2:1]   ),
+    .Zero     	(zero           ),
+    .Overflow 	(overflow       ),
+    .Sign     	(AdderRes[31]   ),
+    .CMPRes   	(CMPRes         )
+);
+
+assign ALURes = ({32{ALUFunc[5:4] == 2'b00}} & AdderRes) |
+                ({32{ALUFunc[5:4] == 2'b01}} & {31'b0, CMPRes});
 
 endmodule

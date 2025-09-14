@@ -40,28 +40,57 @@ void print_paddr_write(uint32_t addr, int len, uint32_t data)
     printf("MEM_WRITE at 0x%08x , len = %d, write data: 0x%08x \n", addr, len, data);
 }
 
-uint32_t paddr_read(uint32_t addr, int len)
+extern "C" uint32_t paddr_read(uint32_t raddr)
 {
+    uint32_t addr = raddr & ~0x3u;
 #ifdef CONFIG_MTRACE
-    print_paddr_read(addr, len);
+    print_paddr_read(addr, 4);
 #endif
     if(likely(in_pmem(addr)))
     {
-        return pmem_read(addr, len);
+        return pmem_read(addr, 4);
     }
     out_of_bound(addr);
     return 0;
 }
 
-void paddr_write(uint32_t addr, int len, uint32_t data)
+extern "C" void paddr_write(uint32_t waddr, uint32_t wdata, char wmask)
 {
+    uint32_t addr = waddr & ~0x3u;
+    int len = 0;
+    switch (wmask)
+    {
+    case 0x1:
+        len = 1;
+        break;
+    case 0x3:
+        len = 2;
+        break;
+    case 0xF:
+        len = 4;
+        break;
+    default:
+        len = 4;
+        break;
+    }
+
 #ifdef CONFIG_MTRACE
     print_paddr_write(addr, len, data);
 #endif
     if(likely(in_pmem(addr)))
     {
-        pmem_write(addr, len, data);
+        pmem_write(addr, len, wdata);
         return;
     }
     out_of_bound(addr);
+}
+
+extern "C" int get_inst(int pc)
+{
+    uint32_t inst = 0;
+    if((uint32_t)pc >= 0x80000000)
+    {
+        inst = paddr_read((uint32_t)pc);
+    }
+    return (int)inst;
 }

@@ -8,22 +8,34 @@ module top(
 
 wire [31:0] inst;
 wire RegWriteEn;
-wire [2:0] ImmType;
-wire [1:0] NPCSrcSel;
+wire [2:0] InstType;
+wire [3:0] NPCSrcSel;
 wire [1:0] ALUSrcSel1;
 wire [1:0] ALUSrcSel2;
 wire [31:0] ImmExt;
 wire [31:0] ReadData1;
 wire [31:0] ReadData2;
 wire [31:0] ALURes;
+wire [5:0] ALUFunc;
+wire [31:0] Memraddr;
+wire [31:0] Memwaddr;
+wire [31:0] Memwdata;
+wire [7:0] Memwmask;
+wire MemRW;
+wire MemWrite;
+wire [31:0] Memrdata;
+wire [31:0] GPRwdata;
+wire GPRwdataSel;
 
 
 PCCnt u_PCCnt(
     .clk       	(clk        ),
     .rst       	(rst        ),
+    .CMPRes     (ALURes[0]  ),
     .ReadData1 	(ReadData1  ),
     .ImmExt    	(ImmExt     ),
     .NPCSrcSel 	(NPCSrcSel  ),
+    .InstType   (InstType   ),
     .PC        	(pc         ),
     .NPC        (npc        )
 );
@@ -33,6 +45,20 @@ Inst u_Inst(
     .inst 	(inst  )
 );
 
+assign Memraddr = ALURes;
+assign Memwaddr = ALURes;
+assign Memwdata = ReadData2;
+
+Memory u_Memory(
+    .raddr    	(Memraddr     ),
+    .waddr    	(Memwaddr     ),
+    .wdata    	(Memwdata     ),
+    .wmask    	(Memwmask     ),
+    .MemRW    	(MemRW        ),
+    .MemWrite 	(MemWrite     ),
+    .rdata    	(Memrdata     )
+);
+
 
 Decode u_Decode(
     .clk            (clk         ),
@@ -40,22 +66,28 @@ Decode u_Decode(
     .Opcode     	(inst[6:0]   ),
     .Funct3     	(inst[14:12] ),
     .Funct7     	(inst[31:25] ),
-    .ImmType    	(ImmType     ),
+    .InstType    	(InstType    ),
     .RegWriteEn 	(RegWriteEn  ),
+    .ALUFunc        (ALUFunc     ),
     .ALUSrcSel1 	(ALUSrcSel1  ),
     .ALUSrcSel2 	(ALUSrcSel2  ),
-    .NPCSrcSel  	(NPCSrcSel   )
+    .NPCSrcSel  	(NPCSrcSel   ),
+    .GPRwdataSel    (GPRwdataSel ),
+    .Memwmask       (Memwmask    ),
+    .MemRW          (MemRW       ),
+    .MemWrite       (MemWrite    )
 );
 
 
 ImmDecode u_ImmDecode(
-    .ImmType 	(ImmType        ),
+    .InstType 	(InstType       ),
     .Imm   	    (inst[31:7]     ),
     .ImmExt  	(ImmExt         )
 );
 
 ALU u_ALU(
     .PC         	(pc          ),
+    .ALUFunc        (ALUFunc     ),
     .ReadData1  	(ReadData1   ),
     .ReadData2  	(ReadData2   ),
     .ImmExt     	(ImmExt      ),
@@ -64,6 +96,7 @@ ALU u_ALU(
     .ALURes     	(ALURes      )
 );
 
+assign GPRwdata = (GPRwdataSel == 1'b0) ? ALURes : Memrdata;
 
 GPR u_GPR(
     .clk         	(clk          ),
@@ -71,7 +104,7 @@ GPR u_GPR(
     .ReadAddr1   	(inst[19:15]  ),
     .ReadAddr2   	(inst[24:20]  ),
     .WriteAddr   	(inst[11:7]   ),
-    .WriteData   	(ALURes       ),
+    .WriteData   	(GPRwdata     ),
     .ReadData1   	(ReadData1    ),
     .ReadData2   	(ReadData2    ),
     .ReadData_a0 	(ReadData_a0  )

@@ -19,7 +19,5 @@ static inline bool in_pmem(uint32_t addr)
 }
 
 void init_mem();
-uint32_t paddr_read(uint32_t addr, int len);
-void paddr_write(uint32_t addr, int len, uint32_t data);
 
 #endif
