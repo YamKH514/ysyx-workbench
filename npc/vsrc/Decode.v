@@ -50,41 +50,37 @@ always @(posedge clk) begin
     end
 end
 
-// I(0) S(1) B(2) U(3) J(4) R(5)
-assign InstType =   {3{inst_jalr | inst_lw | inst_addi}} & 3'd0 |
-                    {3{inst_sw}} & 3'd1 |
-                    {3{inst_beq | inst_bne}} & 3'd2 |
-                    {3{inst_lui | inst_auipc}} & 3'd3 |
-                    {3{inst_jal}} & 3'd4 |
-                    {3{inst_add | inst_sub}} & 3'd5;
+assign InstType =   {3{inst_jalr | inst_lw | inst_addi}} & 3'd0 | // I
+                    {3{inst_sw}} & 3'd1 | // S
+                    {3{inst_beq | inst_bne}} & 3'd2 | // B
+                    {3{inst_lui | inst_auipc}} & 3'd3 | // U
+                    {3{inst_jal}} & 3'd4 | // J
+                    {3{inst_add | inst_sub}} & 3'd5; // R
 
 assign RegWriteEn = inst_lui | inst_auipc | inst_jal | inst_jalr | inst_lw | inst_addi | inst_add | inst_sub;
 
-// add(00---0) sub(00---1) A==B(01-011) A<B(01-101) A<=B(01-111)
-assign ALUFunc =    {6{inst_sub}} & 6'b000001 |
-                    {6{inst_beq | inst_bne}} & 6'b010011 |
-                    {6{1'b0}} & 6'b010101 |
-                    {6{1'b0}} & 6'b010111 |
-                    6'b0;
+assign ALUFunc =    {6{inst_sub}} & 6'b000001 | // sub
+                    {6{inst_beq | inst_bne}} & 6'b010011 | // A==B
+                    {6{1'b0}} & 6'b010101 | // A<B
+                    {6{1'b0}} & 6'b010111 | // A<=B
+                    6'b000000; // add
 
-assign ALUSrcSel1 = {2{inst_lui}} & 2'd0 |
-                    {2{inst_jal | inst_jalr | inst_auipc}} & 2'd1 |
-                    {2{inst_beq | inst_bne | inst_lw | inst_addi | inst_add | inst_sub}} & 2'd2;
+assign ALUSrcSel1 = {2{inst_lui}} & 2'd0 | // 0
+                    {2{inst_jal | inst_jalr | inst_auipc}} & 2'd1 | // PC
+                    {2{inst_beq | inst_bne | inst_lw | inst_sw | inst_addi | inst_add | inst_sub}} & 2'd2; // ReadData1
 
-assign ALUSrcSel2 = {2{inst_beq | inst_bne | inst_add | inst_sub}} & 2'd0 |
-                    {2{inst_lui | inst_auipc | inst_lw | inst_addi}} & 2'd1 |
-                    {2{inst_jal | inst_jalr}} & 2'd2;
+assign ALUSrcSel2 = {2{inst_beq | inst_bne | inst_add | inst_sub}} & 2'd0 | // ReadData2
+                    {2{inst_lui | inst_auipc | inst_lw | inst_sw | inst_addi}} & 2'd1 | // ImmExt
+                    {2{inst_jal | inst_jalr}} & 2'd2; // 4
 
-// npc = pc+4(0-00) pc+imm(0-01) src1+imm(0-11) res=0,jump(100-) res=1,jump(110-)
-assign NPCSrcSel =  {4{inst_lui | inst_auipc | inst_lw | inst_sw | inst_addi | inst_add | inst_sub}} & 4'b0000 |
-                    {4{inst_jal}} & 4'b0001 |
-                    {4{inst_jalr}} & 4'b0011 |
-                    {4{inst_bne}} & 4'b1000 |
-                    {4{inst_beq}} & 4'b1100 |
-                    4'b0000;
+assign NPCSrcSel =  {4{inst_lui | inst_auipc | inst_lw | inst_sw | inst_addi | inst_add | inst_sub}} & 4'b0000 | // pc+4
+                    {4{inst_jal}} & 4'b0001 | // pc+imm
+                    {4{inst_jalr}} & 4'b0011 | // src1+imm
+                    {4{inst_bne}} & 4'b1000 | // res=0,jump
+                    {4{inst_beq}} & 4'b1100 ; // res=1,jump
 
-assign GPRwdataSel =    (inst_lw) & 1'b1 |
-                        1'b0;
+assign GPRwdataSel =    (inst_lw) & 1'b1 | // Memrdata
+                        1'b0; // ALURes
 
 assign Memwmask =   {8{inst_sw}} & 8'd4 |
                     {8{1'b0}} & 8'd2 |
