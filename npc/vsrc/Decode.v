@@ -80,7 +80,8 @@ assign NPCSrcSel =  {4{inst_lui | inst_auipc | inst_lw | inst_sw | inst_addi | i
                     {4{inst_jal}} & 4'b0001 |
                     {4{inst_jalr}} & 4'b0011 |
                     {4{inst_bne}} & 4'b1000 |
-                    {4{inst_beq}} & 4'b1100;
+                    {4{inst_beq}} & 4'b1100 |
+                    4'b0000;
 
 assign GPRwdataSel =    (inst_lw) & 1'b1 |
                         1'b0;
