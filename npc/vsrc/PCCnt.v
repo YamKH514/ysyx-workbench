@@ -10,8 +10,10 @@ module PCCnt(
     output reg [31:0] NPC
 );
 
-assign NPC =    ((NPCSrcSel[1] == 1'b0) ? PC : ReadData1) + 
-                {32{~NPCSrcSel[3]}} & ((NPCSrcSel[0] == 1'b0) ? 32'd4 : ImmExt) | {32{NPCSrcSel[3]}} & ((NPCSrcSel[2] == CMPRes) ? ImmExt : 32'd4);
+assign NPC =    (NPCSrcSel[3] == 1'b0) ?
+                (((NPCSrcSel[1] == 1'b0) ? PC : ReadData1) + ((NPCSrcSel[0] == 1'b0) ? 32'd4 : ImmExt)) :
+                (PC + ((NPCSrcSel[2] == CMPRes) ? ImmExt : 4));
+
 
 always @(posedge clk) begin
     if(rst) PC <= 32'h80000000;
