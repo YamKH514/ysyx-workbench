@@ -91,6 +91,6 @@ assign MemValid =   (inst_lw | inst_sw) & 1'b1 |
                     1'b0;
 
 assign MemWrite =   (inst_sw) & 1'b1 |
-                    1'b0;
+                    (inst_lw) & 1'b0;
 
 endmodule
