@@ -21,7 +21,7 @@ wire [31:0] Memraddr;
 wire [31:0] Memwaddr;
 wire [31:0] Memwdata;
 wire [7:0] Memwmask;
-wire MemRW;
+wire MemValid;
 wire MemWrite;
 wire [31:0] Memrdata;
 wire [31:0] GPRwdata;
@@ -54,7 +54,7 @@ Memory u_Memory(
     .waddr    	(Memwaddr     ),
     .wdata    	(Memwdata     ),
     .wmask    	(Memwmask     ),
-    .MemRW    	(MemRW        ),
+    .MemValid   (MemValid     ),
     .MemWrite 	(MemWrite     ),
     .rdata    	(Memrdata     )
 );
@@ -74,7 +74,7 @@ Decode u_Decode(
     .NPCSrcSel  	(NPCSrcSel   ),
     .GPRwdataSel    (GPRwdataSel ),
     .Memwmask       (Memwmask    ),
-    .MemRW          (MemRW       ),
+    .MemValid       (MemValid    ),
     .MemWrite       (MemWrite    )
 );
 

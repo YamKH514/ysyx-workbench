@@ -12,7 +12,7 @@ module Decode(
     output [3:0] NPCSrcSel, // npc = pc+4(0-00) pc+imm(0-01) src1+imm(0-11) res=0,jump(100-) res=1,jump(110-)
     output GPRwdataSel, // ALURes(0) Memrdata(1)
     output [7:0] Memwmask,
-    output MemRW,
+    output MemValid,
     output MemWrite
 );
 
@@ -91,7 +91,7 @@ assign Memwmask =   {8{inst_sw}} & 8'd4 |
                     {8{1'b0}} & 8'd1 |
                     8'd0;
 
-assign MemRW =  (inst_lw | inst_sw) & 1'b1 |
+assign MemValid =  (inst_lw | inst_sw) & 1'b1 |
                 1'b0;
 
 assign MemWrite =   (inst_sw) & 1'b1 |
