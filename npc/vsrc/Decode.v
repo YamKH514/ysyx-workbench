@@ -91,8 +91,8 @@ assign Memwmask =   {8{inst_sw}} & 8'd4 |
                     {8{1'b0}} & 8'd1 |
                     8'd0;
 
-assign MemValid =  (inst_lw | inst_sw) & 1'b1 |
-                1'b0;
+assign MemValid =   (inst_lw | inst_sw) & 1'b1 |
+                    1'b0;
 
 assign MemWrite =   (inst_sw) & 1'b1 |
                     1'b0;
