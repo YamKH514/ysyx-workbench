@@ -16,6 +16,7 @@ static uint32_t pmem_read(uint32_t addr, int len)
 
 static void pmem_write(uint32_t addr, int len, uint32_t data)
 {
+    printf("pmem_write\n");
     host_write(guest_to_host(addr), len, data);
 }
 
@@ -56,7 +57,7 @@ extern "C" uint32_t paddr_read(uint32_t raddr)
 
 extern "C" void paddr_write(uint32_t waddr, uint32_t wdata, char wmask)
 {
-    printf("111\n");
+    printf("paddr_write\n");
     uint32_t addr = waddr & ~0x3u;
     int len = 0;
     switch (wmask)
@@ -83,6 +84,7 @@ extern "C" void paddr_write(uint32_t waddr, uint32_t wdata, char wmask)
         pmem_write(addr, len, wdata);
         return;
     }
+    printf("paddr_write out_of_bound addr = 0x%x\n", addr);
     out_of_bound(addr);
 }
 
