@@ -35,7 +35,6 @@ PCCnt u_PCCnt(
     .ReadData1 	(ReadData1  ),
     .ImmExt    	(ImmExt     ),
     .NPCSrcSel 	(NPCSrcSel  ),
-    .InstType   (InstType   ),
     .PC        	(pc         ),
     .NPC        (npc        )
 );
