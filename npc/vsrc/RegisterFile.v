@@ -13,7 +13,7 @@ reg [DATA_WIDTH-1:0] rf [2**ADDR_WIDTH-1:0];
 
 always @(posedge clk) begin
     if (RegWrite)
-        rf[WriteAddr] <= WriteData;
+     `   rf[WriteAddr] <= WriteData;
 end
 
 assign ReadData1 = (ReadAddr1 == 0) ? 0 : rf[ReadAddr1];

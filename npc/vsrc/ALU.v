@@ -1,6 +1,6 @@
 module ALU(
     input [31:0] PC,
-    input [5:0] ALUFunc, // add(00---0) sub(00---1) A==B(01-011) A<B(01-101) A<=B(01-111)
+    input [5:0] ALUFunc, // add(00---0) sub(00---1) A==B(01-011) A<B(01-101) A<=B(01-111) SLL(11--00) SRL(11--01) SRA(11--11)
     input [31:0] ReadData1,
     input [31:0] ReadData2,
     input [31:0] ImmExt,
@@ -20,6 +20,7 @@ wire [31:0] Src2 =  ({32{ALUSrcSel2 == 2'd0}} & ReadData2) |
                     ({32{ALUSrcSel2 == 2'd2}} & 32'd4    ) ;
 wire [31:0] AdderRes;
 wire CMPRes;
+wire [31:0] ShifterRes;
 
 adder32 u_adder32(
             .mode       (ALUFunc[0]),
@@ -39,7 +40,15 @@ Comparison u_Comparison(
     .CMPRes   	(CMPRes         )
 );
 
+Shifter u_Shifter(
+    .Src         	(Src1          ),
+    .Shamt       	(Src2[4:0]     ),
+    .ShifterFunc 	(ALUFunc[1:0]  ),
+    .ShifterRes  	(ShifterRes    )
+);
+
 assign ALURes = ({32{ALUFunc[5:4] == 2'b00}} & AdderRes) |
-                ({32{ALUFunc[5:4] == 2'b01}} & {31'b0, CMPRes});
+                ({32{ALUFunc[5:4] == 2'b01}} & {31'b0, CMPRes}) |
+                ({32{ALUFunc[5:4] == 2'b11}} & ShifterRes);
 
 endmodule
