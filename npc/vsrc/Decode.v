@@ -71,8 +71,10 @@ assign RegWriteEn = inst_lui | inst_auipc | inst_jal | inst_jalr | inst_lw | ins
 // AND(101000) OR(101110) XOR(100110)
 assign ALUFunc =    {6{inst_sub}} & 6'b000001 | // sub
                     {6{inst_beq | inst_bne}} & 6'b010011 | // A==B
-                    {6{inst_sltiu | inst_sltu}} & 6'b010101 | // A<B
-                    {6{1'b0}} & 6'b010111 | // A<=B
+                    {6{1'b0}} & 6'b010101 | // A<B signed
+                    {6{1'b0}} & 6'b010111 | // A<=B signed
+                    {6{inst_sltiu | inst_sltu}} & 6'b011101 | // A<B unsigned
+                    {6{1'b0}} & 6'b011111 | // A<=B unsigned
                     {6{1'b0}} & 6'b101000 | // AND
                     {6{inst_or}} & 6'b101110 | // OR
                     {6{inst_xor}} & 6'b100110 | // XOR

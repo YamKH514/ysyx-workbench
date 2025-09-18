@@ -1,6 +1,6 @@
 module ALU(
     input [31:0] PC,
-    input [5:0] ALUFunc, // add(00---0) sub(00---1) A==B(01-011) A<B(01-101) A<=B(01-111) AND(101000) OR(101110) XOR(100110) SLL(11--00) SRL(11--01) SRA(11--11)
+    input [5:0] ALUFunc, // add(00---0) sub(00---1) A==B(010011) A<B signed(010101) A<=B signed(010111) A<B unsigned(011101) A<=B unsigned(011111) AND(101000) OR(101110) XOR(100110) SLL(11--00) SRL(11--01) SRA(11--11)
     input [31:0] ReadData1,
     input [31:0] ReadData2,
     input [31:0] ImmExt,
@@ -34,9 +34,10 @@ adder32 u_adder32(
         );
 
 Comparison u_Comparison(
-    .Func     	(ALUFunc[2:1]   ),
+    .Func     	(ALUFunc[3:1]   ),
     .Zero     	(zero           ),
     .Overflow 	(overflow       ),
+    .Carry      (carry          ),
     .Sign     	(AdderRes[31]   ),
     .CMPRes   	(CMPRes         )
 );
