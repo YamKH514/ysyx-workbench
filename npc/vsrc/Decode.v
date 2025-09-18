@@ -23,6 +23,7 @@ wire inst_jalr;     // I
 wire inst_beq;      // B
 wire inst_bne;      // B
 wire inst_lw;       // I
+// wire inst_lbu;      // I
 wire inst_sw;       // S
 wire inst_addi;     // I
 wire inst_sltiu;    // I
@@ -94,12 +95,11 @@ assign ALUSrcSel2 = {2{inst_beq | inst_bne | inst_add | inst_sub | inst_sltu | i
                     {2{inst_jal | inst_jalr}} & 2'd2; // 4
 
 assign NPCSrcSel =  
-                    // {4{inst_lui | inst_auipc | inst_lw | inst_sw | inst_addi | inst_sltiu | inst_slli | inst_add | inst_sub}} & 4'b0000 | // pc+4
                     {4{inst_jal}} & 4'b0001 | // pc+imm
                     {4{inst_jalr}} & 4'b0011 | // src1+imm
                     {4{inst_bne}} & 4'b1000 | // res=0,jump
                     {4{inst_beq}} & 4'b1100 | // res=1,jump
-                    4'b0000; 
+                    4'b0000; // pc+4
 
 assign GPRwdataSel =    (inst_lw) & 1'b1 | // Memrdata
                         1'b0; // ALURes
@@ -113,6 +113,6 @@ assign MemValid =   (inst_lw | inst_sw) & 1'b1 |
                     1'b0;
 
 assign MemWrite =   (inst_sw) & 1'b1 |
-                    (inst_lw) & 1'b0;
+                    1'b0;
 
 endmodule
