@@ -76,7 +76,8 @@ Decode u_Decode(
     .GPRwdataSel    (GPRwdataSel ),
     .Memwmask       (Memwmask    ),
     .MemValid       (MemValid    ),
-    .MemWrite       (MemWrite    )
+    .MemWrite       (MemWrite    ),
+    .MemReadFunc    (MemReadFunc )
 );
 
 
