@@ -23,6 +23,7 @@ wire [31:0] Memwdata;
 wire [7:0] Memwmask;
 wire MemValid;
 wire MemWrite;
+wire [2:0] MemReadFunc;
 wire [31:0] Memrdata;
 wire [31:0] GPRwdata;
 wire GPRwdataSel;
@@ -55,6 +56,7 @@ Memory u_Memory(
     .wmask    	(Memwmask     ),
     .MemValid   (MemValid     ),
     .MemWrite 	(MemWrite     ),
+    .MemReadFunc(MemReadFunc  ),
     .rdata    	(Memrdata     )
 );
 

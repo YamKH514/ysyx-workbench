@@ -13,7 +13,8 @@ module Decode(
     output GPRwdataSel, // ALURes(0) Memrdata(1)
     output [7:0] Memwmask,
     output MemValid,
-    output MemWrite
+    output MemWrite,
+    output [2:0] MemReadFunc // unsigned(0--) signed(1--) lb(-01) lh(-10) lw(-11)
 );
 
 wire inst_lui;      // U
@@ -23,7 +24,7 @@ wire inst_jalr;     // I
 wire inst_beq;      // B
 wire inst_bne;      // B
 wire inst_lw;       // I
-// wire inst_lbu;      // I
+wire inst_lbu;      // I
 wire inst_sw;       // S
 wire inst_addi;     // I
 wire inst_sltiu;    // I
@@ -43,6 +44,7 @@ assign inst_jalr  = (Opcode == 7'b1100111) & (Funct3 == 3'b000);
 assign inst_beq   = (Opcode == 7'b1100011) & (Funct3 == 3'b000);
 assign inst_bne   = (Opcode == 7'b1100011) & (Funct3 == 3'b001);
 assign inst_lw    = (Opcode == 7'b0000011) & (Funct3 == 3'b010);
+assign inst_lbu   = (Opcode == 7'b0000011) & (Funct3 == 3'b100);
 assign inst_sw    = (Opcode == 7'b0100011) & (Funct3 == 3'b010);
 assign inst_addi  = (Opcode == 7'b0010011) & (Funct3 == 3'b000);
 assign inst_sltiu = (Opcode == 7'b0010011) & (Funct3 == 3'b011);
@@ -63,14 +65,14 @@ always @(posedge clk) begin
     end
 end
 
-assign InstType =   {3{inst_jalr | inst_lw | inst_addi | inst_sltiu | inst_slli | inst_srai}} & 3'd0 | // I
+assign InstType =   {3{inst_jalr | inst_lw | inst_lbu | inst_addi | inst_sltiu | inst_slli | inst_srai}} & 3'd0 | // I
                     {3{inst_sw}} & 3'd1 | // S
                     {3{inst_beq | inst_bne}} & 3'd2 | // B
                     {3{inst_lui | inst_auipc}} & 3'd3 | // U
                     {3{inst_jal}} & 3'd4 | // J
                     {3{inst_add | inst_sub | inst_sltu | inst_xor | inst_or}} & 3'd5; // R
 
-assign RegWriteEn = inst_lui | inst_auipc | inst_jal | inst_jalr | inst_lw | inst_addi | inst_sltiu | inst_slli | inst_srai | inst_add | inst_sub | inst_sltu | inst_xor | inst_or;
+assign RegWriteEn = inst_lui | inst_auipc | inst_jal | inst_jalr | inst_lw | inst_lbu | inst_addi | inst_sltiu | inst_slli | inst_srai | inst_add | inst_sub | inst_sltu | inst_xor | inst_or;
 
 assign ALUFunc =    {6{inst_sub}} & 6'b000001 | // sub
                     {6{inst_beq | inst_bne}} & 6'b010011 | // A==B
@@ -88,10 +90,10 @@ assign ALUFunc =    {6{inst_sub}} & 6'b000001 | // sub
 
 assign ALUSrcSel1 = {2{inst_lui}} & 2'd0 | // 0
                     {2{inst_jal | inst_jalr | inst_auipc}} & 2'd1 | // PC
-                    {2{inst_beq | inst_bne | inst_lw | inst_sw | inst_addi | inst_sltiu | inst_slli | inst_srai | inst_add | inst_sub | inst_sltu | inst_xor | inst_or}} & 2'd2; // ReadData1
+                    {2{inst_beq | inst_bne | inst_lw | inst_lbu | inst_sw | inst_addi | inst_sltiu | inst_slli | inst_srai | inst_add | inst_sub | inst_sltu | inst_xor | inst_or}} & 2'd2; // ReadData1
 
 assign ALUSrcSel2 = {2{inst_beq | inst_bne | inst_add | inst_sub | inst_sltu | inst_xor | inst_or}} & 2'd0 | // ReadData2
-                    {2{inst_lui | inst_auipc | inst_lw | inst_sw | inst_addi | inst_sltiu | inst_slli | inst_srai}} & 2'd1 | // ImmExt
+                    {2{inst_lui | inst_auipc | inst_lw | inst_lbu | inst_sw | inst_addi | inst_sltiu | inst_slli | inst_srai}} & 2'd1 | // ImmExt
                     {2{inst_jal | inst_jalr}} & 2'd2; // 4
 
 assign NPCSrcSel =  
@@ -101,7 +103,7 @@ assign NPCSrcSel =
                     {4{inst_beq}} & 4'b1100 | // res=1,jump
                     4'b0000; // pc+4
 
-assign GPRwdataSel =    (inst_lw) & 1'b1 | // Memrdata
+assign GPRwdataSel =    (inst_lw | inst_lbu) & 1'b1 | // Memrdata
                         1'b0; // ALURes
 
 assign Memwmask =   {8{inst_sw}} & 8'd4 |
@@ -109,10 +111,13 @@ assign Memwmask =   {8{inst_sw}} & 8'd4 |
                     {8{1'b0}} & 8'd1 |
                     8'd0;
 
-assign MemValid =   (inst_lw | inst_sw) & 1'b1 |
+assign MemValid =   (inst_lw | inst_lbu | inst_sw) & 1'b1 |
                     1'b0;
 
 assign MemWrite =   (inst_sw) & 1'b1 |
                     1'b0;
+// unsigned(0--) signed(1--) lb(-01) lh(-10) lw(-11)
+assign MemReadFunc =    {3{inst_lbu}} & 3'b001 |
+                        {3{inst_lw}} & 3'b011;
 
 endmodule
