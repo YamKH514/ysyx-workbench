@@ -1,6 +1,6 @@
 module ALU(
     input [31:0] PC,
-    input [5:0] ALUFunc, // add(00---0) sub(00---1) A==B(01-011) A<B(01-101) A<=B(01-111) SLL(11--00) SRL(11--01) SRA(11--11)
+    input [5:0] ALUFunc, // add(00---0) sub(00---1) A==B(01-011) A<B(01-101) A<=B(01-111) AND(101000) OR(101110) XOR(100110) SLL(11--00) SRL(11--01) SRA(11--11)
     input [31:0] ReadData1,
     input [31:0] ReadData2,
     input [31:0] ImmExt,
@@ -21,6 +21,7 @@ wire [31:0] Src2 =  ({32{ALUSrcSel2 == 2'd0}} & ReadData2) |
 wire [31:0] AdderRes;
 wire CMPRes;
 wire [31:0] ShifterRes;
+wire [31:0] BoolRes;
 
 adder32 u_adder32(
             .mode       (ALUFunc[0]),
@@ -47,8 +48,16 @@ Shifter u_Shifter(
     .ShifterRes  	(ShifterRes    )
 );
 
+Bool u_Bool(
+    .Src1     	(Src1           ),
+    .Src2     	(Src2           ),
+    .BoolFunc 	(ALUFunc[3:0]   ),
+    .BoolRes  	(BoolRes        )
+);
+
 assign ALURes = ({32{ALUFunc[5:4] == 2'b00}} & AdderRes) |
                 ({32{ALUFunc[5:4] == 2'b01}} & {31'b0, CMPRes}) |
+                ({32{ALUFunc[5:4] == 2'b10}} & BoolRes) |
                 ({32{ALUFunc[5:4] == 2'b11}} & ShifterRes);
 
 endmodule
