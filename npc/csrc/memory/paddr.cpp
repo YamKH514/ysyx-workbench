@@ -17,7 +17,6 @@ static uint32_t pmem_read(uint32_t addr, int len)
 static void pmem_write(uint32_t addr, int len, uint32_t data)
 {
     host_write(guest_to_host(addr), len, data);
-    printf("Write data: 0x%x, paddr: 0x%x, host addr: 0x%x, len: %d\n", pmem_read(addr, len), addr, addr - MEM_BASE, len);
 }
 
 static void out_of_bound(uint32_t addr)
