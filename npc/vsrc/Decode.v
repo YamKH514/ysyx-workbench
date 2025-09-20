@@ -84,7 +84,7 @@ assign InstType =   {3{inst_jalr | inst_lw | inst_lbu | inst_addi | inst_sltiu |
                     {3{inst_jal}} & 3'd4 | // J
                     {3{inst_add | inst_sub | inst_sll | inst_sltu | inst_xor | inst_or | inst_and}} & 3'd5; // R
 
-assign RegWriteEn = inst_lui | inst_auipc | inst_jal | inst_jalr | inst_lw | inst_lbu | inst_addi | inst_sltiu | inst_xori | inst_andi | inst_slli | inst_srai | inst_add | inst_sub | inst_sltu | inst_xor | inst_or | inst_and;
+assign RegWriteEn = inst_lui | inst_auipc | inst_jal | inst_jalr | inst_lw | inst_lbu | inst_addi | inst_sltiu | inst_xori | inst_andi | inst_slli | inst_srai | inst_add | inst_sub | inst_sll | inst_sltu | inst_xor | inst_or | inst_and;
 
 assign ALUFunc =    {6{inst_sub}} & 6'b000001 | // sub
                     {6{inst_beq | inst_bne}} & 6'b010011 | // A==B
