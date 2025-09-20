@@ -33,7 +33,7 @@ void init_mem()
 
 void print_paddr_read(uint32_t addr, int len)
 {
-    printf("MEM_READ at 0x%08x , len = %d\n", addr, len);
+    printf("MEM_READ data: 0x%08x, at 0x%08x , len = %d\n", pmem_read(addr, len), addr, len);
 }
 
 void print_paddr_write(uint32_t addr, int len, uint32_t data)
