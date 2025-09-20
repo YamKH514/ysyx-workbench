@@ -27,9 +27,9 @@ always @(*) begin
 end
 
 assign rdata =  {32{MemReadFunc == 3'b001}} & {24'b0, data[7:0]} | // lbu
-                {32{MemReadFunc == 3'b101}} & {{24{data[7]}}, data[7:0]} | // lbu
+                {32{MemReadFunc == 3'b101}} & {{24{data[7]}}, data[7:0]} | // lb
                 {32{MemReadFunc == 3'b010}} & {16'b0, data[15:0]} | // lhu
-                {32{MemReadFunc == 3'b110}} & {{16{data[15]}}, data[15:0]} | // lhu
+                {32{MemReadFunc == 3'b110}} & {{16{data[15]}}, data[15:0]} | // lh
                 {32{MemReadFunc[1:0] == 2'b11}} & data ; // lw
 
 endmodule
