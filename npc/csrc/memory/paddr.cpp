@@ -32,12 +32,12 @@ void init_mem()
 
 void print_paddr_read(uint32_t addr, int len)
 {
-    printf("MEM_READ data: 0x%08x, at 0x%08x , len = %d\n", pmem_read(addr, len), addr, len);
+    printf("MEM_READ  data: 0x%08x, at 0x%08x , len = %d\n", pmem_read(addr, len), addr, len);
 }
 
 void print_paddr_write(uint32_t addr, int len, uint32_t data)
 {
-    printf("MEM_WRITE at 0x%08x , len = %d, write data: 0x%08x \n", addr, len, data);
+    printf("MEM_WRITE data: 0x%08x, at 0x%08x , len = %d\n", data, addr, len);
 }
 
 extern "C" uint32_t paddr_read(uint32_t raddr)
