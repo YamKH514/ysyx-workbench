@@ -14,7 +14,7 @@ module Decode(
     output [7:0] Memwmask,
     output MemValid,
     output MemWrite,
-    output [2:0] MemReadFunc // unsigned(0--) signed(1--) lb(-01) lh(-10) lw(-11)
+    output [2:0] MemReadFunc // unsigned(0--) signed(1--) lb(-01) lh(-10) lw(011)
 );
 
 wire inst_lui;      // U
@@ -116,7 +116,7 @@ assign MemValid =   (inst_lw | inst_lbu | inst_sw) & 1'b1 |
 
 assign MemWrite =   (inst_sw) & 1'b1 |
                     1'b0;
-// unsigned(0--) signed(1--) lb(-01) lh(-10) lw(-11)
+// unsigned(0--) signed(1--) lb(-01) lh(-10) lw(011)
 assign MemReadFunc =    {3{inst_lbu}} & 3'b001 |
                         {3{inst_lw}} & 3'b011;
 
