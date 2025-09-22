@@ -9,27 +9,39 @@ module Memory(
     output      [31:0] rdata
 );
 
-reg [31:0] data;
+reg     [31:0]  Data;
+wire    [1:0]   ByteOff;
+wire    [7:0]   DataB;
+wire    [15:0]  DataH;
 
 import "DPI-C" function int paddr_read(input int raddr);
 import "DPI-C" function void paddr_write(
     input int waddr, input int wdata, input byte wmask);
 always @(*) begin
-    data = 0;
+    Data = 0;
     if (MemValid) begin // 有读写请求时
         if (MemWrite) begin // 有写请求时
             paddr_write(waddr, wdata, wmask);
         end
         else begin
-            data = paddr_read(raddr);
+            Data = paddr_read(raddr);
         end
     end
 end
 
-assign rdata =  {32{MemReadFunc == 3'b001}} & {24'b0, data[7:0]} | // lbu
-                {32{MemReadFunc == 3'b101}} & {{24{data[7]}}, data[7:0]} | // lb
-                {32{MemReadFunc == 3'b010}} & {16'b0, data[15:0]} | // lhu
-                {32{MemReadFunc == 3'b110}} & {{16{data[15]}}, data[15:0]} | // lh
-                {32{MemReadFunc == 3'b011}} & data ; // lw
+assign ByteOff = Data[1:0];
+
+assign DataB =  {8{ByteOff == 2'b00}} & Data[7:0] |
+                {8{ByteOff == 2'b01}} & Data[15:8] |
+                {8{ByteOff == 2'b10}} & Data[23:16] |
+                Data[31:24];
+
+assign DataH = ByteOff[1] == 1'b0 ? Data[15:0] : Data[31:16];
+
+assign rdata =  {32{MemReadFunc == 3'b001}} & {24'b0, DataB[7:0]} | // lbu
+                {32{MemReadFunc == 3'b101}} & {{24{DataB[7]}}, DataB[7:0]} | // lb
+                {32{MemReadFunc == 3'b010}} & {16'b0, DataH[15:0]} | // lhu
+                {32{MemReadFunc == 3'b110}} & {{16{DataH[15]}}, DataH[15:0]} | // lh
+                {32{MemReadFunc == 3'b011}} & Data ; // lw
 
 endmodule
