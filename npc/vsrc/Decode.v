@@ -118,9 +118,9 @@ assign NPCSrcSel =
 assign GPRwdataSel =    (inst_lw | inst_lbu) & 1'b1 | // Memrdata
                         1'b0; // ALURes
 
-assign Memwmask =   {8{inst_lw | inst_sw}} & 8'd4 |
+assign Memwmask =   {8{inst_sw}} & 8'd4 |
                     {8{inst_sh}} & 8'd2 |
-                    {8{inst_lbu | inst_sb}} & 8'd1 |
+                    {8{inst_sb}} & 8'd1 |
                     8'd0;
 
 assign MemValid =   (inst_lw | inst_lbu | inst_sb | inst_sh | inst_sw) & 1'b1 |
