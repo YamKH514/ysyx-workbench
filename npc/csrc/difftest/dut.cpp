@@ -90,7 +90,7 @@ void difftest_step(uint32_t pc)
   NPCState ref_r;
   ref_difftest_exec(1);
   ref_difftest_regcpy(&ref_r, DIFFTEST_TO_DUT);
-  //TODO 我没做Memory的差分？？？
+  
   checkregs(&ref_r, pc);
 }
 
