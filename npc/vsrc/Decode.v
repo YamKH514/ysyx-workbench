@@ -9,7 +9,7 @@ module Decode(
     output [5:0] ALUFunc, // add(00---0) sub(00---1) A==B(01-011) A<B(01-101) A<=B(01-111) AND(101000) OR(101110) XOR(100110) SLL(11--00) SRL(11--01) SRA(11--11)
     output [1:0] ALUSrcSel1, // 0(0) PC(1) ReadData1(2)
     output [1:0] ALUSrcSel2, // ReadData2(0) ImmExt(1) 4(2)
-    output [3:0] NPCSrcSel, // npc = pc+4(0-00) pc+imm(0-01) src1+imm(0-11) res=0,jump(100-) res=1,jump(110-)
+    output [3:0] NPCSrcSel, // npc = pc+4(0-00) pc+imm(0-01) src1+imm(0-11) res=0,jump(10--) res=1,jump(11--)
     output GPRwdataSel, // ALURes(0) Memrdata(1)
     output [7:0] Memwmask,
     output MemValid,

@@ -4,7 +4,7 @@ module PCCnt(
     input CMPRes,
     input [31:0] ReadData1,
     input [31:0] ImmExt,
-    input [3:0] NPCSrcSel, // npc = pc+4(0-00) pc+imm(0-01) src1+imm(0-11) res=0,jump(100-) res=1,jump(110-)
+    input [3:0] NPCSrcSel, // npc = pc+4(0-00) pc+imm(0-01) src1+imm(0-11) res=0,jump(10--) res=1,jump(11--)
     output reg [31:0] PC,
     output reg [31:0] NPC
 );
