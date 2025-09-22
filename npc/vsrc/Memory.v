@@ -29,7 +29,7 @@ always @(*) begin
     end
 end
 
-assign ByteOff = Data[1:0];
+assign ByteOff = raddr[1:0];
 
 assign DataB =  {8{ByteOff == 2'b00}} & Data[7:0] |
                 {8{ByteOff == 2'b01}} & Data[15:8] |
