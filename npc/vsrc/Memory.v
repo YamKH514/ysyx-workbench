@@ -34,7 +34,7 @@ assign ByteOff = raddr[1:0];
 assign DataB =  {8{ByteOff == 2'b00}} & Data[7:0] |
                 {8{ByteOff == 2'b01}} & Data[15:8] |
                 {8{ByteOff == 2'b10}} & Data[23:16] |
-                Data[31:24];
+                {8{ByteOff == 2'b10}} & Data[31:24];
 
 assign DataH = ByteOff[1] == 1'b0 ? Data[15:0] : Data[31:16];
 
