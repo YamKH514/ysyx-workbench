@@ -83,7 +83,7 @@ extern "C" void paddr_write(uint32_t waddr, uint32_t wdata, char wmask)
 
 
 #ifdef CONFIG_MTRACE
-    print_paddr_write(waddr, len, wdata);
+    print_paddr_write(addr, sw, data);
 #endif
     if(likely(in_pmem(addr)))
     {
