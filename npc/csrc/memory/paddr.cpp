@@ -68,7 +68,7 @@ extern "C" void paddr_write(uint32_t waddr, uint32_t wdata, uint8_t wmask)
         data = ((wdata & 0xFFFF) << (offset * 8)) | (pmem_read(addr, 4) & ~(offset * 8));
         break;
     case 0xF:
-        data = (wdata << (offset * 8)) | (pmem_read(addr, 4) & ~(offset * 8));
+        data = wdata;
         break;
     default:
         data = 0;
