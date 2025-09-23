@@ -87,7 +87,7 @@ extern "C" void paddr_write(uint32_t waddr, uint32_t wdata, char wmask)
 #endif
     if(likely(in_pmem(addr)))
     {
-        pmem_write(addr, sw, wdata);
+        pmem_write(addr, sw, data);
         return;
     }
     printf("paddr_write out_of_bound addr = 0x%x\n", addr);
