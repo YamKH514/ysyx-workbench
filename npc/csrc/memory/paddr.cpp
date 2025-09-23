@@ -62,13 +62,13 @@ extern "C" void paddr_write(uint32_t waddr, uint32_t wdata, uint8_t wmask)
     switch (wmask)
     {
     case 0x1:
-        data = (wdata & 0xF) << (offset * 4);
+        data = (wdata & 0xF) << (offset * 8);
         break;
     case 0x3:
-        data = (wdata & 0xFF) << (offset * 4);
+        data = (wdata & 0xFF) << (offset * 8);
         break;
     case 0xF:
-        data = wdata << (offset * 4);
+        data = wdata << (offset * 8);
         break;
     default:
         data = 0;
