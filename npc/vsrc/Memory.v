@@ -13,7 +13,6 @@ reg     [31:0]  Data;
 wire    [1:0]   ByteOff;
 wire    [7:0]   DataB;
 wire    [15:0]  DataH;
-wire    [7:0]   Mask;
 
 import "DPI-C" function int paddr_read(input int raddr);
 import "DPI-C" function void paddr_write(
@@ -22,15 +21,13 @@ always @(*) begin
     Data = 0;
     if (MemValid) begin // 有读写请求时
         if (MemWrite) begin // 有写请求时
-            paddr_write(waddr, wdata, Mask);
+            paddr_write(waddr, wdata, wmask);
         end
         else begin
             Data = paddr_read(raddr);
         end
     end
 end
-
-assign Mask = wmask << waddr[1:0];
 
 assign ByteOff = raddr[1:0];
 
