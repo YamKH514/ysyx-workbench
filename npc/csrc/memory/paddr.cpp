@@ -70,11 +70,11 @@ extern "C" void paddr_write(uint32_t waddr, uint32_t wdata, char wmask)
         break;
     case 0x3:
         len = sh;
-        data = (wdata & 0xFF)  << (offset * 4);
+        data = (wdata & 0xFF) << (offset * 4);
         break;
     case 0xF:
         len = sw;
-        data = wdata;
+        data = wdata << (offset * 4);
         break;
     default:
         len = sw;
