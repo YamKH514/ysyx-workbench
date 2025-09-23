@@ -56,7 +56,7 @@ extern "C" uint32_t paddr_read(uint32_t raddr)
     return 0;
 }
 
-extern "C" void paddr_write(uint32_t waddr, uint32_t wdata, char wmask)
+extern "C" void paddr_write(uint32_t waddr, uint32_t wdata, uint8_t wmask)
 {
     uint32_t addr = waddr & ~0x3u;
     uint32_t data = 0;
