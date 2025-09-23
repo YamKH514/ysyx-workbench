@@ -34,9 +34,13 @@ assign ByteOff = raddr[1:0];
 assign DataB =  {8{ByteOff == 2'b00}} & Data[7:0] |
                 {8{ByteOff == 2'b01}} & Data[15:8] |
                 {8{ByteOff == 2'b10}} & Data[23:16] |
-                {8{ByteOff == 2'b10}} & Data[31:24];
+                {8{ByteOff == 2'b11}} & Data[31:24];
 
 assign DataH = ByteOff[1] == 1'b0 ? Data[15:0] : Data[31:16];
+// assign DataH =  {16{ByteOff == 2'b00}} & Data[7:0] |
+//                 {16{ByteOff == 2'b01}} & Data[15:8] |
+//                 {16{ByteOff == 2'b10}} & Data[23:16] |
+//                 {16{ByteOff == 2'b10}} & Data[31:24];
 
 assign rdata =  {32{MemReadFunc == 3'b001}} & {24'b0, DataB[7:0]} | // lbu
                 {32{MemReadFunc == 3'b101}} & {{24{DataB[7]}}, DataB[7:0]} | // lb
