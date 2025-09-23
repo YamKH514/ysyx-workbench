@@ -8,6 +8,8 @@ static uint8_t pmem[MEM_MSIZE] PG_ALIGN = {};
 uint8_t *guest_to_host(uint32_t paddr) { return pmem + paddr - MEM_BASE; }
 uint32_t host_to_guest(uint8_t *haddr) { return haddr - pmem + MEM_BASE; }
 
+enum store{sb = 1, sh = 2, sw = 4};
+
 static uint32_t pmem_read(uint32_t addr, int len)
 {
     uint32_t ret = host_read(guest_to_host(addr), len);
@@ -57,29 +59,35 @@ extern "C" uint32_t paddr_read(uint32_t raddr)
 extern "C" void paddr_write(uint32_t waddr, uint32_t wdata, char wmask)
 {
     uint32_t addr = waddr & ~0x3u;
+    uint32_t data = 0;
+    uint32_t offset = waddr & 0x3;
     int len = 0;
     switch (wmask)
     {
     case 0x1:
-        len = 1;
+        len = sb;
+        data = (wdata & 0xF) << (offset * 4);
         break;
     case 0x3:
-        len = 2;
+        len = sh;
+        data = (wdata & 0xFF)  << (offset * 4);
         break;
     case 0xF:
-        len = 4;
+        len = sw;
+        data = wdata;
         break;
     default:
-        len = 4;
+        len = sw;
         break;
     }
 
+
 #ifdef CONFIG_MTRACE
-    print_paddr_write(addr, 4, wdata);
+    print_paddr_write(waddr, len, wdata);
 #endif
     if(likely(in_pmem(addr)))
     {
-        pmem_write(addr, 4, wdata);
+        pmem_write(addr, sw, wdata);
         return;
     }
     printf("paddr_write out_of_bound addr = 0x%x\n", addr);
