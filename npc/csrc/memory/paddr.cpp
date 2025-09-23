@@ -75,11 +75,11 @@ extern "C" void paddr_write(uint32_t waddr, uint32_t wdata, char wmask)
     }
 
 #ifdef CONFIG_MTRACE
-    print_paddr_write(addr, len, wdata);
+    print_paddr_write(addr, 4, wdata);
 #endif
     if(likely(in_pmem(addr)))
     {
-        pmem_write(addr, len, wdata);
+        pmem_write(addr, 4, wdata);
         return;
     }
     printf("paddr_write out_of_bound addr = 0x%x\n", addr);
