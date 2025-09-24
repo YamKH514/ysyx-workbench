@@ -17,6 +17,8 @@ module Decode(
     output [2:0] MemReadFunc // unsigned(0--) signed(1--) lb(-01) lh(-10) lw(011)
 );
 
+//TODO if-else未通过
+
 wire inst_lui;      // U
 wire inst_auipc;    // U
 wire inst_jal;      // J
