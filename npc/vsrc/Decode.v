@@ -29,6 +29,8 @@ wire inst_blt;      // B
 wire inst_bge;      // B
 wire inst_bltu;     // B
 wire inst_bgeu;     // B
+wire inst_lb;       // I
+wire inst_lh;       // I
 wire inst_lw;       // I
 wire inst_lbu;      // I
 wire inst_sb;       // S
@@ -60,6 +62,8 @@ assign inst_blt   = (Opcode == 7'b1100011) & (Funct3 == 3'b100);
 assign inst_bge   = (Opcode == 7'b1100011) & (Funct3 == 3'b101);
 assign inst_bltu  = (Opcode == 7'b1100011) & (Funct3 == 3'b110);
 assign inst_bgeu  = (Opcode == 7'b1100011) & (Funct3 == 3'b111);
+assign inst_lb    = (Opcode == 7'b0000011) & (Funct3 == 3'b000);
+assign inst_lh    = (Opcode == 7'b0000011) & (Funct3 == 3'b001);
 assign inst_lw    = (Opcode == 7'b0000011) & (Funct3 == 3'b010);
 assign inst_lbu   = (Opcode == 7'b0000011) & (Funct3 == 3'b100);
 assign inst_sb    = (Opcode == 7'b0100011) & (Funct3 == 3'b000);
@@ -89,14 +93,14 @@ always @(posedge clk) begin
     end
 end
 
-assign InstType =   {3{inst_jalr | inst_lw | inst_lbu | inst_addi | inst_sltiu | inst_xori | inst_andi | inst_slli | inst_srli | inst_srai}} & 3'd0 | // I
+assign InstType =   {3{inst_jalr | inst_lb | inst_lh | inst_lw | inst_lbu | inst_addi | inst_sltiu | inst_xori | inst_andi | inst_slli | inst_srli | inst_srai}} & 3'd0 | // I
                     {3{inst_sb | inst_sh | inst_sw}} & 3'd1 | // S
                     {3{inst_beq | inst_bne | inst_blt | inst_bge | inst_bltu | inst_bgeu}} & 3'd2 | // B
                     {3{inst_lui | inst_auipc}} & 3'd3 | // U
                     {3{inst_jal}} & 3'd4 | // J
                     {3{inst_add | inst_sub | inst_sll | inst_sltu | inst_xor | inst_or | inst_and}} & 3'd5; // R
 
-assign RegWriteEn = inst_lui | inst_auipc | inst_jal | inst_jalr | inst_lw | inst_lbu | inst_addi | inst_sltiu | inst_xori | inst_andi | inst_slli | inst_srli | inst_srai | inst_add | inst_sub | inst_sll | inst_sltu | inst_xor | inst_or | inst_and;
+assign RegWriteEn = inst_lui | inst_auipc | inst_jal | inst_jalr | inst_lb | inst_lh | inst_lw | inst_lbu | inst_addi | inst_sltiu | inst_xori | inst_andi | inst_slli | inst_srli | inst_srai | inst_add | inst_sub | inst_sll | inst_sltu | inst_xor | inst_or | inst_and;
 
 assign ALUFunc =    {6{inst_sub}} & 6'b000001 | // sub
                     {6{inst_beq | inst_bne}} & 6'b010011 | // A==B
@@ -114,10 +118,10 @@ assign ALUFunc =    {6{inst_sub}} & 6'b000001 | // sub
 
 assign ALUSrcSel1 = {2{inst_lui}} & 2'd0 | // 0
                     {2{inst_jal | inst_jalr | inst_auipc}} & 2'd1 | // PC
-                    {2{inst_beq | inst_bne | inst_blt | inst_bge | inst_bltu | inst_bgeu | inst_lw | inst_lbu | inst_sb | inst_sh | inst_sw | inst_addi | inst_sltiu | inst_xori | inst_andi| inst_slli | inst_srli | inst_srai | inst_add | inst_sub | inst_sll | inst_sltu | inst_xor | inst_or | inst_and}} & 2'd2; // ReadData1
+                    {2{inst_beq | inst_bne | inst_blt | inst_bge | inst_bltu | inst_bgeu | inst_lb | inst_lh | inst_lw | inst_lbu | inst_sb | inst_sh | inst_sw | inst_addi | inst_sltiu | inst_xori | inst_andi| inst_slli | inst_srli | inst_srai | inst_add | inst_sub | inst_sll | inst_sltu | inst_xor | inst_or | inst_and}} & 2'd2; // ReadData1
 
 assign ALUSrcSel2 = {2{inst_beq | inst_bne | inst_blt | inst_bge | inst_bltu | inst_bgeu | inst_add | inst_sub | inst_sll | inst_sltu | inst_xor | inst_or | inst_and}} & 2'd0 | // ReadData2
-                    {2{inst_lui | inst_auipc | inst_lw | inst_lbu | inst_sb | inst_sh | inst_sw | inst_addi | inst_sltiu | inst_xori | inst_andi | inst_slli | inst_srli | inst_srai}} & 2'd1 | // ImmExt
+                    {2{inst_lui | inst_auipc |inst_lb | inst_lh | inst_lw | inst_lbu | inst_sb | inst_sh | inst_sw | inst_addi | inst_sltiu | inst_xori | inst_andi | inst_slli | inst_srli | inst_srai}} & 2'd1 | // ImmExt
                     {2{inst_jal | inst_jalr}} & 2'd2; // 4
 
 assign NPCSrcSel =  
@@ -127,7 +131,7 @@ assign NPCSrcSel =
                     {4{inst_beq | inst_blt | inst_bltu}} & 4'b1100 | // res=1,jump
                     4'b0000; // pc+4
 
-assign GPRwdataSel =    (inst_lw | inst_lbu) & 1'b1 | // Memrdata
+assign GPRwdataSel =    (inst_lb | inst_lh | inst_lw | inst_lbu) & 1'b1 | // Memrdata
                         1'b0; // ALURes
 
 assign Memwmask =   inst_sw ? 8'b00001111 :
@@ -135,13 +139,15 @@ assign Memwmask =   inst_sw ? 8'b00001111 :
                     inst_sb ? 8'b00000001 :
                     8'b0;
 
-assign MemValid =   (inst_lw | inst_lbu | inst_sb | inst_sh | inst_sw) & 1'b1 |
+assign MemValid =   (inst_lb | inst_lh | inst_lw | inst_lbu | inst_sb | inst_sh | inst_sw) & 1'b1 |
                     1'b0;
 
 assign MemWrite =   (inst_sb | inst_sh | inst_sw) & 1'b1 |
                     1'b0;
 // unsigned(0--) signed(1--) lb(-01) lh(-10) lw(011)
 assign MemReadFunc =    {3{inst_lbu}} & 3'b001 |
+                        {3{inst_lb}} & 3'b101 |
+                        {3{inst_lh}} & 3'b110 |
                         {3{inst_lw}} & 3'b011;
 
 endmodule
