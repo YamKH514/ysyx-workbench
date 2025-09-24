@@ -9,8 +9,8 @@ module Comparison(
 
 assign CMPRes = (Func == 3'b001) & Zero |
                 (Func == 3'b010) & (Sign ^ Overflow) |
-                (Func == 3'b011) & (Zero + (Sign ^ Overflow)) |
+                (Func == 3'b011) & (Zero | (Sign ^ Overflow)) |
                 (Func == 3'b110) & (~Carry) |
-                (Func == 3'b111) & (Zero + ~Carry);
+                (Func == 3'b111) & (Zero | ~Carry);
 
 endmodule
