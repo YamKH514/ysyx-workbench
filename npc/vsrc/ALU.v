@@ -23,7 +23,7 @@ wire CMPRes;
 wire [31:0] ShifterRes;
 wire [31:0] BoolRes;
 
-adder32 u_adder32(
+Adder u_Adder(
             .mode       (ALUFunc[0]),
             .a          (Src1      ),
             .b          (Src2      ),
