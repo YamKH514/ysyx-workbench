@@ -1,7 +1,5 @@
 module Comparison(
     input [2:0] Func, // A==B(001) A<B signed(010) A<=B signed(011) A<B unsigned(110) A<=B unsigned(111)
-    input [31:0] a,
-    input [31:0] b,
     input Zero,
     input Overflow,
     input Carry,
