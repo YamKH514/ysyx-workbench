@@ -8,7 +8,7 @@ module adder32(
     reg [31:0] b_complement, carry_out;
     wire [31:0] t_add_Cin;
 
-    assign b_complement = b ^ {32{mode}};
+    assign b_complement = mode ? (~b + 1) : b;
 
     adder1 u_adder0(
                .Cin  	(mode   ),
