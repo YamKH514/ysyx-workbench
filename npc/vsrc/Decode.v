@@ -49,6 +49,7 @@ wire inst_sub;      // R
 wire inst_sll;      // R
 wire inst_sltu;     // R
 wire inst_xor;      // R
+wire inst_srl;      // R
 wire inst_sra;      // R
 wire inst_or;       // R
 wire inst_and;      // R
@@ -84,6 +85,7 @@ assign inst_sub   = (Opcode == 7'b0110011) & (Funct3 == 3'b000) & (Funct7 == 7'b
 assign inst_sll   = (Opcode == 7'b0110011) & (Funct3 == 3'b001) & (Funct7 == 7'b0000000);
 assign inst_sltu  = (Opcode == 7'b0110011) & (Funct3 == 3'b011) & (Funct7 == 7'b0000000);
 assign inst_xor   = (Opcode == 7'b0110011) & (Funct3 == 3'b100) & (Funct7 == 7'b0000000);
+assign inst_srl   = (Opcode == 7'b0110011) & (Funct3 == 3'b101) & (Funct7 == 7'b0000000);
 assign inst_sra   = (Opcode == 7'b0110011) & (Funct3 == 3'b101) & (Funct7 == 7'b0100000);
 assign inst_or    = (Opcode == 7'b0110011) & (Funct3 == 3'b110) & (Funct7 == 7'b0000000);
 assign inst_and   = (Opcode == 7'b0110011) & (Funct3 == 3'b111) & (Funct7 == 7'b0000000);
@@ -102,9 +104,9 @@ assign InstType =   {3{inst_jalr | inst_lb | inst_lh | inst_lw | inst_lbu | inst
                     {3{inst_beq | inst_bne | inst_blt | inst_bge | inst_bltu | inst_bgeu}} & 3'd2 | // B
                     {3{inst_lui | inst_auipc}} & 3'd3 | // U
                     {3{inst_jal}} & 3'd4 | // J
-                    {3{inst_add | inst_sub | inst_sll | inst_sltu | inst_xor | inst_sra | inst_or | inst_and}} & 3'd5; // R
+                    {3{inst_add | inst_sub | inst_sll | inst_sltu | inst_xor | inst_srl | inst_sra | inst_or | inst_and}} & 3'd5; // R
 
-assign RegWriteEn = inst_lui | inst_auipc | inst_jal | inst_jalr | inst_lb | inst_lh | inst_lw | inst_lbu | inst_lhu | inst_addi | inst_sltiu | inst_xori | inst_andi | inst_slli | inst_srli | inst_srai | inst_add | inst_sub | inst_sll | inst_sltu | inst_xor | inst_sra | inst_or | inst_and;
+assign RegWriteEn = inst_lui | inst_auipc | inst_jal | inst_jalr | inst_lb | inst_lh | inst_lw | inst_lbu | inst_lhu | inst_addi | inst_sltiu | inst_xori | inst_andi | inst_slli | inst_srli | inst_srai | inst_add | inst_sub | inst_sll | inst_sltu | inst_xor | inst_srl | inst_sra | inst_or | inst_and;
 
 assign ALUFunc =    {6{inst_sub}} & 6'b000001 | // sub
                     {6{inst_beq | inst_bne}} & 6'b010011 | // A==B
@@ -116,15 +118,15 @@ assign ALUFunc =    {6{inst_sub}} & 6'b000001 | // sub
                     {6{inst_or}} & 6'b101110 | // OR
                     {6{inst_xori | inst_xor}} & 6'b100110 | // XOR
                     {6{inst_slli | inst_sll}} & 6'b110000 | // SLL
-                    {6{inst_srli}} & 6'b110001 | // SRL
+                    {6{inst_srli | inst_srl}} & 6'b110001 | // SRL
                     {6{inst_srai | inst_sra}} & 6'b110011 | // SRA
                     6'b000000; // add
 
 assign ALUSrcSel1 = {2{inst_lui}} & 2'd0 | // 0
                     {2{inst_jal | inst_jalr | inst_auipc}} & 2'd1 | // PC
-                    {2{inst_beq | inst_bne | inst_blt | inst_bge | inst_bltu | inst_bgeu | inst_lb | inst_lh | inst_lw | inst_lbu | inst_lhu | inst_sb | inst_sh | inst_sw | inst_addi | inst_sltiu | inst_xori | inst_andi| inst_slli | inst_srli | inst_srai | inst_add | inst_sub | inst_sll | inst_sltu | inst_xor | inst_sra | inst_or | inst_and}} & 2'd2; // ReadData1
+                    {2{inst_beq | inst_bne | inst_blt | inst_bge | inst_bltu | inst_bgeu | inst_lb | inst_lh | inst_lw | inst_lbu | inst_lhu | inst_sb | inst_sh | inst_sw | inst_addi | inst_sltiu | inst_xori | inst_andi| inst_slli | inst_srli | inst_srai | inst_add | inst_sub | inst_sll | inst_sltu | inst_xor | inst_srl | inst_sra | inst_or | inst_and}} & 2'd2; // ReadData1
 
-assign ALUSrcSel2 = {2{inst_beq | inst_bne | inst_blt | inst_bge | inst_bltu | inst_bgeu | inst_add | inst_sub | inst_sll | inst_sltu | inst_xor | inst_sra | inst_or | inst_and}} & 2'd0 | // ReadData2
+assign ALUSrcSel2 = {2{inst_beq | inst_bne | inst_blt | inst_bge | inst_bltu | inst_bgeu | inst_add | inst_sub | inst_sll | inst_sltu | inst_xor | inst_srl | inst_sra | inst_or | inst_and}} & 2'd0 | // ReadData2
                     {2{inst_lui | inst_auipc |inst_lb | inst_lh | inst_lw | inst_lbu | inst_lhu | inst_sb | inst_sh | inst_sw | inst_addi | inst_sltiu | inst_xori | inst_andi | inst_slli | inst_srli | inst_srai}} & 2'd1 | // ImmExt
                     {2{inst_jal | inst_jalr}} & 2'd2; // 4
 
