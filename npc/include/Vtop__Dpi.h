@@ -4,6 +4,8 @@
 #include "common.h"
 
 extern void ebreak_trigger();
+extern uint32_t paddr_read(uint32_t raddr);
+extern void paddr_write(uint32_t waddr, uint32_t wdata, char wmask);
 extern int get_inst(int pc);
 extern void get_gpr(int out_gpr[16]);
 

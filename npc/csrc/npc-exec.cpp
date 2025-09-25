@@ -71,7 +71,7 @@ static void single_cycle(Vtop *top, VerilatedContext *contextp, VerilatedVcdC *t
         p += snprintf(p, sizeof(logbuf), "0x%08x:", npc_state.halt_pc);
         int ilen = 4;
         int i;
-        uint32_t inst_val = paddr_read(npc_state.halt_pc, 4);
+        uint32_t inst_val = paddr_read(npc_state.halt_pc);
         uint8_t *inst = (uint8_t *)&inst_val;
         for (i = ilen - 1; i >= 0; i--)
         {
