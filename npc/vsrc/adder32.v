@@ -33,8 +33,8 @@ module adder32(
 
     assign t_add_Cin = b_complement + {31'b0, mode};
     assign carry = carry_out[31];
-    // assign overflow = (a[31] == t_add_Cin[31]) && (result[31] != a[31]);
-    assign overflow = (a[31] ^ b[31] ^ mode) & (result[31] != a[31]);
+    assign overflow = (a[31] == t_add_Cin[31]) && (result[31] != a[31]);
+    // assign overflow = (a[31] ^ b[31] ^ mode) & (result[31] != a[31]);
     assign zero = ~(| result);
 
     wire _unused_ok = &{
