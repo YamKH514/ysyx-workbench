@@ -95,12 +95,12 @@ int printf(const char *fmt, ...) {
   }
   *out = '\0';
   va_end(args);
-  // out = buf;
-  // while(*out != '\0')
-  // {
-  //   putch(*out);
-  //   out ++;
-  // }
+  out = buf;
+  while(*out != '\0')
+  {
+    putch(*out);
+    out ++;
+  }
   return cnt;
 }
 
