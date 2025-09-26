@@ -57,6 +57,7 @@ char *int_to_str(int num, char *dest, int *cnt) {
 }
 
 int printf(const char *fmt, ...) {
+  putch('A');
   char buf[128];
   char *out = buf;
   va_list args;
