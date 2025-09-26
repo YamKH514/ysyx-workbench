@@ -5,14 +5,6 @@
 
 #if !defined(__ISA_NATIVE__) || defined(__NATIVE_USE_KLIB__)
 
-int printf(const char *fmt, ...) {
-  panic("Not implemented");
-}
-
-int vsprintf(char *out, const char *fmt, va_list ap) {
-  panic("Not implemented");
-}
-
 char *chwrite(char *dest, char *ch, int *cnt) {
   while (*ch != '\0')
   {
@@ -62,6 +54,58 @@ char *int_to_str(int num, char *dest, int *cnt) {
     dest ++;
   }
   return dest;
+}
+
+int printf(const char *fmt, ...) {
+  char buf[128];
+  char *out = buf;
+  va_list args;
+  va_start(args, fmt);
+  int cnt = 0;
+  const char *p = fmt;
+  while (*p != '\0')
+  {
+    if(*p == '%')
+    {
+      p ++;
+      switch (*p)
+      {
+      case 'd':
+        int num = va_arg(args, int);
+        out = int_to_str(num, out, &cnt);
+        p ++;
+        break;
+      case 's':
+        char *ch = va_arg(args, char *);
+        out = chwrite(out, ch, &cnt);
+        p ++;
+        break;
+      default:
+        assert(0);
+        break;
+      }
+    }
+    else
+    {
+      *out = *p;
+      out ++;
+      p ++;
+      cnt ++;
+    }
+  }
+  *out = '\0';
+  va_end(args);
+  out = buf;
+  while(*out != '\0')
+  {
+    putch(*out);
+    out ++;
+  }
+  return cnt;
+}
+
+int vsprintf(char *out, const char *fmt, va_list ap) {
+  panic("Not implemented");
 }
 
 int sprintf(char *out, const char *fmt, ...) {
