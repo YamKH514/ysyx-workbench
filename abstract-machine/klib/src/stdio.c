@@ -56,6 +56,43 @@ char *int_to_str(int num, char *dest, int *cnt) {
   return dest;
 }
 
+int get_str(const char *fmt, char *str, va_list args) {
+  int cnt = 0;
+  const char *p = fmt;
+  while (*p != '\0')
+  {
+    if(*p == '%')
+    {
+      p ++;
+      switch (*p)
+      {
+      case 'd':
+        int num = va_arg(args, int);
+        str = int_to_str(num, str, &cnt);
+        p ++;
+        break;
+      case 's':
+        char *ch = va_arg(args, char *);
+        str = chwrite(str, ch, &cnt);
+        p ++;
+        break;
+      default:
+        assert(0);
+        break;
+      }
+    }
+    else
+    {
+      *str = *p;
+      str ++;
+      p ++;
+      cnt ++;
+    }
+  }
+  *str = '\0';
+  return cnt;
+}
+
 int printf(const char *fmt, ...) {
   char buf[128];
   char *out = buf;
@@ -113,38 +150,7 @@ int sprintf(char *out, const char *fmt, ...) {
   int cnt = 0;
   va_list args;
   va_start(args, fmt);
-  const char *p = fmt;
-  while (*p != '\0')
-  {
-    if(*p == '%')
-    {
-      p ++;
-      switch (*p)
-      {
-      case 'd':
-        int num = va_arg(args, int);
-        out = int_to_str(num, out, &cnt);
-        p ++;
-        break;
-      case 's':
-        char *ch = va_arg(args, char *);
-        out = chwrite(out, ch, &cnt);
-        p ++;
-        break;
-      default:
-        assert(0);
-        break;
-      }
-    }
-    else
-    {
-      *out = *p;
-      out ++;
-      p ++;
-      cnt ++;
-    }
-  }
-  *out = '\0';
+  cnt = get_str(fmt, out, args);
   va_end(args);
   return cnt;
 }
