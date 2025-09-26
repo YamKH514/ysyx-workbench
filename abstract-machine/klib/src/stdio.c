@@ -94,45 +94,13 @@ int get_str(const char *fmt, char *str, va_list args) {
 }
 
 int printf(const char *fmt, ...) {
+  int cnt = 0;
   char buf[128];
   char *out = buf;
   va_list args;
   va_start(args, fmt);
-  int cnt = 0;
-  const char *p = fmt;
-  while (*p != '\0')
-  {
-    if(*p == '%')
-    {
-      p ++;
-      switch (*p)
-      {
-      case 'd':
-        int num = va_arg(args, int);
-        out = int_to_str(num, out, &cnt);
-        p ++;
-        break;
-      case 's':
-        char *ch = va_arg(args, char *);
-        out = chwrite(out, ch, &cnt);
-        p ++;
-        break;
-      default:
-        assert(0);
-        break;
-      }
-    }
-    else
-    {
-      *out = *p;
-      out ++;
-      p ++;
-      cnt ++;
-    }
-  }
-  *out = '\0';
+  cnt = get_str(fmt, buf, args);
   va_end(args);
-  out = buf;
   while(*out != '\0')
   {
     putch(*out);
