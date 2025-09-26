@@ -110,7 +110,6 @@ int vsprintf(char *out, const char *fmt, va_list ap) {
 }
 
 int sprintf(char *out, const char *fmt, ...) {
-  // panic("Not implemented");
   if(out == NULL) return -1;
   int cnt = 0;
   va_list args;
