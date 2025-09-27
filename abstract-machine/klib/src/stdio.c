@@ -66,44 +66,44 @@ int get_format_str(const char *fmt, char *str, va_list args) {
     {
       percent_sign = 1;
       p ++;
-      switch (*p)
-      {
-      case '%':
-        *str = '%';
-        str ++;
-        p ++;
-        percent_sign = 0;
-        break;
-      case 'd':
-        int num = va_arg(args, int);
-        str = int_to_str(num, str, &cnt);
-        p ++;
-        percent_sign = 0;
-        break;
-      case 'c':
-        char ch = va_arg(args, int);
-        *str = ch;
-        str ++;
-        p ++;
-        percent_sign = 0;
-        break;
-      case 's':
-        char *s = va_arg(args, char *);
-        str = chwrite(str, s, &cnt);
-        p ++;
-        percent_sign = 0;
-        break;
-      default:
-        // assert(0);
-        break;
-      }
     }
-    else
+    else if(percent_sign == 0)
     {
       *str = *p;
       str ++;
       p ++;
       cnt ++;
+    }
+    switch (*p)
+    {
+    case '%':
+      *str = '%';
+      str ++;
+      p ++;
+      percent_sign = 0;
+      break;
+    case 'd':
+      int num = va_arg(args, int);
+      str = int_to_str(num, str, &cnt);
+      p ++;
+      percent_sign = 0;
+      break;
+    case 'c':
+      char ch = va_arg(args, int);
+      *str = ch;
+      str ++;
+      p ++;
+      percent_sign = 0;
+      break;
+    case 's':
+      char *s = va_arg(args, char *);
+      str = chwrite(str, s, &cnt);
+      p ++;
+      percent_sign = 0;
+      break;
+    default:
+      // assert(0);
+      break;
     }
   }
   *str = '\0';
