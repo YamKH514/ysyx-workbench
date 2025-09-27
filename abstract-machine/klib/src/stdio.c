@@ -66,15 +66,9 @@ int get_format_str(const char *fmt, char *str, va_list args) {
     {
       percent_sign = 1;
     }
-      p ++;
-      switch (*p)
-      {
-      case '%':
-        *str = '%';
-        str ++;
-        p ++;
-        percent_sign = 0;
-        break;
+    p ++;
+    switch (*p)
+    {
       case 'd':
         int num = va_arg(args, int);
         str = int_to_str(num, str, &cnt);
