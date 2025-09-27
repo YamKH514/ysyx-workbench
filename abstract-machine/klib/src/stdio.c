@@ -83,11 +83,6 @@ int get_format_str(const char *fmt, char *str, va_list args) {
     // 解析格式字符
     switch (*p)
     {
-      case '%':
-        *str = '%';
-        str ++;
-        p ++;
-        break;
       case 'd':
         int num = va_arg(args, int);
         str = int_to_str(num, str, &cnt);
