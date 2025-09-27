@@ -76,6 +76,7 @@ int get_format_str(const char *fmt, char *str, va_list args) {
         str = int_to_str(num, str, &cnt);
         p ++;
         break;
+      case 'c':
       case 's':
         char *ch = va_arg(args, char *);
         str = chwrite(str, ch, &cnt);
