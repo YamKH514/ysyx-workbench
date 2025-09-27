@@ -66,7 +66,7 @@ int get_format_str(const char *fmt, char *str, va_list args) {
     {
       percent_sign = 1;
     }
-    if(percent_sign == 0)
+    else if(percent_sign == 0)
     {
       *str = *p;
       str ++;
