@@ -38,8 +38,8 @@ void *malloc(size_t size) {
   //   panic() -> putchar() -> (glibc) -> malloc() -> panic()
   void *p = NULL;
 #if !(defined(__ISA_NATIVE__) && defined(__NATIVE_USE_KLIB__))
-  p = start_addr + used_space;
-  used_space += size;
+  // p = start_addr + used_space;
+  // used_space += size;
 #endif
   return p;
 }
