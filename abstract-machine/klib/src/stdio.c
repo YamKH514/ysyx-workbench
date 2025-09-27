@@ -16,17 +16,19 @@ char *chwrite(char *dest, char *ch, int *cnt) {
   return dest;
 }
 
-char *int_to_str(int num, char *dest, int *cnt) {
+char *int_to_str(int num, char *dest, int *cnt, char pad, int width) {
   assert(dest);
   char numbuf[32];
   int i = 0;
   int is_negative = 0;
+  int pad_len = 0;
+  // 处理负号
   if(num < 0)
   {
     is_negative = 1;
     num = -num;
   }
-
+  // 计数
   if(num == 0)
   {
     numbuf[0] = '0';
@@ -47,6 +49,15 @@ char *int_to_str(int num, char *dest, int *cnt) {
     (*cnt) ++;
     dest ++;
   }
+  // 填充
+  pad_len = (width > (i + is_negative)) ? width - (i + is_negative) : 0;
+  (*cnt) += pad_len;
+  for(int j = 0; j < pad_len; j++)
+  {
+    *dest = pad;
+    dest ++;
+  }
+
   (*cnt) += i;
   while (i-- > 0)
   {
@@ -81,11 +92,26 @@ int get_format_str(const char *fmt, char *str, va_list args) {
     }
 
     // 解析格式字符
+    char pad = ' ';
+    int width = 0;
+
+    if(*p == '0')
+    {
+      pad = '0';
+      p ++;
+    }
+
+    if(*p >= '0' && *p <= '9')
+    {
+      width = width * 10 + (*p - '0');
+      p ++;
+    }
+
     switch (*p)
     {
       case 'd':
         int num = va_arg(args, int);
-        str = int_to_str(num, str, &cnt);
+        str = int_to_str(num, str, &cnt, pad, width);
         p ++;
         break;
       case 'c':
@@ -101,7 +127,6 @@ int get_format_str(const char *fmt, char *str, va_list args) {
         break;
       default:
         assert(0);
-        break;
     }
   }
   *str = '\0';
