@@ -58,48 +58,51 @@ char *int_to_str(int num, char *dest, int *cnt) {
 
 int get_format_str(const char *fmt, char *str, va_list args) {
   int cnt = 0;
-  int percent_sign = 0;
   const char *p = fmt;
+
   while (*p != '\0')
   {
-    if(*p == '%')
-    {
-      percent_sign = 1;
-    }
-    else if(percent_sign == 0)
+    if(*p != '%')
     {
       *str = *p;
       str ++;
       p ++;
       cnt ++;
+      continue;
     }
     p ++;
+    if(*p == '%')
+    {
+      *str = *p;
+      str ++;
+      p ++;
+      cnt ++;
+      continue;
+    }
+
+    // 解析格式字符
     switch (*p)
     {
       case '%':
         *str = '%';
         str ++;
         p ++;
-        percent_sign = 0;
         break;
       case 'd':
         int num = va_arg(args, int);
         str = int_to_str(num, str, &cnt);
         p ++;
-        percent_sign = 0;
         break;
       case 'c':
         char ch = va_arg(args, int);
         *str = ch;
         str ++;
         p ++;
-        percent_sign = 0;
         break;
       case 's':
         char *s = va_arg(args, char *);
         str = chwrite(str, s, &cnt);
         p ++;
-        percent_sign = 0;
         break;
       default:
         assert(0);
@@ -107,7 +110,6 @@ int get_format_str(const char *fmt, char *str, va_list args) {
     }
   }
   *str = '\0';
-  if(percent_sign == 1) assert(0);
   return cnt;
 }
 
