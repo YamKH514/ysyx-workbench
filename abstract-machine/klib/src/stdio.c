@@ -58,11 +58,13 @@ char *int_to_str(int num, char *dest, int *cnt) {
 
 int get_format_str(const char *fmt, char *str, va_list args) {
   int cnt = 0;
+  int percent_sign = 0;
   const char *p = fmt;
   while (*p != '\0')
   {
     if(*p == '%')
     {
+      percent_sign = 1;
       p ++;
       switch (*p)
       {
@@ -87,9 +89,6 @@ int get_format_str(const char *fmt, char *str, va_list args) {
         str = chwrite(str, s, &cnt);
         p ++;
         break;
-      default:
-        assert(0);
-        break;
       }
     }
     else
@@ -100,6 +99,8 @@ int get_format_str(const char *fmt, char *str, va_list args) {
       cnt ++;
     }
   }
+  if(percent_sign)
+    assert(0);
   *str = '\0';
   return cnt;
 }
