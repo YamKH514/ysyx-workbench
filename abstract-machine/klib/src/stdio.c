@@ -66,9 +66,22 @@ int get_format_str(const char *fmt, char *str, va_list args) {
     {
       percent_sign = 1;
     }
+    if(percent_sign == 0)
+    {
+      *str = *p;
+      str ++;
+      p ++;
+      cnt ++;
+    }
     p ++;
     switch (*p)
     {
+      case '%':
+        *str = '%';
+        str ++;
+        p ++;
+        percent_sign = 0;
+        break;
       case 'd':
         int num = va_arg(args, int);
         str = int_to_str(num, str, &cnt);
@@ -91,13 +104,6 @@ int get_format_str(const char *fmt, char *str, va_list args) {
       default:
         assert(0);
         break;
-    }
-    if(percent_sign == 0)
-    {
-      *str = *p;
-      str ++;
-      p ++;
-      cnt ++;
     }
   }
   *str = '\0';
