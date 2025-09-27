@@ -5,6 +5,8 @@
 
 #if !defined(__ISA_NATIVE__) || defined(__NATIVE_USE_KLIB__)
 
+typedef char (*base_conversion)(int raw_num);
+
 char *chwrite(char *dest, char *ch, int *cnt) {
   while (*ch != '\0')
   {
@@ -16,7 +18,7 @@ char *chwrite(char *dest, char *ch, int *cnt) {
   return dest;
 }
 
-char *int_to_str(int num, char *dest, int *cnt, char pad, int width) {
+char *int_to_str(int num, char *dest, int *cnt, char pad, int width, int base, base_conversion bc) {
   assert(dest);
   char numbuf[32];
   int i = 0;
@@ -38,8 +40,8 @@ char *int_to_str(int num, char *dest, int *cnt, char pad, int width) {
   {
     while (num > 0)
     {
-      numbuf[i] = '0' + (num % 10);
-      num /= 10;
+      numbuf[i] = bc(num % base);
+      num /= base;
       i ++;
     }
   }
@@ -65,6 +67,11 @@ char *int_to_str(int num, char *dest, int *cnt, char pad, int width) {
     dest ++;
   }
   return dest;
+}
+
+char dec_bc(int num)
+{
+  return '0' + num;
 }
 
 int get_format_str(const char *fmt, char *str, va_list args) {
@@ -111,7 +118,7 @@ int get_format_str(const char *fmt, char *str, va_list args) {
     {
       case 'd':
         int num = va_arg(args, int);
-        str = int_to_str(num, str, &cnt, pad, width);
+        str = int_to_str(num, str, &cnt, pad, width, 10, dec_bc);
         p ++;
         break;
       case 'c':
