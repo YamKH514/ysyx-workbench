@@ -74,6 +74,14 @@ char dec_bc(int num)
   return '0' + num;
 }
 
+char hex_bc(int num)
+{
+  if(num >= 10)
+    return 'a' + (num - 10);
+  else
+    return '0' + num;
+}
+
 int get_format_str(const char *fmt, char *str, va_list args) {
   int cnt = 0;
   const char *p = fmt;
