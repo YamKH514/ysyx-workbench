@@ -6,7 +6,7 @@
 static unsigned long int next = 1;
 
 void *start_addr = &heap.start;
-int used_space = 0;
+uint32_t used_space = 0;
 
 int rand(void) {
   // RAND_MAX assumed to be 32767
