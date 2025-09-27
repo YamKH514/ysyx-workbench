@@ -141,6 +141,7 @@ int get_format_str(const char *fmt, char *str, va_list args) {
         p ++;
         break;
       default:
+        printf("%c\n", *p);
         assert(0);
     }
   }
