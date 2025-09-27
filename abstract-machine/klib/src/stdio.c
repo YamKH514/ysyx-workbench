@@ -94,6 +94,7 @@ int get_str(const char *fmt, char *str, va_list args) {
 }
 
 int printf(const char *fmt, ...) {
+  panic("Not implemented");
   int cnt = 0;
   char buf[128];
   char *out = buf;
