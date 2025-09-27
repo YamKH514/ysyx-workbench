@@ -89,7 +89,7 @@ int get_format_str(const char *fmt, char *str, va_list args) {
         percent_sign = 0;
         break;
       default:
-        // assert(0);
+        assert(0);
         break;
     }
     if(percent_sign == 0)
