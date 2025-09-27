@@ -86,14 +86,14 @@ void *memmove(void *dst, const void *src, size_t n) {
 
   if(d < s)
   {
-    for(int i = 0; i < n; i++)
+    for(size_t i = 0; i < n; i++)
     {
       d[i] = s[i];
     }
   }
   else
   {
-    for(int i = n - 1; i >= 0; i++)
+    for(size_t i = n - 1; i >= 0; i++)
     {
       d[i] = s[i];
     }
