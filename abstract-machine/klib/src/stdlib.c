@@ -40,6 +40,7 @@ void *malloc(size_t size) {
   void *p = start_addr + used_space;
   used_space += size;
 #endif
+  printf("malloc size = %d\n", size);
   return p;
 }
 
