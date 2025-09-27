@@ -81,7 +81,13 @@ void *memset(void *s, int c, size_t n) {
 }
 
 void *memmove(void *dst, const void *src, size_t n) {
-  panic("Not implemented");
+  char *p = dst;
+  int cnt = n / 4;
+  for(int i = 0; i < cnt; i++)
+  {
+    *(p + i) = *((char *)src + i);
+  }
+  return dst;
 }
 
 void *memcpy(void *out, const void *in, size_t n) {
