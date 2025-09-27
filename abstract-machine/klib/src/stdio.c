@@ -5,14 +5,6 @@
 
 #if !defined(__ISA_NATIVE__) || defined(__NATIVE_USE_KLIB__)
 
-int printf(const char *fmt, ...) {
-  panic("Not implemented");
-}
-
-int vsprintf(char *out, const char *fmt, va_list ap) {
-  panic("Not implemented");
-}
-
 char *chwrite(char *dest, char *ch, int *cnt) {
   while (*ch != '\0')
   {
@@ -24,17 +16,19 @@ char *chwrite(char *dest, char *ch, int *cnt) {
   return dest;
 }
 
-char *int_to_str(int num, char *dest, int *cnt) {
+char *int_to_str(int num, char *dest, int *cnt, char pad, int width) {
   assert(dest);
   char numbuf[32];
   int i = 0;
   int is_negative = 0;
+  int pad_len = 0;
+  // 处理负号
   if(num < 0)
   {
     is_negative = 1;
     num = -num;
   }
-
+  // 计数
   if(num == 0)
   {
     numbuf[0] = '0';
@@ -55,6 +49,15 @@ char *int_to_str(int num, char *dest, int *cnt) {
     (*cnt) ++;
     dest ++;
   }
+  // 填充
+  pad_len = (width > (i + is_negative)) ? width - (i + is_negative) : 0;
+  (*cnt) += pad_len;
+  for(int j = 0; j < pad_len; j++)
+  {
+    *dest = pad;
+    dest ++;
+  }
+
   (*cnt) += i;
   while (i-- > 0)
   {
@@ -64,43 +67,98 @@ char *int_to_str(int num, char *dest, int *cnt) {
   return dest;
 }
 
+int get_format_str(const char *fmt, char *str, va_list args) {
+  int cnt = 0;
+  const char *p = fmt;
+
+  while (*p != '\0')
+  {
+    if(*p != '%')
+    {
+      *str = *p;
+      str ++;
+      p ++;
+      cnt ++;
+      continue;
+    }
+    p ++;
+    if(*p == '%')
+    {
+      *str = *p;
+      str ++;
+      p ++;
+      cnt ++;
+      continue;
+    }
+
+    // 解析格式字符
+    char pad = ' ';
+    int width = 0;
+
+    if(*p == '0')
+    {
+      pad = '0';
+      p ++;
+    }
+
+    if(*p >= '0' && *p <= '9')
+    {
+      width = width * 10 + (*p - '0');
+      p ++;
+    }
+
+    switch (*p)
+    {
+      case 'd':
+        int num = va_arg(args, int);
+        str = int_to_str(num, str, &cnt, pad, width);
+        p ++;
+        break;
+      case 'c':
+        char ch = va_arg(args, int);
+        *str = ch;
+        str ++;
+        p ++;
+        break;
+      case 's':
+        char *s = va_arg(args, char *);
+        str = chwrite(str, s, &cnt);
+        p ++;
+        break;
+      default:
+        assert(0);
+    }
+  }
+  *str = '\0';
+  return cnt;
+}
+
+int printf(const char *fmt, ...) {
+  int cnt = 0;
+  char buf[128];
+  char *out = buf;
+  va_list args;
+  va_start(args, fmt);
+  cnt = get_format_str(fmt, buf, args);
+  va_end(args);
+  while(*out != '\0')
+  {
+    putch(*out);
+    out ++;
+  }
+  return cnt;
+}
+
+int vsprintf(char *out, const char *fmt, va_list ap) {
+  panic("Not implemented");
+}
+
 int sprintf(char *out, const char *fmt, ...) {
   if(out == NULL) return -1;
   int cnt = 0;
   va_list args;
   va_start(args, fmt);
-  const char *p = fmt;
-  while (*p != '\0')
-  {
-    if(*p == '%')
-    {
-      p ++;
-      switch (*p)
-      {
-      case 'd':
-        int num = va_arg(args, int);
-        out = int_to_str(num, out, &cnt);
-        p ++;
-        break;
-      case 's':
-        char *ch = va_arg(args, char *);
-        out = chwrite(out, ch, &cnt);
-        p ++;
-        break;
-      default:
-        assert(0);
-        break;
-      }
-    }
-    else
-    {
-      *out = *p;
-      out ++;
-      p ++;
-      cnt ++;
-    }
-  }
-  *out = '\0';
+  cnt = get_format_str(fmt, out, args);
   va_end(args);
   return cnt;
 }
