@@ -81,10 +81,22 @@ void *memset(void *s, int c, size_t n) {
 }
 
 void *memmove(void *dst, const void *src, size_t n) {
-  char *p = dst;
-  for(int i = 0; i < n; i++)
+  unsigned char *d = dst;
+  const unsigned char *s = src;
+
+  if(d < s)
   {
-    *(p + i) = *((char *)src + i);
+    for(int i = 0; i < n; i++)
+    {
+      d[i] = s[i];
+    }
+  }
+  else
+  {
+    for(int i = n - 1; i >= 0; i++)
+    {
+      d[i] = s[i];
+    }
   }
   return dst;
 }
