@@ -125,8 +125,13 @@ int get_format_str(const char *fmt, char *str, va_list args) {
     switch (*p)
     {
       case 'd':
-        int num = va_arg(args, int);
-        str = int_to_str(num, str, &cnt, pad, width, 10, dec_bc);
+        int dec_num = va_arg(args, int);
+        str = int_to_str(dec_num, str, &cnt, pad, width, 10, dec_bc);
+        p ++;
+        break;
+      case 'x':
+        int hex_num = va_arg(args, int);
+        str = int_to_str(hex_num, str, &cnt, pad, width, 16, hex_bc);
         p ++;
         break;
       case 'c':
@@ -141,7 +146,7 @@ int get_format_str(const char *fmt, char *str, va_list args) {
         p ++;
         break;
       default:
-        printf("%c\n", *p);
+        printf("Need support %c.\n", *p);
         assert(0);
     }
   }
