@@ -56,7 +56,7 @@ char *int_to_str(int num, char *dest, int *cnt) {
   return dest;
 }
 
-int get_str(const char *fmt, char *str, va_list args) {
+int get_format_str(const char *fmt, char *str, va_list args) {
   int cnt = 0;
   const char *p = fmt;
   while (*p != '\0')
@@ -66,6 +66,11 @@ int get_str(const char *fmt, char *str, va_list args) {
       p ++;
       switch (*p)
       {
+      case '%':
+        *str = '%';
+        str ++;
+        p ++;
+        break;
       case 'd':
         int num = va_arg(args, int);
         str = int_to_str(num, str, &cnt);
@@ -99,7 +104,7 @@ int printf(const char *fmt, ...) {
   char *out = buf;
   va_list args;
   va_start(args, fmt);
-  cnt = get_str(fmt, buf, args);
+  cnt = get_format_str(fmt, buf, args);
   va_end(args);
   while(*out != '\0')
   {
@@ -118,7 +123,7 @@ int sprintf(char *out, const char *fmt, ...) {
   int cnt = 0;
   va_list args;
   va_start(args, fmt);
-  cnt = get_str(fmt, out, args);
+  cnt = get_format_str(fmt, out, args);
   va_end(args);
   return cnt;
 }
