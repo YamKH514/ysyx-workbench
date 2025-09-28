@@ -6,7 +6,7 @@
 static unsigned long int next = 1;
 
 static char *addr = NULL;
-int addr_init = 0;
+static int addr_init = 0;
 
 int rand(void) {
   // RAND_MAX assumed to be 32767
