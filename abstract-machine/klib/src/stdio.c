@@ -25,7 +25,7 @@ char *int_to_str(int num, char *dest, int *cnt, char pad, int width, int base, b
   int is_negative = 0;
   int pad_len = 0;
   // 处理负号
-  if(num < 0)
+  if(num < 0 && base == 10)
   {
     is_negative = 1;
     num = -num;
