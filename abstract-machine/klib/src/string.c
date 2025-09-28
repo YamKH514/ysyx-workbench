@@ -88,7 +88,7 @@ void *memmove(void *dst, const void *src, size_t n) {
   {
     for(size_t i = 0; i < n; i++)
     {
-      // printf("1\n");
+      printf("1. i = %lu\n", i);
       d[i] = s[i];
     }
   }
@@ -96,7 +96,7 @@ void *memmove(void *dst, const void *src, size_t n) {
   {
     for(size_t i = n - 1; i >= 0; i++)
     {
-      printf("2\n");
+      printf("2, i = &lu\n", i);
       d[i] = s[i];
     }
   }
