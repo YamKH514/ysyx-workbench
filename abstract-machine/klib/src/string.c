@@ -88,7 +88,7 @@ void *memmove(void *dst, const void *src, size_t n) {
   {
     for(size_t i = 0; i < n; i++)
     {
-      printf("1\n");
+      // printf("1\n");
       d[i] = s[i];
     }
   }
