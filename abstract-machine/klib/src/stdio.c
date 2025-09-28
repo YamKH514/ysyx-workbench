@@ -79,9 +79,15 @@ char *int_to_str(uint32_t num, int sign, char *dest, int *cnt, char pad, int wid
   return dest;
 }
 
-char dec_bc(int num)
+char s_dec_bc(int num)
 {
   return '0' + num;
+}
+
+char u_dec_bc(int num)
+{
+  uint32_t uvar = (uint32_t)num;
+  return '0' + uvar;
 }
 
 char hex_bc(int num)
@@ -137,7 +143,7 @@ int get_format_str(const char *fmt, char *str, va_list args) {
     {
       case 'd':
         uint32_t dec_num = va_arg(args, uint32_t);
-        str = int_to_str(dec_num, 1, str, &cnt, pad, width, 10, dec_bc);
+        str = int_to_str(dec_num, 1, str, &cnt, pad, width, 10, s_dec_bc);
         p ++;
         break;
       case 'x':
@@ -154,6 +160,13 @@ int get_format_str(const char *fmt, char *str, va_list args) {
       case 's':
         char *s = va_arg(args, char *);
         str = chwrite(str, s, &cnt);
+        p ++;
+        break;
+      case 'l':
+        p ++;
+      case 'u':
+        uint32_t lu_num = va_arg(args, uint32_t);
+        str = int_to_str(lu_num, 0, str, &cnt, pad, width, 10, u_dec_bc);
         p ++;
         break;
       default:
