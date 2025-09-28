@@ -83,7 +83,7 @@ void *memset(void *s, int c, size_t n) {
 void *memmove(void *dst, const void *src, size_t n) {
   unsigned char *d = dst;
   const unsigned char *s = src;
-  printf("memmove d=0x%08x, s=0x%08x\n", &dst, &src);
+  printf("memmove d=0x%08x, s=0x%08x, n=%d\n", &dst, &src, n);
   if(d < s)
   {
     for(size_t i = 0; i < n; i++)
