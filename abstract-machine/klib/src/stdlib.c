@@ -42,7 +42,6 @@ void *malloc(size_t size) {
     addr = (void *)ROUNDUP(heap.start, 8);
     addr_inited = 1;
   }
-  printf("klib malloc size = %lu\n", size);
   size = (size_t) ROUNDUP(size, 8);
   if((void *)addr + size >= heap.end)
   {
