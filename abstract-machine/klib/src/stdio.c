@@ -22,7 +22,7 @@ char *int_to_str(uint32_t num, int sign, char *dest, int *cnt, char pad, int wid
   assert(dest);
   char numbuf[32];
   int i = 0;
-  uint32_t uvar = 0;
+  uint32_t uvar = num;
   int is_negative = 0;
   int pad_len = 0;
 
@@ -31,7 +31,7 @@ char *int_to_str(uint32_t num, int sign, char *dest, int *cnt, char pad, int wid
     int32_t svar = (int32_t)uvar;
     if(svar < 0)
     {
-      is_negative = 0;
+      is_negative = 1;
       uvar = (uint32_t)(-svar);
     }
     else
