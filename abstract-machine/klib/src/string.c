@@ -83,7 +83,6 @@ void *memset(void *s, int c, size_t n) {
 void *memmove(void *dst, const void *src, size_t n) {
   char *d = dst;
   const char *s = src;
-  printf("memmove d=0x%08x, s=0x%08x, n=%lu\n", &dst, &src, n);
   if(n == 0)
   {
     return dst;
@@ -110,7 +109,6 @@ void *memmove(void *dst, const void *src, size_t n) {
       n --;
     }
   }
-  printf("memmove done\n");
   return dst;
 }
 
