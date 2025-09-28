@@ -42,8 +42,8 @@ void *malloc(size_t size) {
     addr = (void *)ROUNDUP(heap.start, 8);
     addr_inited = 1;
   }
-  size = (size_t) ROUNDUP(size, 8);
   printf("malloc size = %lu\n", size);
+  size = (size_t) ROUNDUP(size, 8);
   if((void *)addr + size >= heap.end)
   {
     panic("Heap does not have enough space.");
