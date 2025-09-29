@@ -29,11 +29,12 @@ void __am_gpu_fbdraw(AM_GPU_FBDRAW_T *ctl) {
   int x = ctl->x;
   int y = ctl->y;
 
-  if(w == 0 || h == 0) return;
+  if (!ctl->sync && (w == 0 || h == 0))
+    return;
 
+  uint32_t *fb = (uint32_t *)FB_ADDR;
   uint32_t *pixels = (uint32_t *)(ctl->pixels);
   int screen_w = (inl(VGACTL_ADDR) & 0xFFFF0000) >> 16;
-  uint32_t *fb = (uint32_t *)FB_ADDR;
 
   for(int i = y; i < y + h; i++)
   {
