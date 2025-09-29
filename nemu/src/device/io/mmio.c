@@ -58,6 +58,11 @@ void print_devices_read(IOMap *map, paddr_t addr)
   printf("MMIO_READ at 0x%08x, device name is %s\n", addr, map->name);
 }
 
+void print_devices_write(IOMap *map, paddr_t addr)
+{
+  printf("MMIO_WRITE at 0x%08x, device name is %s\n", addr, map->name);
+}
+
 /* bus interface */
 word_t mmio_read(paddr_t addr, int len) {
   IOMap *map = fetch_mmio_map(addr);
@@ -66,5 +71,7 @@ word_t mmio_read(paddr_t addr, int len) {
 }
 
 void mmio_write(paddr_t addr, int len, word_t data) {
-  map_write(addr, len, data, fetch_mmio_map(addr));
+  IOMap *map = fetch_mmio_map(addr);
+  IFDEF(CONFIG_DTRACE, print_devices_write(map, addr));
+  map_write(addr, len, data, map);
 }
