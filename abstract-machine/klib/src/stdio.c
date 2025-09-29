@@ -5,6 +5,8 @@
 
 #if !defined(__ISA_NATIVE__) || defined(__NATIVE_USE_KLIB__)
 
+typedef char (*base_conversion)(int raw_num);
+
 char *chwrite(char *dest, char *ch, int *cnt) {
   while (*ch != '\0')
   {
@@ -16,30 +18,40 @@ char *chwrite(char *dest, char *ch, int *cnt) {
   return dest;
 }
 
-char *int_to_str(int num, char *dest, int *cnt, char pad, int width) {
+char *int_to_str(uint32_t num, int sign, char *dest, int *cnt, char pad, int width, int base, base_conversion bc) {
   assert(dest);
   char numbuf[32];
   int i = 0;
+  uint32_t uvar = num;
   int is_negative = 0;
   int pad_len = 0;
-  // 处理负号
-  if(num < 0)
+
+  if(sign)
   {
-    is_negative = 1;
-    num = -num;
+    int32_t svar = (int32_t)uvar;
+    if(svar < 0)
+    {
+      is_negative = 1;
+      uvar = (uint32_t)(-svar);
+    }
+    else
+    {
+      uvar = (uint32_t)svar;
+    }
   }
+
   // 计数
-  if(num == 0)
+  if(uvar == 0)
   {
     numbuf[0] = '0';
     i ++;
   }
   else
   {
-    while (num > 0)
+    while (uvar > 0)
     {
-      numbuf[i] = '0' + (num % 10);
-      num /= 10;
+      numbuf[i] = bc(uvar % base);
+      uvar /= base;
       i ++;
     }
   }
@@ -65,6 +77,26 @@ char *int_to_str(int num, char *dest, int *cnt, char pad, int width) {
     dest ++;
   }
   return dest;
+}
+
+char s_dec_bc(int num)
+{
+  return '0' + num;
+}
+
+char u_dec_bc(int num)
+{
+  uint32_t uvar = (uint32_t)num;
+  return '0' + uvar;
+}
+
+char hex_bc(int num)
+{
+  uint32_t uvar = (uint32_t)num;
+  if(uvar >= 10)
+    return 'a' + (uvar - 10);
+  else
+    return '0' + uvar;
 }
 
 int get_format_str(const char *fmt, char *str, va_list args) {
@@ -110,8 +142,13 @@ int get_format_str(const char *fmt, char *str, va_list args) {
     switch (*p)
     {
       case 'd':
-        int num = va_arg(args, int);
-        str = int_to_str(num, str, &cnt, pad, width);
+        uint32_t dec_num = va_arg(args, uint32_t);
+        str = int_to_str(dec_num, 1, str, &cnt, pad, width, 10, s_dec_bc);
+        p ++;
+        break;
+      case 'x':
+        uint32_t hex_num = va_arg(args, uint32_t);
+        str = int_to_str(hex_num, 0, str, &cnt, pad, width, 16, hex_bc);
         p ++;
         break;
       case 'c':
@@ -125,7 +162,15 @@ int get_format_str(const char *fmt, char *str, va_list args) {
         str = chwrite(str, s, &cnt);
         p ++;
         break;
+      case 'l':
+        p ++;
+      case 'u':
+        uint32_t lu_num = va_arg(args, uint32_t);
+        str = int_to_str(lu_num, 0, str, &cnt, pad, width, 10, u_dec_bc);
+        p ++;
+        break;
       default:
+        printf("Need support %c.\n", *p);
         assert(0);
     }
   }
