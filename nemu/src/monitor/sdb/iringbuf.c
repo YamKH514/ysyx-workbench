@@ -25,6 +25,7 @@ void iringbuf_get_inst(Decode *s)
     is_full = is_full || (p_cur == 0);
 }
 
+#ifdef CONFIG_ITRACE
 void iringbuf_print() {
     if ((p_cur == 0) && (is_full == 0)) return;
 
@@ -80,3 +81,4 @@ void iringbuf_print() {
     } while ((i = (i + 1) % MAX_IRINGBUF) != end);
     puts(ANSI_NONE);
 }
+#endif
