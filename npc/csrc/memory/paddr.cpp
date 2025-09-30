@@ -69,7 +69,8 @@ extern "C" void paddr_write(uint32_t waddr, uint32_t wdata, uint8_t wmask)
     uint32_t offset = waddr & 0x3;
     if(waddr == SERIAL_PORT)
     {
-        printf("%c", wdata & 0xff);
+        putchar(wdata);
+        // printf("%c", wdata & 0xff);
         return;
     }
     switch (wmask)
