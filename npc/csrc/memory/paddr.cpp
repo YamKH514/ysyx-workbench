@@ -49,13 +49,14 @@ extern "C" uint32_t paddr_read(uint32_t raddr)
 {
     uint32_t addr = raddr & ~0x3u;
     uint64_t us = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-    printf("%u\n", (uint32_t)(us & 0xFFFF));
     if(addr == RTC_ADDR)
     {
+        printf("RTC_ADDR\n");
         return (uint32_t)(us & 0x0000FFFF);
     }
     if(addr == RTC_ADDR + 0x4)
     {
+        printf("RTC_ADDR + 4\n");
         return (uint32_t)((us & 0xFFFF0000) >> 32);
     }
 #ifdef CONFIG_MTRACE
