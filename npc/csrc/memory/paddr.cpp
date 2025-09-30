@@ -3,6 +3,10 @@
 #include "macro.h"
 #include "utils.h"
 
+#define DEVICE_BASE 0xa0000000
+#define SERIAL_PORT (DEVICE_BASE + 0x00003f8)
+#define RTC_ADDR    (DEVICE_BASE + 0x0000048)
+
 static uint8_t pmem[MEM_MSIZE] PG_ALIGN = {};
 
 uint8_t *guest_to_host(uint32_t paddr) { return pmem + paddr - MEM_BASE; }
@@ -43,6 +47,10 @@ void print_paddr_write(uint32_t addr, int len, uint32_t data)
 extern "C" uint32_t paddr_read(uint32_t raddr)
 {
     uint32_t addr = raddr & ~0x3u;
+    if(addr == RTC_ADDR)
+    {
+        
+    }
 #ifdef CONFIG_MTRACE
     print_paddr_read(addr, 4);
 #endif
@@ -59,6 +67,10 @@ extern "C" void paddr_write(uint32_t waddr, uint32_t wdata, uint8_t wmask)
     uint32_t addr = waddr & ~0x3u;
     uint32_t data = 0;
     uint32_t offset = waddr & 0x3;
+    if(addr == SERIAL_PORT)
+    {
+        printf("%s\n", wdata);
+    }
     switch (wmask)
     {
     case 0x1:
