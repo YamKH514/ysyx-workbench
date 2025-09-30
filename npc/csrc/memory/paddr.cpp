@@ -51,6 +51,10 @@ extern "C" uint32_t paddr_read(uint32_t raddr)
     {
         return 0;
     }
+    if(addr == RTC_ADDR + 0x4)
+    {
+        return 0;
+    }
 #ifdef CONFIG_MTRACE
     print_paddr_read(addr, 4);
 #endif
