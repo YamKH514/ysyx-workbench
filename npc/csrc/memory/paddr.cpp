@@ -51,11 +51,11 @@ extern "C" uint32_t paddr_read(uint32_t raddr)
     uint64_t us = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
     if(addr == RTC_ADDR)
     {
-        return (uint32_t)(us & 0x0000FFFF);
+        return (uint32_t)(us & 0xFFFFFFFF);
     }
     if(addr == RTC_ADDR + 0x4)
     {
-        return (uint32_t)((us & 0xFFFF0000) >> 32);
+        return (uint32_t)(us >> 32);
     }
 #ifdef CONFIG_MTRACE
     print_paddr_read(addr, 4);
