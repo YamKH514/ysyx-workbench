@@ -103,13 +103,13 @@ static void single_cycle(Vtop *top, VerilatedContext *contextp, VerilatedVcdC *t
             {
                 ftrace_call(npc_state.halt_pc, dnpc);
             }
-#endif
         }
         else if (opcode == inst_jarl)
         {
             uint32_t imm = SEXT(BITS(i, 31, 20), 12);
             uint32_t src1 = npc_state.gpr_value[rs1];
             dnpc = src1 + imm;
+#endif
 #ifdef CONFIG_FTRACE
             if (inst_val == 0x00008067)
             {
