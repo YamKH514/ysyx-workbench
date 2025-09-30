@@ -48,7 +48,7 @@ void print_paddr_write(uint32_t addr, int len, uint32_t data)
 extern "C" uint32_t paddr_read(uint32_t raddr)
 {
     uint32_t addr = raddr & ~0x3u;
-    uint64_t us = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+    uint64_t us = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
     if(addr == RTC_ADDR)
     {
         return (uint32_t)(us & 0x0000FFFF);
