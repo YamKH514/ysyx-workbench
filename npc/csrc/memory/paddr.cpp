@@ -51,11 +51,11 @@ extern "C" uint32_t paddr_read(uint32_t raddr)
     //TODO 无法按秒打印信息
     if(addr == RTC_ADDR)
     {
-        return (uint32_t)(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
+        return (uint32_t)(std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
     }
     if(addr == RTC_ADDR + 0x4)
     {
-        return (uint32_t)(std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count() >> 32);
+        return (uint32_t)(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count() >> 32);
     }
 #ifdef CONFIG_MTRACE
     print_paddr_read(addr, 4);
