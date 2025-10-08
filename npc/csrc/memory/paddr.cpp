@@ -2,7 +2,7 @@
 #include "memory/paddr.h"
 #include "macro.h"
 #include "utils.h"
-#include <chrono>
+#include "timer.h"
 
 #define DEVICE_BASE 0xa0000000
 #define SERIAL_PORT (DEVICE_BASE + 0x00003f8)
@@ -51,11 +51,13 @@ extern "C" uint32_t paddr_read(uint32_t raddr)
     //TODO 无法按秒打印信息
     if(raddr == RTC_ADDR)
     {
-        return (uint32_t)(std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
+        uint64_t us = get_time();
+        return (uint32_t)us;
     }
     if(raddr == RTC_ADDR + 0x4)
     {
-        return (uint32_t)(std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count() >> 32);
+        uint64_t us = get_time();
+        return (uint32_t)(us >> 32);
     }
 #ifdef CONFIG_MTRACE
     print_paddr_read(addr, 4);
