@@ -1,6 +1,9 @@
 #include <am.h>
 #include <klib-macros.h>
 
+#define DEVICE_BASE 0xa0000000
+#define SERIAL_PORT (DEVICE_BASE + 0x00003f8)
+
 extern char _heap_start;
 int main(const char *args);
 
@@ -13,6 +16,7 @@ Area heap = RANGE(&_heap_start, PMEM_END);
 static const char mainargs[MAINARGS_MAX_LEN] = MAINARGS_PLACEHOLDER; // defined in CFLAGS
 
 void putch(char ch) {
+  asm volatile("sb %0, 0(%1)" : : "r"(ch), "r"(SERIAL_PORT));
 }
 
 void halt(int code) {

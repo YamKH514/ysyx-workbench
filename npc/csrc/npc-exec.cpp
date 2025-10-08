@@ -66,13 +66,13 @@ static void single_cycle(Vtop *top, VerilatedContext *contextp, VerilatedVcdC *t
     if (npc_state.halt_pc >= 0x80000000)
     {
         // 反汇编 itrace
-#ifdef CONFIG_ITRACE
         char *p = logbuf;
         p += snprintf(p, sizeof(logbuf), "0x%08x:", npc_state.halt_pc);
         int ilen = 4;
         int i;
         uint32_t inst_val = paddr_read(npc_state.halt_pc);
         uint8_t *inst = (uint8_t *)&inst_val;
+#ifdef CONFIG_ITRACE
         for (i = ilen - 1; i >= 0; i--)
         {
             p += snprintf(p, 4, " %02x", inst[i]);
