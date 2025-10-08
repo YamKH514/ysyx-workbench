@@ -14,7 +14,7 @@ Vtop *top;
 VerilatedContext *contextp;
 VerilatedVcdC *tfp;
 char str[1024] = "\0";
-bool is_batch_mode = false;
+static int is_batch_mode = false;
 
 
 static char *rl_gets()
