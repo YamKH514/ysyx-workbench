@@ -137,6 +137,7 @@ static int cmd_help(char *args)
 
 void sdb_set_batch_mode()
 {
+    printf("sdb_set_batch_mode\n");
     is_batch_mode = true;
 }
 
