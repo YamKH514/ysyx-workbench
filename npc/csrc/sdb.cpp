@@ -14,6 +14,7 @@ Vtop *top;
 VerilatedContext *contextp;
 VerilatedVcdC *tfp;
 char str[1024] = "\0";
+bool is_batch_mode = false;
 
 
 static char *rl_gets()
@@ -134,8 +135,18 @@ static int cmd_help(char *args)
     return 0;
 }
 
+void sdb_set_batch_mode()
+{
+    is_batch_mode = true;
+}
+
 void sdb_mainloop()
 {
+    if(is_batch_mode)
+    {
+        cmd_c(NULL);
+    }
+
     for (char *str; (str = rl_gets()) != NULL;)
     {
         char *str_end = str + strlen(str);

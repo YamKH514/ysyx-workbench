@@ -4,6 +4,7 @@
 #include "npc-init.h"
 #include "disasm.h"
 #include "difftest-def.h"
+#include "sdb.h"
 
 static char *log_file = NULL;
 static char *diff_so_file = NULL;
@@ -34,6 +35,7 @@ static long load_img()
 static int parse_args(int argc, char *argv[])
 {
     const struct option table[] = {
+        {"batch",   no_argument      , NULL, 'b'},
         {"log",     required_argument, NULL, 'l'},
         {"diff",    required_argument, NULL, 'd'},
         {"elf",     required_argument, NULL, 'e'},
@@ -44,6 +46,9 @@ static int parse_args(int argc, char *argv[])
     {
         switch (o)
         {
+        case 'b':
+            sdb_set_batch_mode();
+            break;
         case 'l':
             log_file = optarg;
             break;
