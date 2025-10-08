@@ -42,7 +42,7 @@ static int parse_args(int argc, char *argv[])
         {0, 0, NULL, 0},
     };
     int o;
-    while ((o = getopt_long(argc, argv, "-l:d:e:", table, NULL)) != -1)
+    while ((o = getopt_long(argc, argv, "-bl:d:e:", table, NULL)) != -1)
     {
         switch (o)
         {
@@ -63,6 +63,7 @@ static int parse_args(int argc, char *argv[])
             return 0;
         default:
             printf("Usage: %s [OPTION...] IMAGE [args]\n\n", argv[0]);
+            printf("\t-b,--batch              run with batch mode\n");
             printf("\t-l,--log=FILE           output log to FILE\n");
             printf("\t-d,--diff=REF_SO        run DiffTest with reference REF_SO\n");
             printf("\t-e,--elf=FILE           get ELF file\n");
