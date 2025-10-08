@@ -48,7 +48,6 @@ void print_paddr_write(uint32_t addr, int len, uint32_t data)
 extern "C" uint32_t paddr_read(uint32_t raddr)
 {
     uint32_t addr = raddr & ~0x3u;
-    //TODO 无法按秒打印信息
     if(raddr == RTC_ADDR)
     {
         uint64_t us = get_time();
