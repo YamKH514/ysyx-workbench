@@ -27,6 +27,45 @@ enum {
   TYPE_N, // none
 };
 
+#define CSRR() do { \
+                    switch(imm) \
+                      { \
+                        case 0x300: \
+                          old = cpu.csr[mstatus]; \
+                          break; \
+                        case 0x305: \
+                          old = cpu.csr[mtvec]; \
+                          break; \
+                        case 0x341: \
+                          old = cpu.csr[mepc]; \
+                          break; \
+                        case 0x342: \
+                          old = cpu.csr[mcause]; \
+                          break; \
+                        default: \
+                          break; \
+                      } \
+                  } while(0)
+#define CSRW() do { \
+                    switch(imm) \
+                      { \
+                        case 0x300: \
+                          cpu.csr[mstatus] = src1; \
+                          break; \
+                        case 0x305: \
+                          cpu.csr[mtvec] = src1; \
+                          break; \
+                        case 0x341: \
+                          cpu.csr[mepc] = src1; \
+                          break; \
+                        case 0x342: \
+                          cpu.csr[mcause] = src1; \
+                          break; \
+                        default: \
+                          break; \
+                      } \
+                  } while(0)
+
 #define src1R() do { *src1 = R(rs1); } while (0)
 #define src2R() do { *src2 = R(rs2); } while (0)
 #define immI() do { *imm = SEXT(BITS(i, 31, 20), 12); } while(0)
@@ -119,6 +158,7 @@ static int decode_exec(Decode *s) {
   INSTPAT("0000000 ????? ????? 101 ????? 00100 11", srli   , I, R(rd) = src1 >> (imm & 0x1F));
   INSTPAT("0100000 ????? ????? 101 ????? 00100 11", srai   , I, R(rd) = ((sword_t)src1) >> (imm & 0x1F));
   INSTPAT("0000000 00001 00000 000 00000 11100 11", ebreak , N, NEMUTRAP(s->pc, R(10))); // R(10) is $a0
+  INSTPAT("??????? ????? ????? 001 ????? 11100 11", csrrw  , I, word_t old = 0; CSRR(); R(rd) = old; CSRW(););
   INSTPAT("??????? ????? ????? ??? ????? ????? ??", inv    , N, INV(s->pc));
   INSTPAT_END();
 
