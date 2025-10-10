@@ -35,11 +35,13 @@ bool isa_difftest_checkregs(CPU_state *ref_r, vaddr_t pc) {
   if(ref_r->csr.mepc != cpu.csr.mepc)
   {
     printf("Difftest: Inconsistent MEPC register values, pc = 0x%08x\n", pc);
+    printf("ref: 0x%08x, dut: 0x%08x\n", ref_r->csr.mepc, cpu.csr.mepc);
     return false;
   }
   if(ref_r->csr.mcause != cpu.csr.mcause)
   {
     printf("Difftest: Inconsistent MCAUSE register values, pc = 0x%08x\n", pc);
+    printf("ref: 0x%08x, dut: 0x%08x\n", ref_r->csr.mcause, cpu.csr.mcause);
     return false;
   }
   if(ref_r->csr.mtvec != cpu.csr.mtvec)
