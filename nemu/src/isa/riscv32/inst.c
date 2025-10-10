@@ -132,7 +132,7 @@ static int decode_exec(Decode *s) {
   INSTPAT("0000000 ????? ????? 111 ????? 01100 11", and    , r, R(rd) = src1 & src2);
   INSTPAT("0000000 ????? ????? 101 ????? 00100 11", srli   , I, R(rd) = src1 >> (imm & 0x1F));
   INSTPAT("0100000 ????? ????? 101 ????? 00100 11", srai   , I, R(rd) = ((sword_t)src1) >> (imm & 0x1F));
-  INSTPAT("0000000 00000 00000 000 00000 11100 11", ecall  , N, printf("ECALL "); ECALL(s->dnpc); printf("dnpc = 0x%08x\n", s->dnpc));
+  INSTPAT("0000000 00000 00000 000 00000 11100 11", ecall  , N, printf("ECALL ");  printf("dnpc = 0x%08x\n", s->dnpc));
   INSTPAT("0000000 00001 00000 000 00000 11100 11", ebreak , N, NEMUTRAP(s->pc, R(10))); // R(10) is $a0
   INSTPAT("??????? ????? ????? 001 ????? 11100 11", csrrw  , I, R(rd) = CSR(imm); CSR(imm)  = src1);
   INSTPAT("??????? ????? ????? 010 ????? 11100 11", csrrs  , I, R(rd) = CSR(imm); CSR(imm) |= src1);
