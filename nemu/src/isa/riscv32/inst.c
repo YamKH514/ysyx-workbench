@@ -47,44 +47,6 @@ word_t *csr(word_t imm)
 #define immJ() do { *imm = (SEXT((BITS(i, 31, 31) << 20) | (BITS(i, 19, 12) << 12) | (BITS(i, 20, 20) << 11) | (BITS(i, 30, 21) << 1), 21)); } while(0)
 #define immB() do { *imm = (SEXT(((BITS(i, 31, 31) << 12) | (BITS(i, 7, 7) << 11) | (BITS(i, 30, 25) << 5) | (BITS(i, 11, 8) << 1)), 13)); } while(0)
 #define CSR(imm) *csr(imm)
-#define CSRR() do { \
-                    switch(imm) \
-                      { \
-                        case 0x300: \
-                          old = cpu.csr[mstatus]; \
-                          break; \
-                        case 0x305: \
-                          old = cpu.csr[mtvec]; \
-                          break; \
-                        case 0x341: \
-                          old = cpu.csr[mepc]; \
-                          break; \
-                        case 0x342: \
-                          old = cpu.csr[mcause]; \
-                          break; \
-                        default: \
-                          break; \
-                      } \
-                  } while(0)
-#define CSRW() do { \
-                    switch(imm) \
-                      { \
-                        case 0x300: \
-                          cpu.csr[mstatus] = src1; \
-                          break; \
-                        case 0x305: \
-                          cpu.csr[mtvec] = src1; \
-                          break; \
-                        case 0x341: \
-                          cpu.csr[mepc] = src1; \
-                          break; \
-                        case 0x342: \
-                          cpu.csr[mcause] = src1; \
-                          break; \
-                        default: \
-                          break; \
-                      } \
-                  } while(0)
 #define ECALL(dnpc) {bool success; dnpc = isa_raise_intr(isa_reg_str2val("a7", &success), s->pc); }
 
 void ftrace_call(word_t pc, word_t dnpc);
