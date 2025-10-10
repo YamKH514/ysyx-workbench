@@ -10,7 +10,7 @@ Context* __am_irq_handle(Context *c) {
     printf("__am_irq_handle c->mcause: %d\n", c->mcause);
     switch (c->mcause) {
       case 0:
-        if(c->gpr[17] == -1)
+        if(c->GPR1 == -1)
         {
           ev.event = EVENT_YIELD;
         }
