@@ -54,7 +54,7 @@ word_t *csr(word_t imm)
 #define MRET() { \
                   s->dnpc = CSR(0x341); \
                   CSR(0x300) &= ~0x8; \
-                  CSR(0x300) |= ((CSR(0x300)&0x80)>>4); \
+                  CSR(0x300) |= ((CSR(0x300) & 0x80) >> 4); \
                   CSR(0x300) |= 0x80; \
                   CSR(0x300) &= ~0x1800; \
                 }
