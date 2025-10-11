@@ -17,7 +17,7 @@
 #include "local-include/reg.h"
 
 #define IS_THIS_REG(reg_name) (strcmp(s, reg_name) == 0)
-#define CSR(csr_name) cpu.csr.csr_name
+#define csr_val(csr_name) cpu.csr.csr_name
 
 const char *regs[] = {
   "$0", "ra", "sp", "gp", "tp", "t0", "t1", "t2",
@@ -38,9 +38,13 @@ word_t isa_reg_str2val(const char *s, bool *success) {
   if(IS_THIS_REG("pc"))
     return pc_addr;
   else if(IS_THIS_REG("mepc"))
-    return CSR(mepc);
+    return csr_val(mepc);
   else if(IS_THIS_REG("mcause"))
-    return CSR(mcause);
+    return csr_val(mcause);
+  else if(IS_THIS_REG("mtvec"))
+    return csr_val(mtvec);
+  else if(IS_THIS_REG("mstatus"))
+    return csr_val(mstatus);
   else {
     int i;
     for(i = 0; i < reg_length; i++) {
