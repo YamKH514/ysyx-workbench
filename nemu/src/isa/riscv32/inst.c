@@ -27,6 +27,18 @@ enum {
   TYPE_N, // none
 };
 
+word_t *csr(word_t imm)
+{
+  switch(imm)
+    {
+      case 0x300: return &cpu.csr.mstatus;
+      case 0x305: return &cpu.csr.mtvec;
+      case 0x341: return &cpu.csr.mepc;
+      case 0x342: return &cpu.csr.mcause;
+      default: panic("Unknow CSR");
+    }
+}
+
 #define src1R() do { *src1 = R(rs1); } while (0)
 #define src2R() do { *src2 = R(rs2); } while (0)
 #define immI() do { *imm = SEXT(BITS(i, 31, 20), 12); } while(0)
@@ -34,6 +46,20 @@ enum {
 #define immS() do { *imm = (SEXT(BITS(i, 31, 25), 7) << 5) | BITS(i, 11, 7); } while(0)
 #define immJ() do { *imm = (SEXT((BITS(i, 31, 31) << 20) | (BITS(i, 19, 12) << 12) | (BITS(i, 20, 20) << 11) | (BITS(i, 30, 21) << 1), 21)); } while(0)
 #define immB() do { *imm = (SEXT(((BITS(i, 31, 31) << 12) | (BITS(i, 7, 7) << 11) | (BITS(i, 30, 25) << 5) | (BITS(i, 11, 8) << 1)), 13)); } while(0)
+#define CSR(imm) *csr(imm)
+#define ECALL(dnpc) { \
+                      bool success; \
+                      dnpc = isa_raise_intr(isa_reg_str2val("a7", &success), s->pc); \
+                    }
+#define MRET() { \
+                  s->dnpc = CSR(0x341); \
+                  CSR(0x300) &= ~0x8; \
+                  CSR(0x300) |= ((CSR(0x300) & 0x80) >> 4); \
+                  CSR(0x300) |= 0x80; \
+                  CSR(0x300) &= ~0x1800; \
+                }
+
+#define etrace() {printf("%s mepc: 0x%08x, mcause: 0x%08x\n", ANSI_FMT("ETRACE", ANSI_FG_YELLOW), cpu.csr.mepc, cpu.csr.mcause);}
 
 void ftrace_call(word_t pc, word_t dnpc);
 void ftrace_ret(word_t pc);
@@ -118,7 +144,11 @@ static int decode_exec(Decode *s) {
   INSTPAT("0000000 ????? ????? 111 ????? 01100 11", and    , r, R(rd) = src1 & src2);
   INSTPAT("0000000 ????? ????? 101 ????? 00100 11", srli   , I, R(rd) = src1 >> (imm & 0x1F));
   INSTPAT("0100000 ????? ????? 101 ????? 00100 11", srai   , I, R(rd) = ((sword_t)src1) >> (imm & 0x1F));
+  INSTPAT("0000000 00000 00000 000 00000 11100 11", ecall  , N, ECALL(s->dnpc); IFDEF(CONFIG_ETRACE, etrace()));
   INSTPAT("0000000 00001 00000 000 00000 11100 11", ebreak , N, NEMUTRAP(s->pc, R(10))); // R(10) is $a0
+  INSTPAT("??????? ????? ????? 001 ????? 11100 11", csrrw  , I, R(rd) = CSR(imm); CSR(imm)  = src1);
+  INSTPAT("??????? ????? ????? 010 ????? 11100 11", csrrs  , I, R(rd) = CSR(imm); CSR(imm) |= src1);
+  INSTPAT("0011000 00010 00000 000 00000 11100 11", mret   , N, MRET());
   INSTPAT("??????? ????? ????? ??? ????? ????? ??", inv    , N, INV(s->pc));
   INSTPAT_END();
 

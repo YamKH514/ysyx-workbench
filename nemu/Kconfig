@@ -126,6 +126,10 @@ endmenu
 
 menu "Testing and Debugging"
 
+config BATCH_MODE
+  bool "Run with batch mode"
+  default n
+
 config WATCHPOINT
   bool "Enable watchpoint"
   default n
@@ -167,6 +171,11 @@ config FTRACE
 config DTRACE
   depends on TRACE && TARGET_NATIVE_ELF && ENGINE_INTERPRETER && DEVICE
   bool "Enable devices tracer"
+  default y
+
+config ETRACE
+  depends on TRACE && TARGET_NATIVE_ELF && ENGINE_INTERPRETER
+  bool "Enable etrace"
   default y
 
 config DIFFTEST
