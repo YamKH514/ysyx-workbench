@@ -16,7 +16,7 @@
 #include <isa.h>
 #include "local-include/reg.h"
 
-#define IS_THIS_REG(reg_name) (strcmp(s, "reg_name") == 0)
+#define IS_THIS_REG(reg_name) (strcmp(s, reg_name) == 0)
 
 const char *regs[] = {
   "$0", "ra", "sp", "gp", "tp", "t0", "t1", "t2",
@@ -38,7 +38,7 @@ word_t isa_reg_str2val(const char *s, bool *success) {
     printf("pc: %x\n", pc_addr);
     return pc_addr;
   }
-  else if(IS_THIS_REG(mepc)) {
+  else if(IS_THIS_REG("mepc")) {
     return cpu.csr.mepc;
   }
   else {
