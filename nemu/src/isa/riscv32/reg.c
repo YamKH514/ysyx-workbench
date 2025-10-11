@@ -35,8 +35,10 @@ void isa_reg_display() {
 }
 
 word_t isa_reg_str2val(const char *s, bool *success) {
-  if(IS_THIS_REG("pc"))
+  if(IS_THIS_REG("pc")) {
+    printf("pc: %x\n", pc_addr);
     return pc_addr;
+  }
   else if(IS_THIS_REG("mepc"))
     return csr_val(mepc);
   else if(IS_THIS_REG("mcause"))
