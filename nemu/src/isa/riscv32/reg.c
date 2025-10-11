@@ -36,6 +36,9 @@ word_t isa_reg_str2val(const char *s, bool *success) {
     printf("pc: %x\n", pc_addr);
     return pc_addr;
   }
+  else if(strcmp(s, "mepc")) {
+    return cpu.csr.mepc;
+  }
   else {
     int i;
     for(i = 0; i < reg_length; i++) {
