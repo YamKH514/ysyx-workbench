@@ -48,7 +48,7 @@ word_t *csr(word_t imm)
 #define immB() do { *imm = (SEXT(((BITS(i, 31, 31) << 12) | (BITS(i, 7, 7) << 11) | (BITS(i, 30, 25) << 5) | (BITS(i, 11, 8) << 1)), 13)); } while(0)
 #define CSR(imm) *csr(imm)
 #define ECALL(dnpc) {bool success; dnpc = isa_raise_intr(isa_reg_str2val("a7", &success), s->pc); }
-#define MRET() {}
+#define MRET() {s->dnpc = CSR(0x341);}
 
 void ftrace_call(word_t pc, word_t dnpc);
 void ftrace_ret(word_t pc);
@@ -137,7 +137,7 @@ static int decode_exec(Decode *s) {
   INSTPAT("0000000 00001 00000 000 00000 11100 11", ebreak , N, NEMUTRAP(s->pc, R(10))); // R(10) is $a0
   INSTPAT("??????? ????? ????? 001 ????? 11100 11", csrrw  , I, R(rd) = CSR(imm); CSR(imm)  = src1);
   INSTPAT("??????? ????? ????? 010 ????? 11100 11", csrrs  , I, R(rd) = CSR(imm); CSR(imm) |= src1);
-  INSTPAT("0011000 00010 00000 000 00000 11100 11", mret   , N, );
+  INSTPAT("0011000 00010 00000 000 00000 11100 11", mret   , N, MRET());
   INSTPAT("??????? ????? ????? ??? ????? ????? ??", inv    , N, INV(s->pc));
   INSTPAT_END();
 
