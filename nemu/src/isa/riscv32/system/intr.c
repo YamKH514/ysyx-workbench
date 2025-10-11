@@ -16,9 +16,9 @@
 #include <isa.h>
 
 word_t isa_raise_intr(word_t NO, vaddr_t epc) {
+  cpu.csr.mstatus &= ~0x80;
+  cpu.csr.mstatus |= (cpu.csr.mstatus & 0x8) << 4;
   cpu.csr.mstatus &= ~0x8;
-  cpu.csr.mstatus |= (cpu.csr.mstatus & 0x4) << 4;
-  cpu.csr.mstatus &= ~0x4;
   cpu.csr.mstatus |= 0x1800;
 
   cpu.csr.mcause = NO;
