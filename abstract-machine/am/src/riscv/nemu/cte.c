@@ -3,6 +3,7 @@
 #include <klib.h>
 
 static Context* (*user_handler)(Event, Context*) = NULL;
+static Context context = {0};
 
 Context* __am_irq_handle(Context *c) {
   if (user_handler) {
@@ -34,7 +35,12 @@ bool cte_init(Context*(*handler)(Event, Context*)) {
 }
 
 Context *kcontext(Area kstack, void (*entry)(void *), void *arg) {
-  return NULL;
+  Context *c = (Context *)kstack.end - 1;
+  memcpy(c, &context, sizeof(context));
+
+  c->GPR2 = (uintptr_t)entry;
+
+  return c;
 }
 
 void yield() {
