@@ -39,6 +39,7 @@ Context *kcontext(Area kstack, void (*entry)(void *), void *arg) {
   // memcpy(c, &context, sizeof(context));
 
   c->mepc = (uintptr_t)entry;
+  c->mstatus = 0x1800;
 
   return c;
 }
