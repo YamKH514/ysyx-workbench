@@ -3,7 +3,7 @@
 #include <klib.h>
 
 static Context* (*user_handler)(Event, Context*) = NULL;
-// static Context context = {0};
+static Context context = {0};
 
 Context* __am_irq_handle(Context *c) {
   if (user_handler) {
@@ -36,7 +36,7 @@ bool cte_init(Context*(*handler)(Event, Context*)) {
 
 Context *kcontext(Area kstack, void (*entry)(void *), void *arg) {
   Context *c = (Context *)kstack.end - 1;
-  // memcpy(c, &context, sizeof(context));
+  memcpy(c, &context, sizeof(context));
 
   c->mepc = (uintptr_t)entry;
   c->mstatus = 0x1800;
