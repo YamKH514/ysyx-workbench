@@ -1,33 +1,39 @@
 module top(
-    input clk, rst,
-    // input [31:0] inst,
-    output [31:0] pc,
-    output [31:0] npc,
-    output [31:0] ReadData_a0
+    input           clk,
+    input           rst,
+    output  [31:0]  pc,
+    output  [31:0]  npc,
+    output  [31:0]  ReadData_a0
 );
 
-wire [31:0] inst;
-wire RegWriteEn;
-wire [2:0] InstType;
-wire [3:0] NPCSrcSel;
-wire [1:0] ALUSrcSel1;
-wire [1:0] ALUSrcSel2;
-wire [31:0] ImmExt;
-wire [31:0] ReadData1;
-wire [31:0] ReadData2;
-wire [31:0] ALURes;
-wire [5:0] ALUFunc;
-wire [31:0] Memraddr;
-wire [31:0] Memwaddr;
-wire [31:0] Memwdata;
-wire [7:0] Memwmask;
-wire MemValid;
-wire MemWrite;
-wire [2:0] MemReadFunc;
-wire [31:0] Memrdata;
-wire [31:0] GPRwdata;
-wire GPRwdataSel;
-
+wire    [31:0]  inst;
+wire            RegWriteEn;
+wire    [2:0]   InstType;
+wire    [3:0]   NPCSrcSel;
+wire    [1:0]   ALUSrcSel1;
+wire    [1:0]   ALUSrcSel2;
+wire    [31:0]  ImmExt;
+wire    [31:0]  ReadData1;
+wire    [31:0]  ReadData2;
+wire    [31:0]  ALURes;
+wire    [5:0]   ALUFunc;
+wire    [31:0]  Memraddr;
+wire    [31:0]  Memwaddr;
+wire    [31:0]  Memwdata;
+wire    [7:0]   Memwmask;
+wire            MemValid;
+wire            MemWrite;
+wire    [2:0]   MemReadFunc;
+wire    [31:0]  Memrdata;
+wire    [31:0]  GPRwdata;
+wire            GPRwdataSel;
+wire            CSRWriteEn;
+wire    [31:0]  CSRWriteData_mepc;
+wire    [31:0]  CSRWriteData_mcause;
+wire    [31:0]  CSRWriteData_mtvec;
+wire    [31:0]  CSRWriteData_mstatus;
+wire    [31:0]  CSRReadAddr;
+wire    [31:0]  CSRReadData;
 
 PCCnt u_PCCnt(
     .clk       	(clk        ),
@@ -111,5 +117,17 @@ GPR u_GPR(
     .ReadData2   	(ReadData2    ),
     .ReadData_a0 	(ReadData_a0  )
 );
+
+CSR u_CSR(
+    .clk                  	(clk                   ),
+    .CSRWriteEn           	(CSRWriteEn            ),
+    .CSRWriteData_mepc    	(CSRWriteData_mepc     ),
+    .CSRWriteData_mcause  	(CSRWriteData_mcause   ),
+    .CSRWriteData_mtvec   	(CSRWriteData_mtvec    ),
+    .CSRWriteData_mstatus 	(CSRWriteData_mstatus  ),
+    .CSRReadAddr          	(CSRReadAddr           ),
+    .CSRReadData          	(CSRReadData           )
+);
+
 
 endmodule
