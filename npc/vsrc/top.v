@@ -27,13 +27,15 @@ wire    [2:0]   MemReadFunc;
 wire    [31:0]  Memrdata;
 wire    [31:0]  GPRwdata;
 wire            GPRwdataSel;
+wire            is_ecall;
 wire            CSRWriteEn;
+wire    [31:0]  CSRWriteAddr;
+wire    [31:0]  CSRWriteData;
 wire    [31:0]  CSRWriteData_mepc;
 wire    [31:0]  CSRWriteData_mcause;
-wire    [31:0]  CSRWriteData_mtvec;
-wire    [31:0]  CSRWriteData_mstatus;
 wire    [31:0]  CSRReadAddr;
 wire    [31:0]  CSRReadData;
+wire    [31:0]  CSRReadData_mtvec;
 
 PCCnt u_PCCnt(
     .clk       	(clk        ),
@@ -73,6 +75,7 @@ Decode u_Decode(
     .Opcode     	(inst[6:0]   ),
     .Funct3     	(inst[14:12] ),
     .Funct7     	(inst[31:25] ),
+    .is_ecall       (is_ecall    ),
     .InstType    	(InstType    ),
     .RegWriteEn 	(RegWriteEn  ),
     .ALUFunc        (ALUFunc     ),
@@ -118,16 +121,20 @@ GPR u_GPR(
     .ReadData_a0 	(ReadData_a0  )
 );
 
-CSR u_CSR(
-    .clk                  	(clk                   ),
-    .CSRWriteEn           	(CSRWriteEn            ),
-    .CSRWriteData_mepc    	(CSRWriteData_mepc     ),
-    .CSRWriteData_mcause  	(CSRWriteData_mcause   ),
-    .CSRWriteData_mtvec   	(CSRWriteData_mtvec    ),
-    .CSRWriteData_mstatus 	(CSRWriteData_mstatus  ),
-    .CSRReadAddr          	(CSRReadAddr           ),
-    .CSRReadData          	(CSRReadData           )
-);
+assign CSRWriteData_mepc = pc;
 
+CSR u_CSR(
+    .clk                 	(clk                  ),
+    .rst                 	(rst                  ),
+    .is_ecall            	(is_ecall             ),
+    .CSRWriteEn          	(CSRWriteEn           ),
+    .CSRWriteAddr        	(CSRWriteAddr         ),
+    .CSRWriteData        	(CSRWriteData         ),
+    .CSRWriteData_mcause 	(CSRWriteData_mcause  ),
+    .CSRWriteData_mepc   	(CSRWriteData_mepc    ),
+    .CSRReadAddr         	(CSRReadAddr          ),
+    .CSRReadData         	(CSRReadData          ),
+    .CSRReadData_mtvec   	(CSRReadData_mtvec    )
+);
 
 endmodule

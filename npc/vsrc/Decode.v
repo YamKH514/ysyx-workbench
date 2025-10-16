@@ -1,20 +1,21 @@
 module Decode(
-    input clk,
-    input [31:0] inst,
-    input [6:0] Opcode,
-    input [2:0] Funct3,
-    input [6:0] Funct7,
-    output [2:0] InstType, // I(0) S(1) B(2) U(3) J(4) R(5)
-    output RegWriteEn,
-    output [5:0] ALUFunc, // add(00---0) sub(00---1) A==B(01-011) A<B(01-101) A<=B(01-111) AND(101000) OR(101110) XOR(100110) SLL(11--00) SRL(11--01) SRA(11--11)
-    output [1:0] ALUSrcSel1, // 0(0) PC(1) ReadData1(2)
-    output [1:0] ALUSrcSel2, // ReadData2(0) ImmExt(1) 4(2)
-    output [3:0] NPCSrcSel, // npc = pc+4(0-00) pc+imm(0-01) src1+imm(0-11) res=0,jump(10--) res=1,jump(11--)
-    output GPRwdataSel, // ALURes(0) Memrdata(1)
-    output [7:0] Memwmask,
-    output MemValid,
-    output MemWrite,
-    output [2:0] MemReadFunc // unsigned(0--) signed(1--) lb(-01) lh(-10) lw(011)
+    input           clk,
+    input   [31:0]  inst,
+    input   [6:0]   Opcode,
+    input   [2:0]   Funct3,
+    input   [6:0]   Funct7,
+    output          is_ecall,
+    output  [2:0]   InstType, // I(0) S(1) B(2) U(3) J(4) R(5)
+    output          RegWriteEn,
+    output  [5:0]   ALUFunc, // add(00---0) sub(00---1) A==B(01-011) A<B(01-101) A<=B(01-111) AND(101000) OR(101110) XOR(100110) SLL(11--00) SRL(11--01) SRA(11--11)
+    output  [1:0]   ALUSrcSel1, // 0(0) PC(1) ReadData1(2)
+    output  [1:0]   ALUSrcSel2, // ReadData2(0) ImmExt(1) 4(2)
+    output  [3:0]   NPCSrcSel, // npc = pc+4(0-00) pc+imm(0-01) src1+imm(0-11) res=0,jump(10--) res=1,jump(11--)
+    output          GPRwdataSel, // ALURes(0) Memrdata(1)
+    output  [7:0]   Memwmask,
+    output          MemValid,
+    output          MemWrite,
+    output  [2:0]   MemReadFunc // unsigned(0--) signed(1--) lb(-01) lh(-10) lw(011)
 );
 
 wire inst_lui;      // U
@@ -104,6 +105,8 @@ always @(posedge clk) begin
         ebreak_trigger();
     end
 end
+
+assign is_ecall = inst_ecall;
 
 assign InstType =   {3{inst_jalr | inst_lb | inst_lh | inst_lw | inst_lbu | inst_lhu |  inst_addi | inst_slti | inst_sltiu | inst_xori | inst_ori | inst_andi | inst_slli | inst_srli | inst_srai}} & 3'd0 | // I
                     {3{inst_sb | inst_sh | inst_sw}} & 3'd1 | // S
