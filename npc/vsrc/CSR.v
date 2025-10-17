@@ -23,8 +23,9 @@ wire        mepcWriteEn    = CSRWriteEn & (CSRRWAddr == 12'h341);
 wire        mcauseWriteEn  = CSRWriteEn & (CSRRWAddr == 12'h342);
 wire        mtvecWriteEn   = CSRWriteEn & (CSRRWAddr == 12'h305);
 wire        mstatusWriteEn = CSRWriteEn & (CSRRWAddr == 12'h300);
+wire [31:0] CSROldData     = CSRReadData;
 wire [31:0] WriteData      =    {32{CSRFunc3 == 3'b001}} & CSRWriteData |
-                                {32{CSRFunc3 == 3'b010}} & ~CSRWriteData;
+                                {32{CSRFunc3 == 3'b010}} & (CSROldData | CSRWriteData);
 
 assign CSRReadData =    {32{CSRRWAddr == 12'h341}} & mepc |
                         {32{CSRRWAddr == 12'h342}} & mcause |
