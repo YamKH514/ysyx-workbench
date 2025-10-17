@@ -10,6 +10,7 @@ wire    [31:0]  inst;
 wire            RegWriteEn;
 wire    [2:0]   InstType;
 wire    [3:0]   NPCSrcSel;
+wire    [31:0]  TrapNPC;
 wire    [1:0]   ALUSrcSel1;
 wire    [1:0]   ALUSrcSel2;
 wire    [31:0]  ImmExt;
@@ -26,16 +27,20 @@ wire            MemWrite;
 wire    [2:0]   MemReadFunc;
 wire    [31:0]  Memrdata;
 wire    [31:0]  GPRwdata;
-wire            GPRwdataSel;
+wire    [1:0]   GPRwdataSel;
+wire    [31:0]  ReadData_a5;
 wire            is_ecall;
+wire            is_mret;
 wire            CSRWriteEn;
-wire    [31:0]  CSRWriteAddr;
+wire    [11:0]  CSRRWAddr;
 wire    [31:0]  CSRWriteData;
 wire    [31:0]  CSRWriteData_mepc;
 wire    [31:0]  CSRWriteData_mcause;
-wire    [31:0]  CSRReadAddr;
 wire    [31:0]  CSRReadData;
 wire    [31:0]  CSRReadData_mtvec;
+wire    [31:0]  CSRReadData_mepc;
+
+assign TrapNPC = is_ecall ? CSRReadData_mtvec : CSRReadData_mepc;
 
 PCCnt u_PCCnt(
     .clk       	(clk        ),
@@ -44,6 +49,7 @@ PCCnt u_PCCnt(
     .ReadData1 	(ReadData1  ),
     .ImmExt    	(ImmExt     ),
     .NPCSrcSel 	(NPCSrcSel  ),
+    .TrapNPC    (TrapNPC    ),
     .PC        	(pc         ),
     .NPC        (npc        )
 );
@@ -76,8 +82,10 @@ Decode u_Decode(
     .Funct3     	(inst[14:12] ),
     .Funct7     	(inst[31:25] ),
     .is_ecall       (is_ecall    ),
+    .is_mret        (is_mret     ),
     .InstType    	(InstType    ),
     .RegWriteEn 	(RegWriteEn  ),
+    .CSRWriteEn     (CSRWriteEn  ),
     .ALUFunc        (ALUFunc     ),
     .ALUSrcSel1 	(ALUSrcSel1  ),
     .ALUSrcSel2 	(ALUSrcSel2  ),
@@ -107,7 +115,7 @@ ALU u_ALU(
     .ALURes     	(ALURes      )
 );
 
-assign GPRwdata = (GPRwdataSel == 1'b0) ? ALURes : Memrdata;
+assign GPRwdata = (GPRwdataSel[1] == 1'b0) ? ((GPRwdataSel[0] == 1'b0) ? ALURes : Memrdata) : CSRReadData;
 
 GPR u_GPR(
     .clk         	(clk          ),
@@ -118,23 +126,29 @@ GPR u_GPR(
     .WriteData   	(GPRwdata     ),
     .ReadData1   	(ReadData1    ),
     .ReadData2   	(ReadData2    ),
-    .ReadData_a0 	(ReadData_a0  )
+    .ReadData_a0 	(ReadData_a0  ),
+    .ReadData_a5    (ReadData_a5  )
 );
 
+assign CSRWriteData = ReadData1;
+assign CSRWriteData_mcause = ReadData_a5;
 assign CSRWriteData_mepc = pc;
+assign CSRRWAddr = inst[31:20];
 
 CSR u_CSR(
     .clk                 	(clk                  ),
     .rst                 	(rst                  ),
     .is_ecall            	(is_ecall             ),
+    .is_mret                (is_mret              ),
+    .CSRFunc3               (inst[14:12]          ),
     .CSRWriteEn          	(CSRWriteEn           ),
-    .CSRWriteAddr        	(CSRWriteAddr         ),
+    .CSRRWAddr              (CSRRWAddr            ),
     .CSRWriteData        	(CSRWriteData         ),
     .CSRWriteData_mcause 	(CSRWriteData_mcause  ),
     .CSRWriteData_mepc   	(CSRWriteData_mepc    ),
-    .CSRReadAddr         	(CSRReadAddr          ),
     .CSRReadData         	(CSRReadData          ),
-    .CSRReadData_mtvec   	(CSRReadData_mtvec    )
+    .CSRReadData_mtvec   	(CSRReadData_mtvec    ),
+    .CSRReadData_mepc       (CSRReadData_mepc     )
 );
 
 endmodule

@@ -2,14 +2,16 @@ module CSR(
     input           clk,
     input           rst,
     input           is_ecall,
+    input           is_mret,
+    input   [2:0]   CSRFunc3,
     input           CSRWriteEn,
-    input   [31:0]  CSRWriteAddr,
+    input   [11:0]  CSRRWAddr,
     input   [31:0]  CSRWriteData,
     input   [31:0]  CSRWriteData_mcause,
     input   [31:0]  CSRWriteData_mepc,
-    input   [31:0]  CSRReadAddr,
     output  [31:0]  CSRReadData,
-    output  [31:0]  CSRReadData_mtvec
+    output  [31:0]  CSRReadData_mtvec,
+    output  [31:0]  CSRReadData_mepc
 );
 
 reg [31:0]  mepc;
@@ -17,17 +19,20 @@ reg [31:0]  mcause;
 reg [31:0]  mtvec;
 reg [31:0]  mstatus;
 
-wire mepcWriteEn    = CSRWriteEn & (CSRWriteAddr == 32'h341);
-wire mcauseWriteEn  = CSRWriteEn & (CSRWriteAddr == 32'h342);
-wire mtvecWriteEn   = CSRWriteEn & (CSRWriteAddr == 32'h305);
-wire mstatusWriteEn = CSRWriteEn & (CSRWriteAddr == 32'h300);
+wire        mepcWriteEn    = CSRWriteEn & (CSRRWAddr == 12'h341);
+wire        mcauseWriteEn  = CSRWriteEn & (CSRRWAddr == 12'h342);
+wire        mtvecWriteEn   = CSRWriteEn & (CSRRWAddr == 12'h305);
+wire        mstatusWriteEn = CSRWriteEn & (CSRRWAddr == 12'h300);
+wire [31:0] WriteData      =    {32{CSRFunc3 == 3'b001}} & CSRWriteData |
+                                {32{CSRFunc3 == 3'b010}} & ~CSRWriteData;
 
-assign CSRReadData =    {32{CSRReadAddr == 32'h341}} & mepc |
-                        {32{CSRReadAddr == 32'h342}} & mcause |
-                        {32{CSRReadAddr == 32'h305}} & mtvec |
-                        {32{CSRReadAddr == 32'h300}} & mstatus;
+assign CSRReadData =    {32{CSRRWAddr == 12'h341}} & mepc |
+                        {32{CSRRWAddr == 12'h342}} & mcause |
+                        {32{CSRRWAddr == 12'h305}} & mtvec |
+                        {32{CSRRWAddr == 12'h300}} & mstatus;
 
 assign CSRReadData_mtvec = mtvec;
+assign CSRReadData_mepc  = mepc;
 
 always @(posedge clk) begin
     if(rst) begin
@@ -43,18 +48,23 @@ always @(posedge clk) begin
         mcause          <= CSRWriteData_mcause;
         mepc            <= CSRWriteData_mepc;
     end
+    else if(is_mret) begin
+        mstatus[12:11]  <= 2'b0;
+        mstatus[3]      <= mstatus[7];
+        mstatus[7]      <= 1'b0;
+    end
     else begin
         if(mepcWriteEn) begin
-            mepc <= CSRWriteData;
+            mepc <= WriteData;
         end
         if(mcauseWriteEn) begin
-            mcause <= CSRWriteData;
+            mcause <= WriteData;
         end
         if(mtvecWriteEn) begin
-            mtvec <= CSRWriteData;
+            mtvec <= WriteData;
         end
         if(mstatusWriteEn) begin
-            mstatus <= CSRWriteData;
+            mstatus <= WriteData;
         end
     end
 end

@@ -4,13 +4,14 @@ module PCCnt(
     input CMPRes,
     input [31:0] ReadData1,
     input [31:0] ImmExt,
-    input [3:0] NPCSrcSel, // npc = pc+4(0-00) pc+imm(0-01) src1+imm(0-11) res=0,jump(10--) res=1,jump(11--)
+    input [3:0] NPCSrcSel, // npc = pc+4(0000) pc+imm(0001) src1+imm(0011) trap_npc(0100) res=0,jump(10--) res=1,jump(11--)
+    input [31:0] TrapNPC,
     output reg [31:0] PC,
     output reg [31:0] NPC
 );
 
 assign NPC =    (NPCSrcSel[3] == 1'b0) ?
-                (((NPCSrcSel[1] == 1'b0) ? PC : ReadData1) + ((NPCSrcSel[0] == 1'b0) ? 32'd4 : ImmExt)) :
+                (NPCSrcSel[2] == 1'b1 ? TrapNPC : (((NPCSrcSel[1] == 1'b0) ? PC : ReadData1) + ((NPCSrcSel[0] == 1'b0) ? 32'd4 : ImmExt))) :
                 (PC + ((NPCSrcSel[2] == CMPRes) ? ImmExt : 4));
 
 
