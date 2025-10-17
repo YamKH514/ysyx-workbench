@@ -47,7 +47,9 @@ static int parse_args(int argc, char *argv[])
         switch (o)
         {
         case 'b':
+#ifdef CONFIG_BATCH_MODE
             sdb_set_batch_mode();
+#endif
             break;
         case 'l':
             log_file = optarg;
