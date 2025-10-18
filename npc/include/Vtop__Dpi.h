@@ -8,5 +8,6 @@ extern uint32_t paddr_read(uint32_t raddr);
 extern void paddr_write(uint32_t waddr, uint32_t wdata, char wmask);
 extern int get_inst(int pc);
 extern void get_gpr(int out_gpr[16]);
+extern void get_csr(int mepc_o, int mcause_o, int mtvec_o, int mstatus_o);
 
 #endif

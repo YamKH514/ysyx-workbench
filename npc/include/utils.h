@@ -11,6 +11,10 @@ typedef struct {
     int32_t halt_ret;
     bool inited;
     int gpr_value[16];
+    int mepc;
+    int mcause;
+    int mtvec;
+    int mstatus;
   } NPCState;
 
 extern NPCState npc_state;

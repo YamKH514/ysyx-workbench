@@ -16,6 +16,19 @@ void (*ref_difftest_raise_intr)(uint64_t NO) = NULL;
 static bool is_skip_ref = false;
 static int skip_dut_nr_inst = 0;
 
+void difftest_skip_ref() {
+  is_skip_ref = true;
+  skip_dut_nr_inst = 0;
+}
+
+void difftest_skip_dut(int nr_ref, int nr_dut) {
+  skip_dut_nr_inst += nr_dut;
+
+  while (nr_ref -- > 0) {
+    ref_difftest_exec(1);
+  }
+}
+
 void init_difftest(char *ref_so_file, long img_size, int port)
 {
   assert(ref_so_file != NULL);
@@ -61,7 +74,7 @@ bool difftest_checkregs(NPCState *ref_r, uint32_t pc)
   {
     if (ref_r->gpr_value[i] != npc_state.gpr_value[i])
     {
-      printf("Difftest: Inconsistent register values, pc = 0x%x\n", pc);
+      printf("Difftest: Inconsistent register values, pc = 0x%08x\n", pc);
       printf("wrong ref reg: reg[%d] val: 0x%08x\n", i, ref_r->gpr_value[i]);
       printf("wrong dut reg: reg[%d] val: 0x%08x\n", i, npc_state.gpr_value[i]);
       return false;
@@ -69,7 +82,31 @@ bool difftest_checkregs(NPCState *ref_r, uint32_t pc)
   }
   if (ref_r->halt_pc != pc)
   {
-    printf("Difftest: Inconsistent PC register values, pc = 0x%x\n", pc);
+    printf("Difftest: Inconsistent PC register values, pc = 0x%08x\n", pc);
+    return false;
+  }
+  if(ref_r->mepc != npc_state.mepc)
+  {
+    printf("Difftest: Inconsistent MEPC register values, pc = 0x%08x\n", pc);
+    printf("ref: 0x%08x, dut: 0x%08x\n", ref_r->mepc, npc_state.mepc);
+    return false;
+  }
+  if(ref_r->mcause != npc_state.mcause)
+  {
+    printf("Difftest: Inconsistent MCAUSE register values, pc = 0x%08x\n", pc);
+    printf("ref: 0x%08x, dut: 0x%08x\n", ref_r->mcause, npc_state.mcause);
+    return false;
+  }
+  if(ref_r->mtvec != npc_state.mtvec)
+  {
+    printf("Difftest: Inconsistent MTVEC register values, pc = 0x%08x\n", pc);
+    printf("ref: 0x%08x, dut: 0x%08x\n", ref_r->mtvec, npc_state.mtvec);
+    return false;
+  }
+  if(ref_r->mstatus != npc_state.mstatus)
+  {
+    printf("Difftest: Inconsistent MSTATUS register values, pc = 0x%08x\n", pc);
+    printf("ref: 0x%08x, dut: 0x%08x\n", ref_r->mstatus, npc_state.mstatus);
     return false;
   }
 
@@ -88,6 +125,27 @@ static void checkregs(NPCState *ref, uint32_t pc)
 void difftest_step(uint32_t pc)
 {
   NPCState ref_r;
+
+  // if (skip_dut_nr_inst > 0) {
+  //   ref_difftest_regcpy(&ref_r, DIFFTEST_TO_DUT);
+  //   if (ref_r.pc == npc) {
+  //     skip_dut_nr_inst = 0;
+  //     checkregs(&ref_r, npc);
+  //     return;
+  //   }
+  //   skip_dut_nr_inst --;
+  //   if (skip_dut_nr_inst == 0)
+  //     panic("can not catch up with ref.pc = " FMT_WORD " at pc = " FMT_WORD, ref_r.pc, pc);
+  //   return;
+  // }
+
+  // if (is_skip_ref) {
+  //   // to skip the checking of an instruction, just copy the reg state to reference design
+  //   ref_difftest_regcpy(&cpu, DIFFTEST_TO_REF);
+  //   is_skip_ref = false;
+  //   return;
+  // }
+
   ref_difftest_exec(1);
   ref_difftest_regcpy(&ref_r, DIFFTEST_TO_DUT);
   

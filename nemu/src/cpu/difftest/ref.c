@@ -26,6 +26,10 @@ typedef struct
     int32_t halt_ret;
     bool inited;
     int gpr_value[16];
+    int mepc;
+    int mcause;
+    int mtvec;
+    int mstatus;
 } diff_context_t;
 
 // 获取REF的寄存器状态到`dut`
@@ -36,6 +40,10 @@ void diff_get_regs(void *diff_context)
   {
     ctx->gpr_value[i] = gpr(i);
   }
+  ctx->mepc = cpu.csr.mepc;
+  ctx->mcause = cpu.csr.mcause;
+  ctx->mtvec = cpu.csr.mtvec;
+  ctx->mstatus = cpu.csr.mstatus;
   ctx->halt_pc = cpu.pc;
 }
 
@@ -47,6 +55,10 @@ void diff_set_regs(void *diff_context)
   {
     gpr(i) = ctx->gpr_value[i];
   }
+  cpu.csr.mepc = ctx->mepc;
+  cpu.csr.mcause = ctx->mcause;
+  cpu.csr.mtvec = ctx->mtvec;
+  cpu.csr.mstatus = ctx->mstatus;
   cpu.pc = ctx->halt_pc;
 }
 
