@@ -71,11 +71,11 @@ always @(posedge clk) begin
 end
 
 export "DPI-C" function get_csr;
-function void get_csr(output int mepc_o, output int mcause_o, output int mtvec_o, output int mstatus_o);
-    mepc_o = mepc;
-    mcause_o = mcause;
-    mtvec_o = mtvec;
-    mstatus_o = mstatus;
+function void get_csr(output int csr[4]);
+    csr[0] = mepc;
+    csr[1] = mcause;
+    csr[2] = mtvec;
+    csr[3] = mstatus;
 endfunction
 
 endmodule

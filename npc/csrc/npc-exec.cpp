@@ -62,7 +62,12 @@ static void single_cycle(Vtop *top, VerilatedContext *contextp, VerilatedVcdC *t
 
     svSetScope(svGetScopeFromName("TOP.top.u_GPR.u_RegisterFile"));
     get_gpr(npc_state.gpr_value);
-    get_csr(npc_state.mepc, npc_state.mcause, npc_state.mtvec, npc_state.mstatus);
+    int csr[4];
+    get_csr(csr);
+    npc_state.mepc = csr[0];
+    npc_state.mcause = csr[1];
+    npc_state.mtvec = csr[2];
+    npc_state.mstatus = csr[3];
 
     if (npc_state.halt_pc >= 0x80000000)
     {

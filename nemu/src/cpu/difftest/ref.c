@@ -26,10 +26,10 @@ typedef struct
     int32_t halt_ret;
     bool inited;
     int gpr_value[16];
-    int mepc;
-    int mcause;
-    int mtvec;
-    int mstatus;
+    uint32_t mepc;
+    uint32_t mcause;
+    uint32_t mtvec;
+    uint32_t mstatus;
 } diff_context_t;
 
 // 获取REF的寄存器状态到`dut`
