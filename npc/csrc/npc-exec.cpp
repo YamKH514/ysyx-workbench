@@ -124,6 +124,7 @@ static void single_cycle(Vtop *top, VerilatedContext *contextp, VerilatedVcdC *t
 #ifdef CONFIG_DIFFTEST
         difftest_step(npc);
 #endif
+        printf("PC=0x%08x\n", top->pc);
     }
 }
 
