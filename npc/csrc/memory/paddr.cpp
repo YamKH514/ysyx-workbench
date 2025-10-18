@@ -77,6 +77,7 @@ extern "C" void paddr_write(uint32_t waddr, uint32_t wdata, uint8_t wmask)
     if(addr == SERIAL_PORT)
     {
         putchar(wdata);
+        fflush(stdout);
         return;
     }
     switch (wmask)
