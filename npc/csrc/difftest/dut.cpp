@@ -119,9 +119,8 @@ void difftest_step(uint32_t pc)
   NPCState ref_r;
 
   if (is_skip_ref) {
-    // to skip the checking of an instruction, just copy the reg state to reference design
     printf("difftest_step pc: 0x%08x\n", pc);
-    ref_difftest_regcpy(&ref_r, DIFFTEST_TO_REF);
+    ref_difftest_regcpy(&npc_state, DIFFTEST_TO_REF);
     is_skip_ref = false;
     return;
   }
