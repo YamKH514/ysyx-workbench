@@ -51,13 +51,17 @@ extern "C" uint32_t paddr_read(uint32_t raddr)
     uint32_t addr = raddr & ~0x3u;
     if(raddr == RTC_ADDR)
     {
+#ifdef CONFIG_DIFFTEST
         difftest_skip_ref();
+#endif
         uint64_t us = get_time();
         return (uint32_t)us;
     }
     if(raddr == RTC_ADDR + 0x4)
     {
+#ifdef CONFIG_DIFFTEST
         difftest_skip_ref();
+#endif
         uint64_t us = get_time();
         return (uint32_t)(us >> 32);
     }
