@@ -53,11 +53,11 @@ static void single_cycle(Vtop *top, VerilatedContext *contextp, VerilatedVcdC *t
     uint32_t npc = top->npc;
     npc_state.halt_ret = top->ReadData_a0;
     contextp->timeInc(1);
-    top->clk = 1;
+    top->clk = 0;
     top->eval();
     tfp->dump(contextp->time());
     contextp->timeInc(1);
-    top->clk = 0;
+    top->clk = 1;
     top->eval();
     tfp->dump(contextp->time());
 
@@ -130,7 +130,7 @@ static void single_cycle(Vtop *top, VerilatedContext *contextp, VerilatedVcdC *t
 #endif
         }
 #ifdef CONFIG_DIFFTEST
-        difftest_step(npc_state.halt_pc);
+        difftest_step(npc);
 #endif
     }
 }
