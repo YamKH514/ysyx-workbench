@@ -40,14 +40,25 @@ static void single_cycle(Vtop *top, VerilatedContext *contextp, VerilatedVcdC *t
 {
     char logbuf[128];
 
-    if (npc_state.inited)
-    {
-        top->rst = 0;
-    }
-    else
+    if (!npc_state.inited)
     {
         top->rst = 1;
+        contextp->timeInc(1);
+        top->clk = 1;
+        top->eval();
+        tfp->dump(contextp->time());
+        contextp->timeInc(1);
+        top->clk = 0;
+        top->eval();
+        tfp->dump(contextp->time());
+        top->rst = 0;
+        top->eval();
+        npc_state.inited = true;
     }
+    // else
+    // {
+    //     top->rst = 1;
+    // }
     npc_state.halt_pc = top->pc;
     uint32_t npc = top->npc;
     npc_state.halt_ret = top->ReadData_a0;
@@ -139,11 +150,11 @@ static void execute(Vtop *top, VerilatedContext *contextp, VerilatedVcdC *tfp, u
     for (; n > 0; n--)
     {
         single_cycle(top, contextp, tfp);
-        if (!(npc_state.inited))
-        {
-            single_cycle(top, contextp, tfp);
-            npc_state.inited = true;
-        }
+        // if (!(npc_state.inited))
+        // {
+        //     single_cycle(top, contextp, tfp);
+        //     npc_state.inited = true;
+        // }
         g_nr_guest_inst++;
         if ((contextp->gotFinish()) || (npc_state.state == NPC_ABORT))
             break;
