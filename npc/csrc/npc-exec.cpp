@@ -40,15 +40,20 @@ static void single_cycle(Vtop *top, VerilatedContext *contextp, VerilatedVcdC *t
 {
     char logbuf[128];
 
-    if (npc_state.inited)
-    {
-        top->rst = 0;
-    }
-    else
+    if (!npc_state.inited)
     {
         top->rst = 1;
+        contextp->timeInc(1);
+        top->clk = 1;
+        top->eval();
+        tfp->dump(contextp->time());
+        contextp->timeInc(1);
+        top->clk = 0;
+        top->eval();
+        tfp->dump(contextp->time());
         npc_state.inited = true;
     }
+    top->rst = 0;
     npc_state.halt_pc = top->pc;
     uint32_t npc = top->npc;
     npc_state.halt_ret = top->ReadData_a0;
