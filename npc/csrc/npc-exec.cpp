@@ -40,13 +40,10 @@ static void single_cycle(Vtop *top, VerilatedContext *contextp, VerilatedVcdC *t
 {
     char logbuf[128];
 
-    if (npc_state.inited)
-    {
-        top->rst = 0;
-    }
-    else
+    if (!npc_state.inited)
     {
         top->rst = 1;
+        npc_state.inited = 1;
     }
     npc_state.halt_pc = top->pc;
     uint32_t npc = top->npc;
@@ -59,6 +56,7 @@ static void single_cycle(Vtop *top, VerilatedContext *contextp, VerilatedVcdC *t
     top->clk = 0;
     top->eval();
     tfp->dump(contextp->time());
+    top->rst = 0;
 
     svSetScope(svGetScopeFromName("TOP.top.u_GPR.u_RegisterFile"));
     get_gpr(npc_state.gpr_value);
@@ -139,11 +137,11 @@ static void execute(Vtop *top, VerilatedContext *contextp, VerilatedVcdC *tfp, u
     for (; n > 0; n--)
     {
         single_cycle(top, contextp, tfp);
-        if (!(npc_state.inited))
-        {
-            single_cycle(top, contextp, tfp);
-            npc_state.inited = true;
-        }
+        // if (!(npc_state.inited))
+        // {
+        //     single_cycle(top, contextp, tfp);
+        //     npc_state.inited = true;
+        // }
         g_nr_guest_inst++;
         if ((contextp->gotFinish()) || (npc_state.state == NPC_ABORT))
             break;
