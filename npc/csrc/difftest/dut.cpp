@@ -119,7 +119,6 @@ void difftest_step(uint32_t pc)
   NPCState ref_r;
 
   if (is_skip_ref) {
-    printf("difftest_step pc: 0x%08x\n", pc);
     ref_difftest_regcpy(&npc_state, DIFFTEST_TO_REF);
     is_skip_ref = false;
     return;
