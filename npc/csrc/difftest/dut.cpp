@@ -122,29 +122,29 @@ static void checkregs(NPCState *ref, uint32_t pc)
   }
 }
 
-void difftest_step(uint32_t pc)
+void difftest_step(uint32_t pc, uint32_t npc)
 {
   NPCState ref_r;
 
-  // if (skip_dut_nr_inst > 0) {
-  //   ref_difftest_regcpy(&ref_r, DIFFTEST_TO_DUT);
-  //   if (ref_r.pc == npc) {
-  //     skip_dut_nr_inst = 0;
-  //     checkregs(&ref_r, npc);
-  //     return;
-  //   }
-  //   skip_dut_nr_inst --;
-  //   if (skip_dut_nr_inst == 0)
-  //     panic("can not catch up with ref.pc = " FMT_WORD " at pc = " FMT_WORD, ref_r.pc, pc);
-  //   return;
-  // }
+  if (skip_dut_nr_inst > 0) {
+    ref_difftest_regcpy(&ref_r, DIFFTEST_TO_DUT);
+    if (ref_r.halt_pc == npc) {
+      skip_dut_nr_inst = 0;
+      checkregs(&ref_r, npc);
+      return;
+    }
+    skip_dut_nr_inst --;
+    if (skip_dut_nr_inst == 0)
+      printf("can not catch up with ref.pc = 0x%08x at pc = 0x%08x\n", ref_r.halt_pc, pc);
+    return;
+  }
 
-  // if (is_skip_ref) {
-  //   // to skip the checking of an instruction, just copy the reg state to reference design
-  //   ref_difftest_regcpy(&cpu, DIFFTEST_TO_REF);
-  //   is_skip_ref = false;
-  //   return;
-  // }
+  if (is_skip_ref) {
+    // to skip the checking of an instruction, just copy the reg state to reference design
+    ref_difftest_regcpy(&ref_r, DIFFTEST_TO_REF);
+    is_skip_ref = false;
+    return;
+  }
 
   ref_difftest_exec(1);
   ref_difftest_regcpy(&ref_r, DIFFTEST_TO_DUT);
