@@ -69,6 +69,7 @@ static void single_cycle(Vtop *top, VerilatedContext *contextp, VerilatedVcdC *t
 
     svSetScope(svGetScopeFromName("TOP.top.u_GPR.u_RegisterFile"));
     get_gpr(npc_state.gpr_value);
+    printf("reg[15]: 0x%08x\n", npc_state.gpr_value[15]);
     int csr[4];
     svSetScope(svGetScopeFromName("TOP.top.u_CSR"));
     get_csr(csr);
