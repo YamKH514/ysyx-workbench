@@ -40,11 +40,11 @@ void diff_get_regs(void *diff_context)
   {
     ctx->gpr_value[i] = gpr(i);
   }
+  ctx->halt_pc = cpu.pc;
   ctx->mepc = cpu.csr.mepc;
   ctx->mcause = cpu.csr.mcause;
   ctx->mtvec = cpu.csr.mtvec;
   ctx->mstatus = cpu.csr.mstatus;
-  ctx->halt_pc = cpu.pc;
 }
 
 // 设置REF的寄存器状态为`dut`
@@ -55,11 +55,11 @@ void diff_set_regs(void *diff_context)
   {
     gpr(i) = ctx->gpr_value[i];
   }
+  cpu.pc = ctx->halt_pc;
   cpu.csr.mepc = ctx->mepc;
   cpu.csr.mcause = ctx->mcause;
   cpu.csr.mtvec = ctx->mtvec;
   cpu.csr.mstatus = ctx->mstatus;
-  cpu.pc = ctx->halt_pc;
 }
 
 void diff_step(uint64_t n)
