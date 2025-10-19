@@ -3,6 +3,7 @@
 #include "macro.h"
 #include "utils.h"
 #include "timer.h"
+#include "difftest-def.h"
 
 #define DEVICE_BASE 0xa0000000
 #define SERIAL_PORT (DEVICE_BASE + 0x00003f8)
@@ -50,11 +51,13 @@ extern "C" uint32_t paddr_read(uint32_t raddr)
     uint32_t addr = raddr & ~0x3u;
     if(raddr == RTC_ADDR)
     {
+        difftest_skip_ref();
         uint64_t us = get_time();
         return (uint32_t)us;
     }
     if(raddr == RTC_ADDR + 0x4)
     {
+        difftest_skip_ref();
         uint64_t us = get_time();
         return (uint32_t)(us >> 32);
     }
@@ -78,6 +81,7 @@ extern "C" void paddr_write(uint32_t waddr, uint32_t wdata, uint8_t wmask)
     {
         putchar(wdata);
         fflush(stdout);
+        difftest_skip_ref();
         return;
     }
     switch (wmask)
