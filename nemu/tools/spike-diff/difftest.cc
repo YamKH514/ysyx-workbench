@@ -83,6 +83,7 @@ void sim_t::diff_set_regs(void* diff_context) {
   state->mcause->write(ctx->mcause);
   state->mtvec->write(ctx->mtvec);
   state->mstatus->write(ctx->mstatus);
+  printf("ref halt_pc: 0x%08x\n", state->pc);
 }
 
 void sim_t::diff_memcpy(reg_t dest, void* src, size_t n) {
