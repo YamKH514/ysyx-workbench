@@ -129,7 +129,7 @@ static void single_cycle(Vtop *top, VerilatedContext *contextp, VerilatedVcdC *t
 #endif
         }
 #ifdef CONFIG_DIFFTEST
-        difftest_step(top->pc, npc);
+        difftest_step(npc);
 #endif
     }
 }
