@@ -23,6 +23,7 @@ typedef struct
 {
     int state;
     uint32_t halt_pc;
+    uint32_t npc;
     int32_t halt_ret;
     bool inited;
     int gpr_value[16];
@@ -55,7 +56,7 @@ void diff_set_regs(void *diff_context)
   {
     gpr(i) = ctx->gpr_value[i];
   }
-  cpu.pc = ctx->halt_pc;
+  cpu.pc = ctx->npc;
   cpu.csr.mepc = ctx->mepc;
   cpu.csr.mcause = ctx->mcause;
   cpu.csr.mtvec = ctx->mtvec;
