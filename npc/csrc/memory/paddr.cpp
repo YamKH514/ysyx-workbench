@@ -85,7 +85,6 @@ extern "C" void paddr_write(uint32_t waddr, uint32_t wdata, uint8_t wmask)
     {
         #ifdef CONFIG_DIFFTEST
                 difftest_skip_ref();
-                //TODO 此处跳过时给ref的pc不正确
         #endif
         putchar(wdata);
         fflush(stdout);
