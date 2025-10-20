@@ -23,7 +23,6 @@ typedef struct
 {
     int state;
     uint32_t halt_pc;
-    uint32_t npc;
     int32_t halt_ret;
     bool inited;
     int gpr_value[16];
