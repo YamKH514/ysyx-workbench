@@ -25,13 +25,13 @@ typedef struct
   uint32_t mcause;
   uint32_t mtvec;
   uint32_t mstatus;
-} rv32_crs;
+} npc_rv32_crs;
 
 typedef struct
 {
     int gpr[16];
     uint32_t pc;
-    rv32_crs csr;
+    npc_rv32_crs csr;
 } diff_context_t;
 
 // 获取REF的寄存器状态到`dut`
