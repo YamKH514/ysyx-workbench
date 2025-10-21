@@ -15,11 +15,9 @@ void (*ref_difftest_raise_intr)(uint64_t NO) = NULL;
 #ifdef CONFIG_DIFFTEST
 
 static bool is_skip_ref = false;
-static int skip_dut_nr_inst = 0;
 
 void difftest_skip_ref() {
   is_skip_ref = true;
-  skip_dut_nr_inst = 0;
 }
 
 void init_difftest(char *ref_so_file, long img_size, int port)
