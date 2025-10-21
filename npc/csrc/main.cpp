@@ -22,8 +22,8 @@ int main(int argc, char *argv[])
     top->trace(tfp, 5);
     tfp->open("logs/sim_wave.vcd");
 
-    init_npc(argc, argv);
-    init_sdb(top, contextp, tfp);
+    init_npc(argc, argv, top, contextp, tfp);
+    
 
     while (!contextp->gotFinish())
     {

@@ -41,21 +41,21 @@ static void single_cycle(Vtop *top, VerilatedContext *contextp, VerilatedVcdC *t
 {
     char logbuf[128];
 
-    if (!npc_state.inited)
-    {
-        top->rst = 1;
-        contextp->timeInc(1);
-        top->clk = 0;
-        top->eval();
-        tfp->dump(contextp->time());
-        contextp->timeInc(1);
-        top->clk = 1;
-        top->eval();
-        tfp->dump(contextp->time());
-        top->rst = 0;
-        top->eval();
-        npc_state.inited = true;
-    }
+    // if (!npc_state.inited)
+    // {
+    //     top->rst = 1;
+    //     contextp->timeInc(1);
+    //     top->clk = 0;
+    //     top->eval();
+    //     tfp->dump(contextp->time());
+    //     contextp->timeInc(1);
+    //     top->clk = 1;
+    //     top->eval();
+    //     tfp->dump(contextp->time());
+    //     top->rst = 0;
+    //     top->eval();
+    //     npc_state.inited = true;
+    // }
     npc_state.halt_pc = top->pc;
     npc_state.halt_ret = top->ReadData_a0;
     contextp->timeInc(1);
@@ -70,13 +70,8 @@ static void single_cycle(Vtop *top, VerilatedContext *contextp, VerilatedVcdC *t
 
     svSetScope(svGetScopeFromName("TOP.top.u_GPR.u_RegisterFile"));
     get_gpr(cpu.gpr);
-    int csr[4];
     svSetScope(svGetScopeFromName("TOP.top.u_CSR"));
     get_csr((int *)(&cpu.csr));
-    cpu.csr.mepc = (uint32_t)csr[0];
-    cpu.csr.mcause = (uint32_t)csr[1];
-    cpu.csr.mtvec = (uint32_t)csr[2];
-    cpu.csr.mstatus = (uint32_t)csr[3];
 
     if (npc_state.halt_pc >= 0x80000000)
     {

@@ -76,7 +76,26 @@ static int parse_args(int argc, char *argv[])
     return 0;
 }
 
-void init_npc(int argc, char *argv[])
+void reset_npc(Vtop* top, VerilatedContext* contextp, VerilatedVcdC* tfp)
+{
+    if (!npc_state.inited)
+    {
+        top->rst = 1;
+        contextp->timeInc(1);
+        top->clk = 0;
+        top->eval();
+        tfp->dump(contextp->time());
+        contextp->timeInc(1);
+        top->clk = 1;
+        top->eval();
+        tfp->dump(contextp->time());
+        top->rst = 0;
+        top->eval();
+        npc_state.inited = true;
+    }
+}
+
+void init_npc(int argc, char *argv[], Vtop* top, VerilatedContext* contextp, VerilatedVcdC* tfp)
 {
     parse_args(argc, argv);
 
@@ -86,11 +105,15 @@ void init_npc(int argc, char *argv[])
     parse_elf(elf_file);
 #endif
 
+    reset_npc(top, contextp, tfp);
+
     init_mem();
 
     long img_size = load_img();
 
     init_difftest(diff_so_file, img_size, difftest_port);
+
+    init_sdb(top, contextp, tfp);
 
     init_disasm();
 
