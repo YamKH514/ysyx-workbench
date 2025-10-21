@@ -62,7 +62,6 @@ void diff_set_regs(void *diff_context)
   cpu.csr.mcause = ctx->csr.mcause;
   cpu.csr.mtvec = ctx->csr.mtvec;
   cpu.csr.mstatus = ctx->csr.mstatus;
-  printf("ref halt_pc: 0x%08x\n", cpu.pc);
 }
 
 void diff_step(uint64_t n)
