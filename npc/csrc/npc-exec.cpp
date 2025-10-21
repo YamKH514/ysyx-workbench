@@ -7,6 +7,7 @@
 #include "ftrace.h"
 #include "Vtop.h"
 #include "Vtop__Dpi.h"
+#include "cpu.h"
 
 #define BITMASK(bits) ((1ull << (bits)) - 1)
 #define BITS(x, hi, lo) (((x) >> (lo)) & BITMASK((hi) - (lo) + 1)) // similar to x[hi:lo] in verilog
@@ -18,7 +19,7 @@
 
 uint64_t g_nr_guest_inst = 0;
 bool g_print_step = false;
-int npc_init_num = 2;
+CPU_stage cpu = {};
 
 static void trace(char *logbuf)
 {
@@ -55,6 +56,7 @@ static void single_cycle(Vtop *top, VerilatedContext *contextp, VerilatedVcdC *t
         top->eval();
         npc_state.inited = true;
     }
+    npc_state.halt_pc = top->pc;
     npc_state.halt_ret = top->ReadData_a0;
     contextp->timeInc(1);
     top->clk = 0;
@@ -64,17 +66,17 @@ static void single_cycle(Vtop *top, VerilatedContext *contextp, VerilatedVcdC *t
     top->clk = 1;
     top->eval();
     tfp->dump(contextp->time());
-    npc_state.halt_pc = top->pc;
+    cpu.pc = top->pc;
 
     svSetScope(svGetScopeFromName("TOP.top.u_GPR.u_RegisterFile"));
-    get_gpr(npc_state.gpr_value);
+    get_gpr(cpu.gpr);
     int csr[4];
     svSetScope(svGetScopeFromName("TOP.top.u_CSR"));
     get_csr(csr);
-    npc_state.mepc = (uint32_t)csr[0];
-    npc_state.mcause = (uint32_t)csr[1];
-    npc_state.mtvec = (uint32_t)csr[2];
-    npc_state.mstatus = (uint32_t)csr[3];
+    cpu.csr.mepc = (uint32_t)csr[0];
+    cpu.csr.mcause = (uint32_t)csr[1];
+    cpu.csr.mtvec = (uint32_t)csr[2];
+    cpu.csr.mstatus = (uint32_t)csr[3];
 
     if (npc_state.halt_pc >= 0x80000000)
     {
@@ -121,7 +123,7 @@ static void single_cycle(Vtop *top, VerilatedContext *contextp, VerilatedVcdC *t
         else if (opcode == inst_jarl)
         {
             uint32_t imm = SEXT(BITS(i, 31, 20), 12);
-            uint32_t src1 = npc_state.gpr_value[rs1];
+            uint32_t src1 = cpu.gpr[rs1];
             dnpc = src1 + imm;
 #ifdef CONFIG_FTRACE
             if (inst_val == 0x00008067)
@@ -135,7 +137,7 @@ static void single_cycle(Vtop *top, VerilatedContext *contextp, VerilatedVcdC *t
 #endif
         }
 #ifdef CONFIG_DIFFTEST
-        difftest_step(top->pc);
+        difftest_step(npc_state.halt_pc);
 #endif
     }
 }
