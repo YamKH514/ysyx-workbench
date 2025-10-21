@@ -15,4 +15,7 @@
 #include "log.h"
 #include "debug.h"
 
+#include "Vtop.h"
+#include "verilated_vcd_c.h"
+
 #endif
