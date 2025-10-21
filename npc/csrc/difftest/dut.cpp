@@ -127,6 +127,7 @@ void difftest_step(uint32_t pc)
 
   ref_difftest_exec(1);
   ref_difftest_regcpy(&ref_r, DIFFTEST_TO_DUT);
+  printf("ref_r pc = 0x%08x\n", ref_r.pc);
   
   checkregs(&ref_r, pc);
 }
