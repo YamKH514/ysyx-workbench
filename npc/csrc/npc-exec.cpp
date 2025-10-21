@@ -116,7 +116,7 @@ static void single_cycle(Vtop *top, VerilatedContext *contextp, VerilatedVcdC *t
 #endif
         }
 #ifdef CONFIG_DIFFTEST
-        difftest_step(cpu.pc);
+        difftest_step(npc_state.halt_pc);
 #endif
     }
 }
