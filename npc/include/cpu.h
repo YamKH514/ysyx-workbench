@@ -16,8 +16,8 @@ typedef struct {
   int gpr[16];
   uint32_t pc;
   rv32_crs csr;
-} CPU_stage;
+} CPU_state;
 
-extern CPU_stage cpu;
+extern CPU_state cpu;
 
 #endif

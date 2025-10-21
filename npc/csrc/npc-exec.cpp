@@ -18,7 +18,7 @@
 
 uint64_t g_nr_guest_inst = 0;
 bool g_print_step = false;
-CPU_stage cpu = {};
+CPU_state cpu = {};
 
 static void trace(char *logbuf)
 {

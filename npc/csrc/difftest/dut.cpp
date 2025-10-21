@@ -25,7 +25,7 @@ void init_difftest(char *ref_so_file, long img_size, int port)
 {
   assert(ref_so_file != NULL);
 
-  CPU_stage cpu_init = cpu;
+  CPU_state cpu_init = cpu;
   cpu_init.pc = 0x80000000;
   cpu_init.csr.mstatus = 0x00001800;
 
@@ -60,7 +60,7 @@ void init_difftest(char *ref_so_file, long img_size, int port)
   ref_difftest_regcpy(&cpu_init, DIFFTEST_TO_REF);
 }
 
-bool difftest_checkregs(CPU_stage*ref_r, uint32_t pc)
+bool difftest_checkregs(CPU_state*ref_r, uint32_t pc)
 {
   int reg_num = ARRLEN(cpu.gpr);
   for (int i = 0; i < reg_num; i++)
@@ -106,7 +106,7 @@ bool difftest_checkregs(CPU_stage*ref_r, uint32_t pc)
   return true;
 }
 
-static void checkregs(CPU_stage *ref, uint32_t pc)
+static void checkregs(CPU_state *ref, uint32_t pc)
 {
   if (!difftest_checkregs(ref, pc))
   {
@@ -117,10 +117,11 @@ static void checkregs(CPU_stage *ref, uint32_t pc)
 
 void difftest_step(uint32_t pc)
 {
-  CPU_stage ref_r;
+  CPU_state ref_r;
 
   if (is_skip_ref) {
-    printf("difftest skip pc = 0x%08x\n", cpu.pc);
+    // printf("difftest skip pc = 0x%08x\n", cpu.pc);
+    CPU_state
     ref_difftest_regcpy(&cpu, DIFFTEST_TO_REF);
     is_skip_ref = false;
     return;
