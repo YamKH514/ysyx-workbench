@@ -88,7 +88,7 @@ extern "C" void paddr_write(uint32_t waddr, uint32_t wdata, uint8_t wmask)
         putchar(wdata);
         fflush(stdout);
 #ifdef CONFIG_DIFFTEST
-        printf("difftest skip pc = 0x%08x\n", cpu.pc);
+        // printf("difftest skip pc = 0x%08x\n", cpu.pc);
         difftest_skip_ref();
 #endif
         return;
