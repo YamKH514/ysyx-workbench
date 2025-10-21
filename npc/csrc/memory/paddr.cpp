@@ -50,13 +50,6 @@ void print_paddr_write(uint32_t addr, int len, uint32_t data)
 extern "C" uint32_t paddr_read(uint32_t raddr)
 {
     uint32_t addr = raddr & ~0x3u;
-#ifdef CONFIG_MTRACE
-    print_paddr_read(addr, 4);
-#endif
-    if(likely(in_pmem(addr)))
-    {
-        return pmem_read(addr, 4);
-    }
     if(addr == RTC_ADDR)
     {
         uint64_t us = get_time();
@@ -73,6 +66,13 @@ extern "C" uint32_t paddr_read(uint32_t raddr)
 #endif
         return (uint32_t)(us >> 32);
     }
+#ifdef CONFIG_MTRACE
+    print_paddr_read(addr, 4);
+#endif
+    if(likely(in_pmem(addr)))
+    {
+        return pmem_read(addr, 4);
+    }
     out_of_bound(addr);
     return 0;
 }
@@ -82,6 +82,16 @@ extern "C" void paddr_write(uint32_t waddr, uint32_t wdata, uint8_t wmask)
     uint32_t addr = waddr & ~0x3u;
     uint32_t data = 0;
     uint32_t offset = waddr & 0x3;
+    if(addr == SERIAL_PORT)
+    {
+        printf("serial used pc = 0x%08x\n", cpu.pc);
+        putchar(wdata);
+        fflush(stdout);
+#ifdef CONFIG_DIFFTEST
+        // difftest_skip_ref();
+#endif
+        return;
+    }
 
     switch (wmask)
     {
@@ -98,6 +108,7 @@ extern "C" void paddr_write(uint32_t waddr, uint32_t wdata, uint8_t wmask)
         data = 0;
         break;
     }
+
 #ifdef CONFIG_MTRACE
     print_paddr_write(addr, 4, data);
 #endif
@@ -106,16 +117,7 @@ extern "C" void paddr_write(uint32_t waddr, uint32_t wdata, uint8_t wmask)
         pmem_write(addr, 4, data);
         return;
     }
-    if(addr == SERIAL_PORT)
-    {
-        printf("serial used pc = 0x%08x\n", cpu.pc);
-        putchar(wdata);
-        fflush(stdout);
-#ifdef CONFIG_DIFFTEST
-        // difftest_skip_ref();
-#endif
-        return;
-    }
+
     out_of_bound(addr);
 }
 
