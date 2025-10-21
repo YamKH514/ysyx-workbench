@@ -28,6 +28,7 @@ void init_difftest(char *ref_so_file, long img_size, int port)
 
   CPU_stage cpu_init = cpu;
   cpu_init.pc = 0x80000000;
+  cpu_init.csr.mstatus = 0x00001800;
 
   void *handle;
   handle = dlopen(ref_so_file, RTLD_LAZY);
