@@ -17,6 +17,7 @@ wire    [15:0]  DataH;
 import "DPI-C" function int paddr_read(input int raddr);
 import "DPI-C" function void paddr_write(
     input int waddr, input int wdata, input byte wmask);
+import "DPI-C" function void difftest_skip_ref();
 always @(*) begin
     Data = 0;
     if (MemValid) begin // 有读写请求时
@@ -26,6 +27,9 @@ always @(*) begin
         else begin
             Data = paddr_read(raddr);
         end
+    end
+    if ((raddr == 32'ha0000048) | (raddr == 32'ha0000048 + 32'h4) | (waddr == 32'ha00003f8)) begin
+        difftest_skip_ref(); // Difftest跳过读写设备
     end
 end
 
