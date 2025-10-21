@@ -64,6 +64,7 @@ assign Memwaddr = ALURes;
 assign Memwdata = ReadData2;
 
 Memory u_Memory(
+    .pc         (pc),
     .raddr    	(Memraddr     ),
     .waddr    	(Memwaddr     ),
     .wdata    	(Memwdata     ),

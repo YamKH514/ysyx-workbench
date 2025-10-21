@@ -1,4 +1,5 @@
 module Memory(
+    input       [31:0] pc,
     input       [31:0] raddr,
     input       [31:0] waddr,
     input       [31:0] wdata,
@@ -22,6 +23,7 @@ always @(*) begin
     Data = 0;
     if (MemValid) begin // 有读写请求时
         if (MemWrite) begin // 有写请求时
+            $display("Mem write pc = 0x%h\n", pc);
             paddr_write(waddr, wdata, wmask);
         end
         else begin
