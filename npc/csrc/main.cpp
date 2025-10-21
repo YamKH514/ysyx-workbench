@@ -4,9 +4,9 @@
 #include "npc.h"
 #include "sdb.h"
 // #include <nvboard.h>
-#include "Vtop.h"
-#include "verilated_vcd_c.h"
-#include "Vtop__Dpi.h"
+// #include "Vtop.h"
+// #include "verilated_vcd_c.h"
+// #include "Vtop__Dpi.h"
 
 int main(int argc, char *argv[])
 {
@@ -23,7 +23,6 @@ int main(int argc, char *argv[])
     tfp->open("logs/sim_wave.vcd");
 
     init_npc(argc, argv, top, contextp, tfp);
-    
 
     while (!contextp->gotFinish())
     {
