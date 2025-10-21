@@ -53,12 +53,11 @@ void diff_get_regs(void *diff_context)
 void diff_set_regs(void *diff_context)
 {
   diff_context_t *ctx = (diff_context_t *)diff_context;
-  printf("ctx.pc = 0x%08x\n", ctx->pc);
   for(int i = 0; i < 16; i++)
   {
     gpr(i) = ctx->gpr[i];
   }
-  cpu.pc = ctx->pc;
+  cpu.pc = ctx->pc + 4;
   cpu.csr.mepc = ctx->csr.mepc;
   cpu.csr.mcause = ctx->csr.mcause;
   cpu.csr.mtvec = ctx->csr.mtvec;
