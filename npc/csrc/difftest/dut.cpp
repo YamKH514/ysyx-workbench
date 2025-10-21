@@ -26,6 +26,9 @@ void init_difftest(char *ref_so_file, long img_size, int port)
 {
   assert(ref_so_file != NULL);
 
+  CPU_stage cpu_init = cpu;
+  cpu_init.pc = 0x80000000;
+
   void *handle;
   handle = dlopen(ref_so_file, RTLD_LAZY);
   if (!handle)
@@ -54,7 +57,7 @@ void init_difftest(char *ref_so_file, long img_size, int port)
 
   ref_difftest_init(port);
   ref_difftest_memcpy(RESET_VECTOR, guest_to_host(RESET_VECTOR), img_size, DIFFTEST_TO_REF);
-  ref_difftest_regcpy(&cpu, DIFFTEST_TO_REF);
+  ref_difftest_regcpy(&cpu_init, DIFFTEST_TO_REF);
 }
 
 bool difftest_checkregs(CPU_stage*ref_r, uint32_t pc)
