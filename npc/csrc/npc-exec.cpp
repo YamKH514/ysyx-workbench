@@ -5,8 +5,8 @@
 #include "difftest-def.h"
 #include "disasm.h"
 #include "ftrace.h"
-// #include "Vtop.h"
-// #include "Vtop__Dpi.h"
+#include "Vtop.h"
+#include "Vtop__Dpi.h"
 #include "cpu.h"
 
 #define BITMASK(bits) ((1ull << (bits)) - 1)

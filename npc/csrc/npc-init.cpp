@@ -5,6 +5,9 @@
 #include "disasm.h"
 #include "difftest-def.h"
 #include "sdb.h"
+#include "Vtop.h"
+#include "verilated_vcd_c.h"
+#include "Vtop__Dpi.h"
 
 static char *log_file = NULL;
 static char *diff_so_file = NULL;
