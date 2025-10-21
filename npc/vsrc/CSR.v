@@ -40,7 +40,7 @@ always @(posedge clk) begin
         mepc    <= 32'b0;
         mcause  <= 32'b0;
         mtvec   <= 32'b0;
-        mstatus <= 32'b0;
+        mstatus <= 32'h00001800;
     end
     else if(is_ecall) begin
         mstatus[12:11]  <= 2'b11;

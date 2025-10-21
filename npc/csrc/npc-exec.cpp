@@ -72,7 +72,7 @@ static void single_cycle(Vtop *top, VerilatedContext *contextp, VerilatedVcdC *t
     get_gpr(cpu.gpr);
     int csr[4];
     svSetScope(svGetScopeFromName("TOP.top.u_CSR"));
-    get_csr(csr);
+    get_csr((int *)(&cpu.csr));
     cpu.csr.mepc = (uint32_t)csr[0];
     cpu.csr.mcause = (uint32_t)csr[1];
     cpu.csr.mtvec = (uint32_t)csr[2];
