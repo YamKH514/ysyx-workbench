@@ -137,6 +137,7 @@ static void single_cycle(Vtop *top, VerilatedContext *contextp, VerilatedVcdC *t
 #endif
         }
 #ifdef CONFIG_DIFFTEST
+        printf("npc_state.halt_pc = 0x%08x\n", npc_state.halt_pc);
         difftest_step(npc_state.halt_pc);
 #endif
     }
