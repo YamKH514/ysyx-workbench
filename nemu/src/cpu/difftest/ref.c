@@ -57,7 +57,7 @@ void diff_set_regs(void *diff_context)
   {
     gpr(i) = ctx->gpr[i];
   }
-  cpu.pc = ctx->pc + 4;
+  cpu.pc = ctx->pc;
   cpu.csr.mepc = ctx->csr.mepc;
   cpu.csr.mcause = ctx->csr.mcause;
   cpu.csr.mtvec = ctx->csr.mtvec;
