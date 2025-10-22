@@ -23,10 +23,7 @@ CPU_state cpu = {};
 static void trace_and_difftest(char *logbuf)
 {
 #ifdef CONFIG_ITRACE_COND
-    if (ITRACE_COND)
-    {
-        log_write("%s\n", logbuf);
-    }
+    if (ITRACE_COND) { log_write("%s\n", logbuf); }
 #endif
     if (g_print_step)
     {
