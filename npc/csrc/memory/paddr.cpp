@@ -3,7 +3,7 @@
 #include "macro.h"
 #include "utils.h"
 #include "timer.h"
-#include "common.h"
+#include "Vtop.h"
 #include "difftest-def.h"
 #include "cpu.h"
 
