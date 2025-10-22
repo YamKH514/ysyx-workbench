@@ -30,11 +30,9 @@ always @(posedge clk) begin
             Data <= paddr_read(raddr);
         end
     end
-`ifdef CONFIG_DIFFTEST
-    if ((raddr == 32'ha0000048) | (raddr == 32'ha0000048 + 32'h4) | (waddr == 32'ha00003f8)) begin
-        difftest_skip_ref(npc); // Difftest跳过读写设备
-    end
-`endif
+    // if ((raddr == 32'ha0000048) | (raddr == 32'ha0000048 + 32'h4) | (waddr == 32'ha00003f8)) begin
+    //     difftest_skip_ref(npc); // Difftest跳过读写设备
+    // end
 end
 
 assign ByteOff = raddr[1:0];
