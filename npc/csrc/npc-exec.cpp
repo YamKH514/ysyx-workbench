@@ -49,12 +49,12 @@ static void single_cycle(Vtop *top, VerilatedContext *contextp, VerilatedVcdC *t
     //     npc_state.inited = true;
     // }
 
-    contextp->timeInc(1);
     // top->rst = 0;
     // top->clk = 0;
     // top->eval();
     cpu_single_cycle(top);
     tfp->dump(contextp->time());
+    contextp->timeInc(1);
     npc_state.halt_pc = top->pc;
     npc_state.halt_ret = top->ReadData_a0;
     cpu.pc = top->npc;
