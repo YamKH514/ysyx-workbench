@@ -18,7 +18,7 @@ void (*ref_difftest_raise_intr)(uint64_t NO) = NULL;
 static bool is_skip_ref = false;
 static uint32_t skip_to_pc = 0;
 
-extern "C" void difftest_skip_ref(uint32_t pc)
+void difftest_skip_ref(uint32_t pc)
 {
   skip_to_pc = pc;
   is_skip_ref = true;
