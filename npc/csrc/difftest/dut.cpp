@@ -120,10 +120,7 @@ void difftest_step(uint32_t pc)
   CPU_state ref_r;
 
   if (is_skip_ref) {
-    // printf("difftest skip pc = 0x%08x\n", cpu.pc);
-    CPU_state cpu_temp = cpu;
-    cpu_temp.pc += 4;
-    ref_difftest_regcpy(&cpu_temp, DIFFTEST_TO_REF);
+    ref_difftest_regcpy(&cpu, DIFFTEST_TO_REF);
     is_skip_ref = false;
     return;
   }
