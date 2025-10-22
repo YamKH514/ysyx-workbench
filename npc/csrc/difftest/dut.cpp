@@ -123,7 +123,10 @@ void difftest_step(uint32_t pc)
   CPU_state ref_r;
 
   if (is_skip_ref) {
-    if(skip_pc == 0) skip_pc = cpu.npc;
+    if(skip_pc == 0) 
+      skip_pc = cpu.npc;
+    else
+      skip_pc += 4;
     skip_inst_num ++;
   }
   if(cpu.pc == skip_pc)
@@ -132,13 +135,7 @@ void difftest_step(uint32_t pc)
     is_skip_ref = false;
     skip_inst_num --;
     if(skip_inst_num == 0)
-    {
       skip_pc = 0;
-    }
-    else
-    {
-      skip_pc += 4;
-    }
     return;
   }
   ref_difftest_exec(1);
