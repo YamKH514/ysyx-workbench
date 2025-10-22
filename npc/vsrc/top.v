@@ -65,7 +65,7 @@ assign Memwdata = ReadData2;
 
 Memory u_Memory(
     .clk        (clk          ),
-    .npc        (npc          ),
+    .pc         (pc           ),
     .raddr    	(Memraddr     ),
     .waddr    	(Memwaddr     ),
     .wdata    	(Memwdata     ),

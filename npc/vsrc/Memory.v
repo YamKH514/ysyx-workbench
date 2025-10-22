@@ -1,6 +1,6 @@
 module Memory(
     input              clk,
-    input       [31:0] npc,
+    input       [31:0] pc,
     input       [31:0] raddr,
     input       [31:0] waddr,
     input       [31:0] wdata,
