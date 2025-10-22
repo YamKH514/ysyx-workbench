@@ -124,6 +124,7 @@ void difftest_step(uint32_t pc)
   if (is_skip_ref) {
     // cpu.pc = cpu.npc;
     skip_pc = cpu.npc;
+    printf("SKIP_PC = 0x%08x\n", skip_pc);
     // ref_difftest_regcpy(&cpu, DIFFTEST_TO_REF);
     // is_skip_ref = false;
     // return;
