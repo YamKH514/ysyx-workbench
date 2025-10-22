@@ -54,7 +54,7 @@ extern "C" uint32_t paddr_read(uint32_t raddr)
     {
         uint64_t us = get_time();
 #ifdef CONFIG_DIFFTEST
-        // difftest_skip_ref();
+        difftest_skip_ref();
 #endif
         return (uint32_t)us;
     }
@@ -62,7 +62,7 @@ extern "C" uint32_t paddr_read(uint32_t raddr)
     {
         uint64_t us = get_time();
 #ifdef CONFIG_DIFFTEST
-        // difftest_skip_ref();
+        difftest_skip_ref();
 #endif
         return (uint32_t)(us >> 32);
     }
