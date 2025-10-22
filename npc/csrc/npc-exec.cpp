@@ -50,7 +50,7 @@ static void single_cycle(Vtop *top, VerilatedContext *contextp, VerilatedVcdC *t
     // }
 
     contextp->timeInc(1);
-    top->rst = 0;
+    // top->rst = 0;
     // top->clk = 0;
     // top->eval();
     cpu_single_cycle(top);
