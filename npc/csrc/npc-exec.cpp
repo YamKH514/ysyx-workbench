@@ -58,6 +58,7 @@ static void exec_once(Vtop *top, VerilatedContext *contextp, VerilatedVcdC *tfp)
     tfp->dump(contextp->time());
     
     cpu.pc = top->pc;
+    cpu.npc = top->npc;
     svSetScope(svGetScopeFromName("TOP.top.u_GPR.u_RegisterFile"));
     get_gpr(cpu.gpr);
     svSetScope(svGetScopeFromName("TOP.top.u_CSR"));
