@@ -46,10 +46,6 @@ static void single_cycle(Vtop *top, VerilatedContext *contextp, VerilatedVcdC *t
         top->clk = 1;
         top->eval();
         tfp->dump(contextp->time());
-        // contextp->timeInc(1);
-        // top->rst = 0;
-        // top->eval();
-        // tfp->dump(contextp->time());
         npc_state.inited = true;
     }
 
