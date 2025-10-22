@@ -82,6 +82,7 @@ extern "C" void paddr_write(uint32_t waddr, uint32_t wdata, uint8_t wmask)
     uint32_t addr = waddr & ~0x3u;
     uint32_t data = 0;
     uint32_t offset = waddr & 0x3;
+    printf("w addr = 0x%08x\n", addr);
     if(addr == SERIAL_PORT)
     {
         printf("serial used pc = 0x%08x\n", cpu.pc);
