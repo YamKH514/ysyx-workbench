@@ -125,8 +125,8 @@ void difftest_step(uint32_t pc)
   if (is_skip_ref) {
     if(skip_pc == 0) 
       skip_pc = cpu.npc;
-    else
-      skip_pc += 4;
+    // else
+      // skip_pc += 4;
     is_skip_ref = false;
     skip_inst_num ++;
     printf("pc = %x, skipNum = %d\n", cpu.pc, skip_inst_num);
