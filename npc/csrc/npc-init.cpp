@@ -95,7 +95,7 @@ void reset_npc(Vtop* top, VerilatedContext* contextp, VerilatedVcdC* tfp)
         printf("inited pc = 0x%08x\n", top->pc);
         npc_state.halt_pc = top->pc;
         npc_state.inited = true;
-        cpu.pc = top->pc;
+        cpu.pc = top->npc;
         svSetScope(svGetScopeFromName("TOP.top.u_GPR.u_RegisterFile"));
         get_gpr(cpu.gpr);
         svSetScope(svGetScopeFromName("TOP.top.u_CSR"));
