@@ -127,12 +127,12 @@ void difftest_step(uint32_t pc)
       skip_pc = cpu.npc;
     else
       skip_pc += 4;
+    is_skip_ref = false;
     skip_inst_num ++;
   }
   if(cpu.pc == skip_pc)
   {
     ref_difftest_regcpy(&cpu, DIFFTEST_TO_REF);
-    is_skip_ref = false;
     printf("pc = %x, skipNum = %d\n", cpu.pc, skip_inst_num);
     skip_inst_num --;
     if(skip_inst_num == 0)
