@@ -82,7 +82,6 @@ void reset_npc(Vtop* top, VerilatedContext* contextp, VerilatedVcdC* tfp)
         cpu_reset(10, top);
         tfp->dump(contextp->time());
         contextp->timeInc(1);
-        top->rst = 0;
 }
 
 void init_npc(int argc, char *argv[], Vtop* top, VerilatedContext* contextp, VerilatedVcdC* tfp)
