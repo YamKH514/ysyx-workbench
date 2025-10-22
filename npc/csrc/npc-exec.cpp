@@ -41,7 +41,6 @@ static void single_cycle(Vtop *top, VerilatedContext *contextp, VerilatedVcdC *t
     char logbuf[128];
 
     contextp->timeInc(1);
-    top->rst = 0;
     top->clk = 1;
     top->eval();
     tfp->dump(contextp->time());
