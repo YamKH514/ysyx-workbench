@@ -50,17 +50,18 @@ static void single_cycle(Vtop *top, VerilatedContext *contextp, VerilatedVcdC *t
     }
 
     contextp->timeInc(1);
-    top->rst = 0;
-    top->clk = 0;
-    top->eval();
+    // top->rst = 0;
+    // top->clk = 0;
+    // top->eval();
+    cpu_single_cycle(top);
     tfp->dump(contextp->time());
     npc_state.halt_pc = top->pc;
     npc_state.halt_ret = top->ReadData_a0;
     cpu.pc = top->npc;
-    contextp->timeInc(1);
-    top->clk = 1;
-    top->eval();
-    tfp->dump(contextp->time());
+    // contextp->timeInc(1);
+    // top->clk = 1;
+    // top->eval();
+    // tfp->dump(contextp->time());
 
     svSetScope(svGetScopeFromName("TOP.top.u_GPR.u_RegisterFile"));
     get_gpr(cpu.gpr);
