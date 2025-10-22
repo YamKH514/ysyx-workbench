@@ -77,13 +77,6 @@ static int parse_args(int argc, char *argv[])
     return 0;
 }
 
-void reset_npc(Vtop* top, VerilatedContext* contextp, VerilatedVcdC* tfp)
-{
-        cpu_reset(10, top);
-        // tfp->dump(contextp->time());
-        // contextp->timeInc(1);
-}
-
 void init_npc(int argc, char *argv[], Vtop* top, VerilatedContext* contextp, VerilatedVcdC* tfp)
 {
     parse_args(argc, argv);
@@ -94,7 +87,7 @@ void init_npc(int argc, char *argv[], Vtop* top, VerilatedContext* contextp, Ver
     parse_elf(elf_file);
 #endif
 
-    reset_npc(top, contextp, tfp);
+    cpu_reset(10, top);
 
     init_mem();
 
