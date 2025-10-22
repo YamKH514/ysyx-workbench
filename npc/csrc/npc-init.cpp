@@ -5,8 +5,6 @@
 #include "disasm.h"
 #include "difftest-def.h"
 #include "sdb.h"
-#include "cpu.h"
-#include "Vtop__Dpi.h"
 
 static char *log_file = NULL;
 static char *diff_so_file = NULL;
@@ -92,14 +90,12 @@ void reset_npc(Vtop* top, VerilatedContext* contextp, VerilatedVcdC* tfp)
         top->eval();
         tfp->dump(contextp->time());
         contextp->timeInc(1);
+        top->clk = 0;
+        top->eval();
+        tfp->dump(contextp->time());
         printf("inited pc = 0x%08x\n", top->pc);
         npc_state.halt_pc = top->pc;
         npc_state.inited = true;
-        cpu.pc = top->npc;
-        svSetScope(svGetScopeFromName("TOP.top.u_GPR.u_RegisterFile"));
-        get_gpr(cpu.gpr);
-        svSetScope(svGetScopeFromName("TOP.top.u_CSR"));
-        get_csr((int *)(&cpu.csr));
     }
 }
 
@@ -124,10 +120,6 @@ void init_npc(int argc, char *argv[], Vtop* top, VerilatedContext* contextp, Ver
     init_sdb(top, contextp, tfp);
 
     init_disasm();
-
-#ifdef CONFIG_DIFFTEST
-    difftest_step(npc_state.halt_pc);
-#endif
 
     Log("init_npc has done.");
 }
