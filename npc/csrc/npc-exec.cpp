@@ -42,10 +42,10 @@ static void single_cycle(Vtop *top, VerilatedContext *contextp, VerilatedVcdC *t
 
     if(!npc_state.inited)
     {
+        contextp->timeInc(1);
         top->clk = 1;
         top->eval();
         tfp->dump(contextp->time());
-        contextp->timeInc(1);
         npc_state.inited = true;
     }
 
