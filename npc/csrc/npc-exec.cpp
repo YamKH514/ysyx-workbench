@@ -40,14 +40,14 @@ static void single_cycle(Vtop *top, VerilatedContext *contextp, VerilatedVcdC *t
 {
     char logbuf[128];
 
-    if(!npc_state.inited)
-    {
-        contextp->timeInc(1);
-        top->clk = 1;
-        top->eval();
-        tfp->dump(contextp->time());
-        npc_state.inited = true;
-    }
+    // if(!npc_state.inited)
+    // {
+    //     contextp->timeInc(1);
+    //     top->clk = 1;
+    //     top->eval();
+    //     tfp->dump(contextp->time());
+    //     npc_state.inited = true;
+    // }
 
     contextp->timeInc(1);
     top->rst = 0;
