@@ -3,7 +3,6 @@
 #include "macro.h"
 #include "utils.h"
 #include "timer.h"
-#include "Vtop.h"
 #include "difftest-def.h"
 #include "cpu.h"
 
@@ -90,7 +89,7 @@ extern "C" void paddr_write(uint32_t waddr, uint32_t wdata, uint8_t wmask)
         putchar(wdata);
         fflush(stdout);
 #ifdef CONFIG_DIFFTEST
-        difftest_skip_ref(top->pc);
+        difftest_skip_ref(cpu.pc);
 #endif
         return;
     }
