@@ -34,7 +34,7 @@ always @(posedge clk) begin
     end
 `ifdef CONFIG_DIFFTEST
     if ((raddr == 32'ha0000048) | (raddr == 32'ha0000048 + 32'h4) | (waddr == 32'ha00003f8)) begin
-        difftest_skip_ref(npc); // Difftest跳过读写设备
+        difftest_skip_ref(pc); // Difftest跳过读写设备
     end
 `endif
 end
