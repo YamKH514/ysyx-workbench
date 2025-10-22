@@ -1,5 +1,6 @@
 module Memory(
-    input       [31:0] pc,
+    input              clk,
+    input       [31:0] npc,
     input       [31:0] raddr,
     input       [31:0] waddr,
     input       [31:0] wdata,
@@ -18,21 +19,20 @@ wire    [15:0]  DataH;
 import "DPI-C" function int paddr_read(input int raddr);
 import "DPI-C" function void paddr_write(
     input int waddr, input int wdata, input byte wmask);
-// import "DPI-C" function void difftest_skip_ref();
-always @(*) begin
-    Data = 0;
+import "DPI-C" function void difftest_skip_ref(int pc);
+always @(posedge clk) begin
+    Data <= 0;
     if (MemValid) begin // 有读写请求时
         if (MemWrite) begin // 有写请求时
-            $display("Mem write pc = 0x%h\n", pc);
             paddr_write(waddr, wdata, wmask);
         end
         else begin
-            Data = paddr_read(raddr);
+            Data <= paddr_read(raddr);
         end
     end
-    // if ((raddr == 32'ha0000048) | (raddr == 32'ha0000048 + 32'h4) | (waddr == 32'ha00003f8)) begin
-    //     difftest_skip_ref(); // Difftest跳过读写设备
-    // end
+    if ((raddr == 32'ha0000048) | (raddr == 32'ha0000048 + 32'h4) | (waddr == 32'ha00003f8)) begin
+        difftest_skip_ref(npc); // Difftest跳过读写设备
+    end
 end
 
 assign ByteOff = raddr[1:0];

@@ -54,7 +54,7 @@ extern "C" uint32_t paddr_read(uint32_t raddr)
     {
         uint64_t us = get_time();
 #ifdef CONFIG_DIFFTEST
-        difftest_skip_ref(cpu.pc + 4);
+        // difftest_skip_ref(cpu.pc + 4);
 #endif
         return (uint32_t)us;
     }
@@ -62,7 +62,7 @@ extern "C" uint32_t paddr_read(uint32_t raddr)
     {
         uint64_t us = get_time();
 #ifdef CONFIG_DIFFTEST
-        difftest_skip_ref(cpu.pc + 4);
+        // difftest_skip_ref(cpu.pc + 4);
 #endif
         return (uint32_t)(us >> 32);
     }
@@ -88,7 +88,7 @@ extern "C" void paddr_write(uint32_t waddr, uint32_t wdata, uint8_t wmask)
         putchar(wdata);
         fflush(stdout);
 #ifdef CONFIG_DIFFTEST
-        difftest_skip_ref(cpu.pc + 4);
+        // difftest_skip_ref(cpu.pc + 4);
 #endif
         return;
     }
