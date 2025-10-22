@@ -22,14 +22,14 @@ import "DPI-C" function void paddr_write(
 `ifdef CONFIG_DIFFTEST
 import "DPI-C" function void difftest_skip_ref(int pc);
 `endif
-always @(posedge clk) begin
-    Data <= 0;
+always @(*) begin
+    Data = 0;
     if (MemValid) begin // 有读写请求时
         if (MemWrite) begin // 有写请求时
             paddr_write(waddr, wdata, wmask);
         end
         else begin
-            Data <= paddr_read(raddr);
+            Data = paddr_read(raddr);
         end
     end
 `ifdef CONFIG_DIFFTEST
