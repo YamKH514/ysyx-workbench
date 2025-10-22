@@ -90,14 +90,14 @@ void reset_npc(Vtop* top, VerilatedContext* contextp, VerilatedVcdC* tfp)
         top->eval();
         tfp->dump(contextp->time());
 
-        contextp->timeInc(1);
-        top->clk = 1;
-        top->eval();
-        tfp->dump(contextp->time());
-        contextp->timeInc(1);
-        top->clk = 0;
-        top->eval();
-        tfp->dump(contextp->time());
+        // contextp->timeInc(1);
+        // top->clk = 1;
+        // top->eval();
+        // tfp->dump(contextp->time());
+        // contextp->timeInc(1);
+        // top->clk = 0;
+        // top->eval();
+        // tfp->dump(contextp->time());
         printf("inited pc = 0x%08x\n", top->pc);
         // npc_state.halt_pc = top->pc;
         npc_state.inited = true;
