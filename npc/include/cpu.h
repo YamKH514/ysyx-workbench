@@ -20,4 +20,7 @@ typedef struct {
 
 extern CPU_state cpu;
 
+void cpu_single_cycle(Vtop* top);
+void cpu_reset(int n, Vtop* top);
+
 #endif

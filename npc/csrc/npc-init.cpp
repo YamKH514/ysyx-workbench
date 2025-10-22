@@ -5,6 +5,7 @@
 #include "disasm.h"
 #include "difftest-def.h"
 #include "sdb.h"
+#include "cpu.h"
 
 static char *log_file = NULL;
 static char *diff_so_file = NULL;
@@ -78,18 +79,9 @@ static int parse_args(int argc, char *argv[])
 
 void reset_npc(Vtop* top, VerilatedContext* contextp, VerilatedVcdC* tfp)
 {
-    if (!npc_state.inited)
-    {
-        top->rst = 1;
-        contextp->timeInc(1);
-        top->clk = 1;
-        top->eval();
+        cpu_reset(10, top);
         tfp->dump(contextp->time());
         contextp->timeInc(1);
-        top->clk = 0;
-        top->eval();
-        tfp->dump(contextp->time());
-    }
 }
 
 void init_npc(int argc, char *argv[], Vtop* top, VerilatedContext* contextp, VerilatedVcdC* tfp)
