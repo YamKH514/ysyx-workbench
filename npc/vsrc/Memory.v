@@ -22,33 +22,14 @@ import "DPI-C" function void paddr_write(
 `ifdef CONFIG_DIFFTEST
 import "DPI-C" function void difftest_skip_ref(int pc);
 `endif
-// always @(*) begin
-//     Data = 0;
-//     if (MemValid) begin // 有读写请求时
-//         if (MemWrite) begin // 有写请求时
-//             paddr_write(waddr, wdata, wmask);
-//         end
-//         else begin
-//             Data = paddr_read(raddr);
-//         end
-//     end
-// `ifdef CONFIG_DIFFTEST
-//     if ((raddr == 32'ha0000048) | (raddr == 32'ha0000048 + 32'h4) | (waddr == 32'ha00003f8)) begin
-//         difftest_skip_ref(npc); // Difftest跳过读写设备
-//     end
-// `endif
-// end
-
-always @(*) begin
-    Data = 0;
-    if (MemValid) begin // 有读写请求时
-        Data = paddr_read(raddr);
-    end
-end
 always @(posedge clk) begin
+    Data <= 0;
     if (MemValid) begin // 有读写请求时
         if (MemWrite) begin // 有写请求时
             paddr_write(waddr, wdata, wmask);
+        end
+        else begin
+            Data <= paddr_read(raddr);
         end
     end
 `ifdef CONFIG_DIFFTEST
@@ -57,6 +38,25 @@ always @(posedge clk) begin
     end
 `endif
 end
+
+// always @(*) begin
+//     Data = 0;
+//     if (MemValid) begin // 有读写请求时
+//         Data = paddr_read(raddr);
+//     end
+// end
+// always @(posedge clk) begin
+//     if (MemValid) begin // 有读写请求时
+//         if (MemWrite) begin // 有写请求时
+//             paddr_write(waddr, wdata, wmask);
+//         end
+//     end
+// `ifdef CONFIG_DIFFTEST
+//     if ((raddr == 32'ha0000048) | (raddr == 32'ha0000048 + 32'h4) | (waddr == 32'ha00003f8)) begin
+//         difftest_skip_ref(npc); // Difftest跳过读写设备
+//     end
+// `endif
+// end
 
 assign ByteOff = raddr[1:0];
 
