@@ -44,6 +44,7 @@ static void single_cycle(Vtop *top, VerilatedContext *contextp, VerilatedVcdC *t
     npc_state.halt_ret = top->ReadData_a0;
     cpu.pc = top->npc;
     contextp->timeInc(1);
+    top->rst = 0;
     top->clk = 0;
     top->eval();
     tfp->dump(contextp->time());
