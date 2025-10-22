@@ -12,7 +12,7 @@ void reg_display()
     int gpr[16] = {0};
     svSetScope(svGetScopeFromName("TOP.top.u_GPR.u_RegisterFile"));
     get_gpr(gpr);
-    for (int i = 0; i < reg_length; i++)
+    for (int i = 0; i < 16; i++)
     {
         printf("%-10s 0x%08x  %-10u\n", regs[i], gpr[i], gpr[i]);
     }
