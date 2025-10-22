@@ -46,12 +46,12 @@ static void single_cycle(Vtop *top, VerilatedContext *contextp, VerilatedVcdC *t
     top->clk = 0;
     top->eval();
     tfp->dump(contextp->time());
+    cpu.pc = top->pc;
     contextp->timeInc(1);
     top->clk = 1;
     top->eval();
     tfp->dump(contextp->time());
 
-    cpu.pc = top->npc;
     svSetScope(svGetScopeFromName("TOP.top.u_GPR.u_RegisterFile"));
     get_gpr(cpu.gpr);
     svSetScope(svGetScopeFromName("TOP.top.u_CSR"));
