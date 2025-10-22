@@ -67,6 +67,7 @@ void diff_set_regs(void *diff_context)
 
 void diff_step(uint64_t n)
 {
+  printf("ref exec pc = 0x%08x\n", cpu.pc);
   cpu_exec(n);
 }
 
