@@ -133,6 +133,7 @@ void difftest_step(uint32_t pc)
   if(cpu.pc == skip_pc)
   {
     ref_difftest_regcpy(&cpu, DIFFTEST_TO_REF);
+    printf("pc = %x, skipNum = %d\n", cpu.pc, skip_inst_num);
     skip_inst_num --;
     if(skip_inst_num == 0)
       skip_pc = 0;
