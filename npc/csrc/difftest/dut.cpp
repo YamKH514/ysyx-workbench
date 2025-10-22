@@ -119,13 +119,13 @@ static void checkregs(CPU_state *ref, uint32_t pc)
 void difftest_step(uint32_t pc)
 {
   CPU_state ref_r;
-
+ref_difftest_exec(1);
   if (is_skip_ref) {
     ref_difftest_regcpy(&cpu, DIFFTEST_TO_REF);
     is_skip_ref = false;
     return;
   }
-  ref_difftest_exec(1);
+  
   ref_difftest_regcpy(&ref_r, DIFFTEST_TO_DUT);
   
   checkregs(&ref_r, pc);
