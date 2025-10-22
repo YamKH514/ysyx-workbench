@@ -16,5 +16,5 @@ void cpu_reset(int n, Vtop* top)
     {
         cpu_single_cycle(top);
     }
-    top->rst = 0;
+    // top->rst = 0;
 }
