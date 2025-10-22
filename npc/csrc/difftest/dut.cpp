@@ -17,6 +17,7 @@ void (*ref_difftest_raise_intr)(uint64_t NO) = NULL;
 
 static bool is_skip_ref = false;
 static uint32_t skip_pc = 0;
+static int skip_inst_num = 0;
 
 void difftest_skip_ref(){
   is_skip_ref = true;
@@ -121,14 +122,23 @@ void difftest_step(uint32_t pc)
 {
   CPU_state ref_r;
 
-  if (is_skip_ref && skip_pc == 0) {
-    skip_pc = cpu.npc;
+  if (is_skip_ref) {
+    if(skip_pc == 0) skip_pc = cpu.npc;
+    skip_inst_num ++;
   }
   if(cpu.pc == skip_pc)
   {
     ref_difftest_regcpy(&cpu, DIFFTEST_TO_REF);
     is_skip_ref = false;
-    skip_pc = 0;
+    skip_inst_num --;
+    if(skip_inst_num == 0)
+    {
+      skip_pc = 0;
+    }
+    else
+    {
+      skip_pc += 4;
+    }
     return;
   }
   ref_difftest_exec(1);
