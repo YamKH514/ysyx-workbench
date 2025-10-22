@@ -130,7 +130,7 @@ void difftest_step(uint32_t pc)
     is_skip_ref = false;
     return;
   }
-  printf("Difftest pc = 0x%08x\n", cpu.pc);
+  // printf("Difftest pc = 0x%08x\n", cpu.pc);
   ref_difftest_exec(1);
   ref_difftest_regcpy(&ref_r, DIFFTEST_TO_DUT);
   
