@@ -67,9 +67,9 @@ void diff_set_regs(void *diff_context)
 
 void diff_step(uint64_t n)
 {
-  printf("ref exec pc     = 0x%08x\n", cpu.pc);
-  printf("ref exec $a5    = 0x%08x\n", gpr(15));
-  printf("ref exec mcause = 0x%08x\n", cpu.csr.mcause);
+  // printf("ref exec pc     = 0x%08x\n", cpu.pc);
+  // printf("ref exec $a5    = 0x%08x\n", gpr(15));
+  // printf("ref exec mcause = 0x%08x\n", cpu.csr.mcause);
   cpu_exec(n);
 }
 
