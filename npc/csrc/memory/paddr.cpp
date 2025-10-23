@@ -50,21 +50,12 @@ void print_paddr_write(uint32_t addr, int len, uint32_t data)
 extern "C" uint32_t paddr_read(uint32_t raddr)
 {
     uint32_t addr = raddr & ~0x3u;
-    if(addr == RTC_ADDR)
-    {
-        uint64_t us = get_time();
+    if(addr == RTC_ADDR || addr == RTC_ADDR + 0x4) {
+    uint64_t us = get_time();
 #ifdef CONFIG_DIFFTEST
-        difftest_skip_ref();
+    difftest_skip_ref();
 #endif
-        return (uint32_t)us;
-    }
-    if(addr == RTC_ADDR + 0x4)
-    {
-        uint64_t us = get_time();
-#ifdef CONFIG_DIFFTEST
-        difftest_skip_ref();
-#endif
-        return (uint32_t)(us >> 32);
+    return (addr == RTC_ADDR) ? (uint32_t)us : (uint32_t)(us >> 32);
     }
 #ifdef CONFIG_MTRACE
     print_paddr_read(addr, 4);
