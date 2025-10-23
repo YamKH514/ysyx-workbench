@@ -49,7 +49,7 @@ word_t *csr(word_t imm)
 #define CSR(imm) *csr(imm)
 #define ECALL() { \
                       bool success; \
-                      s->dnpc = isa_raise_intr(isa_reg_str2val("a7", &success), s->pc); \
+                      s->dnpc = isa_raise_intr(isa_reg_str2val(MUXDEF(CONFIG_TARGET_SHARE, "a5", "a7"), &success), s->pc); \
                     }
 #define MRET() { \
                   s->dnpc = CSR(0x341); \
