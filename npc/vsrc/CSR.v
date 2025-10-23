@@ -42,31 +42,35 @@ always @(posedge clk) begin
         mtvec   <= 32'b0;
         mstatus <= 32'h00001800;
     end
-    else if(is_ecall) begin
-        mstatus[12:11]  <= 2'b11;
-        mstatus[7]      <= mstatus[3];
-        mstatus[3]      <= 1'b0;
-        mcause          <= CSRWriteData_mcause;
-        mepc            <= CSRWriteData_mepc;
-    end
-    else if(is_mret) begin
-        mstatus[12:11]  <= 2'b0;
-        mstatus[3]      <= mstatus[7];
-        mstatus[7]      <= 1'b0;
-    end
     else begin
-        if(mepcWriteEn) begin
-            mepc <= WriteData;
+        reg [31:0] next_mstatus = mstatus;
+        if(is_ecall) begin
+            next_mstatus[12:11]  = 2'b11;
+            next_mstatus[7]      = mstatus[3];
+            next_mstatus[3]      = 1'b0;
+            mcause          <= CSRWriteData_mcause;
+            mepc            <= CSRWriteData_mepc;
         end
-        if(mcauseWriteEn) begin
-            mcause <= WriteData;
+        else if(is_mret) begin
+            next_mstatus[12:11]  = 2'b0;
+            next_mstatus[3]      = mstatus[7];
+            next_mstatus[7]      = 1'b0;
         end
-        if(mtvecWriteEn) begin
-            mtvec <= WriteData;
+        else begin
+            if(mepcWriteEn) begin
+                mepc <= WriteData;
+            end
+            if(mcauseWriteEn) begin
+                mcause <= WriteData;
+            end
+            if(mtvecWriteEn) begin
+                mtvec <= WriteData;
+            end
+            if(mstatusWriteEn) begin
+                next_mstatus = WriteData;
+            end
         end
-        if(mstatusWriteEn) begin
-            mstatus <= WriteData;
-        end
+        mstatus <= next_mstatus;
     end
 end
 
