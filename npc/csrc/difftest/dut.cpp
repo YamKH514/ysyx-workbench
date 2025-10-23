@@ -15,7 +15,7 @@ void (*ref_difftest_raise_intr)(uint64_t NO) = NULL;
 
 #ifdef CONFIG_DIFFTEST
 
-// static bool is_skip_ref = false;
+static bool is_skip_ref = false;
 // static uint32_t skip_pc = 0;
 // static int skip_inst_num = 0;
 
@@ -25,8 +25,7 @@ static int skip_pc_head = 0;
 static int skip_pc_tail = 0;
 
 void difftest_skip_ref(){
-  skip_pc_queue[skip_pc_tail] = cpu.npc;
-  skip_pc_tail = (skip_pc_tail + 1) % MAX_SKIP_NUM;
+  is_skip_ref = true;
 }
 
 void init_difftest(char *ref_so_file, long img_size, int port)
@@ -127,6 +126,13 @@ static void checkregs(CPU_state *ref, uint32_t pc)
 void difftest_step(uint32_t pc)
 {
   CPU_state ref_r;
+
+  if(is_skip_ref)
+  {
+    skip_pc_queue[skip_pc_tail] = cpu.npc;
+    skip_pc_tail = (skip_pc_tail + 1) % MAX_SKIP_NUM;
+    is_skip_ref = false;
+  }
 
   if (skip_pc_head != skip_pc_tail) {
     uint32_t skip_pc = skip_pc_queue[skip_pc_head];
