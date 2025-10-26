@@ -41,7 +41,7 @@ static struct rule {
    */
 
   {"0x[0-9a-fA-F]+", TK_HEX_NUM},
-  {"\\$[a-zA-Z0-9]+", TK_REG},
+  {"\\$(?![mM])[a-zA-Z0-9]+", TK_REG},
   {" +", TK_NOTYPE},    // spaces
   {"\\+", '+'},         // plus
   {"\\-", '-'},         // sub
