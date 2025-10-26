@@ -39,17 +39,17 @@ void isa_reg_display() {
 }
 
 word_t isa_reg_str2val(const char *s, bool *success) {
-  if(IS_THIS_REG("pc")) {
+  if(IS_THIS_REG("PC")) {
     printf("pc: %x\n", pc_addr);
     return pc_addr;
   }
-  else if(IS_THIS_REG("mepc"))
+  else if(IS_THIS_REG("MEPC"))
     return csr_val(mepc);
-  else if(IS_THIS_REG("mcause"))
+  else if(IS_THIS_REG("MCAUSE"))
     return csr_val(mcause);
-  else if(IS_THIS_REG("mtvec"))
+  else if(IS_THIS_REG("MTVEC"))
     return csr_val(mtvec);
-  else if(IS_THIS_REG("mstatus"))
+  else if(IS_THIS_REG("MSTATUS"))
     return csr_val(mstatus);
   else {
     int i;
