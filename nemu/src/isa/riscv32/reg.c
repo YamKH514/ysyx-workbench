@@ -40,27 +40,27 @@ void isa_reg_display() {
 
 word_t isa_reg_str2val(const char *s, bool *success) {
   if(IS_THIS_REG("PC")) {
-    printf("$PC: %x\n", pc_addr);
+    printf("$PC: 0x%08x\n", pc_addr);
     return pc_addr;
   }
   else if(IS_THIS_REG("MEPC"))
   {
-    printf("$MEPC: %x\n", cpu.csr.mepc);
+    printf("$MEPC: 0x%08x\n", cpu.csr.mepc);
     return csr_val(mepc);
   }
   else if(IS_THIS_REG("MCAUSE"))
   {
-    printf("$MCAUSE: %x\n", cpu.csr.mcause);
+    printf("$MCAUSE: 0x%08x\n", cpu.csr.mcause);
     return csr_val(mcause);
   }
   else if(IS_THIS_REG("MTVEC"))
   {
-    printf("$MTVEC: %x\n", cpu.csr.mtvec);
+    printf("$MTVEC: 0x%08x\n", cpu.csr.mtvec);
     return csr_val(mtvec);
   }
   else if(IS_THIS_REG("MSTATUS"))
   {
-    printf("$MSTATUS: %x\n", cpu.csr.mstatus);
+    printf("$MSTATUS: 0x%08x\n", cpu.csr.mstatus);
     return csr_val(mstatus);
   }
   else {
