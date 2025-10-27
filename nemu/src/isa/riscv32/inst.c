@@ -53,10 +53,7 @@ word_t *csr(word_t imm)
                     }
 #define MRET() { \
                   s->dnpc = CSR(MEPC); \
-                  CSR(MSTATUS) &= ~MSTATUS_MIE; \
-                  CSR(MSTATUS) |= ((CSR(MSTATUS) & MSTATUS_MPIE) >> 4); \
-                  CSR(MSTATUS) |= MSTATUS_MPIE; \
-                  CSR(MSTATUS) &= ~MSTATUS_MPP; \
+                  CSR(MSTATUS) = ~MSTATUS_MPP; \
                 }
 
 #define etrace() {printf("%s mepc: 0x%08x, mcause: 0x%08x\n", ANSI_FMT("ETRACE", ANSI_FG_YELLOW), cpu.csr.mepc, cpu.csr.mcause);}
