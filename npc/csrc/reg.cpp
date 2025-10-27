@@ -28,6 +28,7 @@ void reg_display()
 
 uint32_t reg_str2val(const char *s, bool *success)
 {
+    printf("1\n");
     if (IS_THIS_REG("PC"))
     {
         printf("$PC: 0x%08x\n", cpu.pc);
