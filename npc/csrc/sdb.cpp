@@ -90,7 +90,7 @@ static int cmd_p(char *args) {
     bool *success;
     success = (bool *)malloc(sizeof(bool));
     res = expr(args, success);
-
+printf("1\n");
     if(success) {
         printf("Result: %u\n", res);
     }
