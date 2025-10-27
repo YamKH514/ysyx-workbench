@@ -7,6 +7,7 @@
 #include "Vtop.h"
 #include "verilated_vcd_c.h"
 #include "Vtop__Dpi.h"
+#include "watchpoint.h"
 
 #define ARRLEN(arr) (int)(sizeof(arr) / sizeof(arr[0]))
 
