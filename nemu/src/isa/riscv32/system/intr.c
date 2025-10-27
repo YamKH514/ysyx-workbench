@@ -17,10 +17,10 @@
 #include "../local-include/reg.h"
 
 word_t isa_raise_intr(word_t NO, vaddr_t epc) {
-  cpu.csr.mstatus &= ~MSTATUS_MPIE;
-  cpu.csr.mstatus |= (cpu.csr.mstatus & MSTATUS_MIE) << 4;
-  cpu.csr.mstatus &= ~MSTATUS_MIE;
-  cpu.csr.mstatus |= MSTATUS_MPP;
+  // cpu.csr.mstatus &= ~MSTATUS_MPIE;
+  // cpu.csr.mstatus |= (cpu.csr.mstatus & MSTATUS_MIE) << 4;
+  // cpu.csr.mstatus &= ~MSTATUS_MIE;
+  // cpu.csr.mstatus |= MSTATUS_MPP;
 
   cpu.csr.mcause = NO;
   cpu.csr.mepc = epc;
