@@ -233,4 +233,5 @@ void init_sdb(Vtop *top_in, VerilatedContext *contextp_in, VerilatedVcdC *tfp_in
     tfp = tfp_in;
 
     init_regex();
+    init_wp_pool();
 }
