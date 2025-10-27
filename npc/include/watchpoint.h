@@ -13,6 +13,7 @@ typedef struct watchpoint
     uint32_t old_value;
 } WP;
 
+void init_wp_pool();
 WP *new_wp();
 void free_wp(int n);
 bool wp_scan();
