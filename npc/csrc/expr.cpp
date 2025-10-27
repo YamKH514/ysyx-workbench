@@ -86,6 +86,7 @@ static bool make_token(char *e)
         /* Try all rules one by one. */
         for (i = 0; i < NR_REGEX; i++)
         {
+            printf("1\n");
             if (regexec(&re[i], e + position, 1, &pmatch, 0) == 0 && pmatch.rm_so == 0)
             {
                 char *substr_start = e + position;
@@ -290,7 +291,6 @@ uint32_t eval(int p, int q, bool *success)
 
 uint32_t expr(char *e, bool *success)
 {
-    printf("1\n");
     if (!make_token(e))
     {
         *success = false;
