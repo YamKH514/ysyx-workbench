@@ -8,7 +8,7 @@ static inline int check_reg_idx(int idx) {
   return idx;
 }
 
-#define gpr(idx) (npc_state.gpr_value[check_reg_idx(idx)])
+#define gpr(idx) (cpu.gpr[check_reg_idx(idx)])
 
 #define pc_addr npc_state.halt_pc
 
@@ -18,5 +18,6 @@ static inline const char* reg_name(int idx) {
 }
 
 void reg_display();
+uint32_t reg_str2val(const char *s, bool *success);
 
 #endif
