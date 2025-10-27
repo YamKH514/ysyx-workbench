@@ -7,6 +7,7 @@
 #include "ftrace.h"
 #include "Vtop__Dpi.h"
 #include "cpu.h"
+#include "watchpoint.h"
 
 #define BITMASK(bits) ((1ull << (bits)) - 1)
 #define BITS(x, hi, lo) (((x) >> (lo)) & BITMASK((hi) - (lo) + 1)) // similar to x[hi:lo] in verilog
@@ -23,7 +24,10 @@ CPU_state cpu = {};
 static void trace_and_difftest(char *logbuf)
 {
 #ifdef CONFIG_ITRACE_COND
-    if (ITRACE_COND) { log_write("%s\n", logbuf); }
+    if (ITRACE_COND)
+    {
+        log_write("%s\n", logbuf);
+    }
 #endif
     if (g_print_step)
     {
@@ -32,7 +36,14 @@ static void trace_and_difftest(char *logbuf)
 #endif
     }
 #ifdef CONFIG_DIFFTEST
-        difftest_step(npc_state.halt_pc);
+    difftest_step(npc_state.halt_pc);
+#endif
+#ifdef CONFIG_WATCHPOINT
+    bool changed = wp_scan();
+    if (changed)
+    {
+        npc_state.state = NPC_STOP;
+    }
 #endif
 }
 
@@ -40,7 +51,7 @@ static void exec_once(Vtop *top, VerilatedContext *contextp, VerilatedVcdC *tfp)
 {
     char logbuf[128];
 
-    if(!npc_state.inited)
+    if (!npc_state.inited)
     {
         contextp->timeInc(1);
         top->clk = 1;
@@ -56,7 +67,7 @@ static void exec_once(Vtop *top, VerilatedContext *contextp, VerilatedVcdC *tfp)
     contextp->timeInc(1);
     cpu_single_cycle(top);
     tfp->dump(contextp->time());
-    
+
     cpu.pc = top->pc;
     cpu.npc = top->npc;
     svSetScope(svGetScopeFromName("TOP.top.u_GPR.u_RegisterFile"));
@@ -131,7 +142,8 @@ static void execute(Vtop *top, VerilatedContext *contextp, VerilatedVcdC *tfp, u
     {
         exec_once(top, contextp, tfp);
         g_nr_guest_inst++;
-        if ((contextp->gotFinish()) || (npc_state.state == NPC_ABORT)) break;
+        if ((contextp->gotFinish()) || (npc_state.state == NPC_ABORT) || (npc_state.state == NPC_STOP))
+            break;
     }
 }
 
