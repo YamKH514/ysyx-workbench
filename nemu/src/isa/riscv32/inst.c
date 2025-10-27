@@ -53,6 +53,9 @@ word_t *csr(word_t imm)
                     }
 #define MRET() { \
                   s->dnpc = CSR(MEPC); \
+                  CSR(MSTATUS) &= ~MSTATUS_MIE; \
+                  CSR(MSTATUS) |= ((CSR(MSTATUS) & MSTATUS_MPIE) >> 4); \
+                  CSR(MSTATUS) |= MSTATUS_MPIE; \
                   CSR(MSTATUS) &= ~MSTATUS_MPP; \
                 }
 
