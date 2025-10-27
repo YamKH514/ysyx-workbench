@@ -31,10 +31,10 @@ word_t *csr(word_t imm)
 {
   switch(imm)
     {
-      case 0x300: return &cpu.csr.mstatus;
-      case 0x305: return &cpu.csr.mtvec;
-      case 0x341: return &cpu.csr.mepc;
-      case 0x342: return &cpu.csr.mcause;
+      case MSTATUS: return &cpu.csr.mstatus;
+      case MTVEC: return &cpu.csr.mtvec;
+      case MEPC: return &cpu.csr.mepc;
+      case MCAUSE: return &cpu.csr.mcause;
       default: panic("Unknow CSR");
     }
 }
@@ -52,11 +52,11 @@ word_t *csr(word_t imm)
                       s->dnpc = isa_raise_intr(isa_reg_str2val(MUXDEF(CONFIG_TARGET_SHARE, "a5", "a7"), &success), s->pc); \
                     }
 #define MRET() { \
-                  s->dnpc = CSR(0x341); \
-                  CSR(0x300) &= ~0x8; \
-                  CSR(0x300) |= ((CSR(0x300) & 0x80) >> 4); \
-                  CSR(0x300) |= 0x80; \
-                  CSR(0x300) &= ~0x1800; \
+                  s->dnpc = CSR(MEPC); \
+                  CSR(MSTATUS) &= ~MSTATUS_MIE; \
+                  CSR(MSTATUS) |= ((CSR(MSTATUS) & MSTATUS_MPIE) >> 4); \
+                  CSR(MSTATUS) |= MSTATUS_MPIE; \
+                  CSR(MSTATUS) &= ~MSTATUS_MPP; \
                 }
 
 #define etrace() {printf("%s mepc: 0x%08x, mcause: 0x%08x\n", ANSI_FMT("ETRACE", ANSI_FG_YELLOW), cpu.csr.mepc, cpu.csr.mcause);}
