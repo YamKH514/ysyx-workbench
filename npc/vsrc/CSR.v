@@ -54,7 +54,7 @@ always @(posedge clk) begin
         else if(is_mret) begin
             next_mstatus[12:11]  = 2'b0;
             next_mstatus[3]      = mstatus[7];
-            next_mstatus[7]      = 1'b0;
+            next_mstatus[7]      = 1'b1;
         end
         else begin
             if(mepcWriteEn) begin
