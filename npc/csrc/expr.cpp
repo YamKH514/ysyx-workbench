@@ -290,9 +290,9 @@ uint32_t eval(int p, int q, bool *success)
 
 uint32_t expr(char *e, bool *success)
 {
+    printf("1\n");
     if (!make_token(e))
     {
-        printf("1\n");
         *success = false;
         return 0;
     }
