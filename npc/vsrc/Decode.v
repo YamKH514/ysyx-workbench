@@ -1,20 +1,23 @@
 module Decode(
-    input clk,
-    input [31:0] inst,
-    input [6:0] Opcode,
-    input [2:0] Funct3,
-    input [6:0] Funct7,
-    output [2:0] InstType, // I(0) S(1) B(2) U(3) J(4) R(5)
-    output RegWriteEn,
-    output [5:0] ALUFunc, // add(00---0) sub(00---1) A==B(01-011) A<B(01-101) A<=B(01-111) AND(101000) OR(101110) XOR(100110) SLL(11--00) SRL(11--01) SRA(11--11)
-    output [1:0] ALUSrcSel1, // 0(0) PC(1) ReadData1(2)
-    output [1:0] ALUSrcSel2, // ReadData2(0) ImmExt(1) 4(2)
-    output [3:0] NPCSrcSel, // npc = pc+4(0-00) pc+imm(0-01) src1+imm(0-11) res=0,jump(10--) res=1,jump(11--)
-    output GPRwdataSel, // ALURes(0) Memrdata(1)
-    output [7:0] Memwmask,
-    output MemValid,
-    output MemWrite,
-    output [2:0] MemReadFunc // unsigned(0--) signed(1--) lb(-01) lh(-10) lw(011)
+    input           clk,
+    input   [31:0]  inst,
+    input   [6:0]   Opcode,
+    input   [2:0]   Funct3,
+    input   [6:0]   Funct7,
+    output          is_ecall,
+    output          is_mret,
+    output  [2:0]   InstType, // I(0) S(1) B(2) U(3) J(4) R(5)
+    output          RegWriteEn,
+    output          CSRWriteEn,
+    output  [5:0]   ALUFunc, // add(00---0) sub(00---1) A==B(01-011) A<B(01-101) A<=B(01-111) AND(101000) OR(101110) XOR(100110) SLL(11--00) SRL(11--01) SRA(11--11)
+    output  [1:0]   ALUSrcSel1, // 0(0) PC(1) ReadData1(2)
+    output  [1:0]   ALUSrcSel2, // ReadData2(0) ImmExt(1) 4(2)
+    output  [3:0]   NPCSrcSel, // npc = pc+4(0000) pc+imm(0001) src1+imm(0011) trap_npc(0100) res=0,jump(10--) res=1,jump(11--)
+    output  [1:0]   GPRwdataSel, // ALURes(00) Memrdata(01) CSRVal(10)
+    output  [7:0]   Memwmask,
+    output          MemValid,
+    output          MemWrite,
+    output  [2:0]   MemReadFunc // unsigned(0--) signed(1--) lb(-01) lh(-10) lw(011)
 );
 
 wire inst_lui;      // U
@@ -54,46 +57,54 @@ wire inst_srl;      // R
 wire inst_sra;      // R
 wire inst_or;       // R
 wire inst_and;      // R
+wire inst_ecall;
 wire inst_ebreak;
+wire inst_csrrw;    // I
+wire inst_csrrs;    // I
+wire inst_mret;
 
-assign inst_lui   = (Opcode == 7'b0110111);
-assign inst_auipc = (Opcode == 7'b0010111);
-assign inst_jal   = (Opcode == 7'b1101111);
-assign inst_jalr  = (Opcode == 7'b1100111) & (Funct3 == 3'b000);
-assign inst_beq   = (Opcode == 7'b1100011) & (Funct3 == 3'b000);
-assign inst_bne   = (Opcode == 7'b1100011) & (Funct3 == 3'b001);
-assign inst_blt   = (Opcode == 7'b1100011) & (Funct3 == 3'b100);
-assign inst_bge   = (Opcode == 7'b1100011) & (Funct3 == 3'b101);
-assign inst_bltu  = (Opcode == 7'b1100011) & (Funct3 == 3'b110);
-assign inst_bgeu  = (Opcode == 7'b1100011) & (Funct3 == 3'b111);
-assign inst_lb    = (Opcode == 7'b0000011) & (Funct3 == 3'b000);
-assign inst_lh    = (Opcode == 7'b0000011) & (Funct3 == 3'b001);
-assign inst_lw    = (Opcode == 7'b0000011) & (Funct3 == 3'b010);
-assign inst_lbu   = (Opcode == 7'b0000011) & (Funct3 == 3'b100);
-assign inst_lhu   = (Opcode == 7'b0000011) & (Funct3 == 3'b101);
-assign inst_sb    = (Opcode == 7'b0100011) & (Funct3 == 3'b000);
-assign inst_sh    = (Opcode == 7'b0100011) & (Funct3 == 3'b001);
-assign inst_sw    = (Opcode == 7'b0100011) & (Funct3 == 3'b010);
-assign inst_addi  = (Opcode == 7'b0010011) & (Funct3 == 3'b000);
-assign inst_slti  = (Opcode == 7'b0010011) & (Funct3 == 3'b010);
-assign inst_sltiu = (Opcode == 7'b0010011) & (Funct3 == 3'b011);
-assign inst_xori  = (Opcode == 7'b0010011) & (Funct3 == 3'b100);
-assign inst_ori   = (Opcode == 7'b0010011) & (Funct3 == 3'b110);
-assign inst_andi  = (Opcode == 7'b0010011) & (Funct3 == 3'b111);
-assign inst_slli  = (Opcode == 7'b0010011) & (Funct3 == 3'b001) & (Funct7 == 7'b0000000);
-assign inst_srli  = (Opcode == 7'b0010011) & (Funct3 == 3'b101) & (Funct7 == 7'b0000000);
-assign inst_srai  = (Opcode == 7'b0010011) & (Funct3 == 3'b101) & (Funct7 == 7'b0100000);
-assign inst_add   = (Opcode == 7'b0110011) & (Funct3 == 3'b000) & (Funct7 == 7'b0000000);
-assign inst_sub   = (Opcode == 7'b0110011) & (Funct3 == 3'b000) & (Funct7 == 7'b0100000);
-assign inst_sll   = (Opcode == 7'b0110011) & (Funct3 == 3'b001) & (Funct7 == 7'b0000000);
-assign inst_slt   = (Opcode == 7'b0110011) & (Funct3 == 3'b010) & (Funct7 == 7'b0000000);
-assign inst_sltu  = (Opcode == 7'b0110011) & (Funct3 == 3'b011) & (Funct7 == 7'b0000000);
-assign inst_xor   = (Opcode == 7'b0110011) & (Funct3 == 3'b100) & (Funct7 == 7'b0000000);
-assign inst_srl   = (Opcode == 7'b0110011) & (Funct3 == 3'b101) & (Funct7 == 7'b0000000);
-assign inst_sra   = (Opcode == 7'b0110011) & (Funct3 == 3'b101) & (Funct7 == 7'b0100000);
-assign inst_or    = (Opcode == 7'b0110011) & (Funct3 == 3'b110) & (Funct7 == 7'b0000000);
-assign inst_and   = (Opcode == 7'b0110011) & (Funct3 == 3'b111) & (Funct7 == 7'b0000000);
-assign inst_ebreak = inst == 32'b00000000000100000000000001110011;
+assign inst_lui     = (Opcode == 7'b0110111);
+assign inst_auipc   = (Opcode == 7'b0010111);
+assign inst_jal     = (Opcode == 7'b1101111);
+assign inst_jalr    = (Opcode == 7'b1100111) & (Funct3 == 3'b000);
+assign inst_beq     = (Opcode == 7'b1100011) & (Funct3 == 3'b000);
+assign inst_bne     = (Opcode == 7'b1100011) & (Funct3 == 3'b001);
+assign inst_blt     = (Opcode == 7'b1100011) & (Funct3 == 3'b100);
+assign inst_bge     = (Opcode == 7'b1100011) & (Funct3 == 3'b101);
+assign inst_bltu    = (Opcode == 7'b1100011) & (Funct3 == 3'b110);
+assign inst_bgeu    = (Opcode == 7'b1100011) & (Funct3 == 3'b111);
+assign inst_lb      = (Opcode == 7'b0000011) & (Funct3 == 3'b000);
+assign inst_lh      = (Opcode == 7'b0000011) & (Funct3 == 3'b001);
+assign inst_lw      = (Opcode == 7'b0000011) & (Funct3 == 3'b010);
+assign inst_lbu     = (Opcode == 7'b0000011) & (Funct3 == 3'b100);
+assign inst_lhu     = (Opcode == 7'b0000011) & (Funct3 == 3'b101);
+assign inst_sb      = (Opcode == 7'b0100011) & (Funct3 == 3'b000);
+assign inst_sh      = (Opcode == 7'b0100011) & (Funct3 == 3'b001);
+assign inst_sw      = (Opcode == 7'b0100011) & (Funct3 == 3'b010);
+assign inst_addi    = (Opcode == 7'b0010011) & (Funct3 == 3'b000);
+assign inst_slti    = (Opcode == 7'b0010011) & (Funct3 == 3'b010);
+assign inst_sltiu   = (Opcode == 7'b0010011) & (Funct3 == 3'b011);
+assign inst_xori    = (Opcode == 7'b0010011) & (Funct3 == 3'b100);
+assign inst_ori     = (Opcode == 7'b0010011) & (Funct3 == 3'b110);
+assign inst_andi    = (Opcode == 7'b0010011) & (Funct3 == 3'b111);
+assign inst_slli    = (Opcode == 7'b0010011) & (Funct3 == 3'b001) & (Funct7 == 7'b0000000);
+assign inst_srli    = (Opcode == 7'b0010011) & (Funct3 == 3'b101) & (Funct7 == 7'b0000000);
+assign inst_srai    = (Opcode == 7'b0010011) & (Funct3 == 3'b101) & (Funct7 == 7'b0100000);
+assign inst_add     = (Opcode == 7'b0110011) & (Funct3 == 3'b000) & (Funct7 == 7'b0000000);
+assign inst_sub     = (Opcode == 7'b0110011) & (Funct3 == 3'b000) & (Funct7 == 7'b0100000);
+assign inst_sll     = (Opcode == 7'b0110011) & (Funct3 == 3'b001) & (Funct7 == 7'b0000000);
+assign inst_slt     = (Opcode == 7'b0110011) & (Funct3 == 3'b010) & (Funct7 == 7'b0000000);
+assign inst_sltu    = (Opcode == 7'b0110011) & (Funct3 == 3'b011) & (Funct7 == 7'b0000000);
+assign inst_xor     = (Opcode == 7'b0110011) & (Funct3 == 3'b100) & (Funct7 == 7'b0000000);
+assign inst_srl     = (Opcode == 7'b0110011) & (Funct3 == 3'b101) & (Funct7 == 7'b0000000);
+assign inst_sra     = (Opcode == 7'b0110011) & (Funct3 == 3'b101) & (Funct7 == 7'b0100000);
+assign inst_or      = (Opcode == 7'b0110011) & (Funct3 == 3'b110) & (Funct7 == 7'b0000000);
+assign inst_and     = (Opcode == 7'b0110011) & (Funct3 == 3'b111) & (Funct7 == 7'b0000000);
+assign inst_ecall   = (inst == 32'b00000000000000000000000001110011);
+assign inst_ebreak  = (inst == 32'b00000000000100000000000001110011);
+assign inst_csrrw   = (Opcode == 7'b1110011) & (Funct3 == 3'b001);
+assign inst_csrrs   = (Opcode == 7'b1110011) & (Funct3 == 3'b010);
+assign inst_mret    = (inst == 32'b00110000001000000000000001110011);
 
 import "DPI-C" function void ebreak_trigger();
 
@@ -103,14 +114,19 @@ always @(posedge clk) begin
     end
 end
 
-assign InstType =   {3{inst_jalr | inst_lb | inst_lh | inst_lw | inst_lbu | inst_lhu |  inst_addi | inst_slti | inst_sltiu | inst_xori | inst_ori | inst_andi | inst_slli | inst_srli | inst_srai}} & 3'd0 | // I
+assign is_ecall = inst_ecall;
+assign is_mret  = inst_mret;
+
+assign InstType =   {3{inst_jalr | inst_lb | inst_lh | inst_lw | inst_lbu | inst_lhu |  inst_addi | inst_slti | inst_sltiu | inst_xori | inst_ori | inst_andi | inst_slli | inst_srli | inst_srai | inst_csrrw | inst_csrrs}} & 3'd0 | // I
                     {3{inst_sb | inst_sh | inst_sw}} & 3'd1 | // S
                     {3{inst_beq | inst_bne | inst_blt | inst_bge | inst_bltu | inst_bgeu}} & 3'd2 | // B
                     {3{inst_lui | inst_auipc}} & 3'd3 | // U
                     {3{inst_jal}} & 3'd4 | // J
                     {3{inst_add | inst_sub | inst_sll | inst_slt | inst_sltu | inst_xor | inst_srl | inst_sra | inst_or | inst_and}} & 3'd5; // R
 
-assign RegWriteEn = inst_lui | inst_auipc | inst_jal | inst_jalr | inst_lb | inst_lh | inst_lw | inst_lbu | inst_lhu | inst_addi | inst_slti | inst_sltiu | inst_xori | inst_ori | inst_andi | inst_slli | inst_srli | inst_srai | inst_add | inst_sub | inst_sll | inst_slt | inst_sltu | inst_xor | inst_srl | inst_sra | inst_or | inst_and;
+assign RegWriteEn = inst_lui | inst_auipc | inst_jal | inst_jalr | inst_lb | inst_lh | inst_lw | inst_lbu | inst_lhu | inst_addi | inst_slti | inst_sltiu | inst_xori | inst_ori | inst_andi | inst_slli | inst_srli | inst_srai | inst_add | inst_sub | inst_sll | inst_slt | inst_sltu | inst_xor | inst_srl | inst_sra | inst_or | inst_and | inst_csrrw | inst_csrrs;
+
+assign CSRWriteEn = inst_csrrw | inst_csrrs;
 
 assign ALUFunc =    {6{inst_sub}} & 6'b000001 | // sub
                     {6{inst_beq | inst_bne}} & 6'b010011 | // A==B
@@ -137,12 +153,14 @@ assign ALUSrcSel2 = {2{inst_beq | inst_bne | inst_blt | inst_bge | inst_bltu | i
 assign NPCSrcSel =  
                     {4{inst_jal}} & 4'b0001 | // pc+imm
                     {4{inst_jalr}} & 4'b0011 | // src1+imm
+                    {4{inst_ecall | inst_mret}} & 4'b0100 | // trap_npc
                     {4{inst_bne | inst_bge | inst_bgeu}} & 4'b1000 | // res=0,jump
                     {4{inst_beq | inst_blt | inst_bltu}} & 4'b1100 | // res=1,jump
                     4'b0000; // pc+4
 
-assign GPRwdataSel =    (inst_lb | inst_lh | inst_lw | inst_lbu | inst_lhu) & 1'b1 | // Memrdata
-                        1'b0; // ALURes
+assign GPRwdataSel =    {2{inst_lb | inst_lh | inst_lw | inst_lbu | inst_lhu}} & 2'b01 | // Memrdata
+                        {2{inst_csrrw | inst_csrrs}} & 2'b10 | // CSRVal
+                        2'b00; // ALURes
 
 assign Memwmask =   inst_sw ? 8'b00001111 :
                     inst_sh ? 8'b00000011 :

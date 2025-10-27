@@ -5,8 +5,9 @@
 #include "difftest-def.h"
 #include "disasm.h"
 #include "ftrace.h"
-#include "Vtop.h"
 #include "Vtop__Dpi.h"
+#include "cpu.h"
+#include "watchpoint.h"
 
 #define BITMASK(bits) ((1ull << (bits)) - 1)
 #define BITS(x, hi, lo) (((x) >> (lo)) & BITMASK((hi) - (lo) + 1)) // similar to x[hi:lo] in verilog
@@ -18,9 +19,9 @@
 
 uint64_t g_nr_guest_inst = 0;
 bool g_print_step = false;
-int npc_init_num = 2;
+CPU_state cpu = {};
 
-static void trace(char *logbuf)
+static void trace_and_difftest(char *logbuf)
 {
 #ifdef CONFIG_ITRACE_COND
     if (ITRACE_COND)
@@ -34,34 +35,45 @@ static void trace(char *logbuf)
         puts(logbuf);
 #endif
     }
+#ifdef CONFIG_DIFFTEST
+    difftest_step(npc_state.halt_pc);
+#endif
+#ifdef CONFIG_WATCHPOINT
+    bool changed = wp_scan();
+    if (changed)
+    {
+        npc_state.state = NPC_STOP;
+    }
+#endif
 }
 
-static void single_cycle(Vtop *top, VerilatedContext *contextp, VerilatedVcdC *tfp)
+static void exec_once(Vtop *top, VerilatedContext *contextp, VerilatedVcdC *tfp)
 {
     char logbuf[128];
 
-    if (npc_state.inited)
+    if (!npc_state.inited)
     {
+        contextp->timeInc(1);
+        top->clk = 1;
+        top->eval();
+        tfp->dump(contextp->time());
         top->rst = 0;
+        npc_state.inited = true;
     }
-    else
-    {
-        top->rst = 1;
-    }
+
     npc_state.halt_pc = top->pc;
-    uint32_t npc = top->npc;
     npc_state.halt_ret = top->ReadData_a0;
+
     contextp->timeInc(1);
-    top->clk = 1;
-    top->eval();
-    tfp->dump(contextp->time());
-    contextp->timeInc(1);
-    top->clk = 0;
-    top->eval();
+    cpu_single_cycle(top);
     tfp->dump(contextp->time());
 
+    cpu.pc = top->pc;
+    cpu.npc = top->npc;
     svSetScope(svGetScopeFromName("TOP.top.u_GPR.u_RegisterFile"));
-    get_gpr(npc_state.gpr_value);
+    get_gpr(cpu.gpr);
+    svSetScope(svGetScopeFromName("TOP.top.u_CSR"));
+    get_csr((int *)(&cpu.csr));
 
     if (npc_state.halt_pc >= 0x80000000)
     {
@@ -86,7 +98,7 @@ static void single_cycle(Vtop *top, VerilatedContext *contextp, VerilatedVcdC *t
         p += space_len;
 
         disassemble(p, logbuf + sizeof(logbuf) - p, npc_state.halt_pc, inst, ilen);
-        trace(logbuf);
+        trace_and_difftest(logbuf);
 #endif
 
         // 函数调用 ftrace
@@ -108,7 +120,7 @@ static void single_cycle(Vtop *top, VerilatedContext *contextp, VerilatedVcdC *t
         else if (opcode == inst_jarl)
         {
             uint32_t imm = SEXT(BITS(i, 31, 20), 12);
-            uint32_t src1 = npc_state.gpr_value[rs1];
+            uint32_t src1 = cpu.gpr[rs1];
             dnpc = src1 + imm;
 #ifdef CONFIG_FTRACE
             if (inst_val == 0x00008067)
@@ -121,9 +133,6 @@ static void single_cycle(Vtop *top, VerilatedContext *contextp, VerilatedVcdC *t
             }
 #endif
         }
-#ifdef CONFIG_DIFFTEST
-        difftest_step(npc);
-#endif
     }
 }
 
@@ -131,14 +140,9 @@ static void execute(Vtop *top, VerilatedContext *contextp, VerilatedVcdC *tfp, u
 {
     for (; n > 0; n--)
     {
-        single_cycle(top, contextp, tfp);
-        if (!(npc_state.inited))
-        {
-            single_cycle(top, contextp, tfp);
-            npc_state.inited = true;
-        }
+        exec_once(top, contextp, tfp);
         g_nr_guest_inst++;
-        if ((contextp->gotFinish()) || (npc_state.state == NPC_ABORT))
+        if ((contextp->gotFinish()) || (npc_state.state == NPC_ABORT) || (npc_state.state == NPC_STOP))
             break;
     }
 }

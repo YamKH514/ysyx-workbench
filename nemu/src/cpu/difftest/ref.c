@@ -21,11 +21,18 @@
 
 typedef struct
 {
-    int state;
-    uint32_t halt_pc;
-    int32_t halt_ret;
-    bool inited;
-    int gpr_value[16];
+  uint32_t mepc;
+  uint32_t mcause;
+  uint32_t mtvec;
+  uint32_t mstatus;
+} npc_rv32_crs;
+
+typedef struct
+{
+    int gpr[16];
+    uint32_t pc;
+    uint32_t npc;
+    npc_rv32_crs csr;
 } diff_context_t;
 
 // 获取REF的寄存器状态到`dut`
@@ -34,9 +41,13 @@ void diff_get_regs(void *diff_context)
   diff_context_t *ctx = (diff_context_t *)diff_context;
   for(int i = 0; i < 16; i++)
   {
-    ctx->gpr_value[i] = gpr(i);
+    ctx->gpr[i] = gpr(i);
   }
-  ctx->halt_pc = cpu.pc;
+  ctx->pc = cpu.pc;
+  ctx->csr.mepc = cpu.csr.mepc;
+  ctx->csr.mcause = cpu.csr.mcause;
+  ctx->csr.mtvec = cpu.csr.mtvec;
+  ctx->csr.mstatus = cpu.csr.mstatus;
 }
 
 // 设置REF的寄存器状态为`dut`
@@ -45,13 +56,20 @@ void diff_set_regs(void *diff_context)
   diff_context_t *ctx = (diff_context_t *)diff_context;
   for(int i = 0; i < 16; i++)
   {
-    gpr(i) = ctx->gpr_value[i];
+    gpr(i) = ctx->gpr[i];
   }
-  cpu.pc = ctx->halt_pc;
+  cpu.pc = ctx->pc;
+  cpu.csr.mepc = ctx->csr.mepc;
+  cpu.csr.mcause = ctx->csr.mcause;
+  cpu.csr.mtvec = ctx->csr.mtvec;
+  cpu.csr.mstatus = ctx->csr.mstatus;
 }
 
 void diff_step(uint64_t n)
 {
+  // printf("ref exec pc     = 0x%08x\n", cpu.pc);
+  // printf("ref exec $a5    = 0x%08x\n", gpr(15));
+  // printf("ref exec mcause = 0x%08x\n", cpu.csr.mcause);
   cpu_exec(n);
 }
 

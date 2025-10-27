@@ -18,6 +18,15 @@
 
 #include <common.h>
 
+#define MEPC    0x341
+#define MCAUSE  0x342
+#define MTVEC   0x305
+#define MSTATUS 0x300
+
+#define MSTATUS_MIE   0x8
+#define MSTATUS_MPIE  0x80
+#define MSTATUS_MPP   0x1800
+
 static inline int check_reg_idx(int idx) {
   IFDEF(CONFIG_RT_CHECK, assert(idx >= 0 && idx < MUXDEF(CONFIG_RVE, 16, 32)));
   return idx;

@@ -7,6 +7,8 @@
 #include "Vtop.h"
 #include "verilated_vcd_c.h"
 #include "Vtop__Dpi.h"
+#include "watchpoint.h"
+#include "expr.h"
 
 #define ARRLEN(arr) (int)(sizeof(arr) / sizeof(arr[0]))
 
@@ -58,7 +60,7 @@ static int cmd_info(char *args)
     }
     else if (strcmp(args, "w") == 0)
     {
-        // wp_info();
+        wp_info();
     }
     else
     {
@@ -82,6 +84,37 @@ static int cmd_x(char *args)
     return 0;
 }
 
+static int cmd_p(char *args) {
+    printf("cmd_p args: %s\n", args);
+    uint32_t res;
+    bool *success;
+    success = (bool *)malloc(sizeof(bool));
+    res = expr(args, success);
+
+    if(success) {
+        printf("Result: %u\n", res);
+    }
+    else {
+        printf("Unable to evaluate mathematical expressions.\n");
+    }
+
+    free(success);
+
+    return 0;
+}
+
+static int cmd_w(char *args) {
+    WP *cur = new_wp();
+    strcpy(cur->expression, args);
+    return 0;
+}
+
+static int cmd_d(char *args) {
+    int n = atoi(args);
+    free_wp(n);
+    return 0;
+}
+
 static int cmd_q(char *args)
 {
     Verilated::gotFinish(true);
@@ -101,6 +134,9 @@ static struct
     {"si", "Let's the programepause after executing N instructions in a single step. N defaults to 1", cmd_si},
     {"info", "Type r to print the register, type w for status watchpoint information", cmd_info},
     {"x", "x N EXPR, Scanning Memory, Outputs N consecutive 4 bytes starting from EXPR", cmd_x},
+    {"p", "p EXPR, Find the value of the expression EXPR", cmd_p},
+    {"w", "w EXPR, Watchpoint set", cmd_w},
+    {"d", "d N, Delete the monitoring point with serial number N", cmd_d},
     {"q", "Exit NEMU", cmd_q},
 };
 
@@ -176,6 +212,7 @@ void sdb_mainloop()
             {
                 if (cmd_table[i].handler(args) < 0)
                 {
+                    printf("cmd_table[%d]\n", i);
                     return;
                 }
                 break;
@@ -194,4 +231,7 @@ void init_sdb(Vtop *top_in, VerilatedContext *contextp_in, VerilatedVcdC *tfp_in
     top = top_in;
     contextp = contextp_in;
     tfp = tfp_in;
+
+    init_regex();
+    init_wp_pool();
 }

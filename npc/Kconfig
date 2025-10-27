@@ -2,6 +2,10 @@ mainmenu "NPC Configuration Menu"
 
 menu "Testing and Debugging"
 
+config BATCH_MODE
+  bool "Run with batch mode"
+  default n
+
 config WATCHPOINT
   bool "Enable watchpoint"
   default n

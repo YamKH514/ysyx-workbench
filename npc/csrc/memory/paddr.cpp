@@ -3,6 +3,8 @@
 #include "macro.h"
 #include "utils.h"
 #include "timer.h"
+#include "difftest-def.h"
+#include "cpu.h"
 
 #define DEVICE_BASE 0xa0000000
 #define SERIAL_PORT (DEVICE_BASE + 0x00003f8)
@@ -48,15 +50,12 @@ void print_paddr_write(uint32_t addr, int len, uint32_t data)
 extern "C" uint32_t paddr_read(uint32_t raddr)
 {
     uint32_t addr = raddr & ~0x3u;
-    if(raddr == RTC_ADDR)
-    {
-        uint64_t us = get_time();
-        return (uint32_t)us;
-    }
-    if(raddr == RTC_ADDR + 0x4)
-    {
-        uint64_t us = get_time();
-        return (uint32_t)(us >> 32);
+    if(addr == RTC_ADDR || addr == RTC_ADDR + 0x4) {
+    uint64_t us = get_time();
+#ifdef CONFIG_DIFFTEST
+    difftest_skip_ref();
+#endif
+    return (addr == RTC_ADDR) ? (uint32_t)us : (uint32_t)(us >> 32);
     }
 #ifdef CONFIG_MTRACE
     print_paddr_read(addr, 4);
@@ -77,8 +76,13 @@ extern "C" void paddr_write(uint32_t waddr, uint32_t wdata, uint8_t wmask)
     if(addr == SERIAL_PORT)
     {
         putchar(wdata);
+        fflush(stdout);
+#ifdef CONFIG_DIFFTEST
+        difftest_skip_ref();
+#endif
         return;
     }
+
     switch (wmask)
     {
     case 0x1:
@@ -95,7 +99,6 @@ extern "C" void paddr_write(uint32_t waddr, uint32_t wdata, uint8_t wmask)
         break;
     }
 
-
 #ifdef CONFIG_MTRACE
     print_paddr_write(addr, 4, data);
 #endif
@@ -104,7 +107,7 @@ extern "C" void paddr_write(uint32_t waddr, uint32_t wdata, uint8_t wmask)
         pmem_write(addr, 4, data);
         return;
     }
-    printf("paddr_write out_of_bound addr = 0x%x\n", addr);
+
     out_of_bound(addr);
 }
 

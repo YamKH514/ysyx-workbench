@@ -5,6 +5,7 @@
 #include "disasm.h"
 #include "difftest-def.h"
 #include "sdb.h"
+#include "cpu.h"
 
 static char *log_file = NULL;
 static char *diff_so_file = NULL;
@@ -47,7 +48,9 @@ static int parse_args(int argc, char *argv[])
         switch (o)
         {
         case 'b':
+#ifdef CONFIG_BATCH_MODE
             sdb_set_batch_mode();
+#endif
             break;
         case 'l':
             log_file = optarg;
@@ -74,7 +77,7 @@ static int parse_args(int argc, char *argv[])
     return 0;
 }
 
-void init_npc(int argc, char *argv[])
+void init_npc(int argc, char *argv[], Vtop* top, VerilatedContext* contextp, VerilatedVcdC* tfp)
 {
     parse_args(argc, argv);
 
@@ -84,11 +87,15 @@ void init_npc(int argc, char *argv[])
     parse_elf(elf_file);
 #endif
 
+    cpu_reset(10, top);
+
     init_mem();
 
     long img_size = load_img();
 
     init_difftest(diff_so_file, img_size, difftest_port);
+
+    init_sdb(top, contextp, tfp);
 
     init_disasm();
 

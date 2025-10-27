@@ -30,23 +30,39 @@ int reg_length = sizeof(regs)/sizeof(regs[0]);
 
 void isa_reg_display() {
   for(int i = 0; i < reg_length; i++) {
-    printf("%-10s 0x%-8x  %-10u\n", regs[i], gpr(i), gpr(i));
+    printf("%-10s 0x%08x  %-10u\n", regs[i], gpr(i), gpr(i));
   }
+  printf("MEPC       0x%08x  %-10u\n", cpu.csr.mepc, cpu.csr.mepc);
+  printf("MCAUSE     0x%08x  %-10u\n", cpu.csr.mcause, cpu.csr.mcause);
+  printf("MTVEC      0x%08x  %-10u\n", cpu.csr.mtvec, cpu.csr.mtvec);
+  printf("MSTATUS    0x%08x  %-10u\n", cpu.csr.mstatus, cpu.csr.mstatus);
 }
 
 word_t isa_reg_str2val(const char *s, bool *success) {
-  if(IS_THIS_REG("pc")) {
-    printf("pc: %x\n", pc_addr);
+  if(IS_THIS_REG("PC")) {
+    printf("$PC: 0x%08x\n", pc_addr);
     return pc_addr;
   }
-  else if(IS_THIS_REG("mepc"))
+  else if(IS_THIS_REG("MEPC"))
+  {
+    printf("$MEPC: 0x%08x\n", cpu.csr.mepc);
     return csr_val(mepc);
-  else if(IS_THIS_REG("mcause"))
+  }
+  else if(IS_THIS_REG("MCAUSE"))
+  {
+    printf("$MCAUSE: 0x%08x\n", cpu.csr.mcause);
     return csr_val(mcause);
-  else if(IS_THIS_REG("mtvec"))
+  }
+  else if(IS_THIS_REG("MTVEC"))
+  {
+    printf("$MTVEC: 0x%08x\n", cpu.csr.mtvec);
     return csr_val(mtvec);
-  else if(IS_THIS_REG("mstatus"))
+  }
+  else if(IS_THIS_REG("MSTATUS"))
+  {
+    printf("$MSTATUS: 0x%08x\n", cpu.csr.mstatus);
     return csr_val(mstatus);
+  }
   else {
     int i;
     for(i = 0; i < reg_length; i++) {

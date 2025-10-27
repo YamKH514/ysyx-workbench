@@ -5,6 +5,8 @@
 #include "memory/paddr.h"
 #include "reg.h"
 #include "difftest-def.h"
+#include "cpu.h"
+#include "Vtop__Dpi.h"
 
 void (*ref_difftest_memcpy)(uint32_t addr, void *buf, size_t n, bool direction) = NULL;
 void (*ref_difftest_regcpy)(void *dut, bool direction) = NULL;
@@ -13,15 +15,23 @@ void (*ref_difftest_raise_intr)(uint64_t NO) = NULL;
 
 #ifdef CONFIG_DIFFTEST
 
+#define MAX_SKIP_NUM 16
+static uint32_t skip_pc_queue[MAX_SKIP_NUM] = {0};
+static int skip_pc_head = 0;
+static int skip_pc_tail = 0;
 static bool is_skip_ref = false;
-static int skip_dut_nr_inst = 0;
+
+void difftest_skip_ref(){
+  is_skip_ref = true;
+}
 
 void init_difftest(char *ref_so_file, long img_size, int port)
 {
   assert(ref_so_file != NULL);
 
-  NPCState npc_state_init = npc_state;
-  npc_state_init.halt_pc = 0x80000000;
+  CPU_state cpu_init = cpu;
+  cpu_init.pc = 0x80000000;
+  cpu_init.csr.mstatus = 0x00001800;
 
   void *handle;
   handle = dlopen(ref_so_file, RTLD_LAZY);
@@ -51,32 +61,57 @@ void init_difftest(char *ref_so_file, long img_size, int port)
 
   ref_difftest_init(port);
   ref_difftest_memcpy(RESET_VECTOR, guest_to_host(RESET_VECTOR), img_size, DIFFTEST_TO_REF);
-  ref_difftest_regcpy(&npc_state_init, DIFFTEST_TO_REF);
+  ref_difftest_regcpy(&cpu_init, DIFFTEST_TO_REF);
 }
 
-bool difftest_checkregs(NPCState *ref_r, uint32_t pc)
+bool difftest_checkregs(CPU_state*ref_r, uint32_t pc)
 {
-  int reg_num = ARRLEN(npc_state.gpr_value);
+  int reg_num = ARRLEN(cpu.gpr);
   for (int i = 0; i < reg_num; i++)
   {
-    if (ref_r->gpr_value[i] != npc_state.gpr_value[i])
+    if (ref_r->gpr[i] != cpu.gpr[i])
     {
-      printf("Difftest: Inconsistent register values, pc = 0x%x\n", pc);
-      printf("wrong ref reg: reg[%d] val: 0x%08x\n", i, ref_r->gpr_value[i]);
-      printf("wrong dut reg: reg[%d] val: 0x%08x\n", i, npc_state.gpr_value[i]);
+      printf("Difftest: Inconsistent register values, pc = 0x%08x\n", pc);
+      printf("    ref reg[%d] val: 0x%08x\n", i, ref_r->gpr[i]);
+      printf("    dut reg[%d] val: 0x%08x\n", i, cpu.gpr[i]);
       return false;
     }
   }
-  if (ref_r->halt_pc != pc)
+  if (ref_r->pc != cpu.pc)
   {
-    printf("Difftest: Inconsistent PC register values, pc = 0x%x\n", pc);
+    printf("Difftest: Inconsistent PC register values, pc = 0x%08x\n", pc);
+    printf("ref: 0x%08x, dut: 0x%08x\n", ref_r->pc, cpu.pc);
+    return false;
+  }
+  if(ref_r->csr.mepc != cpu.csr.mepc)
+  {
+    printf("Difftest: Inconsistent MEPC register values, pc = 0x%08x\n", pc);
+    printf("ref: 0x%08x, dut: 0x%08x\n", ref_r->csr.mepc, cpu.csr.mepc);
+    return false;
+  }
+  if(ref_r->csr.mcause != cpu.csr.mcause)
+  {
+    printf("Difftest: Inconsistent MCAUSE register values, pc = 0x%08x\n", pc);
+    printf("ref: 0x%08x, dut: 0x%08x\n", ref_r->csr.mcause, cpu.csr.mcause);
+    return false;
+  }
+  if(ref_r->csr.mtvec != cpu.csr.mtvec)
+  {
+    printf("Difftest: Inconsistent MTVEC register values, pc = 0x%08x\n", pc);
+    printf("ref: 0x%08x, dut: 0x%08x\n", ref_r->csr.mtvec, cpu.csr.mtvec);
+    return false;
+  }
+  if(ref_r->csr.mstatus != cpu.csr.mstatus)
+  {
+    printf("Difftest: Inconsistent MSTATUS register values, pc = 0x%08x\n", pc);
+    printf("ref: 0x%08x, dut: 0x%08x\n", ref_r->csr.mstatus, cpu.csr.mstatus);
     return false;
   }
 
   return true;
 }
 
-static void checkregs(NPCState *ref, uint32_t pc)
+static void checkregs(CPU_state *ref, uint32_t pc)
 {
   if (!difftest_checkregs(ref, pc))
   {
@@ -87,10 +122,27 @@ static void checkregs(NPCState *ref, uint32_t pc)
 
 void difftest_step(uint32_t pc)
 {
-  NPCState ref_r;
+  CPU_state ref_r;
+
+  if(is_skip_ref)
+  {
+    skip_pc_queue[skip_pc_tail] = cpu.npc;
+    skip_pc_tail = (skip_pc_tail + 1) % MAX_SKIP_NUM;
+    is_skip_ref = false;
+  }
+  if (skip_pc_head != skip_pc_tail) {
+    uint32_t skip_pc = skip_pc_queue[skip_pc_head];
+    if(cpu.pc == skip_pc)
+    {
+      ref_difftest_regcpy(&cpu, DIFFTEST_TO_REF);
+      skip_pc_head = (skip_pc_head + 1) % MAX_SKIP_NUM;
+      return;
+    }
+  }
+
   ref_difftest_exec(1);
   ref_difftest_regcpy(&ref_r, DIFFTEST_TO_DUT);
-  
+
   checkregs(&ref_r, pc);
 }
 
