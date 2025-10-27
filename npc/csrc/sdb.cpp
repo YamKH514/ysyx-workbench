@@ -85,6 +85,7 @@ static int cmd_x(char *args)
 }
 
 static int cmd_p(char *args) {
+    printf("cmd_p args: %s\n", args);
     uint32_t res;
     bool *success;
     success = (bool *)malloc(sizeof(bool));
