@@ -82,7 +82,7 @@ extern "C" void paddr_write(uint32_t waddr, uint32_t wdata, uint8_t wmask)
 #endif
         return;
     }
-
+printf("pwrite addr: 0x%08x\n", addr);
     switch (wmask)
     {
     case 0x1:
