@@ -160,6 +160,7 @@ void npc_exec(Vtop *top, VerilatedContext *contextp, VerilatedVcdC *tfp, uint64_
     g_print_step = (n < MAX_INST_TO_PRINT);
     if ((contextp->gotFinish()) || (npc_state.state == NPC_ABORT))
     {
+        Verilated::gotFinish(true);
         printf("Program execution has ended. To restart the program, exit NPC and run again.\n");
         return;
     }
