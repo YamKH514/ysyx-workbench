@@ -82,7 +82,7 @@ extern "C" void paddr_write(uint32_t waddr, uint32_t wdata, uint8_t wmask)
 #endif
         return;
     }
-printf("paddr_write: addr=0x%08x, data=0x%08x, mask=0x%02x\n", waddr, wdata, wmask);
+// printf("paddr_write: addr=0x%08x, data=0x%08x, mask=0x%02x\n", waddr, wdata, wmask);
     if(likely(in_pmem(addr)))
     {
         switch (wmask)
