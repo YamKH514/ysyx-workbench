@@ -56,7 +56,9 @@ static void exec_once(Vtop *top, VerilatedContext *contextp, VerilatedVcdC *tfp)
         contextp->timeInc(1);
         top->clk = 1;
         top->eval();
+#ifdef CONFIG_VCD_TRACE
         tfp->dump(contextp->time());
+#endif
         top->rst = 0;
         npc_state.inited = true;
     }
@@ -66,7 +68,9 @@ static void exec_once(Vtop *top, VerilatedContext *contextp, VerilatedVcdC *tfp)
 
     contextp->timeInc(1);
     cpu_single_cycle(top);
+#ifdef CONFIG_VCD_TRACE
     tfp->dump(contextp->time());
+#endif
 
     cpu.pc = top->pc;
     cpu.npc = top->npc;
