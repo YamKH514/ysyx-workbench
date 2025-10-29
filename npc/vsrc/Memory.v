@@ -44,4 +44,33 @@ assign rdata =  {32{MemReadFunc == 3'b001}} & {24'b0, DataB[7:0]} | // lbu
                 {32{MemReadFunc == 3'b110}} & {{16{DataH[15]}}, DataH[15:0]} | // lh
                 {32{MemReadFunc == 3'b011}} & Data ; // lw
 
+// Mem #(8,32) read_mem
+// (
+//     .clk         	(clk          ),
+//     .ReadAddr      	(raddr        ),
+//     .WriteAddr   	(WriteAddr    ),
+//     .WriteData   	(WriteData    ),
+//     .RegWrite    	(MemValid & MemWrite),
+//     .ReadData      	(Data         ),
+// );
+
+// endmodule
+
+// module Mem #(ADDR_WIDTH = 1, DATA_WIDTH = 1) (
+//     input clk,
+//     input [ADDR_WIDTH-1:0] ReadAddr,
+//     input [ADDR_WIDTH-1:0] WriteAddr,
+//     input [DATA_WIDTH-1:0] WriteData,
+//     input RegWrite,
+//     output [DATA_WIDTH-1:0] ReadData
+// );
+// reg [DATA_WIDTH-1:0] rf [2**ADDR_WIDTH-1:0];
+
+// always @(posedge clk) begin
+//     if (RegWrite)
+//         rf[WriteAddr] <= WriteData;
+// end
+
+// assign ReadData1 = (ReadAddr1 == 0) ? 0 : rf[ReadAddr1];
+
 endmodule
