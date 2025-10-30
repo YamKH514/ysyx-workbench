@@ -1,6 +1,8 @@
 #include "common.h"
 #include "cpu.h"
 
+int running_cycle = 0;
+
 void cpu_single_cycle(Vtop* top)
 {
     top->clk = 0;

@@ -3,6 +3,8 @@
 
 #include "common.h"
 
+extern int running_cycle;
+
 typedef struct
 {
   uint32_t mepc;

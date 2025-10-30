@@ -145,6 +145,7 @@ static void execute(Vtop *top, VerilatedContext *contextp, VerilatedVcdC *tfp, u
     for (; n > 0; n--)
     {
         exec_once(top, contextp, tfp);
+        running_cycle ++;
         g_nr_guest_inst++;
         if ((contextp->gotFinish()) || (npc_state.state == NPC_ABORT) || (npc_state.state == NPC_STOP))
             break;
