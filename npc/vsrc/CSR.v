@@ -18,7 +18,6 @@ reg [31:0]  mepc;
 reg [31:0]  mcause;
 reg [31:0]  mtvec;
 reg [31:0]  mstatus;
-reg [31:0]  next_mstatus;
 
 wire        mepcWriteEn    = CSRWriteEn & (CSRRWAddr == 12'h341);
 wire        mcauseWriteEn  = CSRWriteEn & (CSRRWAddr == 12'h342);
@@ -42,21 +41,19 @@ always @(posedge clk) begin
         mcause  <= 32'b0;
         mtvec   <= 32'b0;
         mstatus <= 32'h00001800;
-        next_mstatus <= 32'h00001800;
     end
     else begin
-        next_mstatus <= mstatus;
         if(is_ecall) begin
-            next_mstatus[12:11]  <= 2'b11;
-            next_mstatus[7]      <= mstatus[3];
-            next_mstatus[3]      <= 1'b0;
+            mstatus[12:11]  <= 2'b11;
+            mstatus[7]      <= mstatus[3];
+            mstatus[3]      <= 1'b0;
             mcause          <= CSRWriteData_mcause;
             mepc            <= CSRWriteData_mepc;
         end
         else if(is_mret) begin
-            next_mstatus[12:11]  <= 2'b0;
-            next_mstatus[3]      <= mstatus[7];
-            next_mstatus[7]      <= 1'b1;
+            mstatus[12:11]  <= 2'b0;
+            mstatus[3]      <= mstatus[7];
+            mstatus[7]      <= 1'b1;
         end
         else begin
             if(mepcWriteEn) begin
@@ -69,10 +66,9 @@ always @(posedge clk) begin
                 mtvec <= WriteData;
             end
             if(mstatusWriteEn) begin
-                next_mstatus <= WriteData;
+                mstatus <= WriteData;
             end
         end
-        mstatus <= next_mstatus;
     end
 end
 
