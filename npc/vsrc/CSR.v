@@ -18,7 +18,7 @@ reg [31:0]  mepc;
 reg [31:0]  mcause;
 reg [31:0]  mtvec;
 reg [31:0]  mstatus;
-reg [31:0]  next_mstatus;
+reg [31:0]  next_mstatus = mstatus;
 
 wire        mepcWriteEn    = CSRWriteEn & (CSRRWAddr == 12'h341);
 wire        mcauseWriteEn  = CSRWriteEn & (CSRRWAddr == 12'h342);
