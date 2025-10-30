@@ -18,7 +18,7 @@ reg [31:0]  mepc;
 reg [31:0]  mcause;
 reg [31:0]  mtvec;
 reg [31:0]  mstatus;
-reg [31:0] next_mstatus;
+reg [31:0]  next_mstatus;
 
 wire        mepcWriteEn    = CSRWriteEn & (CSRRWAddr == 12'h341);
 wire        mcauseWriteEn  = CSRWriteEn & (CSRRWAddr == 12'h342);
@@ -42,6 +42,7 @@ always @(posedge clk) begin
         mcause  <= 32'b0;
         mtvec   <= 32'b0;
         mstatus <= 32'h00001800;
+        next_mstatus <= 32'h00001800;
     end
     else begin
         next_mstatus <= mstatus;
