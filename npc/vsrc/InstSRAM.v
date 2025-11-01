@@ -1,6 +1,6 @@
 module InstSRAM (
     input               inst_sram_clk_in,
-    input       [31:0]  inst_sram_addr_in,
+    input   reg [31:0]  inst_sram_addr_in,
     output  reg [31:0]  inst_sram_data_out,
     input               inst_sram_valid_in,
     output  reg         inst_sram_ready_out
