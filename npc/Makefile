@@ -1,7 +1,7 @@
 TOPNAME = top
 NXDC_FILES = constr/top.nxdc
 INC_PATH ?= $(NPC_HOME)/include
-INC_PATH += $(NPC_HOME)/vsrc
+INC_PATH += $(shell find $(abspath ./vsrc) -name "*.vh" -exec dirname {} \; | sort -u)
 
 VERILATOR = verilator
 VERILATOR_COVERAGE = verilator_coverage
