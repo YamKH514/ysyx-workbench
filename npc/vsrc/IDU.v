@@ -1,25 +1,25 @@
 `include "common.vh"
 
 module IDU(
-    input           idu_clk_in,
-    input   [31:0]  idu_inst_in,
-    output          idu_is_ecall,
-    output          idu_is_mret,
-    output  [2:0]   idu_inst_type,
-    output          idu_reg_we_out,
-    output          idu_csr_we_out,
-    output  [5:0]   idu_alu_fun_out,
-    output  [1:0]   idu_alu_src1_sel_out,
-    output  [1:0]   idu_alu_src2_sel_out,
-    output  [3:0]   idu_npc_src_sel_out,
-    output  [1:0]   idu_gpr_wd_sel_out,
-    output  [7:0]   idu_mem_wmask_out,
-    output          idu_mem_valid_out,
-    output          idu_mem_we_out,
-    output  [2:0]   idu_mem_read_func_out, // unsigned(0--) signed(1--) lb(-01) lh(-10) lw(011)
+    input               idu_clk_in,
+    input       [31:0]  idu_inst_in,
+    output  reg         idu_is_ecall,
+    output  reg         idu_is_mret,
+    output  reg [2:0]   idu_inst_type,
+    output  reg         idu_reg_we_out,
+    output  reg         idu_csr_we_out,
+    output  reg [5:0]   idu_alu_fun_out,
+    output  reg [1:0]   idu_alu_src1_sel_out,
+    output  reg [1:0]   idu_alu_src2_sel_out,
+    output  reg [3:0]   idu_npc_src_sel_out,
+    output  reg [1:0]   idu_gpr_wd_sel_out,
+    output  reg [7:0]   idu_mem_wmask_out,
+    output  reg         idu_mem_valid_out,
+    output  reg         idu_mem_we_out,
+    output  reg [2:0]   idu_mem_read_func_out, // unsigned(0--) signed(1--) lb(-01) lh(-10) lw(011)
 
-    input           idu_valid_in,
-    output          idu_ready_out
+    input               idu_valid_in,
+    output  reg         idu_ready_out
 );
 
 reg     [31:0]  inst_reg;
