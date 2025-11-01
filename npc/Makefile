@@ -6,6 +6,7 @@ V_INC_PATH ?= $(NPC_HOME)/vsrc
 VERILATOR = verilator
 VERILATOR_COVERAGE = verilator_coverage
 VERILATOR_FLAGS += --cc --trace -j 0 --top-module top
+VERILATOR_FLAGS += $(addprefix -I, $(V_INC_PATH))
 
 BUILD_DIR = build
 OBJ_DIR = $(BUILD_DIR)/obj_dir
@@ -49,7 +50,6 @@ include $(FILELIST_MK)
 
 # rules for verilator
 INCFLAGS += $(addprefix -I, $(C_INC_PATH))
-# INCFLAGS += $(addprefix -I, $(V_INC_PATH))
 CXXFLAGS += $(INCFLAGS) -DTOP_NAME="\"V$(TOPNAME)\""
 
 LDFLAGS += -lreadline -lncurses
@@ -65,7 +65,7 @@ IMG ?=
 $(BIN): $(VSRCS) $(CSRCS) $(SRC_AUTO_BIND) $(NVBOARD_ARCHIVE)
 	@echo "--Build--"
 	@rm -rf $(OBJ_DIR)
-	$(VERILATOR) $(VERILATOR_FLAGS) $(addprefix -I, $(V_INC_PATH)) --build \
+	$(VERILATOR) $(VERILATOR_FLAGS) --build \
 		--top-module $(TOPNAME) $^ \
 		$(addprefix -CFLAGS , $(CXXFLAGS)) $(addprefix -LDFLAGS , $(LDFLAGS)) \
 		--Mdir $(OBJ_DIR) --exe -o $(abspath $(BIN))
