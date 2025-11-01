@@ -116,6 +116,7 @@ extern "C" int get_inst(int pc)
     uint32_t inst = 0;
     if((uint32_t)pc >= MEM_BASE)
     {
+        printf("get_inst pc = 0x%08x\n", pc);
         inst = paddr_read((uint32_t)pc);
     }
     return (int)inst;
