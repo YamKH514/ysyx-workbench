@@ -9,7 +9,7 @@ module PCCnt(
     output  reg [31:0]  pc_cnt_pc_out,
     output  reg [31:0]  pc_cnt_npc_out,
 
-    input               idu_valid_in
+    input               pc_cnt_valid_in
 );
 
 assign pc_cnt_npc_out = (pc_cnt_npc_src_sel_in[3] == 1'b0) ?
@@ -19,7 +19,7 @@ assign pc_cnt_npc_out = (pc_cnt_npc_src_sel_in[3] == 1'b0) ?
 always @(posedge pc_cnt_clk_in) begin
     if (pc_cnt_rst_in) begin
         pc_cnt_pc_out <= 32'h80000000;
-    end else if (idu_valid_in) begin
+    end else if (pc_cnt_valid_in) begin
         pc_cnt_pc_out <= pc_cnt_npc_out;
     end
 end

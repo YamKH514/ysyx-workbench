@@ -46,6 +46,7 @@ wire ifu_sram_valid;
 wire ifu_sram_ready;
 wire ifu_idu_valid;
 wire ifu_idu_ready;
+wire ifu_pc_cnt_valid;
 
 assign TrapNPC = is_ecall ? CSRReadData_mtvec : CSRReadData_mepc;
 
@@ -59,7 +60,7 @@ PCCnt u_PCCnt(
     .pc_cnt_trap_npc_in    	(TrapNPC        ),
     .pc_cnt_pc_out         	(pc             ),
     .pc_cnt_npc_out        	(npc            ),
-    .idu_valid_in          	(ifu_idu_valid  )
+    .pc_cnt_valid_in        (ifu_pc_cnt_valid)
 );
 
 IFU u_IFU(
@@ -72,7 +73,8 @@ IFU u_IFU(
     .ifu_sram_valid_out 	(ifu_sram_valid ),
     .ifu_sram_ready_in  	(ifu_sram_ready ),
     .ifu_idu_valid_out  	(ifu_idu_valid  ),
-    .ifu_idu_ready_in   	(ifu_idu_ready  )
+    .ifu_idu_ready_in   	(ifu_idu_ready  ),
+    .ifu_pc_cnt_valid_out   (ifu_pc_cnt_valid)
 );
 
 InstSRAM u_InstSRAM(
