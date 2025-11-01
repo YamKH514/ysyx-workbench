@@ -39,6 +39,7 @@ always @(*) begin
             next_state = `S_WAIT_SRAM;
         end
         `S_WAIT_SRAM: begin
+            ifu_req_addr_out = ifu_current_pc_in;
             if (ifu_sram_ready_in) begin
                 ifu_idu_valid_out = 1;
                 ifu_inst_out = ifu_req_inst_in;
