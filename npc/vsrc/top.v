@@ -41,7 +41,7 @@ wire    [31:0]  CSRReadData_mepc;
 
 wire [31:0] ifu_req_addr;
 wire [31:0] ifu_req_inst;
-wire [31:0] ifu_inst_out;
+reg  [31:0] ifu_inst_out;
 wire ifu_sram_valid;
 wire ifu_sram_ready;
 wire ifu_idu_valid;
