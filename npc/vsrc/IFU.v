@@ -47,7 +47,7 @@ always @(*) begin
                 end
             end
             `S_WAIT_IDU: begin
-                ifu_idu_valid_out = 1;
+                // ifu_idu_valid_out = 1;
                 ifu_inst_out = ifu_req_inst_in;
                 if (ifu_idu_ready_in) begin
                     next_state = `S_IDLE;

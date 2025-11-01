@@ -114,10 +114,9 @@ extern "C" void paddr_write(uint32_t waddr, uint32_t wdata, uint8_t wmask)
 extern "C" int get_inst(int pc)
 {
     uint32_t inst = 0;
-    printf("outside get_inst pc = 0x%08x\n", pc);
     if((uint32_t)pc >= MEM_BASE)
     {
-        printf("inside get_inst pc = 0x%08x\n", pc);
+        printf("get_inst pc = 0x%08x\n", pc);
         inst = paddr_read((uint32_t)pc);
     }
     return (int)inst;
