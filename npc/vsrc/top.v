@@ -59,8 +59,7 @@ PCCnt u_PCCnt(
     .pc_cnt_trap_npc_in    	(TrapNPC        ),
     .pc_cnt_pc_out         	(pc             ),
     .pc_cnt_npc_out        	(npc            ),
-    .idu_valid_in          	(ifu_idu_valid  ),
-    .idu_ready_in          	(ifu_idu_ready  )
+    .idu_valid_in          	(ifu_idu_valid  )
 );
 
 IFU u_IFU(
