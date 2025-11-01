@@ -6,7 +6,6 @@ module top(
     output  [31:0]  ReadData_a0
 );
 
-wire    [31:0]  inst;
 wire            RegWriteEn;
 wire    [2:0]   InstType;
 wire    [3:0]   NPCSrcSel;
@@ -40,23 +39,70 @@ wire    [31:0]  CSRReadData;
 wire    [31:0]  CSRReadData_mtvec;
 wire    [31:0]  CSRReadData_mepc;
 
+wire [31:0] ifu_req_addr;
+wire [31:0] ifu_req_inst;
+wire [31:0] ifu_inst_out;
+wire ifu_sram_valid;
+wire ifu_sram_ready;
+wire ifu_idu_valid;
+wire ifu_idu_ready;
+
 assign TrapNPC = is_ecall ? CSRReadData_mtvec : CSRReadData_mepc;
 
 PCCnt u_PCCnt(
-    .clk       	(clk        ),
-    .rst       	(rst        ),
-    .CMPRes     (ALURes[0]  ),
-    .ReadData1 	(ReadData1  ),
-    .ImmExt    	(ImmExt     ),
-    .NPCSrcSel 	(NPCSrcSel  ),
-    .TrapNPC    (TrapNPC    ),
-    .PC        	(pc         ),
-    .NPC        (npc        )
+    .pc_cnt_clk_in         	(clk            ),
+    .pc_cnt_rst_in         	(rst            ),
+    .pc_cnt_cmp_res_in     	(ALURes[0]      ),
+    .pc_cnt_rd1_in         	(ReadData1      ),
+    .pc_cnt_imm_in         	(ImmExt         ),
+    .pc_cnt_npc_src_sel_in 	(NPCSrcSel      ),
+    .pc_cnt_trap_npc_in    	(TrapNPC        ),
+    .pc_cnt_pc_out         	(pc             ),
+    .pc_cnt_npc_out        	(npc            ),
+    .idu_valid_in          	(ifu_idu_valid  ),
+    .idu_ready_in          	(ifu_idu_ready  )
 );
 
-Inst u_Inst(
-    .PC   	(pc    ),
-    .inst 	(inst  )
+IFU u_IFU(
+    .ifu_rst_in         	(rst            ),
+    .ifu_clk_in         	(clk            ),
+    .ifu_current_pc_in  	(pc             ),
+    .ifu_req_addr_out   	(ifu_req_addr   ),
+    .ifu_req_inst_in    	(ifu_req_inst   ),
+    .ifu_inst_out       	(ifu_inst_out   ),
+    .ifu_sram_valid_out 	(ifu_sram_valid ),
+    .ifu_sram_ready_in  	(ifu_sram_ready ),
+    .ifu_idu_valid_out  	(ifu_idu_valid  ),
+    .ifu_idu_ready_in   	(ifu_idu_ready  )
+);
+
+InstSRAM u_InstSRAM(
+    .inst_sram_clk_in    	(clk            ),
+    .inst_sram_addr_in   	(ifu_req_addr   ),
+    .inst_sram_data_out  	(ifu_req_inst   ),
+    .inst_sram_valid_in  	(ifu_sram_valid ),
+    .inst_sram_ready_out 	(ifu_sram_ready )
+);
+
+IDU u_IDU(
+    .idu_clk_in            	(clk            ),
+    .idu_inst_in           	(ifu_inst_out   ),
+    .idu_is_ecall          	(is_ecall       ),
+    .idu_is_mret           	(is_mret        ),
+    .idu_inst_type         	(InstType       ),
+    .idu_reg_we_out        	(RegWriteEn     ),
+    .idu_csr_we_out        	(CSRWriteEn     ),
+    .idu_alu_fun_out       	(ALUFunc        ),
+    .idu_alu_src1_sel_out  	(ALUSrcSel1     ),
+    .idu_alu_src2_sel_out  	(ALUSrcSel2     ),
+    .idu_npc_src_sel_out   	(NPCSrcSel      ),
+    .idu_gpr_wd_sel_out    	(GPRwdataSel    ),
+    .idu_mem_wmask_out     	(Memwmask       ),
+    .idu_mem_valid_out     	(MemValid       ),
+    .idu_mem_we_out        	(MemWrite       ),
+    .idu_mem_read_func_out 	(MemReadFunc    ),
+    .idu_valid_in          	(ifu_idu_valid  ),
+    .idu_ready_out         	(ifu_idu_ready  )
 );
 
 assign Memraddr = ALURes;
@@ -74,34 +120,10 @@ Memory u_Memory(
     .rdata    	(Memrdata     )
 );
 
-
-Decode u_Decode(
-    .clk            (clk         ),
-    .inst       	(inst        ),
-    .Opcode     	(inst[6:0]   ),
-    .Funct3     	(inst[14:12] ),
-    .Funct7     	(inst[31:25] ),
-    .is_ecall       (is_ecall    ),
-    .is_mret        (is_mret     ),
-    .InstType    	(InstType    ),
-    .RegWriteEn 	(RegWriteEn  ),
-    .CSRWriteEn     (CSRWriteEn  ),
-    .ALUFunc        (ALUFunc     ),
-    .ALUSrcSel1 	(ALUSrcSel1  ),
-    .ALUSrcSel2 	(ALUSrcSel2  ),
-    .NPCSrcSel  	(NPCSrcSel   ),
-    .GPRwdataSel    (GPRwdataSel ),
-    .Memwmask       (Memwmask    ),
-    .MemValid       (MemValid    ),
-    .MemWrite       (MemWrite    ),
-    .MemReadFunc    (MemReadFunc )
-);
-
-
-ImmDecode u_ImmDecode(
-    .InstType 	(InstType       ),
-    .Imm   	    (inst[31:7]     ),
-    .ImmExt  	(ImmExt         )
+ImmExt u_ImmExt(
+    .imm_ext_inst_type_in 	(InstType           ),
+    .imm_ext_imm_in       	(ifu_inst_out[31:7] ),
+    .imm_ext_imm_out      	(ImmExt             )
 );
 
 ALU u_ALU(
@@ -118,29 +140,29 @@ ALU u_ALU(
 assign GPRwdata = (GPRwdataSel[1] == 1'b0) ? ((GPRwdataSel[0] == 1'b0) ? ALURes : Memrdata) : CSRReadData;
 
 GPR u_GPR(
-    .clk         	(clk          ),
-    .RegWrite    	(RegWriteEn   ),
-    .ReadAddr1   	(inst[19:15]  ),
-    .ReadAddr2   	(inst[24:20]  ),
-    .WriteAddr   	(inst[11:7]   ),
-    .WriteData   	(GPRwdata     ),
-    .ReadData1   	(ReadData1    ),
-    .ReadData2   	(ReadData2    ),
-    .ReadData_a0 	(ReadData_a0  ),
-    .ReadData_a5    (ReadData_a5  )
+    .clk         	(clk                ),
+    .RegWrite    	(RegWriteEn         ),
+    .ReadAddr1   	(ifu_inst_out[19:15]),
+    .ReadAddr2   	(ifu_inst_out[24:20]),
+    .WriteAddr   	(ifu_inst_out[11:7] ),
+    .WriteData   	(GPRwdata           ),
+    .ReadData1   	(ReadData1          ),
+    .ReadData2   	(ReadData2          ),
+    .ReadData_a0 	(ReadData_a0        ),
+    .ReadData_a5    (ReadData_a5        )
 );
 
 assign CSRWriteData = ReadData1;
 assign CSRWriteData_mcause = ReadData_a5;
 assign CSRWriteData_mepc = pc;
-assign CSRRWAddr = inst[31:20];
+assign CSRRWAddr = ifu_inst_out[31:20];
 
 CSR u_CSR(
     .clk                 	(clk                  ),
     .rst                 	(rst                  ),
     .is_ecall            	(is_ecall             ),
     .is_mret                (is_mret              ),
-    .CSRFunc3               (inst[14:12]          ),
+    .CSRFunc3               (ifu_inst_out[14:12]  ),
     .CSRWriteEn          	(CSRWriteEn           ),
     .CSRRWAddr              (CSRRWAddr            ),
     .CSRWriteData        	(CSRWriteData         ),
