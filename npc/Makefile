@@ -1,7 +1,7 @@
 TOPNAME = top
 NXDC_FILES = constr/top.nxdc
-INC_PATH ?= $(NPC_HOME)/include
-# INC_PATH += $(NPC_HOME)/vsrc
+C_INC_PATH ?= $(NPC_HOME)/include
+V_INC_PATH ?= $(NPC_HOME)/vsrc
 
 VERILATOR = verilator
 VERILATOR_COVERAGE = verilator_coverage
@@ -48,7 +48,8 @@ FILELIST_MK = $(shell find -L ./csrc -name "filelist.mk")
 include $(FILELIST_MK)
 
 # rules for verilator
-INCFLAGS = $(addprefix -I, $(INC_PATH))
+INCFLAGS += $(addprefix -I, $(C_INC_PATH))
+INCFLAGS += $(addprefix -I, $(V_INC_PATH))
 CXXFLAGS += $(INCFLAGS) -DTOP_NAME="\"V$(TOPNAME)\""
 
 LDFLAGS += -lreadline -lncurses
