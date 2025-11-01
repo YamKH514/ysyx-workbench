@@ -1,4 +1,4 @@
-`include "common.vh"
+`include "./common.vh"
 
 module IDU(
     input           idu_clk_in,
