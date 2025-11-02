@@ -2,6 +2,7 @@
 
 module IDU(
     input               idu_clk_in,
+    input               idu_rst_in,
     input       [31:0]  idu_inst_in,
     output  reg         idu_is_ecall,
     output  reg         idu_is_mret,
@@ -14,24 +15,58 @@ module IDU(
     output  reg [3:0]   idu_npc_src_sel_out,
     output  reg [1:0]   idu_gpr_wd_sel_out,
     output  reg [7:0]   idu_mem_wmask_out,
-    output  reg         idu_mem_valid_out,
+    output  reg         idu_wbu_valid_out,
+    output  reg         idu_mem_re_out,
     output  reg         idu_mem_we_out,
-    output  reg [2:0]   idu_mem_read_func_out, // unsigned(0--) signed(1--) lb(-01) lh(-10) lw(011)
+    output  reg [2:0]   idu_mem_read_func_out,
 
     input               idu_valid_in,
-    output  reg         idu_ready_out
+    output  reg         idu_ready_out,
+
+    input               exu_ready_in,
+    output  reg         exu_valid_out
 );
+
+reg state;
+reg next_state;
 
 reg     [31:0]  inst_reg;
 wire    [6:0]   inst_opcode;
 wire    [2:0]   inst_func3;
 wire    [6:0]   inst_func7;
 
-assign idu_ready_out = 1'b1;
 always @(posedge idu_clk_in) begin
-    if (idu_valid_in) begin
+    if (idu_rst_in) begin
+        state <= `IDU_S_IDLE;
+    end else begin
+        state <= next_state;
+    end
+
+    if (idu_rst_in) begin
+        inst_reg <= 32'b0;
+    end else if ((state == `IDU_S_IDLE) & (idu_valid_in)) begin
         inst_reg <= idu_inst_in;
     end
+end
+
+always @(*) begin
+    next_state = state;
+    idu_ready_out = 1'b0;
+    exu_valid_out = 1'b0;
+    case (state)
+        `IDU_S_IDLE: begin
+            idu_ready_out = 1'b1;
+            if (idu_valid_in) begin
+                next_state = `IDU_S_WAIT_EXU;
+            end
+        end
+        `IDU_S_WAIT_EXU: begin
+            exu_valid_out = 1'b1;
+            if (exu_ready_in) begin
+                next_state = `IDU_S_IDLE;
+            end
+        end
+    endcase
 end
 
 assign inst_opcode  = inst_reg[6:0];
@@ -184,15 +219,16 @@ assign idu_mem_wmask_out =  inst_sw ? 8'b00001111 :
                             inst_sb ? 8'b00000001 :
                             8'b0;
 
-assign idu_mem_valid_out =  (inst_lb | inst_lh | inst_lw | inst_lbu | inst_lhu | inst_sb | inst_sh | inst_sw);
+assign idu_wbu_valid_out =  (inst_lb | inst_lh | inst_lw | inst_lbu | inst_lhu | inst_sb | inst_sh | inst_sw);
+
+assign idu_mem_re_out = (inst_lb | inst_lh | inst_lw | inst_lbu | inst_lhu);
 
 assign idu_mem_we_out = (inst_sb | inst_sh | inst_sw);
 
-// unsigned(0--) signed(1--) lb(-01) lh(-10) lw(011)
-assign idu_mem_read_func_out =  {3{inst_lbu}} & 3'b001 |
-                                {3{inst_lhu}} & 3'b010 |
-                                {3{inst_lb}} & 3'b101 |
-                                {3{inst_lh}} & 3'b110 |
-                                {3{inst_lw}} & 3'b011;
+assign idu_mem_read_func_out =  {3{inst_lbu}} & `MEM_READ_FUNC_LBU |
+                                {3{inst_lb}}  & `MEM_READ_FUNC_LB  |
+                                {3{inst_lhu}} & `MEM_READ_FUNC_LHU |
+                                {3{inst_lh}}  & `MEM_READ_FUNC_LH  |
+                                {3{inst_lw}}  & `MEM_READ_FUNC_LW  ;
 
 endmodule
