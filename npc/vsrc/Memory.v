@@ -20,13 +20,12 @@ import "DPI-C" function int paddr_read(input int raddr);
 import "DPI-C" function void paddr_write(
     input int waddr, input int wdata, input byte wmask);
 
-reg     [1:0]   state;
-reg     [1:0]   next_state;
+reg state;
+reg next_state;
 
-reg     [31:0]  read_addr;
 reg     [31:0]  read_data;
 reg     [2:0]   read_func;
-wire    [1:0]   byte_off;
+reg     [1:0]   byte_off;
 wire    [7:0]   data_b;
 wire    [15:0]  data_h;
 
@@ -41,9 +40,13 @@ always @(posedge mem_clk_in) begin
         state <= next_state;
     end
 
+    if (mem_re_in) begin
+        read_data <= paddr_read(mem_r_addr_in);
+        byte_off  <= mem_r_addr_in[1:0];
+        read_func <= mem_r_func_in;
+    end
+
     if ((state == `MEM_S_IDLE) & mem_valid_in) begin
-        read_addr  <= mem_r_addr_in;
-        read_func  <= mem_r_func_in;
         write_addr <= mem_w_addr_in;
         write_data <= mem_w_data_in;
         write_mask <= mem_w_mask_in;
@@ -55,29 +58,16 @@ always @(*) begin
     case (state)
     `MEM_S_IDLE: begin
         mem_ready_out = 1'b1;
-        if (mem_valid_in) begin
-            if (mem_re_in) begin
-                next_state = `MEM_S_READ;
-            end else if (mem_we_in) begin
+        if (mem_valid_in & mem_we_in) begin
                 next_state = `MEM_S_WRITE;
-            end
         end
-    end
-    `MEM_S_READ: begin
-        read_data = paddr_read(read_addr);
-        next_state = `MEM_S_IDLE;
     end
     `MEM_S_WRITE: begin
         paddr_write(write_addr, write_data, write_mask);
         next_state = `MEM_S_IDLE;
     end
-    default: begin
-        next_state = `MEM_S_IDLE;
-    end
     endcase
 end
-
-assign byte_off = read_addr[1:0];
 
 assign data_b = {8{byte_off == 2'b00}} & read_data[7:0]  |
                 {8{byte_off == 2'b01}} & read_data[15:8] |

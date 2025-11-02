@@ -6,7 +6,7 @@ module top(
     output  [31:0]  ReadData_a0
 );
 
-wire            RegWriteEn;
+reg             gpr_we;
 wire    [2:0]   InstType;
 wire    [3:0]   NPCSrcSel;
 wire    [31:0]  TrapNPC;
@@ -50,6 +50,11 @@ wire            mem_we;
 wire    [31:0]  mem_w_addr;
 wire    [31:0]  mem_w_data;
 wire    [7:0]   mem_w_mask;
+reg             mem_valid;
+reg             mem_ready;
+reg             wbu_gpr_we;
+reg             wbu_mem_re;
+reg             wbu_mem_we;
 wire            wbu_valid;
 wire            wbu_ready;
 
@@ -91,6 +96,8 @@ InstSRAM u_InstSRAM(
     .inst_sram_ready_out 	(inst_sram_ready)
 );
 
+
+
 IDU u_IDU(
     .idu_clk_in            	(clk            ),
     .idu_rst_in             (rst            ),
@@ -98,7 +105,7 @@ IDU u_IDU(
     .idu_is_ecall          	(is_ecall       ),
     .idu_is_mret           	(is_mret        ),
     .idu_inst_type         	(InstType       ),
-    .idu_reg_we_out        	(RegWriteEn     ),
+    .idu_wbu_gpr_we_out     (wbu_gpr_we     ),
     .idu_csr_we_out        	(CSRWriteEn     ),
     .idu_alu_fun_out       	(ALUFunc        ),
     .idu_alu_src1_sel_out  	(ALUSrcSel1     ),
@@ -106,9 +113,8 @@ IDU u_IDU(
     .idu_npc_src_sel_out   	(NPCSrcSel      ),
     .idu_gpr_wd_sel_out    	(GPRwdataSel    ),
     .idu_mem_wmask_out     	(mem_w_mask     ),
-    .idu_wbu_valid_out     	(wbu_valid      ),
-    .idu_mem_re_out         (mem_re         ),
-    .idu_mem_we_out        	(mem_we         ),
+    .idu_wbu_mem_re_out     (wbu_mem_re     ),
+    .idu_wbu_mem_we_out     (wbu_mem_we     ),
     .idu_mem_read_func_out 	(mem_r_func     ),
     .idu_valid_in          	(idu_valid      ),
     .idu_ready_out         	(idu_ready      ),
@@ -126,7 +132,7 @@ assign GPRwdata = (GPRwdataSel[1] == 1'b0) ? ((GPRwdataSel[0] == 1'b0) ? ALURes 
 
 GPR u_GPR(
     .clk         	(clk                    ),
-    .RegWrite    	(RegWriteEn             ),
+    .RegWrite    	(gpr_we                 ),
     .ReadAddr1   	(ifu_inst_out[19:15]    ),
     .ReadAddr2   	(ifu_inst_out[24:20]    ),
     .WriteAddr   	(ifu_inst_out[11:7]     ),
@@ -155,6 +161,23 @@ EXU u_EXU(
     .pc_cnt_valid_out    	(pc_cnt_valid   )
 );
 
+
+
+WBU u_WBU(
+    .wbu_clk_in    	(clk            ),
+    .wbu_rst_in    	(rst            ),
+    .wbu_gpr_we_in 	(wbu_gpr_we     ),
+    .wbu_mem_re_in 	(wbu_mem_re     ),
+    .wbu_mem_we_in 	(wbu_mem_we     ),
+    .mem_re_out     (mem_re         ),
+    .mem_we_out     (mem_we         ),
+    .gpr_we_out    	(gpr_we         ),
+    .mem_valid_out 	(mem_valid      ),
+    .mem_ready_in  	(mem_ready      ),
+    .wbu_valid_in  	(wbu_valid      ),
+    .wbu_ready_out 	(wbu_ready      )
+);
+
 assign mem_r_addr = ALURes;
 assign mem_w_addr = ALURes;
 assign mem_w_data = ReadData2;
@@ -170,8 +193,8 @@ Memory u_Memory(
     .mem_w_addr_in 	    (mem_w_addr     ),
     .mem_w_data_in 	    (mem_w_data     ),
     .mem_w_mask_in 	    (mem_w_mask     ),
-    .mem_valid_in      	(wbu_valid      ),
-    .mem_ready_out     	(wbu_ready      )
+    .mem_valid_in      	(mem_valid      ),
+    .mem_ready_out     	(mem_ready      )
 );
 
 assign CSRWriteData = ReadData1;

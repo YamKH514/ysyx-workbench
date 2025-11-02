@@ -7,7 +7,7 @@ module IDU(
     output  reg         idu_is_ecall,
     output  reg         idu_is_mret,
     output  reg [2:0]   idu_inst_type,
-    output  reg         idu_reg_we_out,
+    output  reg         idu_wbu_gpr_we_out,
     output  reg         idu_csr_we_out,
     output  reg [5:0]   idu_alu_fun_out,
     output  reg [1:0]   idu_alu_src1_sel_out,
@@ -15,9 +15,8 @@ module IDU(
     output  reg [3:0]   idu_npc_src_sel_out,
     output  reg [1:0]   idu_gpr_wd_sel_out,
     output  reg [7:0]   idu_mem_wmask_out,
-    output  reg         idu_wbu_valid_out,
-    output  reg         idu_mem_re_out,
-    output  reg         idu_mem_we_out,
+    output  reg         idu_wbu_mem_re_out,
+    output  reg         idu_wbu_mem_we_out,
     output  reg [2:0]   idu_mem_read_func_out,
 
     input               idu_valid_in,
@@ -177,7 +176,7 @@ assign idu_inst_type =  `INST_TYPE_I & {3{inst_jalr | inst_lb | inst_lh | inst_l
                         `INST_TYPE_J & {3{inst_jal}} |
                         `INST_TYPE_R & {3{inst_add | inst_sub | inst_sll | inst_slt | inst_sltu | inst_xor | inst_srl | inst_sra | inst_or | inst_and}} ;
 
-assign idu_reg_we_out = inst_lui | inst_auipc | inst_jal | inst_jalr | inst_lb | inst_lh | inst_lw | inst_lbu | inst_lhu | inst_addi | inst_slti | inst_sltiu | inst_xori | inst_ori | inst_andi | inst_slli | inst_srli | inst_srai | inst_add | inst_sub | inst_sll | inst_slt | inst_sltu | inst_xor | inst_srl | inst_sra | inst_or | inst_and | inst_csrrw | inst_csrrs;
+assign idu_wbu_gpr_we_out = inst_lui | inst_auipc | inst_jal | inst_jalr | inst_lb | inst_lh | inst_lw | inst_lbu | inst_lhu | inst_addi | inst_slti | inst_sltiu | inst_xori | inst_ori | inst_andi | inst_slli | inst_srli | inst_srai | inst_add | inst_sub | inst_sll | inst_slt | inst_sltu | inst_xor | inst_srl | inst_sra | inst_or | inst_and | inst_csrrw | inst_csrrs;
 
 assign idu_csr_we_out = inst_csrrw | inst_csrrs;
 
@@ -219,11 +218,9 @@ assign idu_mem_wmask_out =  inst_sw ? 8'b00001111 :
                             inst_sb ? 8'b00000001 :
                             8'b0;
 
-assign idu_wbu_valid_out =  (inst_lb | inst_lh | inst_lw | inst_lbu | inst_lhu | inst_sb | inst_sh | inst_sw);
+assign idu_wbu_mem_re_out = (inst_lb | inst_lh | inst_lw | inst_lbu | inst_lhu);
 
-assign idu_mem_re_out = (inst_lb | inst_lh | inst_lw | inst_lbu | inst_lhu);
-
-assign idu_mem_we_out = (inst_sb | inst_sh | inst_sw);
+assign idu_wbu_mem_we_out = (inst_sb | inst_sh | inst_sw);
 
 assign idu_mem_read_func_out =  {3{inst_lbu}} & `MEM_READ_FUNC_LBU |
                                 {3{inst_lb}}  & `MEM_READ_FUNC_LB  |

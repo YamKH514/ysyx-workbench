@@ -28,11 +28,18 @@
 `define EXU_S_WAIT_WBU  2'b10
 
 // ==========================
+// WBU  STATE
+// ==========================
+`define WBU_S_IDLE          2'b00
+`define WBU_S_WAIT_LOAD     2'b01
+`define WBU_S_WAIT_STORE    2'b10
+`define WBU_S_WB            2'b11
+
+// ==========================
 // MEM  STATE
 // ==========================
-`define MEM_S_IDLE  2'b00
-`define MEM_S_READ  2'b01
-`define MEM_S_WRITE 2'b10
+`define MEM_S_IDLE  1'b0
+`define MEM_S_WRITE 1'b1
 
 // ==========================
 // Inst Type
