@@ -42,7 +42,7 @@ wire            is_ecall;
 wire            is_mret;
 wire            exu_valid;
 wire            exu_ready;
-wire            mem_re;
+// wire            mem_re;
 wire    [31:0]  mem_r_addr;
 wire    [31:0]  mem_r_data;
 wire    [2:0]   mem_r_func;
@@ -53,7 +53,7 @@ wire    [7:0]   mem_w_mask;
 reg             mem_valid;
 reg             mem_ready;
 reg             wbu_gpr_we;
-reg             wbu_mem_re;
+// reg             wbu_mem_re;
 reg             wbu_mem_we;
 wire            wbu_valid;
 wire            wbu_ready;
@@ -113,7 +113,6 @@ IDU u_IDU(
     .idu_npc_src_sel_out   	(NPCSrcSel      ),
     .idu_gpr_wd_sel_out    	(GPRwdataSel    ),
     .idu_mem_wmask_out     	(mem_w_mask     ),
-    .idu_wbu_mem_re_out     (wbu_mem_re     ),
     .idu_wbu_mem_we_out     (wbu_mem_we     ),
     .idu_mem_read_func_out 	(mem_r_func     ),
     .idu_valid_in          	(idu_valid      ),
@@ -167,9 +166,7 @@ WBU u_WBU(
     .wbu_clk_in    	(clk            ),
     .wbu_rst_in    	(rst            ),
     .wbu_gpr_we_in 	(wbu_gpr_we     ),
-    .wbu_mem_re_in 	(wbu_mem_re     ),
     .wbu_mem_we_in 	(wbu_mem_we     ),
-    .mem_re_out     (mem_re         ),
     .mem_we_out     (mem_we         ),
     .gpr_we_out    	(gpr_we         ),
     .mem_valid_out 	(mem_valid      ),
@@ -185,7 +182,6 @@ assign mem_w_data = ReadData2;
 Memory u_Memory(
     .mem_clk_in        	(clk            ),
     .mem_rst_in        	(rst            ),
-    .mem_re_in         	(mem_re         ),
     .mem_r_addr_in  	(mem_r_addr     ),
     .mem_r_data_out 	(mem_r_data     ),
     .mem_r_func_in  	(mem_r_func     ),
