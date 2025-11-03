@@ -46,7 +46,7 @@ wire            exu_ready;
 wire    [31:0]  mem_r_addr;
 wire    [31:0]  mem_r_data;
 wire    [2:0]   mem_r_func;
-wire            mem_we;
+// wire            mem_we;
 wire    [31:0]  mem_w_addr;
 wire    [31:0]  mem_w_data;
 wire    [7:0]   mem_w_mask;
@@ -167,7 +167,6 @@ WBU u_WBU(
     .wbu_rst_in    	(rst            ),
     .wbu_gpr_we_in 	(wbu_gpr_we     ),
     .wbu_mem_we_in 	(wbu_mem_we     ),
-    .mem_we_out     (mem_we         ),
     .gpr_we_out    	(gpr_we         ),
     .mem_valid_out 	(mem_valid      ),
     .mem_ready_in  	(mem_ready      ),
@@ -185,7 +184,6 @@ Memory u_Memory(
     .mem_r_addr_in  	(mem_r_addr     ),
     .mem_r_data_out 	(mem_r_data     ),
     .mem_r_func_in  	(mem_r_func     ),
-    .mem_we_in         	(mem_we         ),
     .mem_w_addr_in 	    (mem_w_addr     ),
     .mem_w_data_in 	    (mem_w_data     ),
     .mem_w_mask_in 	    (mem_w_mask     ),
