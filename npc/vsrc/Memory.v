@@ -6,7 +6,6 @@ module Memory(
     input       [31:0]  mem_r_addr_in,
     output  reg [31:0]  mem_r_data_out,
     input       [2:0]   mem_r_func_in,
-    input               mem_we_in,
     input       [31:0]  mem_w_addr_in,
     input       [31:0]  mem_w_data_in,
     input       [7:0]   mem_w_mask_in,
@@ -42,12 +41,9 @@ always @(posedge mem_clk_in) begin
     read_data <= paddr_read(mem_r_addr_in);
     byte_off  <= mem_r_addr_in[1:0];
     read_func <= mem_r_func_in;
-
-    if ((state == `MEM_S_IDLE) & mem_valid_in) begin
-        write_addr <= mem_w_addr_in;
-        write_data <= mem_w_data_in;
-        write_mask <= mem_w_mask_in;
-    end
+    write_addr <= mem_w_addr_in;
+    write_data <= mem_w_data_in;
+    write_mask <= mem_w_mask_in;
 end
 
 always @(*) begin
@@ -55,8 +51,8 @@ always @(*) begin
     case (state)
     `MEM_S_IDLE: begin
         mem_ready_out = 1'b1;
-        if (mem_valid_in & mem_we_in) begin
-                next_state = `MEM_S_WRITE;
+        if (mem_valid_in) begin
+            next_state = `MEM_S_WRITE;
         end
     end
     `MEM_S_WRITE: begin

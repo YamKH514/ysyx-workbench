@@ -5,7 +5,6 @@ module WBU(
     input               wbu_rst_in,
     input               wbu_gpr_we_in,
     input               wbu_mem_we_in,
-    output  reg         mem_we_out,
     output  reg         gpr_we_out,
 
     output  reg         mem_valid_out,
@@ -29,7 +28,6 @@ end
 always @(*) begin
     next_state = state;
     mem_valid_out = 1'b0;
-    mem_we_out = 1'b0;
     gpr_we_out = 1'b0;
     wbu_ready_out = 1'b0;
     case (state)
@@ -45,7 +43,6 @@ always @(*) begin
         end
         `WBU_S_WAIT_STORE: begin
             mem_valid_out = 1'b1;
-            mem_we_out = 1'b1;
             if (mem_ready_in) begin
                 next_state = `WBU_S_IDLE;
             end
