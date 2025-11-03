@@ -15,7 +15,6 @@ module IDU(
     output  reg [3:0]   idu_npc_src_sel_out,
     output  reg [1:0]   idu_gpr_wd_sel_out,
     output  reg [7:0]   idu_mem_wmask_out,
-    output  reg         idu_wbu_mem_re_out,
     output  reg         idu_wbu_mem_we_out,
     output  reg [2:0]   idu_mem_read_func_out,
 
@@ -218,7 +217,7 @@ assign idu_mem_wmask_out =  inst_sw ? 8'b00001111 :
                             inst_sb ? 8'b00000001 :
                             8'b0;
 
-assign idu_wbu_mem_re_out = (inst_lb | inst_lh | inst_lw | inst_lbu | inst_lhu);
+// assign idu_wbu_mem_re_out = (inst_lb | inst_lh | inst_lw | inst_lbu | inst_lhu);
 
 assign idu_wbu_mem_we_out = (inst_sb | inst_sh | inst_sw);
 

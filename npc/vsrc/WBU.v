@@ -4,9 +4,7 @@ module WBU(
     input               wbu_clk_in,
     input               wbu_rst_in,
     input               wbu_gpr_we_in,
-    input               wbu_mem_re_in,
     input               wbu_mem_we_in,
-    output  reg         mem_re_out,
     output  reg         mem_we_out,
     output  reg         gpr_we_out,
 
@@ -31,7 +29,6 @@ end
 always @(*) begin
     next_state = state;
     mem_valid_out = 1'b0;
-    mem_re_out = 1'b0;
     mem_we_out = 1'b0;
     gpr_we_out = 1'b0;
     wbu_ready_out = 1'b0;
@@ -39,18 +36,12 @@ always @(*) begin
         `WBU_S_IDLE: begin
             wbu_ready_out = 1'b1;
             if (wbu_valid_in) begin
-                if (wbu_mem_re_in) begin
-                    next_state = `WBU_S_WAIT_LOAD;
+                if (wbu_gpr_we_in) begin
+                    next_state = `WBU_S_WB;
                 end else if (wbu_mem_we_in) begin
                     next_state = `WBU_S_WAIT_STORE;
-                end else if (wbu_gpr_we_in) begin
-                    next_state = `WBU_S_WB;
                 end
             end
-        end
-        `WBU_S_WAIT_LOAD: begin
-            mem_re_out = 1'b1;
-            next_state = `WBU_S_WB;
         end
         `WBU_S_WAIT_STORE: begin
             mem_valid_out = 1'b1;
@@ -61,6 +52,9 @@ always @(*) begin
         end
         `WBU_S_WB: begin
             gpr_we_out = 1'b1;
+            next_state = `WBU_S_IDLE;
+        end
+        default: begin
             next_state = `WBU_S_IDLE;
         end
     endcase

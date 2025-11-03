@@ -31,9 +31,8 @@
 // WBU  STATE
 // ==========================
 `define WBU_S_IDLE          2'b00
-`define WBU_S_WAIT_LOAD     2'b01
-`define WBU_S_WAIT_STORE    2'b10
-`define WBU_S_WB            2'b11
+`define WBU_S_WAIT_STORE    2'b01
+`define WBU_S_WB            2'b10
 
 // ==========================
 // MEM  STATE

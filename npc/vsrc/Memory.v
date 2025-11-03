@@ -3,7 +3,6 @@
 module Memory(
     input               mem_clk_in,
     input               mem_rst_in,
-    input               mem_re_in,
     input       [31:0]  mem_r_addr_in,
     output  reg [31:0]  mem_r_data_out,
     input       [2:0]   mem_r_func_in,
@@ -40,11 +39,9 @@ always @(posedge mem_clk_in) begin
         state <= next_state;
     end
 
-    if (mem_re_in) begin
-        read_data <= paddr_read(mem_r_addr_in);
-        byte_off  <= mem_r_addr_in[1:0];
-        read_func <= mem_r_func_in;
-    end
+    read_data <= paddr_read(mem_r_addr_in);
+    byte_off  <= mem_r_addr_in[1:0];
+    read_func <= mem_r_func_in;
 
     if ((state == `MEM_S_IDLE) & mem_valid_in) begin
         write_addr <= mem_w_addr_in;
