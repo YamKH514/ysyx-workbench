@@ -61,7 +61,7 @@ assign  mem_valid_out = mem_valid_r;
 
 always @(posedge clk) begin
     if (rst) begin
-        wbu_ready_r <= 1'b1;
+        wbu_ready_r <= 1'b0;
         gpr_we_r <= 1'b0;
         mem_valid_r <= 1'b0;
     end else begin

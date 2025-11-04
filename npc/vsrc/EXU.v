@@ -73,7 +73,7 @@ assign pc_cnt_valid_out = pc_cnt_valid_r;
 
 always @(posedge clk) begin
     if (rst) begin
-        exu_ready_r <= 1'b1;
+        exu_ready_r <= 1'b0;
         wbu_valid_r <= 1'b0;
         pc_cnt_valid_r <= 1'b0;
 

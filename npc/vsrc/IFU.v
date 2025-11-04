@@ -66,7 +66,7 @@ always @(posedge clk) begin
     if (rst) begin
         inst_sram_valid_r <= 1'b0;
         idu_valid_r <= 1'b0;
-        req_addr_r <= 32'h80000000;
+        req_addr_r <= 32'b0;
         req_inst_r <= 32'b0;
     end else begin
         case (state)

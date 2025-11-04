@@ -68,7 +68,7 @@ assign exu_valid_out = exu_valid_r;
 
 always @(posedge clk) begin
     if (rst) begin
-        idu_ready_r <= 1'b1;
+        idu_ready_r <= 1'b0;
         exu_valid_r <= 1'b0;
         inst_r <= 32'b0;
     end else begin

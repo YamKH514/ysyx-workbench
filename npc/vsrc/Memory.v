@@ -65,7 +65,7 @@ assign mem_ready_out = mem_ready_r;
 
 always @(posedge clk) begin
     if (rst) begin
-        mem_ready_r <= 1'b1;
+        mem_ready_r <= 1'b0;
     end else begin
         case (state)
             `MEM_S_IDLE: begin

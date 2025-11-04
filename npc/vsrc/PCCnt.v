@@ -50,7 +50,7 @@ assign pc_cnt_ready_out = pc_cnt_ready_r;
 
 always @(posedge clk) begin
     if (rst) begin
-        pc_cnt_ready_r <= 1'b1;
+        pc_cnt_ready_r <= 1'b0;
         pc_cnt_pc_out <= 32'h80000000;
     end else begin
         case (state)
