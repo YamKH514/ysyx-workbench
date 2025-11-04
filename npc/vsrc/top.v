@@ -42,7 +42,7 @@ wire            is_ecall;
 wire            is_mret;
 wire            exu_valid;
 wire            exu_ready;
-// wire            mem_re;
+wire            mem_re;
 wire    [31:0]  mem_r_addr;
 wire    [31:0]  mem_r_data;
 wire    [2:0]   mem_r_func;
@@ -114,6 +114,7 @@ IDU u_IDU(
     .idu_gpr_wd_sel_out    	(GPRwdataSel    ),
     .idu_mem_wmask_out     	(mem_w_mask     ),
     .idu_wbu_mem_we_out     (wbu_mem_we     ),
+    .idu_mem_re_out         (mem_re         ),
     .idu_mem_read_func_out 	(mem_r_func     ),
     .idu_valid_in          	(idu_valid      ),
     .idu_ready_out         	(idu_ready      ),
@@ -182,6 +183,7 @@ assign mem_w_data = ReadData2;
 Memory u_Memory(
     .clk            	(clk            ),
     .rst            	(rst            ),
+    .mem_re_in          (mem_re         ),
     .mem_r_addr_in  	(mem_r_addr     ),
     .mem_r_data_out 	(mem_r_data     ),
     .mem_r_func_in  	(mem_r_func     ),
