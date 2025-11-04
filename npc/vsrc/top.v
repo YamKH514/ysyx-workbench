@@ -61,8 +61,8 @@ wire            wbu_ready;
 assign TrapNPC = is_ecall ? CSRReadData_mtvec : CSRReadData_mepc;
 
 PCCnt u_PCCnt(
-    .pc_cnt_clk_in         	(clk            ),
-    .pc_cnt_rst_in         	(rst            ),
+    .clk                 	(clk            ),
+    .rst                 	(rst            ),
     .pc_cnt_cmp_res_in     	(ALURes[0]      ),
     .pc_cnt_rd1_in         	(ReadData1      ),
     .pc_cnt_imm_in         	(ImmExt         ),
@@ -75,8 +75,8 @@ PCCnt u_PCCnt(
 );
 
 IFU u_IFU(
-    .ifu_rst_in         	(rst            ),
-    .ifu_clk_in         	(clk            ),
+    .rst                 	(rst            ),
+    .clk                 	(clk            ),
     .ifu_current_pc_in  	(pc             ),
     .ifu_req_addr_out   	(ifu_req_addr   ),
     .ifu_req_inst_in    	(ifu_req_inst   ),
@@ -99,8 +99,8 @@ InstSRAM u_InstSRAM(
 
 
 IDU u_IDU(
-    .idu_clk_in            	(clk            ),
-    .idu_rst_in             (rst            ),
+    .clk                	(clk            ),
+    .rst                    (rst            ),
     .idu_inst_in           	(ifu_inst_out   ),
     .idu_is_ecall          	(is_ecall       ),
     .idu_is_mret           	(is_mret        ),
@@ -143,8 +143,8 @@ GPR u_GPR(
 );
 
 EXU u_EXU(
-    .exu_clk_in          	(clk            ),
-    .exu_rst_in          	(rst            ),
+    .clk                  	(clk            ),
+    .rst                  	(rst            ),
     .exu_pc_in           	(pc             ),
     .exu_alu_fun_in      	(ALUFunc        ),
     .exu_rd1_in          	(ReadData1      ),
@@ -157,14 +157,15 @@ EXU u_EXU(
     .exu_ready_out       	(exu_ready      ),
     .wbu_ready_in        	(wbu_ready      ),
     .wbu_valid_out       	(wbu_valid      ),
+    .pc_cnt_ready_in        (pc_cnt_ready   ),
     .pc_cnt_valid_out    	(pc_cnt_valid   )
 );
 
 
 
 WBU u_WBU(
-    .wbu_clk_in    	(clk            ),
-    .wbu_rst_in    	(rst            ),
+    .clk        	(clk            ),
+    .rst        	(rst            ),
     .wbu_gpr_we_in 	(wbu_gpr_we     ),
     .wbu_mem_we_in 	(wbu_mem_we     ),
     .gpr_we_out    	(gpr_we         ),
@@ -179,8 +180,8 @@ assign mem_w_addr = ALURes;
 assign mem_w_data = ReadData2;
 
 Memory u_Memory(
-    .mem_clk_in        	(clk            ),
-    .mem_rst_in        	(rst            ),
+    .clk            	(clk            ),
+    .rst            	(rst            ),
     .mem_r_addr_in  	(mem_r_addr     ),
     .mem_r_data_out 	(mem_r_data     ),
     .mem_r_func_in  	(mem_r_func     ),

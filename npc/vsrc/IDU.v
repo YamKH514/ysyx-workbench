@@ -1,8 +1,8 @@
 `include "common.vh"
 
 module IDU(
-    input               idu_clk_in,
-    input               idu_rst_in,
+    input               clk,
+    input               rst,
     input       [31:0]  idu_inst_in,
     output  reg         idu_is_ecall,
     output  reg         idu_is_mret,
@@ -25,51 +25,72 @@ module IDU(
     output  reg         exu_valid_out
 );
 
-reg state;
-reg next_state;
+reg             idu_ready_r;
+reg             exu_valid_r;
 
-reg     [31:0]  inst_reg;
+reg     [31:0]  inst_r;
 wire    [6:0]   inst_opcode;
 wire    [2:0]   inst_func3;
 wire    [6:0]   inst_func7;
 
-always @(posedge idu_clk_in) begin
-    if (idu_rst_in) begin
+reg state;
+reg next_state;
+
+always @(posedge clk) begin
+    if (rst) begin
         state <= `IDU_S_IDLE;
     end else begin
         state <= next_state;
-    end
-
-    if (idu_rst_in) begin
-        inst_reg <= 32'b0;
-    end else if ((state == `IDU_S_IDLE) & (idu_valid_in)) begin
-        inst_reg <= idu_inst_in;
     end
 end
 
 always @(*) begin
     next_state = state;
-    idu_ready_out = 1'b0;
-    exu_valid_out = 1'b0;
     case (state)
         `IDU_S_IDLE: begin
-            idu_ready_out = 1'b1;
             if (idu_valid_in) begin
                 next_state = `IDU_S_WAIT_EXU;
             end
         end
         `IDU_S_WAIT_EXU: begin
-            exu_valid_out = 1'b1;
             if (exu_ready_in) begin
                 next_state = `IDU_S_IDLE;
             end
         end
+        default: begin
+            next_state = `IDU_S_IDLE;
+        end
     endcase
 end
 
-assign inst_opcode  = inst_reg[6:0];
-assign inst_func3   = inst_reg[14:12];
-assign inst_func7   = inst_reg[31:25];
+assign idu_ready_out = idu_ready_r;
+assign exu_valid_out = exu_valid_r;
+
+always @(posedge clk) begin
+    if (rst) begin
+        idu_ready_r <= 1'b1;
+        exu_valid_r <= 1'b0;
+        inst_r <= 32'b0;
+    end else begin
+        case (state)
+            `IDU_S_IDLE: begin
+                idu_ready_r <= 1'b1;
+                exu_valid_r <= 1'b0;
+                if (idu_valid_in) begin
+                    inst_r <= idu_inst_in;
+                end
+            end
+            `IDU_S_WAIT_EXU: begin
+                idu_ready_r <= 1'b0;
+                exu_valid_r <= 1'b1;
+            end
+        endcase
+    end
+end
+
+assign inst_opcode  = inst_r[6:0];
+assign inst_func3   = inst_r[14:12];
+assign inst_func7   = inst_r[31:25];
 
 wire inst_lui;      // U
 wire inst_auipc;    // U
@@ -151,15 +172,15 @@ assign inst_srl     = (inst_opcode == 7'b0110011) & (inst_func3 == 3'b101) & (in
 assign inst_sra     = (inst_opcode == 7'b0110011) & (inst_func3 == 3'b101) & (inst_func7 == 7'b0100000);
 assign inst_or      = (inst_opcode == 7'b0110011) & (inst_func3 == 3'b110) & (inst_func7 == 7'b0000000);
 assign inst_and     = (inst_opcode == 7'b0110011) & (inst_func3 == 3'b111) & (inst_func7 == 7'b0000000);
-assign inst_ecall   = (inst_reg == 32'b00000000000000000000000001110011);
-assign inst_ebreak  = (inst_reg == 32'b00000000000100000000000001110011);
+assign inst_ecall   = (inst_r == 32'b00000000000000000000000001110011);
+assign inst_ebreak  = (inst_r == 32'b00000000000100000000000001110011);
 assign inst_csrrw   = (inst_opcode == 7'b1110011) & (inst_func3 == 3'b001);
 assign inst_csrrs   = (inst_opcode == 7'b1110011) & (inst_func3 == 3'b010);
-assign inst_mret    = (inst_reg == 32'b00110000001000000000000001110011);
+assign inst_mret    = (inst_r == 32'b00110000001000000000000001110011);
 
 import "DPI-C" function void ebreak_trigger();
 
-always @(posedge idu_clk_in) begin
+always @(posedge clk) begin
     if(inst_ebreak) begin
         ebreak_trigger();
     end

@@ -1,8 +1,8 @@
 `include "common.vh"
 
 module IFU(
-    input               ifu_rst_in,
-    input               ifu_clk_in,
+    input               rst,
+    input               clk,
     input       [31:0]  ifu_current_pc_in,
     output  reg [31:0]  ifu_req_addr_out,
     input       [31:0]  ifu_req_inst_in,
@@ -17,11 +17,16 @@ module IFU(
     input               pc_cnt_ready_in
 );
 
+reg         inst_sram_valid_r;
+reg         idu_valid_r;
+reg [31:0]  req_addr_r;
+reg [31:0]  req_inst_r;
+
 reg [1:0]   state;
 reg [1:0]   next_state;
 
-always @(posedge ifu_clk_in) begin
-    if (ifu_rst_in) begin
+always @(posedge clk) begin
+    if (rst) begin
         state <= `IFU_S_IDLE;
     end else begin
         state <= next_state;
@@ -29,37 +34,63 @@ always @(posedge ifu_clk_in) begin
 end
 
 always @(*) begin
-    if (!ifu_rst_in) begin
-        next_state = state;
-        // ifu_req_addr_out = 32'h0;
-        // ifu_inst_out = 32'h0;
-        inst_sram_valid_out = 1'b0;
-        idu_valid_out = 1'b0;
+    next_state = state;
+    case (state)
+        `IFU_S_IDLE: begin
+            if (pc_cnt_ready_in) begin
+                next_state = `IFU_S_WAIT_SRAM;
+            end
+        end
+        `IFU_S_WAIT_SRAM: begin
+            if (inst_sram_ready_in) begin
+                next_state = `IFU_S_WAIT_IDU;
+            end
+        end
+        `IFU_S_WAIT_IDU: begin
+            if (idu_ready_in) begin
+                next_state = `IFU_S_IDLE;
+            end
+        end
+        default: begin
+            next_state = `IFU_S_IDLE;
+        end
+    endcase
+end
+
+assign inst_sram_valid_out = inst_sram_valid_r;
+assign idu_valid_out = idu_valid_r;
+assign ifu_req_addr_out = req_addr_r;
+assign ifu_inst_out = req_inst_r;
+
+always @(posedge clk) begin
+    if (rst) begin
+        inst_sram_valid_r <= 1'b0;
+        idu_valid_r <= 1'b0;
+        req_addr_r <= 32'h80000000;
+        req_inst_r <= 32'b0;
+    end else begin
         case (state)
             `IFU_S_IDLE: begin
+                inst_sram_valid_r <= 1'b0;
+                idu_valid_r <= 1'b0;
                 if (pc_cnt_ready_in) begin
-                    inst_sram_valid_out = 1;
-                    ifu_req_addr_out = ifu_current_pc_in;
-                    next_state = `IFU_S_WAIT_SRAM;
+                    req_addr_r <= ifu_current_pc_in;
                 end
             end
             `IFU_S_WAIT_SRAM: begin
-                inst_sram_valid_out = 1;
+                inst_sram_valid_r <= 1'b1;
+                idu_valid_r <= 1'b0;
                 if (inst_sram_ready_in) begin
-                    idu_valid_out = 1;
-                    ifu_inst_out = ifu_req_inst_in;
-                    next_state = `IFU_S_WAIT_IDU;
+                    req_inst_r <= ifu_req_inst_in;
                 end
             end
             `IFU_S_WAIT_IDU: begin
-                idu_valid_out = 1;
-                // ifu_inst_out = ifu_req_inst_in;
-                if (idu_ready_in) begin
-                    next_state = `IFU_S_IDLE;
-                end
+                inst_sram_valid_r <= 1'b0;
+                idu_valid_r <= 1'b1;
             end
             default: begin
-                next_state = `IFU_S_IDLE;
+                inst_sram_valid_r <= 1'b0;
+                idu_valid_r <= 1'b0;
             end
         endcase
     end
