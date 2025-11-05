@@ -29,19 +29,12 @@ wire    [31:0]  CSRReadData;
 wire    [31:0]  CSRReadData_mtvec;
 wire    [31:0]  CSRReadData_mepc;
 
-// wire            pc_cnt_valid;
-// wire            pc_cnt_ready;
 wire            [31:0] ifu_req_addr;
 wire            [31:0] ifu_req_inst;
 reg             [31:0] ifu_inst_out;
-// wire            inst_sram_valid;
-// wire            inst_sram_ready;
-// wire            idu_valid;
-// wire            idu_ready;
+
 wire            is_ecall;
 wire            is_mret;
-// wire            exu_valid;
-// wire            exu_ready;
 wire            mem_re;
 wire    [31:0]  mem_r_addr;
 wire    [31:0]  mem_r_data;
@@ -51,14 +44,6 @@ wire    [31:0]  mem_w_addr;
 wire    [31:0]  mem_w_data;
 wire    [7:0]   mem_w_mask;
 reg             mem_valid;
-// reg             mem_ready;
-// reg             wbu_gpr_we;
-// reg             wbu_mem_re;
-// reg             wbu_mem_we;
-// wire            wbu_valid;
-// wire            wbu_ready;
-
-// wire valid;
 
 assign TrapNPC = is_ecall ? CSRReadData_mtvec : CSRReadData_mepc;
 
@@ -72,35 +57,22 @@ PCCnt u_PCCnt(
     .pc_cnt_trap_npc_in    	(TrapNPC        ),
     .pc_cnt_pc_out         	(pc             ),
     .pc_cnt_npc_out        	(npc            )
-    // .pc_cnt_valid_in        (valid   ),
-    // .pc_cnt_ready_out       (pc_cnt_ready   )
 );
 
 IFU u_IFU(
-    // .rst                 	(rst            ),
-    // .clk                 	(clk            ),
     .ifu_current_pc_in  	(pc             ),
     .ifu_req_addr_out   	(ifu_req_addr   ),
     .ifu_req_inst_in    	(ifu_req_inst   ),
     .ifu_inst_out       	(ifu_inst_out   )
-    // .inst_sram_valid_out    (inst_sram_valid),
-    // .inst_sram_ready_in     (inst_sram_ready),
-    // .idu_valid_out  	    (valid      ),
-    // .idu_ready_in   	    (idu_ready      ),
-    // .pc_cnt_ready_in        (pc_cnt_ready   )
 );
 
 InstSRAM u_InstSRAM(
-    // .inst_sram_clk_in    	(clk            ),
     .inst_sram_addr_in   	(ifu_req_addr   ),
     .inst_sram_data_out  	(ifu_req_inst   )
-    // .inst_sram_valid_in  	(inst_sram_valid),
-    // .inst_sram_ready_out 	(inst_sram_ready)
 );
 
 IDU u_IDU(
     .clk                	(clk            ),
-    // .rst                    (rst            ),
     .idu_inst_in           	(ifu_inst_out   ),
     .idu_is_ecall          	(is_ecall       ),
     .idu_is_mret           	(is_mret        ),
@@ -117,10 +89,6 @@ IDU u_IDU(
     .idu_mem_re_out         (mem_re         ),
     .idu_mem_read_func_out 	(mem_r_func     ),
     .idu_mem_valid_out      (mem_valid      )
-    // .idu_valid_in          	(valid      ),
-    // .idu_ready_out         	(idu_ready      )
-    // .exu_ready_in           (exu_ready      ),
-    // .exu_valid_out          (exu_valid      )
 );
 
 ImmExt u_ImmExt(
@@ -145,8 +113,6 @@ GPR u_GPR(
 );
 
 EXU u_EXU(
-    // .clk                  	(clk            ),
-    // .rst                  	(rst            ),
     .exu_pc_in           	(pc             ),
     .exu_alu_fun_in      	(ALUFunc        ),
     .exu_rd1_in          	(ReadData1      ),
@@ -155,12 +121,6 @@ EXU u_EXU(
     .exu_alu_src1_sel_in 	(ALUSrcSel1     ),
     .exu_alu_src2_sel_in 	(ALUSrcSel2     ),
     .exu_res_out         	(ALURes         )
-    // .exu_valid_in        	(valid      )
-    // .exu_ready_out       	(exu_ready      ),
-    // .wbu_ready_in        	(wbu_ready      ),
-    // .wbu_valid_out       	(wbu_valid      ),
-    // .pc_cnt_ready_in        (pc_cnt_ready   ),
-    // .pc_cnt_valid_out    	(pc_cnt_valid   )
 );
 
 
@@ -182,8 +142,6 @@ assign mem_w_addr = ALURes;
 assign mem_w_data = ReadData2;
 
 Memory u_Memory(
-    // .clk            	(clk            ),
-    // .rst            	(rst            ),
     .mem_re_in          (mem_re         ),
     .mem_r_addr_in  	(mem_r_addr     ),
     .mem_r_data_out 	(mem_r_data     ),
@@ -193,7 +151,6 @@ Memory u_Memory(
     .mem_w_data_in 	    (mem_w_data     ),
     .mem_w_mask_in 	    (mem_w_mask     ),
     .mem_valid_in      	(mem_valid      )
-    // .mem_ready_out     	(mem_ready      )
 );
 
 assign CSRWriteData = ReadData1;
