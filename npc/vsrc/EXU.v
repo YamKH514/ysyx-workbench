@@ -10,9 +10,9 @@ module EXU(
     input       [31:0]  exu_imm_in,
     input       [1:0]   exu_alu_src1_sel_in,
     input       [1:0]   exu_alu_src2_sel_in,
-    output  reg [31:0]  exu_res_out,
+    output  reg [31:0]  exu_res_out
 
-    input               exu_valid_in
+    // input               exu_valid_in
     // output  reg         exu_ready_out,
 
     // input               wbu_ready_in,
@@ -38,24 +38,32 @@ reg [1:0]   alu_src1_sel_r;
 reg [1:0]   alu_src2_sel_r;
 reg [31:0]  alu_res_r;
 
-always @(*) begin
-    pc_r            = 32'b0;
-    alu_fun_r       = 6'b0;
-    rd1_r           = 32'b0;
-    rd2_r           = 32'b0;
-    imm_r           = 32'b0;
-    alu_src1_sel_r  = 2'b0;
-    alu_src2_sel_r  = 2'b0;
-    if (exu_valid_in) begin
-        pc_r           = exu_pc_in;
-        alu_fun_r      = exu_alu_fun_in;
-        rd1_r          = exu_rd1_in;
-        rd2_r          = exu_rd2_in;
-        imm_r          = exu_imm_in;
-        alu_src1_sel_r = exu_alu_src1_sel_in;
-        alu_src2_sel_r = exu_alu_src2_sel_in;
-    end
-end
+assign pc_r           = exu_pc_in;
+assign alu_fun_r      = exu_alu_fun_in;
+assign rd1_r          = exu_rd1_in;
+assign rd2_r          = exu_rd2_in;
+assign imm_r          = exu_imm_in;
+assign alu_src1_sel_r = exu_alu_src1_sel_in;
+assign alu_src2_sel_r = exu_alu_src2_sel_in;
+
+// always @(*) begin
+//     pc_r            = 32'b0;
+//     alu_fun_r       = 6'b0;
+//     rd1_r           = 32'b0;
+//     rd2_r           = 32'b0;
+//     imm_r           = 32'b0;
+//     alu_src1_sel_r  = 2'b0;
+//     alu_src2_sel_r  = 2'b0;
+    // if (exu_valid_in) begin
+        // pc_r           = exu_pc_in;
+        // alu_fun_r      = exu_alu_fun_in;
+        // rd1_r          = exu_rd1_in;
+        // rd2_r          = exu_rd2_in;
+        // imm_r          = exu_imm_in;
+        // alu_src1_sel_r = exu_alu_src1_sel_in;
+        // alu_src2_sel_r = exu_alu_src2_sel_in;
+    // end
+// end
 
 // always @(posedge clk) begin
 //     if (rst) begin
