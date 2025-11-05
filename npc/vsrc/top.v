@@ -30,7 +30,7 @@ wire    [31:0]  CSRReadData_mtvec;
 wire    [31:0]  CSRReadData_mepc;
 
 // wire            pc_cnt_valid;
-// wire            pc_cnt_ready;
+wire            pc_cnt_ready;
 wire            [31:0] ifu_req_addr;
 wire            [31:0] ifu_req_inst;
 reg             [31:0] ifu_inst_out;
@@ -72,8 +72,8 @@ PCCnt u_PCCnt(
     .pc_cnt_trap_npc_in    	(TrapNPC        ),
     .pc_cnt_pc_out         	(pc             ),
     .pc_cnt_npc_out        	(npc            ),
-    .pc_cnt_valid_in        (valid   )
-    // .pc_cnt_ready_out       (pc_cnt_ready   )
+    .pc_cnt_valid_in        (valid   ),
+    .pc_cnt_ready_out       (pc_cnt_ready   )
 );
 
 IFU u_IFU(
@@ -86,8 +86,8 @@ IFU u_IFU(
     .inst_sram_valid_out    (inst_sram_valid),
     .inst_sram_ready_in     (inst_sram_ready),
     .idu_valid_out  	    (valid      ),
-    .idu_ready_in   	    (idu_ready      )
-    // .pc_cnt_ready_in        (pc_cnt_ready   )
+    .idu_ready_in   	    (idu_ready      ),
+    .pc_cnt_ready_in        (pc_cnt_ready   )
 );
 
 InstSRAM u_InstSRAM(

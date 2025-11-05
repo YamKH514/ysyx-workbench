@@ -26,7 +26,7 @@ module IDU(
     // output  reg         exu_valid_out
 );
 
-reg             idu_ready_r;
+// reg             idu_ready_r;
 // reg             exu_valid_r;
 
 reg     [31:0]  inst_r;
@@ -58,12 +58,13 @@ always @(*) begin
         `IDU_S_IDLE: begin
             if (idu_valid_in) begin
                 next_state = `IDU_S_WAIT_EXU;
+                idu_ready_out = 1'b0;
+                inst_r = idu_inst_in;
             end
         end
         `IDU_S_WAIT_EXU: begin
-            // if (exu_ready_in) begin
-                next_state = `IDU_S_IDLE;
-            // end
+            next_state = `IDU_S_IDLE;
+            idu_ready_out = 1'b1;
         end
         default: begin
             next_state = `IDU_S_IDLE;
@@ -71,30 +72,30 @@ always @(*) begin
     endcase
 end
 
-assign idu_ready_out = idu_ready_r;
+// assign idu_ready_out = idu_ready_r;
 // assign exu_valid_out = exu_valid_r;
 
-always @(posedge clk) begin
-    if (rst) begin
-        idu_ready_r <= 1'b0;
-        // exu_valid_r <= 1'b0;
-        inst_r <= 32'b0;
-    end else begin
-        case (state)
-            `IDU_S_IDLE: begin
-                idu_ready_r <= 1'b1;
-                // exu_valid_r <= 1'b0;
-                if (idu_valid_in) begin
-                    inst_r <= idu_inst_in;
-                end
-            end
-            `IDU_S_WAIT_EXU: begin
-                idu_ready_r <= 1'b0;
-                // exu_valid_r <= 1'b1;
-            end
-        endcase
-    end
-end
+// always @(posedge clk) begin
+//     if (rst) begin
+//         idu_ready_r <= 1'b0;
+//         // exu_valid_r <= 1'b0;
+//         inst_r <= 32'b0;
+//     end else begin
+//         case (state)
+//             `IDU_S_IDLE: begin
+//                 idu_ready_r <= 1'b1;
+//                 // exu_valid_r <= 1'b0;
+//                 if (idu_valid_in) begin
+//                     inst_r <= idu_inst_in;
+//                 end
+//             end
+//             `IDU_S_WAIT_EXU: begin
+//                 idu_ready_r <= 1'b0;
+//                 // exu_valid_r <= 1'b1;
+//             end
+//         endcase
+//     end
+// end
 
 assign inst_opcode  = inst_r[6:0];
 assign inst_func3   = inst_r[14:12];

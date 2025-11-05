@@ -19,7 +19,6 @@ always @(posedge inst_sram_clk_in) begin
         inst_sram_data_out  <= data;
         inst_sram_ready_out <= 1'b1;
     end else begin
-        inst_sram_data_out  <= 32'b0;
         inst_sram_ready_out <= 1'b0;
     end
 end
