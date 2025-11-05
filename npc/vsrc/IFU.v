@@ -11,7 +11,7 @@ module IFU(
     input               inst_sram_ready_in,
     output  reg         inst_sram_valid_out,
 
-    // input               idu_ready_in,
+    input               idu_ready_in,
     output  reg         idu_valid_out
 
     // input               pc_cnt_ready_in
@@ -47,9 +47,9 @@ always @(*) begin
             end
         end
         `IFU_S_WAIT_IDU: begin
-            // if (idu_ready_in) begin
+            if (idu_ready_in) begin
                 next_state = `IFU_S_IDLE;
-            // end
+            end
         end
         default: begin
             next_state = `IFU_S_IDLE;

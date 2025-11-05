@@ -37,7 +37,7 @@ reg             [31:0] ifu_inst_out;
 wire            inst_sram_valid;
 wire            inst_sram_ready;
 // wire            idu_valid;
-// wire            idu_ready;
+wire            idu_ready;
 wire            is_ecall;
 wire            is_mret;
 // wire            exu_valid;
@@ -85,8 +85,8 @@ IFU u_IFU(
     .ifu_inst_out       	(ifu_inst_out   ),
     .inst_sram_valid_out    (inst_sram_valid),
     .inst_sram_ready_in     (inst_sram_ready),
-    .idu_valid_out  	    (valid      )
-    // .idu_ready_in   	    (idu_ready      ),
+    .idu_valid_out  	    (valid      ),
+    .idu_ready_in   	    (idu_ready      )
     // .pc_cnt_ready_in        (pc_cnt_ready   )
 );
 
@@ -100,7 +100,7 @@ InstSRAM u_InstSRAM(
 
 IDU u_IDU(
     .clk                	(clk            ),
-    // .rst                    (rst            ),
+    .rst                    (rst            ),
     .idu_inst_in           	(ifu_inst_out   ),
     .idu_is_ecall          	(is_ecall       ),
     .idu_is_mret           	(is_mret        ),
@@ -116,8 +116,8 @@ IDU u_IDU(
     .idu_mem_we_out         (mem_we         ),
     .idu_mem_re_out         (mem_re         ),
     .idu_mem_read_func_out 	(mem_r_func     ),
-    .idu_valid_in          	(valid      )
-    // .idu_ready_out         	(idu_ready      ),
+    .idu_valid_in          	(valid      ),
+    .idu_ready_out         	(idu_ready      )
     // .exu_ready_in           (exu_ready      ),
     // .exu_valid_out          (exu_valid      )
 );
