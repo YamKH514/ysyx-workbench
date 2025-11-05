@@ -149,8 +149,7 @@ Memory u_Memory(
     .mem_we_in          (mem_we         ),
     .mem_w_addr_in 	    (mem_w_addr     ),
     .mem_w_data_in 	    (mem_w_data     ),
-    .mem_w_mask_in 	    (mem_w_mask     ),
-    .mem_valid_in      	(mem_valid      )
+    .mem_w_mask_in 	    (mem_w_mask     )
 );
 
 assign CSRWriteData = ReadData1;
