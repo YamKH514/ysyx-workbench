@@ -1,19 +1,25 @@
 // `include "common.vh"
 
 // module LSU(
-//     input               lsu_clk_in,
-//     input               lsu_rst_in,
-//     input               mem_re_in,
-//     input               mem_we_in,
+    // input               clk,
+    // input               rst,
+    // input               lsu_re_in,
+    // input       [31:0]  lsu_r_addr_in,
+    // output  reg [31:0]  lsu_r_data_out,
+    // input       [2:0]   lsu_r_func_in,
+    // input               lsu_we_in,
+    // input       [31:0]  lsu_w_addr_in,
+    // input       [31:0]  lsu_w_data_in,
+    // input       [7:0]   lsu_w_mask_in
 
-//     input               lsu_valid_in,
-//     output  reg         lsu_ready_out,
+    // input               lsu_valid_in,
+    // output  reg         lsu_ready_out,
 
-//     output  reg         mem_valid_out,
-//     input               mem_ready_in,
+    // output  reg         mem_valid_out,
+    // input               mem_ready_in,
 
-//     output  reg         lsu_wbu_valid_out,
-//     input               wbu_ready_in
+    // output  reg         lsu_wbu_valid_out,
+    // input               wbu_ready_in
 // );
 
 // reg [1:0]   state;

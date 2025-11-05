@@ -2,10 +2,10 @@
 
 module EXU(
     input       [31:0]  exu_pc_in,
-    input       [5:0]   exu_alu_fun_in,
     input       [31:0]  exu_rd1_in,
     input       [31:0]  exu_rd2_in,
     input       [31:0]  exu_imm_in,
+    input       [5:0]   exu_alu_fun_in,
     input       [1:0]   exu_alu_src1_sel_in,
     input       [1:0]   exu_alu_src2_sel_in,
     output  reg [31:0]  exu_res_out

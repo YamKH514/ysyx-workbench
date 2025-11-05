@@ -43,7 +43,6 @@ wire            mem_we;
 wire    [31:0]  mem_w_addr;
 wire    [31:0]  mem_w_data;
 wire    [7:0]   mem_w_mask;
-reg             mem_valid;
 
 assign TrapNPC = is_ecall ? CSRReadData_mtvec : CSRReadData_mepc;
 
@@ -74,9 +73,9 @@ InstSRAM u_InstSRAM(
 IDU u_IDU(
     .clk                	(clk            ),
     .idu_inst_in           	(ifu_inst_out   ),
-    .idu_is_ecall          	(is_ecall       ),
-    .idu_is_mret           	(is_mret        ),
-    .idu_inst_type         	(InstType       ),
+    .idu_is_ecall_out      	(is_ecall       ),
+    .idu_is_mret_out       	(is_mret        ),
+    .idu_inst_type_out     	(InstType       ),
     .idu_gpr_we_out         (gpr_we         ),
     .idu_csr_we_out        	(CSRWriteEn     ),
     .idu_alu_fun_out       	(ALUFunc        ),
@@ -87,8 +86,8 @@ IDU u_IDU(
     .idu_mem_wmask_out     	(mem_w_mask     ),
     .idu_mem_we_out         (mem_we         ),
     .idu_mem_re_out         (mem_re         ),
-    .idu_mem_read_func_out 	(mem_r_func     ),
-    .idu_mem_valid_out      (mem_valid      )
+    .idu_mem_read_func_out 	(mem_r_func     )
+    // .idu_mem_valid_out      (mem_valid      )
 );
 
 ImmExt u_ImmExt(

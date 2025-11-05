@@ -3,21 +3,27 @@
 module IDU(
     input               clk,
     input       [31:0]  idu_inst_in,
-    output  reg         idu_is_ecall,
-    output  reg         idu_is_mret,
-    output  reg [2:0]   idu_inst_type,
+    output  reg         idu_is_ecall_out,
+    output  reg         idu_is_mret_out,
+
+    output  reg [2:0]   idu_inst_type_out,
+
     output  reg         idu_gpr_we_out,
+    output  reg [1:0]   idu_gpr_wd_sel_out,
+
     output  reg         idu_csr_we_out,
+
     output  reg [5:0]   idu_alu_fun_out,
     output  reg [1:0]   idu_alu_src1_sel_out,
     output  reg [1:0]   idu_alu_src2_sel_out,
+
     output  reg [3:0]   idu_npc_src_sel_out,
-    output  reg [1:0]   idu_gpr_wd_sel_out,
+
     output  reg [7:0]   idu_mem_wmask_out,
     output  reg         idu_mem_we_out,
     output  reg         idu_mem_re_out,
-    output  reg [2:0]   idu_mem_read_func_out,
-    output  reg         idu_mem_valid_out
+    output  reg [2:0]   idu_mem_read_func_out
+    // output  reg         idu_mem_valid_out
 );
 
 reg     [31:0]  inst_r;
@@ -125,15 +131,15 @@ always @(posedge clk) begin
     end
 end
 
-assign idu_is_ecall = inst_ecall;
-assign idu_is_mret  = inst_mret;
+assign idu_is_ecall_out = inst_ecall;
+assign idu_is_mret_out  = inst_mret;
 
-assign idu_inst_type =  `INST_TYPE_I & {3{inst_jalr | inst_lb | inst_lh | inst_lw | inst_lbu | inst_lhu |  inst_addi | inst_slti | inst_sltiu | inst_xori | inst_ori | inst_andi | inst_slli | inst_srli | inst_srai | inst_csrrw | inst_csrrs}} |
-                        `INST_TYPE_S & {3{inst_sb | inst_sh | inst_sw}} |
-                        `INST_TYPE_B & {3{inst_beq | inst_bne | inst_blt | inst_bge | inst_bltu | inst_bgeu}} |
-                        `INST_TYPE_U & {3{inst_lui | inst_auipc}} |
-                        `INST_TYPE_J & {3{inst_jal}} |
-                        `INST_TYPE_R & {3{inst_add | inst_sub | inst_sll | inst_slt | inst_sltu | inst_xor | inst_srl | inst_sra | inst_or | inst_and}} ;
+assign idu_inst_type_out =  `INST_TYPE_I & {3{inst_jalr | inst_lb | inst_lh | inst_lw | inst_lbu | inst_lhu |  inst_addi | inst_slti | inst_sltiu | inst_xori | inst_ori | inst_andi | inst_slli | inst_srli | inst_srai | inst_csrrw | inst_csrrs}} |
+                            `INST_TYPE_S & {3{inst_sb | inst_sh | inst_sw}} |
+                            `INST_TYPE_B & {3{inst_beq | inst_bne | inst_blt | inst_bge | inst_bltu | inst_bgeu}} |
+                            `INST_TYPE_U & {3{inst_lui | inst_auipc}} |
+                            `INST_TYPE_J & {3{inst_jal}} |
+                            `INST_TYPE_R & {3{inst_add | inst_sub | inst_sll | inst_slt | inst_sltu | inst_xor | inst_srl | inst_sra | inst_or | inst_and}} ;
 
 assign idu_gpr_we_out = inst_lui | inst_auipc | inst_jal | inst_jalr | inst_lb | inst_lh | inst_lw | inst_lbu | inst_lhu | inst_addi | inst_slti | inst_sltiu | inst_xori | inst_ori | inst_andi | inst_slli | inst_srli | inst_srai | inst_add | inst_sub | inst_sll | inst_slt | inst_sltu | inst_xor | inst_srl | inst_sra | inst_or | inst_and | inst_csrrw | inst_csrrs;
 
@@ -177,7 +183,7 @@ assign idu_mem_wmask_out =  inst_sw ? 8'b00001111 :
                             inst_sb ? 8'b00000001 :
                             8'b0;
 
-assign idu_mem_valid_out = (inst_lb | inst_lh | inst_lw | inst_lbu | inst_lhu | inst_sb | inst_sh | inst_sw);
+// assign idu_mem_valid_out = (inst_lb | inst_lh | inst_lw | inst_lbu | inst_lhu | inst_sb | inst_sh | inst_sw);
 
 assign idu_mem_re_out = (inst_lb | inst_lh | inst_lw | inst_lbu | inst_lhu);
 
