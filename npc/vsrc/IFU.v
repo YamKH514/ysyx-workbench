@@ -11,10 +11,10 @@ module IFU(
     input               inst_sram_ready_in,
     output  reg         inst_sram_valid_out,
 
-    input               idu_ready_in,
-    output  reg         idu_valid_out,
+    // input               idu_ready_in,
+    output  reg         idu_valid_out
 
-    input               pc_cnt_ready_in
+    // input               pc_cnt_ready_in
 );
 
 reg         inst_sram_valid_r;
@@ -37,9 +37,9 @@ always @(*) begin
     next_state = state;
     case (state)
         `IFU_S_IDLE: begin
-            if (pc_cnt_ready_in) begin
+            // if (pc_cnt_ready_in) begin
                 next_state = `IFU_S_WAIT_SRAM;
-            end
+            // end
         end
         `IFU_S_WAIT_SRAM: begin
             if (inst_sram_ready_in) begin
@@ -47,9 +47,9 @@ always @(*) begin
             end
         end
         `IFU_S_WAIT_IDU: begin
-            if (idu_ready_in) begin
+            // if (idu_ready_in) begin
                 next_state = `IFU_S_IDLE;
-            end
+            // end
         end
         default: begin
             next_state = `IFU_S_IDLE;
@@ -73,9 +73,9 @@ always @(posedge clk) begin
             `IFU_S_IDLE: begin
                 inst_sram_valid_r <= 1'b0;
                 idu_valid_r <= 1'b0;
-                if (pc_cnt_ready_in) begin
+                // if (pc_cnt_ready_in) begin
                     req_addr_r <= ifu_current_pc_in;
-                end
+                // end
             end
             `IFU_S_WAIT_SRAM: begin
                 inst_sram_valid_r <= 1'b1;

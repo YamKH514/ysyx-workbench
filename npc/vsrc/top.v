@@ -29,34 +29,36 @@ wire    [31:0]  CSRReadData;
 wire    [31:0]  CSRReadData_mtvec;
 wire    [31:0]  CSRReadData_mepc;
 
-wire            pc_cnt_valid;
-wire            pc_cnt_ready;
+// wire            pc_cnt_valid;
+// wire            pc_cnt_ready;
 wire            [31:0] ifu_req_addr;
 wire            [31:0] ifu_req_inst;
 reg             [31:0] ifu_inst_out;
 wire            inst_sram_valid;
 wire            inst_sram_ready;
-wire            idu_valid;
-wire            idu_ready;
+// wire            idu_valid;
+// wire            idu_ready;
 wire            is_ecall;
 wire            is_mret;
-wire            exu_valid;
-wire            exu_ready;
+// wire            exu_valid;
+// wire            exu_ready;
 wire            mem_re;
 wire    [31:0]  mem_r_addr;
 wire    [31:0]  mem_r_data;
 wire    [2:0]   mem_r_func;
-// wire            mem_we;
+wire            mem_we;
 wire    [31:0]  mem_w_addr;
 wire    [31:0]  mem_w_data;
 wire    [7:0]   mem_w_mask;
-reg             mem_valid;
-reg             mem_ready;
-reg             wbu_gpr_we;
+// reg             mem_valid;
+// reg             mem_ready;
+// reg             wbu_gpr_we;
 // reg             wbu_mem_re;
-reg             wbu_mem_we;
-wire            wbu_valid;
-wire            wbu_ready;
+// reg             wbu_mem_we;
+// wire            wbu_valid;
+// wire            wbu_ready;
+
+wire valid;
 
 assign TrapNPC = is_ecall ? CSRReadData_mtvec : CSRReadData_mepc;
 
@@ -70,8 +72,8 @@ PCCnt u_PCCnt(
     .pc_cnt_trap_npc_in    	(TrapNPC        ),
     .pc_cnt_pc_out         	(pc             ),
     .pc_cnt_npc_out        	(npc            ),
-    .pc_cnt_valid_in        (pc_cnt_valid   ),
-    .pc_cnt_ready_out       (pc_cnt_ready   )
+    .pc_cnt_valid_in        (valid   )
+    // .pc_cnt_ready_out       (pc_cnt_ready   )
 );
 
 IFU u_IFU(
@@ -83,9 +85,9 @@ IFU u_IFU(
     .ifu_inst_out       	(ifu_inst_out   ),
     .inst_sram_valid_out    (inst_sram_valid),
     .inst_sram_ready_in     (inst_sram_ready),
-    .idu_valid_out  	    (idu_valid      ),
-    .idu_ready_in   	    (idu_ready      ),
-    .pc_cnt_ready_in        (pc_cnt_ready   )
+    .idu_valid_out  	    (valid      )
+    // .idu_ready_in   	    (idu_ready      ),
+    // .pc_cnt_ready_in        (pc_cnt_ready   )
 );
 
 InstSRAM u_InstSRAM(
@@ -96,16 +98,14 @@ InstSRAM u_InstSRAM(
     .inst_sram_ready_out 	(inst_sram_ready)
 );
 
-
-
 IDU u_IDU(
     .clk                	(clk            ),
-    .rst                    (rst            ),
+    // .rst                    (rst            ),
     .idu_inst_in           	(ifu_inst_out   ),
     .idu_is_ecall          	(is_ecall       ),
     .idu_is_mret           	(is_mret        ),
     .idu_inst_type         	(InstType       ),
-    .idu_wbu_gpr_we_out     (wbu_gpr_we     ),
+    .idu_gpr_we_out         (gpr_we         ),
     .idu_csr_we_out        	(CSRWriteEn     ),
     .idu_alu_fun_out       	(ALUFunc        ),
     .idu_alu_src1_sel_out  	(ALUSrcSel1     ),
@@ -113,13 +113,13 @@ IDU u_IDU(
     .idu_npc_src_sel_out   	(NPCSrcSel      ),
     .idu_gpr_wd_sel_out    	(GPRwdataSel    ),
     .idu_mem_wmask_out     	(mem_w_mask     ),
-    .idu_wbu_mem_we_out     (wbu_mem_we     ),
+    .idu_mem_we_out         (mem_we         ),
     .idu_mem_re_out         (mem_re         ),
     .idu_mem_read_func_out 	(mem_r_func     ),
-    .idu_valid_in          	(idu_valid      ),
-    .idu_ready_out         	(idu_ready      ),
-    .exu_ready_in           (exu_ready      ),
-    .exu_valid_out          (exu_valid      )
+    .idu_valid_in          	(valid      )
+    // .idu_ready_out         	(idu_ready      ),
+    // .exu_ready_in           (exu_ready      ),
+    // .exu_valid_out          (exu_valid      )
 );
 
 ImmExt u_ImmExt(
@@ -144,8 +144,8 @@ GPR u_GPR(
 );
 
 EXU u_EXU(
-    .clk                  	(clk            ),
-    .rst                  	(rst            ),
+    // .clk                  	(clk            ),
+    // .rst                  	(rst            ),
     .exu_pc_in           	(pc             ),
     .exu_alu_fun_in      	(ALUFunc        ),
     .exu_rd1_in          	(ReadData1      ),
@@ -154,44 +154,45 @@ EXU u_EXU(
     .exu_alu_src1_sel_in 	(ALUSrcSel1     ),
     .exu_alu_src2_sel_in 	(ALUSrcSel2     ),
     .exu_res_out         	(ALURes         ),
-    .exu_valid_in        	(exu_valid      ),
-    .exu_ready_out       	(exu_ready      ),
-    .wbu_ready_in        	(wbu_ready      ),
-    .wbu_valid_out       	(wbu_valid      ),
-    .pc_cnt_ready_in        (pc_cnt_ready   ),
-    .pc_cnt_valid_out    	(pc_cnt_valid   )
+    .exu_valid_in        	(valid      )
+    // .exu_ready_out       	(exu_ready      ),
+    // .wbu_ready_in        	(wbu_ready      ),
+    // .wbu_valid_out       	(wbu_valid      ),
+    // .pc_cnt_ready_in        (pc_cnt_ready   ),
+    // .pc_cnt_valid_out    	(pc_cnt_valid   )
 );
 
 
 
-WBU u_WBU(
-    .clk        	(clk            ),
-    .rst        	(rst            ),
-    .wbu_gpr_we_in 	(wbu_gpr_we     ),
-    .wbu_mem_we_in 	(wbu_mem_we     ),
-    .gpr_we_out    	(gpr_we         ),
-    .mem_valid_out 	(mem_valid      ),
-    .mem_ready_in  	(mem_ready      ),
-    .wbu_valid_in  	(wbu_valid      ),
-    .wbu_ready_out 	(wbu_ready      )
-);
+// WBU u_WBU(
+//     .clk        	(clk            ),
+//     .rst        	(rst            ),
+//     .wbu_gpr_we_in 	(wbu_gpr_we     ),
+//     .wbu_mem_we_in 	(wbu_mem_we     ),
+//     .gpr_we_out    	(gpr_we         ),
+//     .mem_valid_out 	(mem_valid      ),
+//     .mem_ready_in  	(mem_ready      ),
+//     .wbu_valid_in  	(wbu_valid      ),
+//     .wbu_ready_out 	(wbu_ready      )
+// );
 
 assign mem_r_addr = ALURes;
 assign mem_w_addr = ALURes;
 assign mem_w_data = ReadData2;
 
 Memory u_Memory(
-    .clk            	(clk            ),
-    .rst            	(rst            ),
+    // .clk            	(clk            ),
+    // .rst            	(rst            ),
     .mem_re_in          (mem_re         ),
     .mem_r_addr_in  	(mem_r_addr     ),
     .mem_r_data_out 	(mem_r_data     ),
     .mem_r_func_in  	(mem_r_func     ),
+    .mem_we_in          (mem_we         ),
     .mem_w_addr_in 	    (mem_w_addr     ),
     .mem_w_data_in 	    (mem_w_data     ),
     .mem_w_mask_in 	    (mem_w_mask     ),
-    .mem_valid_in      	(mem_valid      ),
-    .mem_ready_out     	(mem_ready      )
+    .mem_valid_in      	(valid      )
+    // .mem_ready_out     	(mem_ready      )
 );
 
 assign CSRWriteData = ReadData1;

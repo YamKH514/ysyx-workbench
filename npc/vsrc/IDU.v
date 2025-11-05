@@ -2,12 +2,12 @@
 
 module IDU(
     input               clk,
-    input               rst,
+    // input               rst,
     input       [31:0]  idu_inst_in,
     output  reg         idu_is_ecall,
     output  reg         idu_is_mret,
     output  reg [2:0]   idu_inst_type,
-    output  reg         idu_wbu_gpr_we_out,
+    output  reg         idu_gpr_we_out,
     output  reg         idu_csr_we_out,
     output  reg [5:0]   idu_alu_fun_out,
     output  reg [1:0]   idu_alu_src1_sel_out,
@@ -15,79 +15,86 @@ module IDU(
     output  reg [3:0]   idu_npc_src_sel_out,
     output  reg [1:0]   idu_gpr_wd_sel_out,
     output  reg [7:0]   idu_mem_wmask_out,
-    output  reg         idu_wbu_mem_we_out,
+    output  reg         idu_mem_we_out,
     output  reg         idu_mem_re_out,
     output  reg [2:0]   idu_mem_read_func_out,
 
-    input               idu_valid_in,
-    output  reg         idu_ready_out,
+    input               idu_valid_in
+    // output  reg         idu_ready_out,
 
-    input               exu_ready_in,
-    output  reg         exu_valid_out
+    // input               exu_ready_in,
+    // output  reg         exu_valid_out
 );
 
-reg             idu_ready_r;
-reg             exu_valid_r;
+// reg             idu_ready_r;
+// reg             exu_valid_r;
 
 reg     [31:0]  inst_r;
 wire    [6:0]   inst_opcode;
 wire    [2:0]   inst_func3;
 wire    [6:0]   inst_func7;
 
-reg state;
-reg next_state;
-
-always @(posedge clk) begin
-    if (rst) begin
-        state <= `IDU_S_IDLE;
-    end else begin
-        state <= next_state;
-    end
-end
-
 always @(*) begin
-    next_state = state;
-    case (state)
-        `IDU_S_IDLE: begin
-            if (idu_valid_in) begin
-                next_state = `IDU_S_WAIT_EXU;
-            end
-        end
-        `IDU_S_WAIT_EXU: begin
-            if (exu_ready_in) begin
-                next_state = `IDU_S_IDLE;
-            end
-        end
-        default: begin
-            next_state = `IDU_S_IDLE;
-        end
-    endcase
-end
-
-assign idu_ready_out = idu_ready_r;
-assign exu_valid_out = exu_valid_r;
-
-always @(posedge clk) begin
-    if (rst) begin
-        idu_ready_r <= 1'b0;
-        exu_valid_r <= 1'b0;
-        inst_r <= 32'b0;
-    end else begin
-        case (state)
-            `IDU_S_IDLE: begin
-                idu_ready_r <= 1'b1;
-                exu_valid_r <= 1'b0;
-                if (idu_valid_in) begin
-                    inst_r <= idu_inst_in;
-                end
-            end
-            `IDU_S_WAIT_EXU: begin
-                idu_ready_r <= 1'b0;
-                exu_valid_r <= 1'b1;
-            end
-        endcase
+    inst_r = 32'b0;
+    if (idu_valid_in) begin
+        inst_r = idu_inst_in;
     end
 end
+
+// reg state;
+// reg next_state;
+
+// always @(posedge clk) begin
+//     if (rst) begin
+//         state <= `IDU_S_IDLE;
+//     end else begin
+//         state <= next_state;
+//     end
+// end
+
+// always @(*) begin
+//     next_state = state;
+//     case (state)
+//         `IDU_S_IDLE: begin
+//             if (idu_valid_in) begin
+//                 next_state = `IDU_S_WAIT_EXU;
+//             end
+//         end
+//         `IDU_S_WAIT_EXU: begin
+//             if (exu_ready_in) begin
+//                 next_state = `IDU_S_IDLE;
+//             end
+//         end
+//         default: begin
+//             next_state = `IDU_S_IDLE;
+//         end
+//     endcase
+// end
+
+// assign idu_ready_out = idu_ready_r;
+// assign exu_valid_out = exu_valid_r;
+
+// always @(posedge clk) begin
+//     if (rst) begin
+//         idu_ready_r <= 1'b0;
+//         exu_valid_r <= 1'b0;
+//         inst_r <= 32'b0;
+//     end else begin
+//         case (state)
+//             `IDU_S_IDLE: begin
+//                 idu_ready_r <= 1'b1;
+//                 exu_valid_r <= 1'b0;
+//                 if (idu_valid_in) begin
+//                     inst_r <= idu_inst_in;
+//                 end
+//             end
+//             `IDU_S_WAIT_EXU: begin
+//                 idu_ready_r <= 1'b0;
+//                 exu_valid_r <= 1'b1;
+//             end
+//         endcase
+//     end
+// end
 
 assign inst_opcode  = inst_r[6:0];
 assign inst_func3   = inst_r[14:12];
@@ -241,7 +248,7 @@ assign idu_mem_wmask_out =  inst_sw ? 8'b00001111 :
 
 assign idu_mem_re_out = (inst_lb | inst_lh | inst_lw | inst_lbu | inst_lhu);
 
-assign idu_wbu_mem_we_out = (inst_sb | inst_sh | inst_sw);
+assign idu_mem_we_out = (inst_sb | inst_sh | inst_sw);
 
 assign idu_mem_read_func_out =  {3{inst_lbu}} & `MEM_READ_FUNC_LBU |
                                 {3{inst_lb}}  & `MEM_READ_FUNC_LB  |
