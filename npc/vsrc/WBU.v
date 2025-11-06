@@ -1,93 +1,33 @@
-// `include "common.vh"
+`include "common.vh"
 
-// module WBU(
-    // input               clk,
-    // input               rst,
-    // input               wbu_gpr_we_in,
-    // input               wbu_mem_we_in,
-    // output              gpr_we_out,
+module WBU(
+    input               wbu_we_in,
+    input       [4:0]   wbu_w_addr_in,
+    input       [1:0]   wbu_w_data_sel,
 
-    // output              mem_valid_out,
-    // input               mem_ready_in,
+    input       [31:0]  exu_res_in,
+    input       [31:0]  lsu_r_data_in,
+    input       [31:0]  csr_r_data_in,
 
-    // input               wbu_valid_in,
-    // output              wbu_ready_out
-// );
+    output reg          gpr_we_out,
+    output reg  [4:0]   gpr_w_addr_out,
+    output reg  [31:0]  gpr_w_data_out
+);
 
-// reg wbu_ready_r;
-// reg gpr_we_r;
-// reg mem_valid_r;
+reg [31:0]  gpr_w_data_r;
 
-// reg [1:0]   state;
-// reg [1:0]   next_state;
+assign gpr_w_data_r = (wbu_w_data_sel[1] == 1'b0) ? ((wbu_w_data_sel[0] == 1'b0) ? exu_res_in : lsu_r_data_in) : csr_r_data_in;
 
-// always @(posedge clk) begin
-//     if (rst) begin
-//         state <= `WBU_S_IDLE;
-//     end else begin
-//         state <= next_state;
-//     end
-// end
+always @(*) begin
+    if (wbu_we_in) begin
+        gpr_we_out = 1'b1;
+        gpr_w_addr_out = wbu_w_addr_in;
+        gpr_w_data_out = gpr_w_data_r;
+    end else begin
+        gpr_we_out = 1'b0;
+        gpr_w_addr_out = 5'b0;
+        gpr_w_data_out = 32'b0;
+    end
+end
 
-// always @(*) begin
-//     next_state = state;
-//     case (state)
-//         `WBU_S_IDLE: begin
-//             if (wbu_valid_in) begin
-//                 if (wbu_gpr_we_in) begin
-//                     next_state = `WBU_S_WB;
-//                 end else if (wbu_mem_we_in) begin
-//                     next_state = `WBU_S_WAIT_STORE;
-//                 end
-//             end
-//         end
-//         `WBU_S_WAIT_STORE: begin
-//             if (mem_ready_in) begin
-//                 next_state = `WBU_S_IDLE;
-//             end
-//         end
-//         `WBU_S_WB: begin
-//             next_state = `WBU_S_IDLE;
-//         end
-//         default: begin
-//             next_state = `WBU_S_IDLE;
-//         end
-//     endcase
-// end
-
-// assign  wbu_ready_out = wbu_ready_r;
-// assign  gpr_we_out = gpr_we_r;
-// assign  mem_valid_out = mem_valid_r;
-
-// always @(posedge clk) begin
-//     if (rst) begin
-//         wbu_ready_r <= 1'b0;
-//         gpr_we_r <= 1'b0;
-//         mem_valid_r <= 1'b0;
-//     end else begin
-//         case (state)
-//             `WBU_S_IDLE: begin
-//                 wbu_ready_r <= 1'b1;
-//                 gpr_we_r <= 1'b0;
-//                 mem_valid_r <= 1'b0;
-//             end
-//             `WBU_S_WAIT_STORE: begin
-//                 wbu_ready_r <= 1'b0;
-//                 gpr_we_r <= 1'b0;
-//                 mem_valid_r <= 1'b1;
-//             end
-//             `WBU_S_WB: begin
-//                 wbu_ready_r <= 1'b0;
-//                 gpr_we_r <= 1'b1;
-//                 mem_valid_r <= 1'b0;
-//             end
-//             default: begin
-//                 wbu_ready_r <= 1'b1;
-//                 gpr_we_r <= 1'b0;
-//                 mem_valid_r <= 1'b0;
-//             end
-//         endcase
-//     end
-// end
-
-// endmodule
+endmodule

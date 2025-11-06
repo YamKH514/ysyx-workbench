@@ -8,21 +8,22 @@ module IDU(
 
     output  reg [2:0]   idu_inst_type_out,
 
-    output  reg         idu_gpr_we_out,
-    output  reg [1:0]   idu_gpr_wd_sel_out,
+    output  reg         wbu_gpr_we_out,
+    output  reg [4:0]   wbu_gpr_w_addr_out,
+    output  reg [1:0]   wbu_gpr_wd_sel_out,
 
-    output  reg         idu_csr_we_out,
+    output  reg         csr_we_out,
 
-    output  reg [5:0]   idu_alu_fun_out,
-    output  reg [1:0]   idu_alu_src1_sel_out,
-    output  reg [1:0]   idu_alu_src2_sel_out,
+    output  reg [5:0]   exu_alu_fun_out,
+    output  reg [1:0]   exu_alu_src1_sel_out,
+    output  reg [1:0]   exu_alu_src2_sel_out,
 
-    output  reg [3:0]   idu_npc_src_sel_out,
+    output  reg [3:0]   pc_cnt_npc_src_sel_out,
 
-    output  reg [7:0]   idu_mem_wmask_out,
-    output  reg         idu_mem_we_out,
-    output  reg         idu_mem_re_out,
-    output  reg [2:0]   idu_mem_read_func_out
+    output  reg [7:0]   lsu_mem_wmask_out,
+    output  reg         lsu_mem_we_out,
+    output  reg         lsu_mem_re_out,
+    output  reg [2:0]   lsu_mem_read_func_out
     // output  reg         idu_mem_valid_out
 );
 
@@ -141,11 +142,11 @@ assign idu_inst_type_out =  `INST_TYPE_I & {3{inst_jalr | inst_lb | inst_lh | in
                             `INST_TYPE_J & {3{inst_jal}} |
                             `INST_TYPE_R & {3{inst_add | inst_sub | inst_sll | inst_slt | inst_sltu | inst_xor | inst_srl | inst_sra | inst_or | inst_and}} ;
 
-assign idu_gpr_we_out = inst_lui | inst_auipc | inst_jal | inst_jalr | inst_lb | inst_lh | inst_lw | inst_lbu | inst_lhu | inst_addi | inst_slti | inst_sltiu | inst_xori | inst_ori | inst_andi | inst_slli | inst_srli | inst_srai | inst_add | inst_sub | inst_sll | inst_slt | inst_sltu | inst_xor | inst_srl | inst_sra | inst_or | inst_and | inst_csrrw | inst_csrrs;
+assign wbu_gpr_we_out = inst_lui | inst_auipc | inst_jal | inst_jalr | inst_lb | inst_lh | inst_lw | inst_lbu | inst_lhu | inst_addi | inst_slti | inst_sltiu | inst_xori | inst_ori | inst_andi | inst_slli | inst_srli | inst_srai | inst_add | inst_sub | inst_sll | inst_slt | inst_sltu | inst_xor | inst_srl | inst_sra | inst_or | inst_and | inst_csrrw | inst_csrrs;
 
-assign idu_csr_we_out = inst_csrrw | inst_csrrs;
+assign csr_we_out = inst_csrrw | inst_csrrs;
 
-assign idu_alu_fun_out =    `ALU_SUB                & {6{inst_sub}} |
+assign exu_alu_fun_out =    `ALU_SUB                & {6{inst_sub}} |
                             `ALU_EQU                & {6{inst_beq | inst_bne}} |
                             `ALU_LT_SIGN            & {6{inst_blt | inst_bge | inst_slti | inst_slt}} |
                             `ALU_LT_OR_EQU_SIGN     & {6{1'b0}} |
@@ -159,37 +160,39 @@ assign idu_alu_fun_out =    `ALU_SUB                & {6{inst_sub}} |
                             `ALU_SRA                & {6{inst_srai | inst_sra}} |
                             `ALU_ADD;
 
-assign idu_alu_src1_sel_out =   `ALU_SRC1_SEL_0     & {2{inst_lui}} |
+assign exu_alu_src1_sel_out =   `ALU_SRC1_SEL_0     & {2{inst_lui}} |
                                 `ALU_SRC1_SEL_PC    & {2{inst_jal | inst_jalr | inst_auipc}} |
                                 `ALU_SRC1_SEL_RD1   & {2{inst_beq | inst_bne | inst_blt | inst_bge | inst_bltu | inst_bgeu | inst_lb | inst_lh | inst_lw | inst_lbu | inst_lhu | inst_sb | inst_sh | inst_sw | inst_addi | inst_slti | inst_sltiu | inst_xori | inst_ori | inst_andi| inst_slli | inst_srli | inst_srai | inst_add | inst_sub | inst_sll | inst_slt | inst_sltu | inst_xor | inst_srl | inst_sra | inst_or | inst_and}};
 
-assign idu_alu_src2_sel_out =   `ALU_SRC2_SEL_RD2   & {2{inst_beq | inst_bne | inst_blt | inst_bge | inst_bltu | inst_bgeu | inst_add | inst_sub | inst_sll | inst_slt | inst_sltu | inst_xor | inst_srl | inst_sra | inst_or | inst_and}} |
+assign exu_alu_src2_sel_out =   `ALU_SRC2_SEL_RD2   & {2{inst_beq | inst_bne | inst_blt | inst_bge | inst_bltu | inst_bgeu | inst_add | inst_sub | inst_sll | inst_slt | inst_sltu | inst_xor | inst_srl | inst_sra | inst_or | inst_and}} |
                                 `ALU_SRC2_SEL_IMM   & {2{inst_lui | inst_auipc |inst_lb | inst_lh | inst_lw | inst_lbu | inst_lhu | inst_sb | inst_sh | inst_sw | inst_addi | inst_slti | inst_sltiu | inst_xori | inst_ori | inst_andi | inst_slli | inst_srli | inst_srai}} |
                                 `ALU_SRC2_SEL_4     & {2{inst_jal | inst_jalr}};
 
-assign idu_npc_src_sel_out =    `NPC_SRC_SEL_PC_IMM     & {4{inst_jal}} |
+assign pc_cnt_npc_src_sel_out = `NPC_SRC_SEL_PC_IMM     & {4{inst_jal}} |
                                 `NPC_SRC_SEL_SRC1_IMM   & {4{inst_jalr}} |
                                 `NPC_SRC_SEL_TRAP_PC    & {4{inst_ecall | inst_mret}} |
                                 `NPC_SRC_SEL_JUMP_0     & {4{inst_bne | inst_bge | inst_bgeu}} |
                                 `NPC_SRC_SEL_JUMP_1     & {4{inst_beq | inst_blt | inst_bltu}} |
                                 `NPC_SRC_SEL_PC_4;
 
-assign idu_gpr_wd_sel_out = `GPR_WD_SEL_MEM_DATA & {2{inst_lb | inst_lh | inst_lw | inst_lbu | inst_lhu}} |
+assign wbu_gpr_w_addr_out = inst_r[11:7];
+
+assign wbu_gpr_wd_sel_out = `GPR_WD_SEL_MEM_DATA & {2{inst_lb | inst_lh | inst_lw | inst_lbu | inst_lhu}} |
                             `GPR_WD_SEL_CSR_DATA & {2{inst_csrrw | inst_csrrs}} |
                             `GPR_WD_SEL_ALU_RES;
 
-assign idu_mem_wmask_out =  inst_sw ? 8'b00001111 :
+assign lsu_mem_wmask_out =  inst_sw ? 8'b00001111 :
                             inst_sh ? 8'b00000011 :
                             inst_sb ? 8'b00000001 :
                             8'b0;
 
 // assign idu_mem_valid_out = (inst_lb | inst_lh | inst_lw | inst_lbu | inst_lhu | inst_sb | inst_sh | inst_sw);
 
-assign idu_mem_re_out = (inst_lb | inst_lh | inst_lw | inst_lbu | inst_lhu);
+assign lsu_mem_re_out = (inst_lb | inst_lh | inst_lw | inst_lbu | inst_lhu);
 
-assign idu_mem_we_out = (inst_sb | inst_sh | inst_sw);
+assign lsu_mem_we_out = (inst_sb | inst_sh | inst_sw);
 
-assign idu_mem_read_func_out =  {3{inst_lbu}} & `MEM_READ_FUNC_LBU |
+assign lsu_mem_read_func_out =  {3{inst_lbu}} & `MEM_READ_FUNC_LBU |
                                 {3{inst_lb}}  & `MEM_READ_FUNC_LB  |
                                 {3{inst_lhu}} & `MEM_READ_FUNC_LHU |
                                 {3{inst_lh}}  & `MEM_READ_FUNC_LH  |
