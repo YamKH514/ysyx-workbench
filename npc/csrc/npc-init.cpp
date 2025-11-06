@@ -87,11 +87,11 @@ void init_npc(int argc, char *argv[], Vtop* top, VerilatedContext* contextp, Ver
     parse_elf(elf_file);
 #endif
 
-    cpu_reset(10, top);
-
     init_mem();
 
     long img_size = load_img();
+
+    cpu_reset(10, top);
 
     init_difftest(diff_so_file, img_size, difftest_port);
 

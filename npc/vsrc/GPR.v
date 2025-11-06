@@ -1,28 +1,28 @@
 module GPR(
-    input clk,
-    input RegWrite,
-    input [4:0] ReadAddr1,
-    input [4:0] ReadAddr2,
-    input [4:0] WriteAddr,
-    input [31:0] WriteData,
-    output [31:0] ReadData1,
-    output [31:0] ReadData2,
-    output [31:0] ReadData_a0,
-    output [31:0] ReadData_a5
+    input               clk,
+    input               gpr_we_in,
+    input       [4:0]   gpr_w_addr_in,
+    input       [31:0]  gpr_w_data_in,
+    input       [4:0]   gpr_r_addr1_in,
+    input       [4:0]   gpr_r_addr2_in,
+    output  reg [31:0]  gpr_r_data1_out,
+    output  reg [31:0]  gpr_r_data2_out,
+    output      [31:0]  gpr_r_a0_out,
+    output      [31:0]  gpr_r_a5_out
 );
 
 RegisterFile #(5, 32) u_RegisterFile
 (
-    .clk         	(clk          ),
-    .ReadAddr1   	(ReadAddr1    ),
-    .ReadAddr2   	(ReadAddr2    ),
-    .WriteAddr   	(WriteAddr    ),
-    .WriteData   	(WriteData    ),
-    .RegWrite    	(RegWrite     ),
-    .ReadData1   	(ReadData1    ),
-    .ReadData2   	(ReadData2    ),
-    .ReadData_a0 	(ReadData_a0  ),
-    .ReadData_a5    (ReadData_a5  )
+    .clk         	(clk            ),
+    .ReadAddr1   	(gpr_r_addr1_in ),
+    .ReadAddr2   	(gpr_r_addr2_in ),
+    .WriteAddr   	(gpr_w_addr_in  ),
+    .WriteData   	(gpr_w_data_in  ),
+    .RegWrite    	(gpr_we_in      ),
+    .ReadData1   	(gpr_r_data1_out),
+    .ReadData2   	(gpr_r_data2_out),
+    .ReadData_a0 	(gpr_r_a0_out   ),
+    .ReadData_a5    (gpr_r_a5_out   )
 );
 
 endmodule

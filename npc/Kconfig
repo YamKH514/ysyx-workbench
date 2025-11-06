@@ -24,6 +24,11 @@ config TRACE_END
   int "When tracing is disabled (unit: number of instructions)"
   default 10000
 
+config VCD_TRACE
+  depends on TRACE
+  bool "Enable VCD wive tracer"
+  default y
+
 config ITRACE
   depends on TRACE
   bool "Enable instruction tracer"

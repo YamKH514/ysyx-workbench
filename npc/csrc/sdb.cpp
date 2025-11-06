@@ -212,7 +212,6 @@ void sdb_mainloop()
             {
                 if (cmd_table[i].handler(args) < 0)
                 {
-                    printf("cmd_table[%d]\n", i);
                     return;
                 }
                 break;

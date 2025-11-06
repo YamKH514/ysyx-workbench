@@ -56,7 +56,9 @@ static void exec_once(Vtop *top, VerilatedContext *contextp, VerilatedVcdC *tfp)
         contextp->timeInc(1);
         top->clk = 1;
         top->eval();
+#ifdef CONFIG_VCD_TRACE
         tfp->dump(contextp->time());
+#endif
         top->rst = 0;
         npc_state.inited = true;
     }
@@ -66,7 +68,9 @@ static void exec_once(Vtop *top, VerilatedContext *contextp, VerilatedVcdC *tfp)
 
     contextp->timeInc(1);
     cpu_single_cycle(top);
+#ifdef CONFIG_VCD_TRACE
     tfp->dump(contextp->time());
+#endif
 
     cpu.pc = top->pc;
     cpu.npc = top->npc;
@@ -141,6 +145,7 @@ static void execute(Vtop *top, VerilatedContext *contextp, VerilatedVcdC *tfp, u
     for (; n > 0; n--)
     {
         exec_once(top, contextp, tfp);
+        running_cycle ++;
         g_nr_guest_inst++;
         if ((contextp->gotFinish()) || (npc_state.state == NPC_ABORT) || (npc_state.state == NPC_STOP))
             break;
@@ -156,6 +161,7 @@ void npc_exec(Vtop *top, VerilatedContext *contextp, VerilatedVcdC *tfp, uint64_
     g_print_step = (n < MAX_INST_TO_PRINT);
     if ((contextp->gotFinish()) || (npc_state.state == NPC_ABORT))
     {
+        Verilated::gotFinish(true);
         printf("Program execution has ended. To restart the program, exit NPC and run again.\n");
         return;
     }
