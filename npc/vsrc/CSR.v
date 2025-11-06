@@ -3,70 +3,70 @@ module CSR(
     input           rst,
     input           is_ecall,
     input           is_mret,
-    input   [2:0]   CSRFunc3,
-    input           CSRWriteEn,
-    input   [11:0]  CSRRWAddr,
-    input   [31:0]  CSRWriteData,
-    input   [31:0]  CSRWriteData_mcause,
-    input   [31:0]  CSRWriteData_mepc,
-    output  [31:0]  CSRReadData,
-    output  [31:0]  CSRReadData_mtvec,
-    output  [31:0]  CSRReadData_mepc
+    input   [2:0]   csr_func3_in,
+    input           csr_we_in,
+    input   [11:0]  csr_rw_addr_in,
+    input   [31:0]  csr_w_data_in,
+    input   [31:0]  csr_w_mcause_in,
+    input   [31:0]  csr_w_mepc_in,
+    output  [31:0]  csr_r_data_out,
+    output  [31:0]  csr_r_mtvec_out,
+    output  [31:0]  csr_r_mepc_out
 );
 
-reg [31:0]  mepc;
-reg [31:0]  mcause;
-reg [31:0]  mtvec;
-reg [31:0]  mstatus;
+reg [31:0]  mepc_r;
+reg [31:0]  mcause_r;
+reg [31:0]  mtvec_r;
+reg [31:0]  mstatus_r;
 
-wire        mepcWriteEn    = CSRWriteEn & (CSRRWAddr == 12'h341);
-wire        mcauseWriteEn  = CSRWriteEn & (CSRRWAddr == 12'h342);
-wire        mtvecWriteEn   = CSRWriteEn & (CSRRWAddr == 12'h305);
-wire        mstatusWriteEn = CSRWriteEn & (CSRRWAddr == 12'h300);
-wire [31:0] CSROldData     = CSRReadData;
-wire [31:0] WriteData      =    {32{CSRFunc3 == 3'b001}} & CSRWriteData |
-                                {32{CSRFunc3 == 3'b010}} & (CSROldData | CSRWriteData);
+wire        mepc_we      = csr_we_in & (csr_rw_addr_in == 12'h341);
+wire        mcause_we    = csr_we_in & (csr_rw_addr_in == 12'h342);
+wire        mtvec_we     = csr_we_in & (csr_rw_addr_in == 12'h305);
+wire        mstatus_we   = csr_we_in & (csr_rw_addr_in == 12'h300);
+wire [31:0] csr_old_data = csr_r_data_out;
+wire [31:0] csr_r_data   =  {32{csr_func3_in == 3'b001}} & csr_w_data_in |
+                            {32{csr_func3_in == 3'b010}} & (csr_old_data | csr_w_data_in);
 
-assign CSRReadData =    {32{CSRRWAddr == 12'h341}} & mepc |
-                        {32{CSRRWAddr == 12'h342}} & mcause |
-                        {32{CSRRWAddr == 12'h305}} & mtvec |
-                        {32{CSRRWAddr == 12'h300}} & mstatus;
+assign csr_r_data_out = {32{csr_rw_addr_in == 12'h341}} & mepc_r |
+                        {32{csr_rw_addr_in == 12'h342}} & mcause_r |
+                        {32{csr_rw_addr_in == 12'h305}} & mtvec_r |
+                        {32{csr_rw_addr_in == 12'h300}} & mstatus_r;
 
-assign CSRReadData_mtvec = mtvec;
-assign CSRReadData_mepc  = mepc;
+assign csr_r_mtvec_out = mtvec_r;
+assign csr_r_mepc_out  = mepc_r;
 
 always @(posedge clk) begin
     if(rst) begin
-        mepc    <= 32'b0;
-        mcause  <= 32'b0;
-        mtvec   <= 32'b0;
-        mstatus <= 32'h00001800;
+        mepc_r    <= 32'b0;
+        mcause_r  <= 32'b0;
+        mtvec_r   <= 32'b0;
+        mstatus_r <= 32'h00001800;
     end
     else begin
         if(is_ecall) begin
-            mstatus[12:11]  <= 2'b11;
-            mstatus[7]      <= mstatus[3];
-            mstatus[3]      <= 1'b0;
-            mcause          <= CSRWriteData_mcause;
-            mepc            <= CSRWriteData_mepc;
+            mstatus_r[12:11]  <= 2'b11;
+            mstatus_r[7]      <= mstatus_r[3];
+            mstatus_r[3]      <= 1'b0;
+            mcause_r          <= csr_w_mcause_in;
+            mepc_r            <= csr_w_mepc_in;
         end
         else if(is_mret) begin
-            mstatus[12:11]  <= 2'b0;
-            mstatus[3]      <= mstatus[7];
-            mstatus[7]      <= 1'b1;
+            mstatus_r[12:11]  <= 2'b0;
+            mstatus_r[3]      <= mstatus_r[7];
+            mstatus_r[7]      <= 1'b1;
         end
         else begin
-            if(mepcWriteEn) begin
-                mepc <= WriteData;
+            if(mepc_we) begin
+                mepc_r <= csr_r_data;
             end
-            if(mcauseWriteEn) begin
-                mcause <= WriteData;
+            if(mcause_we) begin
+                mcause_r <= csr_r_data;
             end
-            if(mtvecWriteEn) begin
-                mtvec <= WriteData;
+            if(mtvec_we) begin
+                mtvec_r <= csr_r_data;
             end
-            if(mstatusWriteEn) begin
-                mstatus <= WriteData;
+            if(mstatus_we) begin
+                mstatus_r <= csr_r_data;
             end
         end
     end
@@ -74,10 +74,10 @@ end
 
 export "DPI-C" function get_csr;
 function void get_csr(output int csr[4]);
-    csr[0] = mepc;
-    csr[1] = mcause;
-    csr[2] = mtvec;
-    csr[3] = mstatus;
+    csr[0] = mepc_r;
+    csr[1] = mcause_r;
+    csr[2] = mtvec_r;
+    csr[3] = mstatus_r;
 endfunction
 
 endmodule

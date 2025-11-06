@@ -6,14 +6,15 @@ module top(
     output  [31:0]  ReadData_a0
 );
 
-wire    [2:0]   InstType;
-wire    [3:0]   NPCSrcSel;
-wire    [31:0]  TrapNPC;
-wire    [1:0]   ALUSrcSel1;
-wire    [1:0]   ALUSrcSel2;
-wire    [31:0]  ImmExt;
-wire    [31:0]  ALURes;
-wire    [5:0]   ALUFunc;
+wire    [2:0]   inst_type;
+wire    [31:0]  trap_npc;
+wire    [31:0]  imm_ext;
+wire    [3:0]   pc_cnt_npc_src_sel;
+
+wire    [1:0]   exu_alu_src_sel1;
+wire    [1:0]   exu_alu_src_sel2;
+wire    [31:0]  exu_res;
+wire    [5:0]   exu_alu_func;
 
 wire            wbu_we;
 wire    [4:0]   wbu_w_addr;
@@ -26,14 +27,14 @@ wire    [31:0]  gpr_r_data1;
 wire    [31:0]  gpr_r_data2;
 wire    [31:0]  gpr_r_a5;
 
-wire            CSRWriteEn;
-wire    [11:0]  CSRRWAddr;
-wire    [31:0]  CSRWriteData;
-wire    [31:0]  CSRWriteData_mepc;
-wire    [31:0]  CSRWriteData_mcause;
-wire    [31:0]  CSRReadData;
-wire    [31:0]  CSRReadData_mtvec;
-wire    [31:0]  CSRReadData_mepc;
+wire            csr_we;
+wire    [11:0]  csr_rw_addr;
+wire    [31:0]  csr_w_data;
+wire    [31:0]  csr_w_mepc;
+wire    [31:0]  csr_w_mcause;
+wire    [31:0]  csr_r_data;
+wire    [31:0]  csr_r_mtvec;
+wire    [31:0]  csr_r_mepc;
 
 wire            [31:0] ifu_req_addr;
 wire            [31:0] ifu_req_inst;
@@ -51,18 +52,18 @@ wire    [31:0]  mem_w_addr;
 wire    [31:0]  mem_w_data;
 wire    [7:0]   mem_w_mask;
 
-assign TrapNPC = is_ecall ? CSRReadData_mtvec : CSRReadData_mepc;
+assign trap_npc = is_ecall ? csr_r_mtvec : csr_r_mepc;
 
 PCCnt u_PCCnt(
-    .clk                 	(clk            ),
-    .rst                 	(rst            ),
-    .pc_cnt_cmp_res_in     	(ALURes[0]      ),
-    .pc_cnt_rd1_in         	(gpr_r_data1    ),
-    .pc_cnt_imm_in         	(ImmExt         ),
-    .pc_cnt_npc_src_sel_in 	(NPCSrcSel      ),
-    .pc_cnt_trap_npc_in    	(TrapNPC        ),
-    .pc_cnt_pc_out         	(pc             ),
-    .pc_cnt_npc_out        	(npc            )
+    .clk                 	(clk                ),
+    .rst                 	(rst                ),
+    .pc_cnt_cmp_res_in     	(exu_res[0]         ),
+    .pc_cnt_rd1_in         	(gpr_r_data1        ),
+    .pc_cnt_imm_in         	(imm_ext            ),
+    .pc_cnt_npc_src_sel_in 	(pc_cnt_npc_src_sel ),
+    .pc_cnt_trap_npc_in    	(trap_npc           ),
+    .pc_cnt_pc_out         	(pc                 ),
+    .pc_cnt_npc_out        	(npc                )
 );
 
 IFU u_IFU(
@@ -78,30 +79,30 @@ InstSRAM u_InstSRAM(
 );
 
 IDU u_IDU(
-    .clk                	(clk            ),
-    .idu_inst_in           	(ifu_inst_r     ),
-    .idu_is_ecall_out      	(is_ecall       ),
-    .idu_is_mret_out       	(is_mret        ),
-    .idu_inst_type_out     	(InstType       ),
-    .csr_we_out        	    (CSRWriteEn     ),
-    .exu_alu_fun_out       	(ALUFunc        ),
-    .exu_alu_src1_sel_out  	(ALUSrcSel1     ),
-    .exu_alu_src2_sel_out  	(ALUSrcSel2     ),
-    .pc_cnt_npc_src_sel_out (NPCSrcSel      ),
-    .wbu_gpr_we_out         (wbu_we         ),
-    .wbu_gpr_w_addr_out     (wbu_w_addr     ),
-    .wbu_gpr_wd_sel_out    	(wbu_w_data_sel ),
-    .lsu_mem_wmask_out     	(mem_w_mask     ),
-    .lsu_mem_we_out         (mem_we         ),
-    .lsu_mem_re_out         (mem_re         ),
-    .lsu_mem_read_func_out 	(mem_r_func     )
+    .clk                	(clk                ),
+    .idu_inst_in           	(ifu_inst_r         ),
+    .idu_is_ecall_out      	(is_ecall           ),
+    .idu_is_mret_out       	(is_mret            ),
+    .idu_inst_type_out     	(inst_type          ),
+    .csr_we_out        	    (csr_we             ),
+    .exu_alu_fun_out       	(exu_alu_func       ),
+    .exu_alu_src1_sel_out  	(exu_alu_src_sel1   ),
+    .exu_alu_src2_sel_out  	(exu_alu_src_sel2   ),
+    .pc_cnt_npc_src_sel_out (pc_cnt_npc_src_sel ),
+    .wbu_gpr_we_out         (wbu_we             ),
+    .wbu_gpr_w_addr_out     (wbu_w_addr         ),
+    .wbu_gpr_wd_sel_out    	(wbu_w_data_sel     ),
+    .lsu_mem_wmask_out     	(mem_w_mask         ),
+    .lsu_mem_we_out         (mem_we             ),
+    .lsu_mem_re_out         (mem_re             ),
+    .lsu_mem_read_func_out 	(mem_r_func         )
     // .idu_mem_valid_out      (mem_valid      )
 );
 
 ImmExt u_ImmExt(
-    .imm_ext_inst_type_in 	(InstType           ),
+    .imm_ext_inst_type_in 	(inst_type          ),
     .imm_ext_imm_in       	(ifu_inst_r[31:7]   ),
-    .imm_ext_imm_out      	(ImmExt             )
+    .imm_ext_imm_out      	(imm_ext            )
 );
 
 GPR u_GPR(
@@ -118,31 +119,31 @@ GPR u_GPR(
 );
 
 EXU u_EXU(
-    .exu_pc_in           	(pc             ),
-    .exu_alu_fun_in      	(ALUFunc        ),
-    .exu_rd1_in          	(gpr_r_data1    ),
-    .exu_rd2_in          	(gpr_r_data2    ),
-    .exu_imm_in          	(ImmExt         ),
-    .exu_alu_src1_sel_in 	(ALUSrcSel1     ),
-    .exu_alu_src2_sel_in 	(ALUSrcSel2     ),
-    .exu_res_out         	(ALURes         )
+    .exu_pc_in           	(pc                 ),
+    .exu_alu_fun_in      	(exu_alu_func       ),
+    .exu_rd1_in          	(gpr_r_data1        ),
+    .exu_rd2_in          	(gpr_r_data2        ),
+    .exu_imm_in          	(imm_ext            ),
+    .exu_alu_src1_sel_in 	(exu_alu_src_sel1   ),
+    .exu_alu_src2_sel_in 	(exu_alu_src_sel2   ),
+    .exu_res_out         	(exu_res            )
 );
 
 WBU u_WBU(
     .wbu_we_in      	(wbu_we         ),
     .wbu_w_addr_in  	(wbu_w_addr     ),
     .wbu_w_data_sel     (wbu_w_data_sel ),
-    .exu_res_in         (ALURes         ),
+    .exu_res_in         (exu_res        ),
     .lsu_r_data_in      (mem_r_data     ),
-    .csr_r_data_in      (CSRReadData    ),
+    .csr_r_data_in      (csr_r_data     ),
     .gpr_we_out     	(gpr_we         ),
     .gpr_w_addr_out 	(gpr_w_addr     ),
     .gpr_w_data_out 	(gpr_w_data     )
 );
 
 
-assign mem_r_addr = ALURes;
-assign mem_w_addr = ALURes;
+assign mem_r_addr = exu_res;
+assign mem_w_addr = exu_res;
 assign mem_w_data = gpr_r_data2;
 
 LSU u_LSU(
@@ -156,25 +157,25 @@ LSU u_LSU(
     .lsu_w_mask_in 	    (mem_w_mask     )
 );
 
-assign CSRWriteData = gpr_r_data1;
-assign CSRWriteData_mcause = gpr_r_a5;
-assign CSRWriteData_mepc = pc;
-assign CSRRWAddr = ifu_inst_r[31:20];
+assign csr_w_data   = gpr_r_data1;
+assign csr_w_mcause = gpr_r_a5;
+assign csr_w_mepc   = pc;
+assign csr_rw_addr  = ifu_inst_r[31:20];
 
 CSR u_CSR(
-    .clk                 	(clk                  ),
-    .rst                 	(rst                  ),
-    .is_ecall            	(is_ecall             ),
-    .is_mret                (is_mret              ),
-    .CSRFunc3               (ifu_inst_r[14:12]    ),
-    .CSRWriteEn          	(CSRWriteEn           ),
-    .CSRRWAddr              (CSRRWAddr            ),
-    .CSRWriteData        	(CSRWriteData         ),
-    .CSRWriteData_mcause 	(CSRWriteData_mcause  ),
-    .CSRWriteData_mepc   	(CSRWriteData_mepc    ),
-    .CSRReadData         	(CSRReadData          ),
-    .CSRReadData_mtvec   	(CSRReadData_mtvec    ),
-    .CSRReadData_mepc       (CSRReadData_mepc     )
+    .clk                (clk                ),
+    .rst                (rst                ),
+    .is_ecall           (is_ecall           ),
+    .is_mret            (is_mret            ),
+    .csr_func3_in       (ifu_inst_r[14:12]  ),
+    .csr_we_in          (csr_we             ),
+    .csr_rw_addr_in     (csr_rw_addr        ),
+    .csr_w_data_in      (csr_w_data         ),
+    .csr_w_mcause_in 	(csr_w_mcause       ),
+    .csr_w_mepc_in   	(csr_w_mepc         ),
+    .csr_r_data_out     (csr_r_data         ),
+    .csr_r_mtvec_out   	(csr_r_mtvec        ),
+    .csr_r_mepc_out     (csr_r_mepc         )
 );
 
 endmodule
