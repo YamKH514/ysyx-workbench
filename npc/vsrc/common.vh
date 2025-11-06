@@ -2,45 +2,6 @@
 `define COMMON_VH__
 
 // ==========================
-// PC CNT  STATE
-// ==========================
-`define PC_CNT_S_READY          1'b0
-`define PC_CNT_S_WAIT_UPDATE    1'b1
-
-// ==========================
-// IFU  STATE
-// ==========================
-`define IFU_S_IDLE      2'd0
-`define IFU_S_WAIT_SRAM 2'd1
-`define IFU_S_WAIT_IDU  2'd2
-
-// ==========================
-// IDU  STATE
-// ==========================
-`define IDU_S_IDLE          1'b0
-`define IDU_S_WAIT_EXU      1'b1
-
-// ==========================
-// EXU  STATE
-// ==========================
-`define EXU_S_IDLE      2'b00
-`define EXU_S_EXEC      2'b01
-`define EXU_S_WAIT_WBU  2'b10
-
-// ==========================
-// WBU  STATE
-// ==========================
-`define WBU_S_IDLE          2'b00
-`define WBU_S_WAIT_STORE    2'b01
-`define WBU_S_WB            2'b10
-
-// ==========================
-// MEM  STATE
-// ==========================
-`define MEM_S_IDLE  1'b0
-`define MEM_S_WRITE 1'b1
-
-// ==========================
 // Inst Type
 // ==========================
 `define INST_TYPE_I  3'd0

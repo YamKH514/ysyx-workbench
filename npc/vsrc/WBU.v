@@ -16,7 +16,10 @@ module WBU(
 
 reg [31:0]  gpr_w_data_r;
 
-assign gpr_w_data_r = (wbu_w_data_sel[1] == 1'b0) ? ((wbu_w_data_sel[0] == 1'b0) ? exu_res_in : lsu_r_data_in) : csr_r_data_in;
+assign gpr_w_data_r =   (wbu_w_data_sel == `GPR_WD_SEL_ALU_RES)  ? exu_res_in   :
+                        (wbu_w_data_sel == `GPR_WD_SEL_MEM_DATA) ? lsu_r_data_in:
+                        (wbu_w_data_sel == `GPR_WD_SEL_CSR_DATA) ? csr_r_data_in:
+                        32'b0;
 
 always @(*) begin
     if (wbu_we_in) begin
