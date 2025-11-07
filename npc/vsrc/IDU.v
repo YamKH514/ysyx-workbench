@@ -24,7 +24,6 @@ module IDU(
     output  reg         lsu_mem_we_out,
     output  reg         lsu_mem_re_out,
     output  reg [2:0]   lsu_mem_read_func_out
-    // output  reg         idu_mem_valid_out
 );
 
 reg     [31:0]  inst_r;
@@ -185,8 +184,6 @@ assign lsu_mem_wmask_out =  inst_sw ? 8'b00001111 :
                             inst_sh ? 8'b00000011 :
                             inst_sb ? 8'b00000001 :
                             8'b0;
-
-// assign idu_mem_valid_out = (inst_lb | inst_lh | inst_lw | inst_lbu | inst_lhu | inst_sb | inst_sh | inst_sw);
 
 assign lsu_mem_re_out = (inst_lb | inst_lh | inst_lw | inst_lbu | inst_lhu);
 

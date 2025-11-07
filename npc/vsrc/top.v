@@ -36,9 +36,9 @@ wire    [31:0]  csr_r_data;
 wire    [31:0]  csr_r_mtvec;
 wire    [31:0]  csr_r_mepc;
 
-wire            [31:0] ifu_req_addr;
-wire            [31:0] ifu_req_inst;
-reg             [31:0] ifu_inst_r;
+wire    [31:0]  ifu_req_addr;
+wire    [31:0]  ifu_req_inst;
+reg     [31:0]  ifu_inst_r;
 
 wire            is_ecall;
 wire            is_mret;
@@ -96,7 +96,6 @@ IDU u_IDU(
     .lsu_mem_we_out         (mem_we             ),
     .lsu_mem_re_out         (mem_re             ),
     .lsu_mem_read_func_out 	(mem_r_func         )
-    // .idu_mem_valid_out      (mem_valid      )
 );
 
 ImmExt u_ImmExt(
