@@ -52,12 +52,14 @@ always @(posedge clk) begin
                 idu_to_ifu_ready_out <= 1'b0;
                 idu_to_pc_valid_out <= 1'b0;
                 if (ifu_to_idu_valid_in) begin
+                    idu_to_ifu_ready_out <= 1'b1;
+                    idu_to_pc_valid_out <= 1'b1;
                     inst_r <= idu_inst_in;
                 end
             end
             S_WAIT_EXU: begin
-                idu_to_ifu_ready_out <= 1'b1;
-                idu_to_pc_valid_out <= 1'b1;
+                idu_to_ifu_ready_out <= 1'b0;
+                idu_to_pc_valid_out <= 1'b0;
                 inst_r <= 32'b0;
             end
             default: begin
