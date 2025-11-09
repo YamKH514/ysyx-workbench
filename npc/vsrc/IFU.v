@@ -7,6 +7,8 @@ module IFU(
     input       [31:0]  ifu_req_inst_in,
     output  reg [31:0]  ifu_inst_out,
 
+    input               pc_to_ifu_ready_in,
+
     output  reg         ifu_to_inst_valid_out,
     input               inst_to_ifu_ready_in,
 
@@ -23,26 +25,52 @@ reg [1:0]   state, next_state;
 always @(posedge clk) begin
     if (rst) state <= S_IDLE;
     else state <= next_state;
+
+    if (rst) begin
+        ifu_req_addr_out <= 32'b0;
+        ifu_inst_out <= 32'b0;
+        ifu_to_inst_valid_out <= 1'b0;
+        ifu_to_idu_valid_out <= 1'b0;
+    end else begin
+        case (state)
+            S_IDLE: begin
+                if (pc_to_ifu_ready_in) begin
+                    ifu_req_addr_out <= ifu_current_pc_in;
+                    ifu_to_inst_valid_out <= 1'b1;
+                end
+            end
+            S_WAIT_INST: begin
+                if (inst_to_ifu_ready_in) begin
+                    ifu_inst_out <= ifu_req_inst_in;
+                    ifu_to_inst_valid_out <= 1'b0;
+                    ifu_to_idu_valid_out <= 1'b1;
+                end
+            end
+            S_WAIT_IDU: begin
+                if (idu_to_ifu_ready_in) begin
+                    ifu_to_idu_valid_out <= 1'b0;
+                end
+            end
+            default: begin
+            end
+        endcase
+    end
 end
 
 always @(*) begin
     case (state)
         S_IDLE: begin
-            ifu_req_addr_out = ifu_current_pc_in;
-            ifu_to_inst_valid_out = 1'b1;
-            next_state = S_WAIT_INST;
+            if (pc_to_ifu_ready_in) begin
+                next_state = S_WAIT_INST;
+            end
         end
         S_WAIT_INST: begin
             if (inst_to_ifu_ready_in) begin
-                ifu_inst_out = ifu_req_inst_in;
-                ifu_to_inst_valid_out = 1'b0;
-                ifu_to_idu_valid_out = 1'b1;
                 next_state = S_WAIT_IDU;
             end
         end
         S_WAIT_IDU: begin
             if (idu_to_ifu_ready_in) begin
-                ifu_to_idu_valid_out = 1'b0;
                 next_state = S_IDLE;
             end
         end

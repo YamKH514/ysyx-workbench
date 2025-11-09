@@ -11,6 +11,7 @@ wire    [31:0]  trap_npc;
 wire    [31:0]  imm_ext;
 wire    [3:0]   pc_cnt_npc_src_sel;
 
+wire            pc_to_ifu_ready;
 wire            ifu_to_inst_valid;
 wire            inst_to_ifu_ready;
 wire            ifu_to_idu_valid;
@@ -70,7 +71,8 @@ PCCnt u_PCCnt(
     .pc_cnt_trap_npc_in    	(trap_npc           ),
     .pc_cnt_pc_out         	(pc                 ),
     .pc_cnt_npc_out        	(npc                ),
-    .idu_to_pc_valid_in     (idu_to_pc_valid)
+    .idu_to_pc_valid_in     (idu_to_pc_valid),
+    .pc_to_ifu_ready_out    (pc_to_ifu_ready)
 );
 
 IFU u_IFU(
@@ -80,6 +82,7 @@ IFU u_IFU(
     .ifu_req_addr_out   	(ifu_req_addr   ),
     .ifu_req_inst_in    	(ifu_req_inst   ),
     .ifu_inst_out       	(ifu_inst_r     ),
+    .pc_to_ifu_ready_in     (pc_to_ifu_ready),
     .ifu_to_inst_valid_out  (ifu_to_inst_valid),
     .inst_to_ifu_ready_in   (inst_to_ifu_ready),
     .ifu_to_idu_valid_out   (ifu_to_idu_valid),

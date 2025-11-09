@@ -11,7 +11,8 @@ module PCCnt(
     output  reg [31:0]  pc_cnt_pc_out,
     output  reg [31:0]  pc_cnt_npc_out,
 
-    input               idu_to_pc_valid_in
+    input               idu_to_pc_valid_in,
+    output  reg         pc_to_ifu_ready_out
 );
 
 assign pc_cnt_npc_out = (pc_cnt_npc_src_sel_in[3] == 1'b0) ?
@@ -19,9 +20,12 @@ assign pc_cnt_npc_out = (pc_cnt_npc_src_sel_in[3] == 1'b0) ?
                         (pc_cnt_pc_out + ((pc_cnt_npc_src_sel_in[2] == pc_cnt_cmp_res_in) ? pc_cnt_imm_in : 4));
 
 always @(posedge clk) begin
+    pc_to_ifu_ready_out <= 1'b0;
     if (rst) begin
+        pc_to_ifu_ready_out <= 1'b1;
         pc_cnt_pc_out <= 32'h80000000;
     end else if (idu_to_pc_valid_in) begin
+        pc_to_ifu_ready_out <= 1'b1;
         pc_cnt_pc_out <= pc_cnt_npc_out;
     end
 end
