@@ -58,6 +58,7 @@ always @(posedge clk) begin
             end
             S_WAIT_EXU: begin
                 idu_to_ifu_ready_out <= 1'b1;
+                inst_r <= 32'b0;
             end
             S_WAIT_PC_UPDATE: begin
                 idu_to_pc_valid_out <= 1'b1;
