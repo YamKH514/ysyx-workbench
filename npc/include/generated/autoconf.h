@@ -5,7 +5,6 @@
  *
  */
 #define CONFIG_WATCHPOINT 1
-#define CONFIG_BATCH_MODE 1
 #define CONFIG_VCD_TRACE 1
 #define CONFIG_ITRACE 1
 #define CONFIG_TRACE_END 10000
