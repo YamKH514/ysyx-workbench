@@ -41,21 +41,36 @@ reg state, next_state;
 always @(posedge clk) begin
     if (rst) state <= S_IDLE;
     else state <= next_state;
+
+    if (rst) begin
+        idu_to_ifu_ready_out <= 1'b0;
+        idu_to_pc_valid_out <= 1'b0;
+        inst_r <= 32'b0;
+    end else begin
+        case (state)
+            S_IDLE: begin
+                idu_to_ifu_ready_out <= 1'b0;
+                idu_to_pc_valid_out <= 1'b0;
+                if (ifu_to_idu_valid_in) begin
+                    inst_r <= idu_inst_in;
+                end
+            end
+            S_DECODE: begin
+                idu_to_ifu_ready_out <= 1'b1;
+                idu_to_pc_valid_out <= 1'b1;
+            end
+        endcase
+    end
 end
 
 always @(*) begin
     case (state)
         S_IDLE: begin
-            idu_to_ifu_ready_out = 1'b0;
-            idu_to_pc_valid_out = 1'b0;
             if (ifu_to_idu_valid_in) begin
-                inst_r = idu_inst_in;
                 next_state = S_DECODE;
             end
         end
         S_DECODE: begin
-            idu_to_ifu_ready_out = 1'b1;
-            idu_to_pc_valid_out = 1'b1;
             next_state = S_IDLE;
         end
     endcase
