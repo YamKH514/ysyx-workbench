@@ -5,7 +5,7 @@
 #include "difftest-def.h"
 #include "disasm.h"
 #include "ftrace.h"
-#include "Vtop.h"
+#include "Vtop__Syms.h"
 #include "Vtop__Dpi.h"
 #include "cpu.h"
 #include "watchpoint.h"
@@ -36,7 +36,7 @@ static void trace_and_difftest(Vtop *top, char *logbuf)
         puts(logbuf);
 #endif
     }
-    if (top->top__DOT__pc_to_ifu_ready) printf("top__DOT__pc_to_ifu_ready\n");
+    if (top->rootp->top__DOT__pc_to_ifu_ready) printf("top__DOT__pc_to_ifu_ready\n");
 #ifdef CONFIG_DIFFTEST
     difftest_step(npc_state.halt_pc);
 #endif
