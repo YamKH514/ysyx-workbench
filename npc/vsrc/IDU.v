@@ -35,7 +35,6 @@ module IDU(
 
 parameter S_IDLE = 2'd0;
 parameter S_WAIT_EXU = 2'd1;
-parameter S_WAIT_PC_UPDATE = 2'd2;
 
 reg [1:0]   state, next_state;
 
@@ -58,10 +57,8 @@ always @(posedge clk) begin
             end
             S_WAIT_EXU: begin
                 idu_to_ifu_ready_out <= 1'b1;
-                inst_r <= 32'b0;
-            end
-            S_WAIT_PC_UPDATE: begin
                 idu_to_pc_valid_out <= 1'b1;
+                inst_r <= 32'b0;
             end
             default: begin
                 idu_to_ifu_ready_out <= 1'b0;
@@ -79,9 +76,6 @@ always @(*) begin
             end
         end
         S_WAIT_EXU: begin
-            next_state = S_WAIT_PC_UPDATE;
-        end
-        S_WAIT_PC_UPDATE: begin
             next_state = S_IDLE;
         end
         default: begin
