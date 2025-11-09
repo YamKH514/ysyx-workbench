@@ -33,10 +33,11 @@ module IDU(
     output  reg         idu_to_pc_valid_out
 );
 
-parameter S_IDLE = 1'd0;
-parameter S_DECODE = 1'd1;
+parameter S_IDLE = 2'd0;
+parameter S_WAIT_EXU = 2'd1;
+parameter S_WAIT_PC_UPDATE = 2'd2;
 
-reg state, next_state;
+reg [1:0]   state, next_state;
 
 always @(posedge clk) begin
     if (rst) state <= S_IDLE;
@@ -55,9 +56,15 @@ always @(posedge clk) begin
                     inst_r <= idu_inst_in;
                 end
             end
-            S_DECODE: begin
+            S_WAIT_EXU: begin
                 idu_to_ifu_ready_out <= 1'b1;
+            end
+            S_WAIT_PC_UPDATE: begin
                 idu_to_pc_valid_out <= 1'b1;
+            end
+            default: begin
+                idu_to_ifu_ready_out <= 1'b0;
+                idu_to_pc_valid_out <= 1'b0;
             end
         endcase
     end
@@ -67,10 +74,16 @@ always @(*) begin
     case (state)
         S_IDLE: begin
             if (ifu_to_idu_valid_in) begin
-                next_state = S_DECODE;
+                next_state = S_WAIT_EXU;
             end
         end
-        S_DECODE: begin
+        S_WAIT_EXU: begin
+            next_state = S_WAIT_PC_UPDATE;
+        end
+        S_WAIT_PC_UPDATE: begin
+            next_state = S_IDLE;
+        end
+        default: begin
             next_state = S_IDLE;
         end
     endcase
