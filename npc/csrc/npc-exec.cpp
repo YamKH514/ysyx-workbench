@@ -5,6 +5,7 @@
 #include "difftest-def.h"
 #include "disasm.h"
 #include "ftrace.h"
+#include "Vtop.h"
 #include "Vtop__Dpi.h"
 #include "cpu.h"
 #include "watchpoint.h"
@@ -21,7 +22,7 @@ uint64_t g_nr_guest_inst = 0;
 bool g_print_step = false;
 CPU_state cpu = {};
 
-static void trace_and_difftest(char *logbuf)
+static void trace_and_difftest(Vtop *top, char *logbuf)
 {
 #ifdef CONFIG_ITRACE_COND
     if (ITRACE_COND)
@@ -35,6 +36,7 @@ static void trace_and_difftest(char *logbuf)
         puts(logbuf);
 #endif
     }
+    if (top->rootp->top__DOT__pc_to_ifu_ready) printf("top__DOT__pc_to_ifu_ready\n");
 #ifdef CONFIG_DIFFTEST
     difftest_step(npc_state.halt_pc);
 #endif
@@ -102,7 +104,7 @@ static void exec_once(Vtop *top, VerilatedContext *contextp, VerilatedVcdC *tfp)
         p += space_len;
 
         disassemble(p, logbuf + sizeof(logbuf) - p, npc_state.halt_pc, inst, ilen);
-        trace_and_difftest(logbuf);
+        trace_and_difftest(top, logbuf);
 #endif
 
         // 函数调用 ftrace
