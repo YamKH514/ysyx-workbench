@@ -2,6 +2,8 @@
 
 module IDU(
     input               clk,
+    input               rst,
+
     input       [31:0]  idu_inst_in,
     output  reg         idu_is_ecall_out,
     output  reg         idu_is_mret_out,
@@ -23,15 +25,46 @@ module IDU(
     output  reg [7:0]   lsu_mem_wmask_out,
     output  reg         lsu_mem_we_out,
     output  reg         lsu_mem_re_out,
-    output  reg [2:0]   lsu_mem_read_func_out
+    output  reg [2:0]   lsu_mem_read_func_out,
+
+    input               ifu_to_idu_valid_in,
+    output  reg         idu_to_ifu_ready_out,
+
+    output  reg         idu_to_pc_valid_out
 );
+
+parameter S_IDLE = 1'd0;
+parameter S_DECODE = 1'd1;
+
+reg state, next_state;
+
+always @(posedge clk) begin
+    if (rst) state <= S_IDLE;
+    else state <= next_state;
+end
+
+always @(*) begin
+    case (state)
+        S_IDLE: begin
+            idu_to_ifu_ready_out = 1'b0;
+            idu_to_pc_valid_out = 1'b0;
+            if (ifu_to_idu_valid_in) begin
+                inst_r = idu_inst_in;
+                next_state = S_DECODE;
+            end
+        end
+        S_DECODE: begin
+            idu_to_ifu_ready_out = 1'b1;
+            idu_to_pc_valid_out = 1'b1;
+            next_state = S_IDLE;
+        end
+    endcase
+end
 
 reg     [31:0]  inst_r;
 wire    [6:0]   inst_opcode;
 wire    [2:0]   inst_func3;
 wire    [6:0]   inst_func7;
-
-assign inst_r = idu_inst_in;
 
 assign inst_opcode  = inst_r[6:0];
 assign inst_func3   = inst_r[14:12];

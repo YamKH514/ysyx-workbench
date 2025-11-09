@@ -11,6 +11,12 @@ wire    [31:0]  trap_npc;
 wire    [31:0]  imm_ext;
 wire    [3:0]   pc_cnt_npc_src_sel;
 
+wire            ifu_to_inst_valid;
+wire            inst_to_ifu_ready;
+wire            ifu_to_idu_valid;
+wire            idu_to_ifu_ready;
+wire            idu_to_pc_valid;
+
 wire    [1:0]   exu_alu_src_sel1;
 wire    [1:0]   exu_alu_src_sel2;
 wire    [31:0]  exu_res;
@@ -63,23 +69,35 @@ PCCnt u_PCCnt(
     .pc_cnt_npc_src_sel_in 	(pc_cnt_npc_src_sel ),
     .pc_cnt_trap_npc_in    	(trap_npc           ),
     .pc_cnt_pc_out         	(pc                 ),
-    .pc_cnt_npc_out        	(npc                )
+    .pc_cnt_npc_out        	(npc                ),
+    .idu_to_pc_valid_in     (idu_to_pc_valid)
 );
 
 IFU u_IFU(
+    .clk                    (clk            ),
+    .rst                    (rst            ),
     .ifu_current_pc_in  	(pc             ),
     .ifu_req_addr_out   	(ifu_req_addr   ),
     .ifu_req_inst_in    	(ifu_req_inst   ),
-    .ifu_inst_out       	(ifu_inst_r     )
+    .ifu_inst_out       	(ifu_inst_r     ),
+    .ifu_to_inst_valid_out  (ifu_to_inst_valid),
+    .inst_to_ifu_ready_in   (inst_to_ifu_ready),
+    .ifu_to_idu_valid_out   (ifu_to_idu_valid),
+    .idu_to_ifu_ready_in    (idu_to_ifu_ready)
 );
 
 InstSRAM u_InstSRAM(
+    .clk                    (clk),
+    .rst                    (rst),
     .inst_sram_addr_in   	(ifu_req_addr   ),
-    .inst_sram_data_out  	(ifu_req_inst   )
+    .inst_sram_data_out  	(ifu_req_inst   ),
+    .ifu_to_inst_valid_in   (ifu_to_inst_valid),
+    .inst_to_ifu_ready_out  (inst_to_ifu_ready)
 );
 
 IDU u_IDU(
     .clk                	(clk                ),
+    .rst                    (rst),
     .idu_inst_in           	(ifu_inst_r         ),
     .idu_is_ecall_out      	(is_ecall           ),
     .idu_is_mret_out       	(is_mret            ),
@@ -95,7 +113,10 @@ IDU u_IDU(
     .lsu_mem_wmask_out     	(mem_w_mask         ),
     .lsu_mem_we_out         (mem_we             ),
     .lsu_mem_re_out         (mem_re             ),
-    .lsu_mem_read_func_out 	(mem_r_func         )
+    .lsu_mem_read_func_out 	(mem_r_func         ),
+    .ifu_to_idu_valid_in    (ifu_to_idu_valid),
+    .idu_to_ifu_ready_out   (idu_to_ifu_ready),
+    .idu_to_pc_valid_out    (idu_to_pc_valid)
 );
 
 ImmExt u_ImmExt(
