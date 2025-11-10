@@ -73,12 +73,15 @@ static void exec_once(Vtop *top, VerilatedContext *contextp, VerilatedVcdC *tfp)
     tfp->dump(contextp->time());
 #endif
 
-    cpu.pc = top->pc;
-    cpu.npc = top->npc;
-    svSetScope(svGetScopeFromName("TOP.top.u_GPR.u_RegisterFile"));
-    get_gpr(cpu.gpr);
-    svSetScope(svGetScopeFromName("TOP.top.u_CSR"));
-    get_csr((int *)(&cpu.csr));
+    if (top->rootp->top__DOT__pc_to_ifu_ready)
+    {
+        cpu.pc = top->pc;
+        cpu.npc = top->npc;
+        svSetScope(svGetScopeFromName("TOP.top.u_GPR.u_RegisterFile"));
+        get_gpr(cpu.gpr);
+        svSetScope(svGetScopeFromName("TOP.top.u_CSR"));
+        get_csr((int *)(&cpu.csr));
+    }
 
     if (npc_state.halt_pc >= 0x80000000)
     {
