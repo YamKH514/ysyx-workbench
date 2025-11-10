@@ -20,7 +20,7 @@ static uint32_t skip_pc_queue[MAX_SKIP_NUM] = {0};
 static int skip_pc_head = 0;
 static int skip_pc_tail = 0;
 static bool is_skip_ref = false;
-
+// TODO 为多周期cpu修改skip
 void difftest_skip_ref(){
   is_skip_ref = true;
 }
