@@ -77,6 +77,7 @@ extern "C" void paddr_write(uint32_t waddr, uint32_t wdata, uint8_t wmask)
     {
         putchar(wdata);
         fflush(stdout);
+        printf("skip\n");
 #ifdef CONFIG_DIFFTEST
         difftest_skip_ref();
 #endif
