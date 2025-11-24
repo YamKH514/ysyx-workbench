@@ -135,6 +135,7 @@ void difftest_step(uint32_t pc)
     printf("recode skip pc: 0x%08x\n", skip_pc);
     if(cpu.pc == skip_pc)
     {
+      printf("ref skip now, pc: 0x%08x\n", skip_pc);
       ref_difftest_regcpy(&cpu, DIFFTEST_TO_REF);
       skip_pc_head = (skip_pc_head + 1) % MAX_SKIP_NUM;
       return;
