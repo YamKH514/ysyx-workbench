@@ -16,18 +16,17 @@ void (*ref_difftest_raise_intr)(uint64_t NO) = NULL;
 #ifdef CONFIG_DIFFTEST
 
 #define MAX_SKIP_NUM 16
-static uint32_t skip_pc_queue[MAX_SKIP_NUM] = {0};
-static int skip_pc_head = 0;
-static int skip_pc_tail = 0;
+// static uint32_t skip_pc_queue[MAX_SKIP_NUM] = {0};
+// static int skip_pc_head = 0;
+// static int skip_pc_tail = 0;
+static bool is_skip_ref = false;
 // TODO 为多周期cpu修改skip
 int need_skip_pc = 0;
 void difftest_skip_ref(){
   svSetScope(svGetScopeFromName("TOP.top.u_PCCnt"));
   get_pc_value(&need_skip_pc);
   printf("difftest_skip_ref get_pc_value: 0x%08x\n", (uint32_t)need_skip_pc);
-  skip_pc_queue[skip_pc_tail] = (uint32_t)need_skip_pc;
-  printf("recode skip pc: 0x%08x\n", need_skip_pc);
-  skip_pc_tail = (skip_pc_tail + 1) % MAX_SKIP_NUM;
+  is_skip_ref = true;
 }
 
 void init_difftest(char *ref_so_file, long img_size, int port)
@@ -129,15 +128,27 @@ void difftest_step(uint32_t pc)
 {
   CPU_state ref_r;
 
-  if (skip_pc_head != skip_pc_tail) {
-    uint32_t skip_pc = skip_pc_queue[skip_pc_head];
-    if(cpu.pc == skip_pc)
-    {
-      printf("ref skip now, pc: 0x%08x\n", skip_pc);
-      ref_difftest_regcpy(&cpu, DIFFTEST_TO_REF);
-      skip_pc_head = (skip_pc_head + 1) % MAX_SKIP_NUM;
-      return;
-    }
+  // if(is_skip_ref)
+  // {
+  //   skip_pc_queue[skip_pc_tail] = (uint32_t)need_skip_pc;
+  //   printf("recode skip pc: 0x%08x\n", need_skip_pc);
+  //   skip_pc_tail = (skip_pc_tail + 1) % MAX_SKIP_NUM;
+  //   is_skip_ref = false;
+  // }
+  // if (skip_pc_head != skip_pc_tail) {
+  //   uint32_t skip_pc = skip_pc_queue[skip_pc_head];
+  //   if(cpu.pc == skip_pc)
+  //   {
+  //     printf("ref skip now, pc: 0x%08x\n", skip_pc);
+  //     ref_difftest_regcpy(&cpu, DIFFTEST_TO_REF);
+  //     skip_pc_head = (skip_pc_head + 1) % MAX_SKIP_NUM;
+  //     return;
+  //   }
+  // }
+  if(is_skip_ref)
+  {
+    ref_difftest_regcpy(&cpu, DIFFTEST_TO_REF);
+    is_skip_ref = false;
   }
 
   ref_difftest_exec(1);
