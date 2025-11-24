@@ -37,7 +37,7 @@ static void trace_and_difftest(Vtop *top, char *logbuf)
 #endif
     }
 #ifdef CONFIG_DIFFTEST
-    if (top->rootp->top__DOT__pc_to_ifu_ready) difftest_step(npc_state.halt_pc);
+    if (top->rootp->top__DOT__idu_to_pc_valid) difftest_step(npc_state.halt_pc);
 #endif
 #ifdef CONFIG_WATCHPOINT
     bool changed = wp_scan();
