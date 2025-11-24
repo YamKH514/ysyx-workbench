@@ -77,7 +77,7 @@ static void exec_once(Vtop *top, VerilatedContext *contextp, VerilatedVcdC *tfp)
     tfp->dump(contextp->time());
 #endif
 
-    if (top->rootp->top__DOT__idu_to_pc_valid)
+    if (top->rootp->top__DOT__pc_to_ifu_ready)
     {
         cpu.pc = top->pc;
         cpu.npc = top->npc;
@@ -86,6 +86,11 @@ static void exec_once(Vtop *top, VerilatedContext *contextp, VerilatedVcdC *tfp)
         svSetScope(svGetScopeFromName("TOP.top.u_CSR"));
         get_csr((int *)(&cpu.csr));
         // printf("cpu.pc: 0x%08x\n", cpu.pc);
+    }
+
+    if (top->rootp->top__DOT__idu_to_pc_valid)
+    {
+        cpu.pc = top->pc;
     }
 
     if (npc_state.halt_pc >= 0x80000000)
