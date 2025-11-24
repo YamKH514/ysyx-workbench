@@ -21,11 +21,11 @@ void (*ref_difftest_raise_intr)(uint64_t NO) = NULL;
 // static int skip_pc_tail = 0;
 static bool is_skip_ref = false;
 // TODO 为多周期cpu修改skip
-int need_skip_pc = 0;
+// int need_skip_pc = 0;
 void difftest_skip_ref(){
-  svSetScope(svGetScopeFromName("TOP.top.u_PCCnt"));
-  get_pc_value(&need_skip_pc);
-  printf("difftest_skip_ref get_pc_value: 0x%08x\n", (uint32_t)need_skip_pc);
+  // svSetScope(svGetScopeFromName("TOP.top.u_PCCnt"));
+  // get_pc_value(&need_skip_pc);
+  // printf("difftest_skip_ref get_pc_value: 0x%08x\n", (uint32_t)need_skip_pc);
   is_skip_ref = true;
 }
 
