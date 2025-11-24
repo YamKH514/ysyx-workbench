@@ -10,6 +10,8 @@ extern int get_inst(int pc);
 extern void get_gpr(int out_gpr[16]);
 extern void get_csr(int csr[4]);
 
+extern void get_pc_value(int pc);
+
 // #ifdef CONFIG_DIFFTEST
 // extern void difftest_skip_ref(int pc);
 // #endif
