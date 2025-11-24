@@ -15,11 +15,6 @@ module PCCnt(
     output  reg         pc_to_ifu_ready_out
 );
 
-export "DPI-C" function get_pc_value;
-function void get_pc_value(output int pc);
-    pc = pc_cnt_pc_out;
-endfunction
-
 assign pc_cnt_npc_out = (pc_cnt_npc_src_sel_in[3] == 1'b0) ?
                         (pc_cnt_npc_src_sel_in[2] == 1'b1 ? pc_cnt_trap_npc_in : (((pc_cnt_npc_src_sel_in[1] == 1'b0) ? pc_cnt_pc_out : pc_cnt_rd1_in) + ((pc_cnt_npc_src_sel_in[0] == 1'b0) ? 32'd4 : pc_cnt_imm_in))) :
                         (pc_cnt_pc_out + ((pc_cnt_npc_src_sel_in[2] == pc_cnt_cmp_res_in) ? pc_cnt_imm_in : 4));
@@ -34,5 +29,10 @@ always @(posedge clk) begin
         pc_cnt_pc_out <= pc_cnt_npc_out;
     end
 end
+
+export "DPI-C" function get_pc_value;
+function void get_pc_value(output int pc);
+    pc = pc_cnt_pc_out;
+endfunction
 
 endmodule
