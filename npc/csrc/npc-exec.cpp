@@ -68,6 +68,7 @@ static void exec_once(Vtop *top, VerilatedContext *contextp, VerilatedVcdC *tfp)
     {
         npc_state.halt_pc = top->pc;
         npc_state.halt_ret = top->ReadData_a0;
+        printf("halt_pc: 0x%08x\n", npc_state.halt_pc);
     }
 
     contextp->timeInc(1);
@@ -84,6 +85,7 @@ static void exec_once(Vtop *top, VerilatedContext *contextp, VerilatedVcdC *tfp)
         get_gpr(cpu.gpr);
         svSetScope(svGetScopeFromName("TOP.top.u_CSR"));
         get_csr((int *)(&cpu.csr));
+        printf("cpu.pc: 0x%08x\n", cpu.pc);
     }
 
     if (npc_state.halt_pc >= 0x80000000)
