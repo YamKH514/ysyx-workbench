@@ -77,7 +77,7 @@ static void exec_once(Vtop *top, VerilatedContext *contextp, VerilatedVcdC *tfp)
     tfp->dump(contextp->time());
 #endif
 
-    if (top->rootp->top__DOT__pc_to_ifu_ready)
+    if (top->rootp->top__DOT__idu_to_pc_valid)
     {
         cpu.pc = top->pc;
         cpu.npc = top->npc;
