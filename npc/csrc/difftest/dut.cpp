@@ -131,7 +131,7 @@ void difftest_step(uint32_t pc)
   if(is_skip_ref)
   {
     skip_pc_queue[skip_pc_tail] = (uint32_t)need_skip_pc;
-    printf("recode skip pc: 0x%08x\n", skip_pc);
+    printf("recode skip pc: 0x%08x\n", need_skip_pc);
     skip_pc_tail = (skip_pc_tail + 1) % MAX_SKIP_NUM;
     is_skip_ref = false;
   }
