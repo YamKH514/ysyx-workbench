@@ -149,6 +149,7 @@ void difftest_step(uint32_t pc)
   {
     ref_difftest_regcpy(&cpu, DIFFTEST_TO_REF);
     is_skip_ref = false;
+    return;
   }
 
   ref_difftest_exec(1);
