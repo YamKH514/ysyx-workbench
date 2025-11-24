@@ -21,11 +21,11 @@ static int skip_pc_head = 0;
 static int skip_pc_tail = 0;
 static bool is_skip_ref = false;
 // TODO 为多周期cpu修改skip
-int skip_pc = 0;
+int need_skip_pc = 0;
 void difftest_skip_ref(){
   svSetScope(svGetScopeFromName("TOP.top.u_PCCnt"));
-  get_pc_value(&skip_pc);
-  printf("difftest_skip_ref get_pc_value: 0x%08x\n", (uint32_t)skip_pc);
+  get_pc_value(&need_skip_pc);
+  printf("difftest_skip_ref get_pc_value: 0x%08x\n", (uint32_t)need_skip_pc);
   is_skip_ref = true;
 }
 
@@ -130,7 +130,7 @@ void difftest_step(uint32_t pc)
 
   if(is_skip_ref)
   {
-    skip_pc_queue[skip_pc_tail] = skip_pc;
+    skip_pc_queue[skip_pc_tail] = (uint32_t)need_skip_pc;
     printf("recode skip pc: 0x%08x\n", skip_pc);
     skip_pc_tail = (skip_pc_tail + 1) % MAX_SKIP_NUM;
     is_skip_ref = false;
