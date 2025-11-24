@@ -64,8 +64,11 @@ static void exec_once(Vtop *top, VerilatedContext *contextp, VerilatedVcdC *tfp)
         npc_state.inited = true;
     }
 
-    npc_state.halt_pc = top->pc;
-    npc_state.halt_ret = top->ReadData_a0;
+    if (top->rootp->top__DOT__pc_to_ifu_ready)
+    {
+        npc_state.halt_pc = top->pc;
+        npc_state.halt_ret = top->ReadData_a0;
+    }
 
     contextp->timeInc(1);
     cpu_single_cycle(top);
