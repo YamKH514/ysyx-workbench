@@ -21,10 +21,10 @@ static int skip_pc_head = 0;
 static int skip_pc_tail = 0;
 static bool is_skip_ref = false;
 // TODO 为多周期cpu修改skip
-uint32_t skip_pc;
+int skip_pc = 0;
 void difftest_skip_ref(){
-  get_pc_value((int)skip_pc);
-  printf("difftest_skip_ref get_pc_value: 0x%08x\n", skip_pc);
+  get_pc_value(skip_pc);
+  printf("difftest_skip_ref get_pc_value: 0x%08x\n", (uint32_t)skip_pc);
   is_skip_ref = true;
 }
 
