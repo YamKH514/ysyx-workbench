@@ -5,6 +5,7 @@
 #include "difftest-def.h"
 #include "disasm.h"
 #include "ftrace.h"
+#include "Vtop__Syms.h"
 #include "Vtop__Dpi.h"
 #include "cpu.h"
 #include "watchpoint.h"
@@ -21,7 +22,7 @@ uint64_t g_nr_guest_inst = 0;
 bool g_print_step = false;
 CPU_state cpu = {};
 
-static void trace_and_difftest(char *logbuf)
+static void trace_and_difftest(Vtop *top, char *logbuf)
 {
 #ifdef CONFIG_ITRACE_COND
     if (ITRACE_COND)
@@ -36,7 +37,7 @@ static void trace_and_difftest(char *logbuf)
 #endif
     }
 #ifdef CONFIG_DIFFTEST
-    difftest_step(npc_state.halt_pc);
+    if (top->rootp->top__DOT__pc_to_ifu_ready) difftest_step(npc_state.halt_pc);
 #endif
 #ifdef CONFIG_WATCHPOINT
     bool changed = wp_scan();
@@ -63,8 +64,11 @@ static void exec_once(Vtop *top, VerilatedContext *contextp, VerilatedVcdC *tfp)
         npc_state.inited = true;
     }
 
-    npc_state.halt_pc = top->pc;
-    npc_state.halt_ret = top->ReadData_a0;
+    if (top->rootp->top__DOT__pc_to_ifu_ready)
+    {
+        npc_state.halt_pc = top->pc;
+        npc_state.halt_ret = top->ReadData_a0;
+    }
 
     contextp->timeInc(1);
     cpu_single_cycle(top);
@@ -72,12 +76,15 @@ static void exec_once(Vtop *top, VerilatedContext *contextp, VerilatedVcdC *tfp)
     tfp->dump(contextp->time());
 #endif
 
-    cpu.pc = top->pc;
-    cpu.npc = top->npc;
-    svSetScope(svGetScopeFromName("TOP.top.u_GPR.u_RegisterFile"));
-    get_gpr(cpu.gpr);
-    svSetScope(svGetScopeFromName("TOP.top.u_CSR"));
-    get_csr((int *)(&cpu.csr));
+    if (top->rootp->top__DOT__pc_to_ifu_ready)
+    {
+        cpu.pc = top->pc;
+        cpu.npc = top->npc;
+        svSetScope(svGetScopeFromName("TOP.top.u_GPR.u_RegisterFile"));
+        get_gpr(cpu.gpr);
+        svSetScope(svGetScopeFromName("TOP.top.u_CSR"));
+        get_csr((int *)(&cpu.csr));
+    }
 
     if (npc_state.halt_pc >= 0x80000000)
     {
@@ -102,7 +109,7 @@ static void exec_once(Vtop *top, VerilatedContext *contextp, VerilatedVcdC *tfp)
         p += space_len;
 
         disassemble(p, logbuf + sizeof(logbuf) - p, npc_state.halt_pc, inst, ilen);
-        trace_and_difftest(logbuf);
+        trace_and_difftest(top, logbuf);
 #endif
 
         // 函数调用 ftrace

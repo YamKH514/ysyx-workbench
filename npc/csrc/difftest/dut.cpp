@@ -16,9 +16,6 @@ void (*ref_difftest_raise_intr)(uint64_t NO) = NULL;
 #ifdef CONFIG_DIFFTEST
 
 #define MAX_SKIP_NUM 16
-static uint32_t skip_pc_queue[MAX_SKIP_NUM] = {0};
-static int skip_pc_head = 0;
-static int skip_pc_tail = 0;
 static bool is_skip_ref = false;
 
 void difftest_skip_ref(){
@@ -126,18 +123,9 @@ void difftest_step(uint32_t pc)
 
   if(is_skip_ref)
   {
-    skip_pc_queue[skip_pc_tail] = cpu.npc;
-    skip_pc_tail = (skip_pc_tail + 1) % MAX_SKIP_NUM;
+    ref_difftest_regcpy(&cpu, DIFFTEST_TO_REF);
     is_skip_ref = false;
-  }
-  if (skip_pc_head != skip_pc_tail) {
-    uint32_t skip_pc = skip_pc_queue[skip_pc_head];
-    if(cpu.pc == skip_pc)
-    {
-      ref_difftest_regcpy(&cpu, DIFFTEST_TO_REF);
-      skip_pc_head = (skip_pc_head + 1) % MAX_SKIP_NUM;
-      return;
-    }
+    return;
   }
 
   ref_difftest_exec(1);
