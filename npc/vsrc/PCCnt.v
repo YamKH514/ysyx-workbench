@@ -30,9 +30,4 @@ always @(posedge clk) begin
     end
 end
 
-export "DPI-C" function get_pc_value;
-function void get_pc_value(output int pc);
-    pc = pc_cnt_pc_out;
-endfunction
-
 endmodule
