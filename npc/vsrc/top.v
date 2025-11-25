@@ -59,6 +59,14 @@ wire    [31:0]  mem_w_addr;
 wire    [31:0]  mem_w_data;
 wire    [7:0]   mem_w_mask;
 
+wire            sram_re;
+wire    [31:0]  sram_r_addr;
+wire    [31:0]  sram_r_data;
+wire            sram_we;
+wire    [31:0]  sram_w_addr;
+wire    [31:0]  sram_w_data;
+wire    [7:0]   sram_w_mask;
+
 assign trap_npc = is_ecall ? csr_r_mtvec : csr_r_mepc;
 
 PCCnt u_PCCnt(
@@ -164,7 +172,6 @@ WBU u_WBU(
     .gpr_w_data_out 	(gpr_w_data     )
 );
 
-
 assign mem_r_addr = exu_res;
 assign mem_w_addr = exu_res;
 assign mem_w_data = gpr_r_data2;
@@ -177,7 +184,24 @@ LSU u_LSU(
     .lsu_we_in          (mem_we         ),
     .lsu_w_addr_in 	    (mem_w_addr     ),
     .lsu_w_data_in 	    (mem_w_data     ),
-    .lsu_w_mask_in 	    (mem_w_mask     )
+    .lsu_w_mask_in 	    (mem_w_mask     ),
+    .sram_re_out        (sram_re        ),
+    .sram_r_addr_out    (sram_r_addr    ),
+    .sram_r_data_in     (sram_r_data    ),
+    .sram_we_out        (sram_we        ),
+    .sram_w_addr_out    (sram_w_addr    ),
+    .sram_w_data_out    (sram_w_data    ),
+    .sram_w_mask_out    (sram_w_mask    )
+);
+
+SRAM u_SRAM(
+    .sram_re_in      	(sram_re        ),
+    .sram_r_addr_in  	(sram_r_addr    ),
+    .sram_r_data_out 	(sram_r_data    ),
+    .sram_we_in      	(sram_we        ),
+    .sram_w_addr_in  	(sram_w_addr    ),
+    .sram_w_data_in  	(sram_w_data    ),
+    .sram_w_mask_in  	(sram_w_mask    )
 );
 
 assign csr_w_data   = gpr_r_data1;

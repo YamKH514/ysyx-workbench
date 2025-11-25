@@ -8,27 +8,29 @@ module LSU(
     input               lsu_we_in,
     input       [31:0]  lsu_w_addr_in,
     input       [31:0]  lsu_w_data_in,
-    input       [7:0]   lsu_w_mask_in
-);
+    input       [7:0]   lsu_w_mask_in,
 
-import "DPI-C" function int paddr_read(input int raddr);
-import "DPI-C" function void paddr_write(
-    input int waddr, input int wdata, input byte wmask);
+    output              sram_re_out,
+    output      [31:0]  sram_r_addr_out,
+    input       [31:0]  sram_r_data_in,
+    output              sram_we_out,
+    output      [31:0]  sram_w_addr_out,
+    output      [31:0]  sram_w_data_out,
+    output      [7:0]   sram_w_mask_out
+);
 
 reg     [31:0]  read_data_r;
 reg     [1:0]   byte_off_r;
 wire    [7:0]   data_b;
 wire    [15:0]  data_h;
 
-always @(*) begin
-    read_data_r = 0;
-    if (lsu_we_in) begin
-        paddr_write(lsu_w_addr_in, lsu_w_data_in, lsu_w_mask_in);
-    end
-    else if (lsu_re_in) begin
-        read_data_r = paddr_read(lsu_r_addr_in);
-    end
-end
+assign sram_re_out = lsu_re_in;
+assign sram_r_addr_out = lsu_r_addr_in;
+assign read_data_r = sram_r_data_in;
+assign sram_we_out = lsu_we_in;
+assign sram_w_addr_out = lsu_w_addr_in;
+assign sram_w_data_out = lsu_w_data_in;
+assign sram_w_mask_out = lsu_w_mask_in;
 
 assign byte_off_r = lsu_r_addr_in[1:0];
 
