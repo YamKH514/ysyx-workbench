@@ -172,7 +172,7 @@ assign mem_w_addr = exu_res;
 assign mem_w_data = gpr_r_data2;
 
 LSU u_LSU(
-    .lsu_data_in        (lsu_data       ),
+    .idu_to_lsu_data_in (lsu_data       ),
     .lsu_r_addr_in  	(mem_r_addr     ),
     .lsu_r_data_out 	(mem_r_data     ),
     .lsu_w_addr_in 	    (mem_w_addr     ),
