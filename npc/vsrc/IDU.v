@@ -22,16 +22,20 @@ module IDU(
 
     output  reg [3:0]   pc_cnt_npc_src_sel_out,
 
-    output  reg [7:0]   lsu_mem_wmask_out,
-    output  reg         lsu_mem_we_out,
-    output  reg         lsu_mem_re_out,
-    output  reg [2:0]   lsu_mem_read_func_out,
+    // lsu_data_out lsu_we[0], lsu_w_mask[8:1], lsu_re[9], lsu_r_func[12:10]
+    output  reg [12:0]  lsu_data_out,
 
     input               ifu_to_idu_valid_in,
     output  reg         idu_to_ifu_ready_out,
 
     output  reg         idu_to_pc_valid_out
 );
+
+reg         lsu_we_r;
+reg [7:0]   lsu_w_mask_r;
+reg         lsu_re_r;
+reg [2:0]   lsu_r_func_r;
+assign  lsu_data_out = {lsu_r_func_r, lsu_re_r, lsu_w_mask_r, lsu_we_r};
 
 parameter S_IDLE = 2'd0;
 parameter S_WAIT_EXU = 2'd1;
@@ -238,19 +242,19 @@ assign wbu_gpr_wd_sel_out = `GPR_WD_SEL_MEM_DATA & {2{inst_lb | inst_lh | inst_l
                             `GPR_WD_SEL_CSR_DATA & {2{inst_csrrw | inst_csrrs}} |
                             `GPR_WD_SEL_ALU_RES;
 
-assign lsu_mem_wmask_out =  inst_sw ? 8'b00001111 :
-                            inst_sh ? 8'b00000011 :
-                            inst_sb ? 8'b00000001 :
-                            8'b0;
+assign lsu_w_mask_r =   inst_sw ? 8'b00001111 :
+                        inst_sh ? 8'b00000011 :
+                        inst_sb ? 8'b00000001 :
+                        8'b0;
 
-assign lsu_mem_re_out = (inst_lb | inst_lh | inst_lw | inst_lbu | inst_lhu);
+assign lsu_re_r = (inst_lb | inst_lh | inst_lw | inst_lbu | inst_lhu);
 
-assign lsu_mem_we_out = (inst_sb | inst_sh | inst_sw);
+assign lsu_we_r = (inst_sb | inst_sh | inst_sw);
 
-assign lsu_mem_read_func_out =  {3{inst_lbu}} & `MEM_READ_FUNC_LBU |
-                                {3{inst_lb}}  & `MEM_READ_FUNC_LB  |
-                                {3{inst_lhu}} & `MEM_READ_FUNC_LHU |
-                                {3{inst_lh}}  & `MEM_READ_FUNC_LH  |
-                                {3{inst_lw}}  & `MEM_READ_FUNC_LW  ;
+assign lsu_r_func_r =   {3{inst_lbu}} & `MEM_READ_FUNC_LBU |
+                        {3{inst_lb}}  & `MEM_READ_FUNC_LB  |
+                        {3{inst_lhu}} & `MEM_READ_FUNC_LHU |
+                        {3{inst_lh}}  & `MEM_READ_FUNC_LH  |
+                        {3{inst_lw}}  & `MEM_READ_FUNC_LW  ;
 
 endmodule

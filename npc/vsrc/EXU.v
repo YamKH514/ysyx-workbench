@@ -1,6 +1,8 @@
 `include "common.vh"
 
 module EXU(
+    // input               clk,
+    // input               rst,
     input       [31:0]  exu_pc_in,
     input       [31:0]  exu_rd1_in,
     input       [31:0]  exu_rd2_in,

@@ -50,14 +50,15 @@ reg     [31:0]  ifu_inst_r;
 wire            is_ecall;
 wire            is_mret;
 
-wire            mem_re;
+// wire            mem_re;
 wire    [31:0]  mem_r_addr;
 wire    [31:0]  mem_r_data;
-wire    [2:0]   mem_r_func;
-wire            mem_we;
+// wire    [2:0]   mem_r_func;
+// wire            mem_we;
 wire    [31:0]  mem_w_addr;
 wire    [31:0]  mem_w_data;
-wire    [7:0]   mem_w_mask;
+// wire    [7:0]   mem_w_mask;
+wire    [12:0]  lsu_data;
 
 wire            sram_re;
 wire    [31:0]  sram_r_addr;
@@ -121,10 +122,7 @@ IDU u_IDU(
     .wbu_gpr_we_out         (wbu_we             ),
     .wbu_gpr_w_addr_out     (wbu_w_addr         ),
     .wbu_gpr_wd_sel_out    	(wbu_w_data_sel     ),
-    .lsu_mem_wmask_out     	(mem_w_mask         ),
-    .lsu_mem_we_out         (mem_we             ),
-    .lsu_mem_re_out         (mem_re             ),
-    .lsu_mem_read_func_out 	(mem_r_func         ),
+    .lsu_data_out           (lsu_data           ),
     .ifu_to_idu_valid_in    (ifu_to_idu_valid),
     .idu_to_ifu_ready_out   (idu_to_ifu_ready),
     .idu_to_pc_valid_out    (idu_to_pc_valid)
@@ -177,14 +175,11 @@ assign mem_w_addr = exu_res;
 assign mem_w_data = gpr_r_data2;
 
 LSU u_LSU(
-    .lsu_re_in          (mem_re         ),
+    .lsu_data_in        (lsu_data       ),
     .lsu_r_addr_in  	(mem_r_addr     ),
     .lsu_r_data_out 	(mem_r_data     ),
-    .lsu_r_func_in  	(mem_r_func     ),
-    .lsu_we_in          (mem_we         ),
     .lsu_w_addr_in 	    (mem_w_addr     ),
     .lsu_w_data_in 	    (mem_w_data     ),
-    .lsu_w_mask_in 	    (mem_w_mask     ),
     .sram_re_out        (sram_re        ),
     .sram_r_addr_out    (sram_r_addr    ),
     .sram_r_data_in     (sram_r_data    ),
