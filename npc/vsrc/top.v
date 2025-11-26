@@ -50,14 +50,11 @@ reg     [31:0]  ifu_inst_r;
 wire            is_ecall;
 wire            is_mret;
 
-// wire            mem_re;
 wire    [31:0]  mem_r_addr;
 wire    [31:0]  mem_r_data;
-// wire    [2:0]   mem_r_func;
-// wire            mem_we;
 wire    [31:0]  mem_w_addr;
 wire    [31:0]  mem_w_data;
-// wire    [7:0]   mem_w_mask;
+
 wire    [12:0]  lsu_data;
 
 wire            sram_re;
@@ -122,10 +119,10 @@ IDU u_IDU(
     .wbu_gpr_we_out         (wbu_we             ),
     .wbu_gpr_w_addr_out     (wbu_w_addr         ),
     .wbu_gpr_wd_sel_out    	(wbu_w_data_sel     ),
-    .lsu_data_out           (lsu_data           ),
-    .ifu_to_idu_valid_in    (ifu_to_idu_valid),
-    .idu_to_ifu_ready_out   (idu_to_ifu_ready),
-    .idu_to_pc_valid_out    (idu_to_pc_valid)
+    .idu_to_lsu_data_out    (lsu_data           ),
+    .ifu_to_idu_valid_in    (ifu_to_idu_valid   ),
+    .idu_to_ifu_ready_out   (idu_to_ifu_ready   ),
+    .idu_to_pc_valid_out    (idu_to_pc_valid    )
 );
 
 ImmExt u_ImmExt(

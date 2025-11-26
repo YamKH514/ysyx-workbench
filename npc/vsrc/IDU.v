@@ -22,8 +22,8 @@ module IDU(
 
     output  reg [3:0]   pc_cnt_npc_src_sel_out,
 
-    // lsu_data_out lsu_we[0], lsu_w_mask[8:1], lsu_re[9], lsu_r_func[12:10]
-    output  reg [12:0]  lsu_data_out,
+    // idu_to_lsu_data_out lsu_we[0], lsu_w_mask[8:1], lsu_re[9], lsu_r_func[12:10]
+    output  reg [12:0]  idu_to_lsu_data_out,
 
     input               ifu_to_idu_valid_in,
     output  reg         idu_to_ifu_ready_out,
@@ -35,7 +35,7 @@ reg         lsu_we_r;
 reg [7:0]   lsu_w_mask_r;
 reg         lsu_re_r;
 reg [2:0]   lsu_r_func_r;
-assign  lsu_data_out = {lsu_r_func_r, lsu_re_r, lsu_w_mask_r, lsu_we_r};
+assign  idu_to_lsu_data_out = {lsu_r_func_r, lsu_re_r, lsu_w_mask_r, lsu_we_r};
 
 parameter S_IDLE = 2'd0;
 parameter S_WAIT_EXU = 2'd1;
