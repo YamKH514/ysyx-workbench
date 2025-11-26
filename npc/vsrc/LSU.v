@@ -1,7 +1,7 @@
 `include "common.vh"
 
 module LSU(
-    // idu_to_lsu_data_in lsu_we[0], lsu_w_mask[8:1], lsu_re[9], lsu_r_func[12:10]
+    // idu_to_lsu_data lsu_r_func[12:10], lsu_re[9], lsu_w_mask[8:1], lsu_we[0]
     input       [12:0]  idu_to_lsu_data_in,
     input       [31:0]  lsu_r_addr_in,
     output  reg [31:0]  lsu_r_data_out,
@@ -17,10 +17,10 @@ module LSU(
     output      [7:0]   sram_w_mask_out
 );
 
-reg         lsu_we_r;
-reg [7:0]   lsu_w_mask_r;
-reg         lsu_re_r;
 reg [2:0]   lsu_r_func_r;
+reg         lsu_re_r;
+reg [7:0]   lsu_w_mask_r;
+reg         lsu_we_r;
 assign {lsu_r_func_r, lsu_re_r, lsu_w_mask_r, lsu_we_r} = idu_to_lsu_data_in;
 
 reg     [31:0]  read_data_r;

@@ -23,9 +23,9 @@ wire    [1:0]   exu_alu_src_sel2;
 wire    [31:0]  exu_res;
 wire    [5:0]   exu_alu_func;
 
-wire            wbu_we;
-wire    [4:0]   wbu_w_addr;
-wire    [1:0]   wbu_w_data_sel;
+// wire            wbu_we;
+// wire    [4:0]   wbu_w_addr;
+// wire    [1:0]   wbu_w_data_sel;
 
 wire            gpr_we;
 wire    [4:0]   gpr_w_addr;
@@ -55,7 +55,9 @@ wire    [31:0]  mem_r_data;
 wire    [31:0]  mem_w_addr;
 wire    [31:0]  mem_w_data;
 
-wire    [12:0]  lsu_data;
+wire    [12:0]  idu_to_lsu_data;
+
+wire    [7:0]   idu_to_wbu_data;
 
 wire            sram_re;
 wire    [31:0]  sram_r_addr;
@@ -116,10 +118,11 @@ IDU u_IDU(
     .exu_alu_src1_sel_out  	(exu_alu_src_sel1   ),
     .exu_alu_src2_sel_out  	(exu_alu_src_sel2   ),
     .pc_cnt_npc_src_sel_out (pc_cnt_npc_src_sel ),
-    .wbu_gpr_we_out         (wbu_we             ),
-    .wbu_gpr_w_addr_out     (wbu_w_addr         ),
-    .wbu_gpr_wd_sel_out    	(wbu_w_data_sel     ),
-    .idu_to_lsu_data_out    (lsu_data           ),
+    // .wbu_gpr_we_out         (wbu_we             ),
+    // .wbu_gpr_w_addr_out     (wbu_w_addr         ),
+    // .wbu_gpr_wd_sel_out    	(wbu_w_data_sel     ),
+    .idu_to_lsu_data_out    (idu_to_lsu_data    ),
+    .idu_to_wbu_data_out    (idu_to_wbu_data    ),
     .ifu_to_idu_valid_in    (ifu_to_idu_valid   ),
     .idu_to_ifu_ready_out   (idu_to_ifu_ready   ),
     .idu_to_pc_valid_out    (idu_to_pc_valid    )
@@ -156,9 +159,10 @@ EXU u_EXU(
 );
 
 WBU u_WBU(
-    .wbu_we_in      	(wbu_we         ),
-    .wbu_w_addr_in  	(wbu_w_addr     ),
-    .wbu_w_data_sel     (wbu_w_data_sel ),
+    .idu_to_wbu_data_in (idu_to_wbu_data),
+    // .wbu_we_in      	(wbu_we         ),
+    // .wbu_w_addr_in  	(wbu_w_addr     ),
+    // .wbu_w_data_sel     (wbu_w_data_sel ),
     .exu_res_in         (exu_res        ),
     .lsu_r_data_in      (mem_r_data     ),
     .csr_r_data_in      (csr_r_data     ),
@@ -172,7 +176,7 @@ assign mem_w_addr = exu_res;
 assign mem_w_data = gpr_r_data2;
 
 LSU u_LSU(
-    .idu_to_lsu_data_in (lsu_data       ),
+    .idu_to_lsu_data_in (idu_to_lsu_data),
     .lsu_r_addr_in  	(mem_r_addr     ),
     .lsu_r_data_out 	(mem_r_data     ),
     .lsu_w_addr_in 	    (mem_w_addr     ),
