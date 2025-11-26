@@ -1,8 +1,9 @@
 `include "common.vh"
 
 module EXU(
-    // input               clk,
-    // input               rst,
+    input               clk,
+    input               rst,
+
     input       [31:0]  exu_pc_in,
     input       [31:0]  exu_rd1_in,
     input       [31:0]  exu_rd2_in,
@@ -10,8 +11,63 @@ module EXU(
     input       [5:0]   exu_alu_fun_in,
     input       [1:0]   exu_alu_src1_sel_in,
     input       [1:0]   exu_alu_src2_sel_in,
-    output  reg [31:0]  exu_res_out
+    output  reg [31:0]  exu_res_out,
+
+    input               idu_to_exu_valid_in,
+    output  reg         exu_to_idu_ready_out,
+
+    output  reg         exu_to_pc_valid_out
 );
+
+parameter S_IDLE = 2'd0;
+parameter S_WAIT_LBU = 2'd1;
+
+reg [1:0] state, next_state;
+
+always @(posedge clk) begin
+    if (rst) state <= S_IDLE;
+    else state <= next_state;
+
+    if (rst) begin
+        exu_to_idu_ready_out <= 1'b0;
+        exu_to_pc_valid_out <= 1'b0;
+    end else begin
+        case (state)
+            S_IDLE: begin
+                exu_to_idu_ready_out <= 1'b0;
+                exu_to_pc_valid_out <= 1'b0;
+                if (idu_to_exu_valid_in) begin
+                    exu_to_idu_ready_out <= 1'b1;
+                    exu_to_pc_valid_out <= 1'b1;
+                end
+            end
+            S_WAIT_LBU: begin
+                exu_to_idu_ready_out <= 1'b0;
+                exu_to_pc_valid_out <= 1'b0;
+            end
+            default: begin
+                exu_to_idu_ready_out <= 1'b0;
+                exu_to_pc_valid_out <= 1'b0;
+            end
+        endcase
+    end
+end
+
+always @(*) begin
+    case (state)
+        S_IDLE: begin
+            if (idu_to_exu_valid_in) begin
+                next_state = S_WAIT_LBU;
+            end
+        end
+        S_WAIT_LBU: begin
+            next_state = S_IDLE;
+        end
+        default: begin
+            next_state = S_IDLE;
+        end
+    endcase
+end
 
 reg [31:0]  pc_r;
 reg [5:0]   alu_fun_r;

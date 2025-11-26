@@ -16,16 +16,14 @@ wire            ifu_to_inst_valid;
 wire            inst_to_ifu_ready;
 wire            ifu_to_idu_valid;
 wire            idu_to_ifu_ready;
-wire            idu_to_pc_valid;
+wire            idu_to_exu_valid;
+wire            exu_to_idu_ready;
+wire            exu_to_pc_valid;
 
 wire    [1:0]   exu_alu_src_sel1;
 wire    [1:0]   exu_alu_src_sel2;
 wire    [31:0]  exu_res;
 wire    [5:0]   exu_alu_func;
-
-// wire            wbu_we;
-// wire    [4:0]   wbu_w_addr;
-// wire    [1:0]   wbu_w_data_sel;
 
 wire            gpr_we;
 wire    [4:0]   gpr_w_addr;
@@ -79,8 +77,8 @@ PCCnt u_PCCnt(
     .pc_cnt_trap_npc_in    	(trap_npc           ),
     .pc_cnt_pc_out         	(pc                 ),
     .pc_cnt_npc_out        	(npc                ),
-    .idu_to_pc_valid_in     (idu_to_pc_valid),
-    .pc_to_ifu_ready_out    (pc_to_ifu_ready)
+    .idu_to_pc_valid_in     (exu_to_pc_valid    ),
+    .pc_to_ifu_ready_out    (pc_to_ifu_ready    )
 );
 
 IFU u_IFU(
@@ -118,14 +116,12 @@ IDU u_IDU(
     .exu_alu_src1_sel_out  	(exu_alu_src_sel1   ),
     .exu_alu_src2_sel_out  	(exu_alu_src_sel2   ),
     .pc_cnt_npc_src_sel_out (pc_cnt_npc_src_sel ),
-    // .wbu_gpr_we_out         (wbu_we             ),
-    // .wbu_gpr_w_addr_out     (wbu_w_addr         ),
-    // .wbu_gpr_wd_sel_out    	(wbu_w_data_sel     ),
     .idu_to_lsu_data_out    (idu_to_lsu_data    ),
     .idu_to_wbu_data_out    (idu_to_wbu_data    ),
     .ifu_to_idu_valid_in    (ifu_to_idu_valid   ),
     .idu_to_ifu_ready_out   (idu_to_ifu_ready   ),
-    .idu_to_pc_valid_out    (idu_to_pc_valid    )
+    .idu_to_exu_valid_out   (idu_to_exu_valid   ),
+    .exu_to_idu_ready_in    (exu_to_idu_ready   )
 );
 
 ImmExt u_ImmExt(
@@ -148,6 +144,8 @@ GPR u_GPR(
 );
 
 EXU u_EXU(
+    .clk                    (clk                ),
+    .rst                    (rst                ),
     .exu_pc_in           	(pc                 ),
     .exu_alu_fun_in      	(exu_alu_func       ),
     .exu_rd1_in          	(gpr_r_data1        ),
@@ -155,14 +153,14 @@ EXU u_EXU(
     .exu_imm_in          	(imm_ext            ),
     .exu_alu_src1_sel_in 	(exu_alu_src_sel1   ),
     .exu_alu_src2_sel_in 	(exu_alu_src_sel2   ),
-    .exu_res_out         	(exu_res            )
+    .exu_res_out         	(exu_res            ),
+    .idu_to_exu_valid_in    (idu_to_exu_valid   ),
+    .exu_to_idu_ready_out   (exu_to_idu_ready   ),
+    .exu_to_pc_valid_out    (exu_to_pc_valid    )
 );
 
 WBU u_WBU(
     .idu_to_wbu_data_in (idu_to_wbu_data),
-    // .wbu_we_in      	(wbu_we         ),
-    // .wbu_w_addr_in  	(wbu_w_addr     ),
-    // .wbu_w_data_sel     (wbu_w_data_sel ),
     .exu_res_in         (exu_res        ),
     .lsu_r_data_in      (mem_r_data     ),
     .csr_r_data_in      (csr_r_data     ),

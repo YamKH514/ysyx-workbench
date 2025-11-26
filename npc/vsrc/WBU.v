@@ -3,9 +3,6 @@
 module WBU(
     // idu_to_wbu_data wbu_we[7], wbu_w_addr[6:2], wbu_wd_sel[1:0]
     input       [7:0]   idu_to_wbu_data_in,
-    // input               wbu_we_in,
-    // input       [4:0]   wbu_w_addr_in,
-    // input       [1:0]   wbu_w_data_sel,
 
     input       [31:0]  exu_res_in,
     input       [31:0]  lsu_r_data_in,

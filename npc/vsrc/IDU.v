@@ -10,10 +10,6 @@ module IDU(
 
     output  reg [2:0]   idu_inst_type_out,
 
-    // output  reg         wbu_gpr_we_out,
-    // output  reg [4:0]   wbu_gpr_w_addr_out,
-    // output  reg [1:0]   wbu_gpr_wd_sel_out,
-
     output  reg         csr_we_out,
 
     output  reg [5:0]   exu_alu_fun_out,
@@ -31,24 +27,14 @@ module IDU(
     input               ifu_to_idu_valid_in,
     output  reg         idu_to_ifu_ready_out,
 
-    output  reg         idu_to_pc_valid_out
+    output  reg         idu_to_exu_valid_out,
+    input               exu_to_idu_ready_in
 );
-
-reg [2:0]   lsu_r_func_r;
-reg         lsu_re_r;
-reg [7:0]   lsu_w_mask_r;
-reg         lsu_we_r;
-assign idu_to_lsu_data_out = {lsu_r_func_r, lsu_re_r, lsu_w_mask_r, lsu_we_r};
-
-reg         wbu_we_r;
-reg [4:0]   wbu_w_addr_r;
-reg [1:0]   wbu_wd_sel_r;
-assign idu_to_wbu_data_out = {wbu_we_r, wbu_w_addr_r, wbu_wd_sel_r};
 
 parameter S_IDLE = 2'd0;
 parameter S_WAIT_EXU = 2'd1;
 
-reg [1:0]   state, next_state;
+reg [1:0] state, next_state;
 
 always @(posedge clk) begin
     if (rst) state <= S_IDLE;
@@ -56,27 +42,29 @@ always @(posedge clk) begin
 
     if (rst) begin
         idu_to_ifu_ready_out <= 1'b0;
-        idu_to_pc_valid_out <= 1'b0;
+        idu_to_exu_valid_out <= 1'b0;
         inst_r <= 32'b0;
     end else begin
         case (state)
             S_IDLE: begin
                 idu_to_ifu_ready_out <= 1'b0;
-                idu_to_pc_valid_out <= 1'b0;
+                idu_to_exu_valid_out <= 1'b0;
                 if (ifu_to_idu_valid_in) begin
                     idu_to_ifu_ready_out <= 1'b1;
-                    idu_to_pc_valid_out <= 1'b1;
+                    idu_to_exu_valid_out <= 1'b1;
                     inst_r <= idu_inst_in;
                 end
             end
             S_WAIT_EXU: begin
                 idu_to_ifu_ready_out <= 1'b0;
-                idu_to_pc_valid_out <= 1'b0;
+                if (exu_to_idu_ready_in) begin
+                    idu_to_exu_valid_out <= 1'b0;
+                end
                 inst_r <= 32'b0;
             end
             default: begin
                 idu_to_ifu_ready_out <= 1'b0;
-                idu_to_pc_valid_out <= 1'b0;
+                idu_to_exu_valid_out <= 1'b0;
             end
         endcase
     end
@@ -90,13 +78,26 @@ always @(*) begin
             end
         end
         S_WAIT_EXU: begin
-            next_state = S_IDLE;
+            if (exu_to_idu_ready_in) begin
+                next_state = S_IDLE;
+            end
         end
         default: begin
             next_state = S_IDLE;
         end
     endcase
 end
+
+reg [2:0]   lsu_r_func_r;
+reg         lsu_re_r;
+reg [7:0]   lsu_w_mask_r;
+reg         lsu_we_r;
+assign idu_to_lsu_data_out = {lsu_r_func_r, lsu_re_r, lsu_w_mask_r, lsu_we_r};
+
+reg         wbu_we_r;
+reg [4:0]   wbu_w_addr_r;
+reg [1:0]   wbu_wd_sel_r;
+assign idu_to_wbu_data_out = {wbu_we_r, wbu_w_addr_r, wbu_wd_sel_r};
 
 reg     [31:0]  inst_r;
 wire    [6:0]   inst_opcode;
