@@ -14,7 +14,9 @@ module LSU(
     output              sram_we_out,
     output      [31:0]  sram_w_addr_out,
     output      [31:0]  sram_w_data_out,
-    output      [7:0]   sram_w_mask_out
+    output      [7:0]   sram_w_mask_out,
+
+    input               exu_to_lsu_valid_in
 );
 
 reg [2:0]   lsu_r_func_r;
@@ -28,10 +30,10 @@ reg     [1:0]   byte_off_r;
 wire    [7:0]   data_b;
 wire    [15:0]  data_h;
 
-assign sram_re_out = lsu_re_r;
+assign sram_re_out = lsu_re_r & exu_to_lsu_valid_in;
 assign sram_r_addr_out = lsu_r_addr_in;
 assign read_data_r = sram_r_data_in;
-assign sram_we_out = lsu_we_r;
+assign sram_we_out = lsu_we_r & exu_to_lsu_valid_in;
 assign sram_w_addr_out = lsu_w_addr_in;
 assign sram_w_data_out = lsu_w_data_in;
 assign sram_w_mask_out = lsu_w_mask_r;

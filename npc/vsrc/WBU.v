@@ -10,7 +10,9 @@ module WBU(
 
     output reg          gpr_we_out,
     output reg  [4:0]   gpr_w_addr_out,
-    output reg  [31:0]  gpr_w_data_out
+    output reg  [31:0]  gpr_w_data_out,
+
+    input               exu_to_lsu_valid_in
 );
 
 reg         wbu_we_r;
@@ -26,7 +28,7 @@ assign gpr_w_data_r =   (wbu_wd_sel_r == `GPR_WD_SEL_ALU_RES)  ? exu_res_in   :
                         32'b0;
 
 always @(*) begin
-    if (wbu_we_r) begin
+    if (wbu_we_r & exu_to_lsu_valid_in) begin
         gpr_we_out = 1'b1;
         gpr_w_addr_out = wbu_w_addr_r;
         gpr_w_data_out = gpr_w_data_r;
