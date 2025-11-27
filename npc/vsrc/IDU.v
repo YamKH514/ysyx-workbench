@@ -31,6 +31,15 @@ module IDU(
     input               exu_to_idu_ready_in
 );
 
+reg [2:0]   lsu_r_func_r;
+reg         lsu_re_r;
+reg [7:0]   lsu_w_mask_r;
+reg         lsu_we_r;
+
+reg         wbu_we_r;
+reg [4:0]   wbu_w_addr_r;
+reg [1:0]   wbu_wd_sel_r;
+
 parameter S_IDLE = 2'd0;
 parameter S_WAIT_EXU = 2'd1;
 
@@ -53,6 +62,8 @@ always @(posedge clk) begin
                     idu_to_ifu_ready_out <= 1'b1;
                     idu_to_exu_valid_out <= 1'b1;
                     inst_r <= idu_inst_in;
+                    idu_to_lsu_data_out <= {lsu_r_func_r, lsu_re_r, lsu_w_mask_r, lsu_we_r};
+                    idu_to_wbu_data_out <= {wbu_we_r, wbu_w_addr_r, wbu_wd_sel_r};
                 end
             end
             S_WAIT_EXU: begin
@@ -60,7 +71,7 @@ always @(posedge clk) begin
                 if (exu_to_idu_ready_in) begin
                     idu_to_exu_valid_out <= 1'b0;
                 end
-                // inst_r <= 32'b0;
+                inst_r <= 32'b0;
             end
             default: begin
                 idu_to_ifu_ready_out <= 1'b0;
@@ -87,17 +98,6 @@ always @(*) begin
         end
     endcase
 end
-
-reg [2:0]   lsu_r_func_r;
-reg         lsu_re_r;
-reg [7:0]   lsu_w_mask_r;
-reg         lsu_we_r;
-assign idu_to_lsu_data_out = {lsu_r_func_r, lsu_re_r, lsu_w_mask_r, lsu_we_r};
-
-reg         wbu_we_r;
-reg [4:0]   wbu_w_addr_r;
-reg [1:0]   wbu_wd_sel_r;
-assign idu_to_wbu_data_out = {wbu_we_r, wbu_w_addr_r, wbu_wd_sel_r};
 
 reg     [31:0]  inst_r;
 wire    [6:0]   inst_opcode;
