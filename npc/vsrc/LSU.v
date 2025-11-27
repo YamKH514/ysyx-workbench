@@ -76,6 +76,7 @@ always @(posedge clk) begin
             S_WAIT_WBU: begin
                 lsu_to_exu_ready_out <= 1'b0;
                 lsu_to_wbu_valid_out <= 1'b0;
+                lsu_to_pc_valid_out <= 1'b0;
             end
             default: begin
                 lsu_to_exu_ready_out <= 1'b0;
