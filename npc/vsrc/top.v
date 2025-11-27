@@ -115,7 +115,7 @@ IDU u_IDU(
     .exu_alu_fun_out       	(exu_alu_func       ),
     .exu_alu_src1_sel_out  	(exu_alu_src_sel1   ),
     .exu_alu_src2_sel_out  	(exu_alu_src_sel2   ),
-    .pc_cnt_npc_src_sel_out (pc_cnt_npc_src_sel ),
+    .idu_to_pccnt_data_out  (pc_cnt_npc_src_sel ),
     .idu_to_lsu_data_out    (idu_to_lsu_data    ),
     .idu_to_wbu_data_out    (idu_to_wbu_data    ),
     .ifu_to_idu_valid_in    (ifu_to_idu_valid   ),
