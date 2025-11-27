@@ -72,6 +72,7 @@ always @(posedge clk) begin
                 lsu_to_sram_valid_out <= 1'b0;
                 lsu_to_wbu_valid_out <= 1'b1;
                 lsu_to_pc_valid_out <= 1'b1;
+                read_data_r <= sram_r_data_in;
             end
             S_WAIT_WBU: begin
                 lsu_to_exu_ready_out <= 1'b0;
@@ -118,7 +119,6 @@ wire    [15:0]  data_h;
 
 assign sram_re_out = lsu_re_r & exu_to_lsu_valid_in;
 assign sram_r_addr_out = lsu_r_addr_in;
-assign read_data_r = sram_r_data_in;
 assign sram_we_out = lsu_we_r & exu_to_lsu_valid_in;
 assign sram_w_addr_out = lsu_w_addr_in;
 assign sram_w_data_out = lsu_w_data_in;
