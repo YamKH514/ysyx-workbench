@@ -53,14 +53,11 @@ always @(*) begin
         S_IDLE: begin
             if (lsu_to_sram_valid_in) begin
                 next_state = S_WORK;
-
-            if (sram_we_in & lsu_to_sram_valid_in) begin
-                paddr_write(sram_w_addr_in, sram_w_data_in, sram_w_mask_in);
-            end
-            else if (sram_re_in & lsu_to_sram_valid_in) begin
-                read_data_r = paddr_read(sram_r_addr_in);
-            end
-
+                if (sram_we_in & lsu_to_sram_valid_in) begin
+                    paddr_write(sram_w_addr_in, sram_w_data_in, sram_w_mask_in);
+                end else if (sram_re_in & lsu_to_sram_valid_in) begin
+                    read_data_r = paddr_read(sram_r_addr_in);
+                end
             end
         end
         S_WORK: begin

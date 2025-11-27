@@ -23,6 +23,7 @@ module LSU(
     output  reg         lsu_to_exu_ready_out,
 
     output  reg         lsu_to_sram_valid_out,
+    input               sram_to_lsu_ready_in,
 
     output  reg         lsu_to_wbu_valid_out,
 
@@ -69,10 +70,12 @@ always @(posedge clk) begin
             end
             S_WAIT_SRAM: begin
                 lsu_to_exu_ready_out <= 1'b0;
-                lsu_to_sram_valid_out <= 1'b0;
-                lsu_to_wbu_valid_out <= 1'b1;
-                lsu_to_pc_valid_out <= 1'b1;
-                read_data_r <= sram_r_data_in;
+                if (sram_to_lsu_ready_in) begin
+                    lsu_to_sram_valid_out <= 1'b0;
+                    lsu_to_wbu_valid_out <= 1'b1;
+                    lsu_to_pc_valid_out <= 1'b1;
+                    read_data_r <= sram_r_data_in;
+                end
             end
             S_WAIT_WBU: begin
                 lsu_to_exu_ready_out <= 1'b0;
@@ -101,7 +104,9 @@ always @(*) begin
             end
         end
         S_WAIT_SRAM: begin
-            next_state = S_WAIT_WBU;
+            if (sram_to_lsu_ready_in) begin
+                next_state = S_WAIT_WBU;
+            end
         end
         S_WAIT_WBU: begin
             next_state = S_IDLE;

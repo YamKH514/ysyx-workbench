@@ -21,6 +21,7 @@ wire            exu_to_idu_ready;
 wire            exu_to_lsu_valid;
 wire            lsu_to_exu_ready;
 wire            lsu_to_sram_valid;
+wire            sram_to_lsu_ready;
 wire            lsu_to_wbu_valid;
 wire            to_pc_valid;
 
@@ -197,11 +198,14 @@ LSU u_LSU(
     .exu_to_lsu_valid_in(exu_to_lsu_valid),
     .lsu_to_exu_ready_out(lsu_to_exu_ready),
     .lsu_to_sram_valid_out(lsu_to_sram_valid),
+    .sram_to_lsu_ready_in(sram_to_lsu_ready),
     .lsu_to_wbu_valid_out(lsu_to_wbu_valid),
     .lsu_to_pc_valid_out(to_pc_valid    )
 );
 
 SRAM u_SRAM(
+    .clk                (clk),
+    .rst                (rst),
     .sram_re_in      	(sram_re        ),
     .sram_r_addr_in  	(sram_r_addr    ),
     .sram_r_data_out 	(sram_r_data    ),
@@ -209,7 +213,8 @@ SRAM u_SRAM(
     .sram_w_addr_in  	(sram_w_addr    ),
     .sram_w_data_in  	(sram_w_data    ),
     .sram_w_mask_in  	(sram_w_mask    ),
-    .lsu_to_sram_valid_in(lsu_to_sram_valid)
+    .lsu_to_sram_valid_in(lsu_to_sram_valid),
+    .sram_to_lsu_ready_out(sram_to_lsu_ready)
 );
 
 assign csr_w_data   = gpr_r_data1;
