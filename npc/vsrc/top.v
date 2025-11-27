@@ -23,6 +23,7 @@ wire            lsu_to_exu_ready;
 wire            lsu_to_sram_valid;
 wire            sram_to_lsu_ready;
 wire            lsu_to_wbu_valid;
+wire            wbu_to_lsu_ready;
 wire            to_pc_valid;
 
 wire    [1:0]   exu_alu_src_sel1;
@@ -164,6 +165,8 @@ EXU u_EXU(
 );
 
 WBU u_WBU(
+    .clk                (clk            ),
+    .rst                (rst            ),
     .idu_to_wbu_data_in (idu_to_wbu_data),
     .exu_res_in         (exu_res        ),
     .lsu_r_data_in      (mem_r_data     ),
@@ -173,7 +176,9 @@ WBU u_WBU(
     .gpr_w_data_out 	(gpr_w_data     ),
     .csr_w_ecall_out    (is_ecall       ),
     .csr_w_mret_out     (is_mret        ),
-    .lsu_to_wbu_valid_in(lsu_to_wbu_valid)
+    .lsu_to_wbu_valid_in(lsu_to_wbu_valid),
+    .wbu_to_lsu_ready_out(wbu_to_lsu_ready),
+    .wbu_to_pc_valid_out(to_pc_valid)
 );
 
 assign mem_r_addr = exu_res;
@@ -182,7 +187,7 @@ assign mem_w_data = gpr_r_data2;
 
 LSU u_LSU(
     .clk                (clk            ),
-    .rst                (rst),
+    .rst                (rst            ),
     .idu_to_lsu_data_in (idu_to_lsu_data),
     .lsu_r_addr_in  	(mem_r_addr     ),
     .lsu_r_data_out 	(mem_r_data     ),
@@ -200,7 +205,7 @@ LSU u_LSU(
     .lsu_to_sram_valid_out(lsu_to_sram_valid),
     .sram_to_lsu_ready_in(sram_to_lsu_ready),
     .lsu_to_wbu_valid_out(lsu_to_wbu_valid),
-    .lsu_to_pc_valid_out(to_pc_valid    )
+    .wbu_to_lsu_ready_in(wbu_to_lsu_ready)
 );
 
 SRAM u_SRAM(

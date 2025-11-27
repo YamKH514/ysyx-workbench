@@ -26,8 +26,7 @@ module LSU(
     input               sram_to_lsu_ready_in,
 
     output  reg         lsu_to_wbu_valid_out,
-
-    output  reg         lsu_to_pc_valid_out
+    input               wbu_to_lsu_ready_in
 );
 
 reg [2:0]   lsu_r_func_r;
@@ -50,21 +49,18 @@ always @(posedge clk) begin
         lsu_to_exu_ready_out <= 1'b0;
         lsu_to_sram_valid_out <= 1'b0;
         lsu_to_wbu_valid_out <= 1'b0;
-        lsu_to_pc_valid_out <= 1'b0;
     end else begin
         case (state)
             S_IDLE: begin
                 lsu_to_exu_ready_out <= 1'b0;
                 lsu_to_sram_valid_out <= 1'b0;
                 lsu_to_wbu_valid_out <= 1'b0;
-                lsu_to_pc_valid_out <= 1'b0;
                 if (exu_to_lsu_valid_in) begin
                     lsu_to_exu_ready_out <= 1'b1;
                     if (lsu_re_r | lsu_we_r) begin
                         lsu_to_sram_valid_out <= 1'b1;
                     end else begin
                         lsu_to_wbu_valid_out <= 1'b1;
-                        lsu_to_pc_valid_out <= 1'b1;
                     end
                 end
             end
@@ -73,20 +69,19 @@ always @(posedge clk) begin
                 if (sram_to_lsu_ready_in) begin
                     lsu_to_sram_valid_out <= 1'b0;
                     lsu_to_wbu_valid_out <= 1'b1;
-                    lsu_to_pc_valid_out <= 1'b1;
                     read_data_r <= sram_r_data_in;
                 end
             end
             S_WAIT_WBU: begin
                 lsu_to_exu_ready_out <= 1'b0;
-                lsu_to_wbu_valid_out <= 1'b0;
-                lsu_to_pc_valid_out <= 1'b0;
+                if (wbu_to_lsu_ready_in) begin
+                    lsu_to_wbu_valid_out <= 1'b0;
+                end
             end
             default: begin
                 lsu_to_exu_ready_out <= 1'b0;
                 lsu_to_sram_valid_out <= 1'b0;
                 lsu_to_wbu_valid_out <= 1'b0;
-                lsu_to_pc_valid_out <= 1'b0;
             end
         endcase
     end
@@ -109,7 +104,9 @@ always @(*) begin
             end
         end
         S_WAIT_WBU: begin
-            next_state = S_IDLE;
+            if (wbu_to_lsu_ready_in) begin
+                next_state = S_IDLE;
+            end
         end
         default: begin
             next_state = S_IDLE;
