@@ -7,7 +7,9 @@ module SRAM(
     input               sram_we_in,
     input       [31:0]  sram_w_addr_in,
     input       [31:0]  sram_w_data_in,
-    input       [7:0]   sram_w_mask_in
+    input       [7:0]   sram_w_mask_in,
+
+    input               lsu_to_sram_valid_in
 );
 
 import "DPI-C" function int paddr_read(input int raddr);
@@ -18,10 +20,10 @@ reg     [31:0]  read_data_r;
 
 always @(*) begin
     read_data_r = 0;
-    if (sram_we_in) begin
+    if (sram_we_in & lsu_to_sram_valid_in) begin
         paddr_write(sram_w_addr_in, sram_w_data_in, sram_w_mask_in);
     end
-    else if (sram_re_in) begin
+    else if (sram_re_in & lsu_to_sram_valid_in) begin
         read_data_r = paddr_read(sram_r_addr_in);
     end
 end

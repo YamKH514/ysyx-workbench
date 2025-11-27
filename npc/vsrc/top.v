@@ -19,7 +19,10 @@ wire            idu_to_ifu_ready;
 wire            idu_to_exu_valid;
 wire            exu_to_idu_ready;
 wire            exu_to_lsu_valid;
-wire            exu_to_pc_valid;
+wire            lsu_to_exu_ready;
+wire            lsu_to_sram_valid;
+wire            lsu_to_wbu_valid;
+wire            to_pc_valid;
 
 wire    [1:0]   exu_alu_src_sel1;
 wire    [1:0]   exu_alu_src_sel2;
@@ -78,7 +81,7 @@ PCCnt u_PCCnt(
     .pc_cnt_trap_npc_in    	(trap_npc           ),
     .pc_cnt_pc_out         	(pc                 ),
     .pc_cnt_npc_out        	(npc                ),
-    .idu_to_pc_valid_in     (exu_to_pc_valid    ),
+    .idu_to_pc_valid_in     (to_pc_valid        ),
     .pc_to_ifu_ready_out    (pc_to_ifu_ready    )
 );
 
@@ -156,7 +159,7 @@ EXU u_EXU(
     .idu_to_exu_valid_in    (idu_to_exu_valid   ),
     .exu_to_idu_ready_out   (exu_to_idu_ready   ),
     .exu_to_lsu_valid_out   (exu_to_lsu_valid   ),
-    .exu_to_pc_valid_out    (exu_to_pc_valid    )
+    .lsu_to_exu_ready_in    (lsu_to_exu_ready   )
 );
 
 WBU u_WBU(
@@ -169,7 +172,7 @@ WBU u_WBU(
     .gpr_w_data_out 	(gpr_w_data     ),
     .csr_w_ecall_out    (is_ecall       ),
     .csr_w_mret_out     (is_mret        ),
-    .exu_to_lsu_valid_in(exu_to_lsu_valid)
+    .lsu_to_wbu_valid_in(lsu_to_wbu_valid)
 );
 
 assign mem_r_addr = exu_res;
@@ -177,6 +180,8 @@ assign mem_w_addr = exu_res;
 assign mem_w_data = gpr_r_data2;
 
 LSU u_LSU(
+    .clk                (clk            ),
+    .rst                (rst),
     .idu_to_lsu_data_in (idu_to_lsu_data),
     .lsu_r_addr_in  	(mem_r_addr     ),
     .lsu_r_data_out 	(mem_r_data     ),
@@ -189,7 +194,11 @@ LSU u_LSU(
     .sram_w_addr_out    (sram_w_addr    ),
     .sram_w_data_out    (sram_w_data    ),
     .sram_w_mask_out    (sram_w_mask    ),
-    .exu_to_lsu_valid_in(exu_to_lsu_valid)
+    .exu_to_lsu_valid_in(exu_to_lsu_valid),
+    .lsu_to_exu_ready_out(lsu_to_exu_ready),
+    .lsu_to_sram_valid_out(lsu_to_sram_valid),
+    .lsu_to_wbu_valid_out(lsu_to_wbu_valid),
+    .lsu_to_pc_valid_out(to_pc_valid    )
 );
 
 SRAM u_SRAM(
@@ -199,7 +208,8 @@ SRAM u_SRAM(
     .sram_we_in      	(sram_we        ),
     .sram_w_addr_in  	(sram_w_addr    ),
     .sram_w_data_in  	(sram_w_data    ),
-    .sram_w_mask_in  	(sram_w_mask    )
+    .sram_w_mask_in  	(sram_w_mask    ),
+    .lsu_to_sram_valid_in(lsu_to_sram_valid)
 );
 
 assign csr_w_data   = gpr_r_data1;

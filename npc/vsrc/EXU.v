@@ -17,8 +17,7 @@ module EXU(
     output  reg         exu_to_idu_ready_out,
 
     output  reg         exu_to_lsu_valid_out,
-
-    output  reg         exu_to_pc_valid_out
+    input               lsu_to_exu_ready_in
 );
 
 parameter S_IDLE = 2'd0;
@@ -33,28 +32,25 @@ always @(posedge clk) begin
     if (rst) begin
         exu_to_idu_ready_out <= 1'b0;
         exu_to_lsu_valid_out <= 1'b0;
-        exu_to_pc_valid_out <= 1'b0;
     end else begin
         case (state)
             S_IDLE: begin
                 exu_to_idu_ready_out <= 1'b0;
                 exu_to_lsu_valid_out <= 1'b0;
-                exu_to_pc_valid_out <= 1'b0;
                 if (idu_to_exu_valid_in) begin
                     exu_to_idu_ready_out <= 1'b1;
                     exu_to_lsu_valid_out <= 1'b1;
-                    exu_to_pc_valid_out <= 1'b1;
                 end
             end
             S_WAIT_LBU: begin
                 exu_to_idu_ready_out <= 1'b0;
-                exu_to_lsu_valid_out <= 1'b0;
-                exu_to_pc_valid_out <= 1'b0;
+                if (lsu_to_exu_ready_in) begin
+                    exu_to_lsu_valid_out <= 1'b0;
+                end
             end
             default: begin
                 exu_to_idu_ready_out <= 1'b0;
                 exu_to_lsu_valid_out <= 1'b0;
-                exu_to_pc_valid_out <= 1'b0;
             end
         endcase
     end
@@ -68,7 +64,9 @@ always @(*) begin
             end
         end
         S_WAIT_LBU: begin
-            next_state = S_IDLE;
+            if (lsu_to_exu_ready_in) begin
+                next_state = S_IDLE;
+            end
         end
         default: begin
             next_state = S_IDLE;

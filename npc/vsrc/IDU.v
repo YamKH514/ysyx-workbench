@@ -42,10 +42,10 @@ reg [4:0]   wbu_w_addr_r;
 reg [1:0]   wbu_wd_sel_r;
 assign idu_to_wbu_data_out = {ecall_r, mret_r, wbu_we_r, wbu_w_addr_r, wbu_wd_sel_r};
 
-parameter S_IDLE = 2'd0;
-parameter S_WAIT_EXU = 2'd1;
+parameter S_IDLE = 1'd0;
+parameter S_WAIT_EXU = 1'd1;
 
-reg [1:0] state, next_state;
+reg state, next_state;
 
 always @(posedge clk) begin
     if (rst) state <= S_IDLE;
@@ -71,7 +71,6 @@ always @(posedge clk) begin
                 if (exu_to_idu_ready_in) begin
                     idu_to_exu_valid_out <= 1'b0;
                 end
-                // inst_r <= 32'b0;
             end
             default: begin
                 idu_to_ifu_ready_out <= 1'b0;
