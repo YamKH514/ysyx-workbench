@@ -56,7 +56,7 @@ wire    [31:0]  mem_w_data;
 
 wire    [12:0]  idu_to_lsu_data;
 
-wire    [7:0]   idu_to_wbu_data;
+wire    [9:0]   idu_to_wbu_data;
 
 wire            sram_re;
 wire    [31:0]  sram_r_addr;
@@ -107,10 +107,8 @@ InstSRAM u_InstSRAM(
 
 IDU u_IDU(
     .clk                	(clk                ),
-    .rst                    (rst),
+    .rst                    (rst                ),
     .idu_inst_in           	(ifu_inst_r         ),
-    .idu_is_ecall_out      	(is_ecall           ),
-    .idu_is_mret_out       	(is_mret            ),
     .idu_inst_type_out     	(inst_type          ),
     .csr_we_out        	    (csr_we             ),
     .exu_alu_fun_out       	(exu_alu_func       ),
@@ -169,6 +167,8 @@ WBU u_WBU(
     .gpr_we_out     	(gpr_we         ),
     .gpr_w_addr_out 	(gpr_w_addr     ),
     .gpr_w_data_out 	(gpr_w_data     ),
+    .csr_w_ecall_out    (is_ecall       ),
+    .csr_w_mret_out     (is_mret        ),
     .exu_to_lsu_valid_in(exu_to_lsu_valid)
 );
 

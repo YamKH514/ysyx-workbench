@@ -1,8 +1,8 @@
 `include "common.vh"
 
 module WBU(
-    // idu_to_wbu_data wbu_we[7], wbu_w_addr[6:2], wbu_wd_sel[1:0]
-    input       [7:0]   idu_to_wbu_data_in,
+    // idu_to_wbu_data is_ecall[9], is_mret[8], wbu_we[7], wbu_w_addr[6:2], wbu_wd_sel[1:0]
+    input       [9:0]   idu_to_wbu_data_in,
 
     input       [31:0]  exu_res_in,
     input       [31:0]  lsu_r_data_in,
@@ -12,13 +12,21 @@ module WBU(
     output reg  [4:0]   gpr_w_addr_out,
     output reg  [31:0]  gpr_w_data_out,
 
+    output reg          csr_w_ecall_out,
+    output reg          csr_w_mret_out,
+
     input               exu_to_lsu_valid_in
 );
 
+reg         ecall_r;
+reg         mret_r;
 reg         wbu_we_r;
 reg [4:0]   wbu_w_addr_r;
 reg [1:0]   wbu_wd_sel_r;
-assign {wbu_we_r, wbu_w_addr_r, wbu_wd_sel_r} = idu_to_wbu_data_in;
+assign {ecall_r, mret_r, wbu_we_r, wbu_w_addr_r, wbu_wd_sel_r} = idu_to_wbu_data_in;
+
+assign csr_w_ecall_out = ecall_r & exu_to_lsu_valid_in;
+assign csr_w_mret_out = mret_r & exu_to_lsu_valid_in;
 
 reg [31:0]  gpr_w_data_r;
 

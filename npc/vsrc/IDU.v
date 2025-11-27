@@ -5,8 +5,6 @@ module IDU(
     input               rst,
 
     input       [31:0]  idu_inst_in,
-    output  reg         idu_is_ecall_out,
-    output  reg         idu_is_mret_out,
 
     output  reg [2:0]   idu_inst_type_out,
 
@@ -21,8 +19,8 @@ module IDU(
     // idu_to_lsu_data lsu_r_func[12:10], lsu_re[9], lsu_w_mask[8:1], lsu_we[0]
     output  reg [12:0]  idu_to_lsu_data_out,
 
-    // idu_to_wbu_data wbu_we[7], wbu_w_addr[6:2], wbu_wd_sel[1:0]
-    output  reg [7:0]   idu_to_wbu_data_out,
+    // idu_to_wbu_data is_ecall[9], is_mret[8], wbu_we[7], wbu_w_addr[6:2], wbu_wd_sel[1:0]
+    output  reg [9:0]   idu_to_wbu_data_out,
 
     input               ifu_to_idu_valid_in,
     output  reg         idu_to_ifu_ready_out,
@@ -37,10 +35,12 @@ reg [7:0]   lsu_w_mask_r;
 reg         lsu_we_r;
 assign idu_to_lsu_data_out = {lsu_r_func_r, lsu_re_r, lsu_w_mask_r, lsu_we_r};
 
+reg         ecall_r;
+reg         mret_r;
 reg         wbu_we_r;
 reg [4:0]   wbu_w_addr_r;
 reg [1:0]   wbu_wd_sel_r;
-assign idu_to_wbu_data_out = {wbu_we_r, wbu_w_addr_r, wbu_wd_sel_r};
+assign idu_to_wbu_data_out = {ecall_r, mret_r, wbu_we_r, wbu_w_addr_r, wbu_wd_sel_r};
 
 parameter S_IDLE = 2'd0;
 parameter S_WAIT_EXU = 2'd1;
@@ -202,8 +202,8 @@ always @(posedge clk) begin
     end
 end
 
-assign idu_is_ecall_out = inst_ecall;
-assign idu_is_mret_out  = inst_mret;
+assign ecall_r = inst_ecall;
+assign mret_r  = inst_mret;
 
 assign idu_inst_type_out =  `INST_TYPE_I & {3{inst_jalr | inst_lb | inst_lh | inst_lw | inst_lbu | inst_lhu |  inst_addi | inst_slti | inst_sltiu | inst_xori | inst_ori | inst_andi | inst_slli | inst_srli | inst_srai | inst_csrrw | inst_csrrs}} |
                             `INST_TYPE_S & {3{inst_sb | inst_sh | inst_sw}} |
