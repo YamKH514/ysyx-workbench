@@ -16,7 +16,7 @@ module IDU(
     output  reg [1:0]   exu_alu_src1_sel_out,
     output  reg [1:0]   exu_alu_src2_sel_out,
 
-    output  reg [3:0]   pc_cnt_npc_src_sel_out,
+    output  reg [3:0]   idu_to_pccnt_data_out,
 
     // idu_to_lsu_data lsu_r_func[12:10], lsu_re[9], lsu_w_mask[8:1], lsu_we[0]
     output  reg [12:0]  idu_to_lsu_data_out,
@@ -30,6 +30,9 @@ module IDU(
     output  reg         idu_to_exu_valid_out,
     input               exu_to_idu_ready_in
 );
+
+reg [3:0]   pc_cnt_npc_src_sel_r;
+assign idu_to_pccnt_data_out = pc_cnt_npc_src_sel_r;
 
 reg [2:0]   lsu_r_func_r;
 reg         lsu_re_r;
@@ -238,7 +241,7 @@ assign exu_alu_src2_sel_out =   `ALU_SRC2_SEL_RD2   & {2{inst_beq | inst_bne | i
                                 `ALU_SRC2_SEL_IMM   & {2{inst_lui | inst_auipc |inst_lb | inst_lh | inst_lw | inst_lbu | inst_lhu | inst_sb | inst_sh | inst_sw | inst_addi | inst_slti | inst_sltiu | inst_xori | inst_ori | inst_andi | inst_slli | inst_srli | inst_srai}} |
                                 `ALU_SRC2_SEL_4     & {2{inst_jal | inst_jalr}};
 
-assign pc_cnt_npc_src_sel_out = `NPC_SRC_SEL_PC_IMM     & {4{inst_jal}} |
+assign pc_cnt_npc_src_sel_r =   `NPC_SRC_SEL_PC_IMM     & {4{inst_jal}} |
                                 `NPC_SRC_SEL_SRC1_IMM   & {4{inst_jalr}} |
                                 `NPC_SRC_SEL_TRAP_PC    & {4{inst_ecall | inst_mret}} |
                                 `NPC_SRC_SEL_JUMP_0     & {4{inst_bne | inst_bge | inst_bgeu}} |
