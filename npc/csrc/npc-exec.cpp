@@ -68,6 +68,7 @@ static void exec_once(Vtop *top, VerilatedContext *contextp, VerilatedVcdC *tfp)
     {
         npc_state.halt_pc = top->pc;
         npc_state.halt_ret = top->rootp->top__DOT__u_GPR__DOT__u_RegisterFile__DOT__rf[10];
+        printf("$a0 = 0x%08x\n", npc_state.halt_ret);
     }
 
     contextp->timeInc(1);
