@@ -45,8 +45,8 @@ always @(posedge clk) begin
                 wbu_to_lsu_ready_out <= 1'b0;
                 wbu_to_pc_valid_out <= 1'b0;
                 gpr_we_out <= 1'b0;
-                csr_w_ecall_out <= 1'b0;
-                csr_w_mret_out <= 1'b0;
+                // csr_w_ecall_out <= 1'b0;
+                // csr_w_mret_out <= 1'b0;
                 if (lsu_to_wbu_valid_in) begin
                     wbu_to_lsu_ready_out <= 1'b1;
                     wbu_to_pc_valid_out <= 1'b1;
