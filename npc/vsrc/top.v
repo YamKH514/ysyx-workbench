@@ -3,7 +3,6 @@ module top(
     input           rst,
     output  [31:0]  pc,
     output  [31:0]  npc
-    // output  [31:0]  ReadData_a0
 );
 
 wire    [2:0]   inst_type;
@@ -147,7 +146,6 @@ GPR u_GPR(
     .gpr_w_data_in          (gpr_w_data         ),
     .gpr_r_data1_out        (gpr_r_data1        ),
     .gpr_r_data2_out        (gpr_r_data2        ),
-    // .gpr_r_a0_out 	        (ReadData_a0        ),
     .gpr_r_a5_out           (gpr_r_a5           )
 );
 
