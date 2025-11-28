@@ -67,7 +67,7 @@ static void exec_once(Vtop *top, VerilatedContext *contextp, VerilatedVcdC *tfp)
     if (top->rootp->top__DOT__pc_to_ifu_ready)
     {
         npc_state.halt_pc = top->pc;
-        npc_state.halt_ret = top->ReadData_a0;
+        npc_state.halt_ret = top->rootp->top__DOT__u_GPR__DOT__u_RegisterFile__DOT__rf[10];
     }
 
     contextp->timeInc(1);
