@@ -37,8 +37,8 @@ always @(posedge clk) begin
         wbu_to_lsu_ready_out <= 1'b0;
         wbu_to_pc_valid_out <= 1'b0;
         gpr_we_out <= 1'b0;
-        csr_w_ecall_out <= 1'b0;
-        csr_w_mret_out <= 1'b0;
+        // csr_w_ecall_out <= 1'b0;
+        // csr_w_mret_out <= 1'b0;
     end else begin
         case (state)
             S_IDLE: begin
@@ -51,16 +51,16 @@ always @(posedge clk) begin
                     wbu_to_lsu_ready_out <= 1'b1;
                     wbu_to_pc_valid_out <= 1'b1;
                     gpr_we_out <= wbu_we_r;
-                    csr_w_ecall_out <= ecall_r;
-                    csr_w_mret_out <= mret_r;
+                    // csr_w_ecall_out <= ecall_r;
+                    // csr_w_mret_out <= mret_r;
                 end
             end
             S_WORK: begin
                 wbu_to_lsu_ready_out <= 1'b0;
                 wbu_to_pc_valid_out <= 1'b0;
                 gpr_we_out <= 1'b0;
-                csr_w_ecall_out <= 1'b0;
-                csr_w_mret_out <= 1'b0;
+                // csr_w_ecall_out <= 1'b0;
+                // csr_w_mret_out <= 1'b0;
             end
             default: begin
                 wbu_to_lsu_ready_out <= 1'b0;
@@ -93,8 +93,8 @@ reg [4:0]   wbu_w_addr_r;
 reg [1:0]   wbu_wd_sel_r;
 assign {ecall_r, mret_r, wbu_we_r, wbu_w_addr_r, wbu_wd_sel_r} = idu_to_wbu_data_in;
 
-// assign csr_w_ecall_out = ecall_r & lsu_to_wbu_valid_in;
-// assign csr_w_mret_out = mret_r & lsu_to_wbu_valid_in;
+assign csr_w_ecall_out = ecall_r & lsu_to_wbu_valid_in;
+assign csr_w_mret_out = mret_r & lsu_to_wbu_valid_in;
 
 reg [31:0]  gpr_w_data_r;
 

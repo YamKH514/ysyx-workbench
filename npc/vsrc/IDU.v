@@ -68,7 +68,7 @@ always @(posedge clk) begin
             end
             S_WAIT_EXU: begin
                 idu_to_ifu_ready_out <= 1'b0;
-                if (exu_to_idu_ready_in & 1'b0) begin
+                if (exu_to_idu_ready_in) begin
                     idu_to_exu_valid_out <= 1'b0;
                 end
             end
