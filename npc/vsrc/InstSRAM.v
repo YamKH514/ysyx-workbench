@@ -31,8 +31,8 @@ always @(posedge clk) begin
     end else begin
         case (state)
             S_IDLE: begin
-                inst_to_ifu_arready_out <= 1'b1;
-                inst_to_ifu_rvalid_out <= 1'b0;
+                // inst_to_ifu_arready_out <= 1'b1;
+                // inst_to_ifu_rvalid_out <= 1'b0;
                 if (ifu_to_inst_arvalid_in) begin
                     inst_sram_data_out <= r_data_r;
                     inst_to_ifu_arready_out <= 1'b0;
@@ -40,8 +40,8 @@ always @(posedge clk) begin
                 end
             end
             S_WORK: begin
-                inst_to_ifu_arready_out <= 1'b0;
-                inst_to_ifu_rvalid_out <= 1'b1;
+                // inst_to_ifu_arready_out <= 1'b0;
+                // inst_to_ifu_rvalid_out <= 1'b1;
                 if (ifu_to_inst_rready_in) begin
                     inst_to_ifu_rvalid_out <= 1'b0;
                 end
