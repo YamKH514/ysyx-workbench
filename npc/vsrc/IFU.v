@@ -19,7 +19,7 @@ module IFU(
 );
 
 parameter S_IDLE      = 2'd0;
-parameter S_SEND_ADDR = 2'd1;
+parameter S_SEND_AR   = 2'd1;
 parameter S_WAIT_INST = 2'd2;
 parameter S_WAIT_IDU  = 2'd3;
 
@@ -44,7 +44,7 @@ always @(posedge clk) begin
                     ifu_to_inst_rready_out  <= 1'b1;
                 end
             end
-            S_SEND_ADDR: begin
+            S_SEND_AR: begin
                 if (inst_to_ifu_arready_in) begin
                     ifu_to_inst_arvalid_out <= 1'b0;
                 end
@@ -72,10 +72,10 @@ always @(*) begin
     case (state)
         S_IDLE: begin
             if (pc_to_ifu_ready_in) begin
-                next_state = S_SEND_ADDR;
+                next_state = S_SEND_AR;
             end
         end
-        S_SEND_ADDR: begin
+        S_SEND_AR: begin
             if (inst_to_ifu_arready_in) begin
                 next_state = S_WAIT_INST;
             end
