@@ -43,6 +43,7 @@ always @(posedge clk) begin
                 // inst_to_ifu_arready_out <= 1'b0;
                 // inst_to_ifu_rvalid_out <= 1'b1;
                 if (ifu_to_inst_rready_in) begin
+                    inst_to_ifu_arready_out <= 1'b1;
                     inst_to_ifu_rvalid_out <= 1'b0;
                 end
             end
