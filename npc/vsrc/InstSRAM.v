@@ -13,7 +13,7 @@ module InstSRAM (
 
 import "DPI-C" function int get_inst(input int pc);
 reg [31:0]  r_addr_r;
-reg [31:0]  r_data_r = get_inst(r_addr_r);
+// reg [31:0]  r_data_r = get_inst(r_addr_r);
 
 parameter S_IDLE   = 2'd0;
 parameter S_GET_AR = 2'd1;
@@ -38,7 +38,7 @@ always @(posedge clk) begin
                 end
             end
             S_GET_AR: begin
-                inst_sram_data_out <= r_data_r;
+                // inst_sram_data_out <= r_data_r;
                 inst_to_ifu_rvalid_out <= 1'b1;
             end
             S_SEND_R: begin
@@ -65,6 +65,7 @@ always @(*) begin
             end
         end
         S_GET_AR: begin
+            inst_sram_data_out = get_inst(r_addr_r);
             next_state = S_SEND_R;
         end
         S_SEND_R: begin
