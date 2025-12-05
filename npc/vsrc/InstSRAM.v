@@ -26,7 +26,7 @@ always @(posedge clk) begin
     else state <= next_state;
 
     if (rst) begin
-        inst_sram_data_out <= 32'b0;
+        // inst_sram_data_out <= 32'b0;
         inst_to_ifu_arready_out <= 1'b0;
         inst_to_ifu_rvalid_out <= 1'b0;
     end else begin
@@ -48,7 +48,7 @@ always @(posedge clk) begin
                 end
             end
             default: begin
-                inst_sram_data_out <= 32'b0;
+                // inst_sram_data_out <= 32'b0;
                 inst_to_ifu_arready_out <= 1'b0;
                 inst_to_ifu_rvalid_out <= 1'b0;
             end
