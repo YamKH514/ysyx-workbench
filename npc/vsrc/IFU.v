@@ -18,9 +18,10 @@ module IFU(
     input               idu_to_ifu_ready_in
 );
 
-parameter S_IDLE = 2'd0;
-parameter S_WAIT_INST = 2'd1;
-parameter S_WAIT_IDU = 2'd2;
+parameter S_IDLE      = 2'd0;
+parameter S_SEND_ADDR = 2'd1;
+parameter S_WAIT_INST = 2'd2;
+parameter S_WAIT_IDU  = 2'd3;
 
 reg [1:0]   state, next_state;
 
@@ -43,12 +44,13 @@ always @(posedge clk) begin
                     ifu_to_inst_rready_out  <= 1'b1;
                 end
             end
-            S_WAIT_INST: begin
-                if (ifu_to_inst_arvalid_out & inst_to_ifu_arready_in) begin
+            S_SEND_ADDR: begin
+                if (inst_to_ifu_arready_in) begin
                     ifu_to_inst_arvalid_out <= 1'b0;
                 end
-
-                if (inst_to_ifu_rvalid_in & ifu_to_inst_rready_out) begin
+            end
+            S_WAIT_INST: begin
+                if (inst_to_ifu_rvalid_in) begin
                     ifu_inst_out            <= ifu_req_inst_in;
                     ifu_to_inst_rready_out  <= 1'b0;
                     ifu_to_idu_valid_out    <= 1'b1;
@@ -66,14 +68,20 @@ always @(posedge clk) begin
 end
 
 always @(*) begin
+    next_state = state;
     case (state)
         S_IDLE: begin
             if (pc_to_ifu_ready_in) begin
+                next_state = S_SEND_ADDR;
+            end
+        end
+        S_SEND_ADDR: begin
+            if (inst_to_ifu_arready_in) begin
                 next_state = S_WAIT_INST;
             end
         end
         S_WAIT_INST: begin
-            if (inst_to_ifu_rvalid_in & ifu_to_inst_rready_out) begin
+            if (inst_to_ifu_rvalid_in) begin
                 next_state = S_WAIT_IDU;
             end
         end
