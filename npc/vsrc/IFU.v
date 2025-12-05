@@ -29,28 +29,29 @@ always @(posedge clk) begin
     else state <= next_state;
 
     if (rst) begin
-        ifu_req_addr_out <= 32'b0;
-        ifu_inst_out <= 32'b0;
+        ifu_req_addr_out        <= 32'b0;
+        ifu_inst_out            <= 32'b0;
         ifu_to_inst_arvalid_out <= 1'b0;
-        ifu_to_inst_rready_out <= 1'b0;
-        ifu_to_idu_valid_out <= 1'b0;
+        ifu_to_inst_rready_out  <= 1'b0;
+        ifu_to_idu_valid_out    <= 1'b0;
     end else begin
         case (state)
             S_IDLE: begin
                 if (pc_to_ifu_ready_in) begin
-                    ifu_req_addr_out <= ifu_current_pc_in;
+                    ifu_req_addr_out        <= ifu_current_pc_in;
                     ifu_to_inst_arvalid_out <= 1'b1;
-                    ifu_to_inst_rready_out <= 1'b1;
+                    ifu_to_inst_rready_out  <= 1'b1;
                 end
             end
             S_WAIT_INST: begin
                 if (inst_to_ifu_arready_in) begin
                     ifu_to_inst_arvalid_out <= 1'b0;
                 end
+
                 if (inst_to_ifu_rvalid_in) begin
-                    ifu_inst_out <= ifu_req_inst_in;
-                    ifu_to_inst_rready_out <= 1'b0;
-                    ifu_to_idu_valid_out <= 1'b1;
+                    ifu_inst_out            <= ifu_req_inst_in;
+                    ifu_to_inst_rready_out  <= 1'b0;
+                    ifu_to_idu_valid_out    <= 1'b1;
                 end
             end
             S_WAIT_IDU: begin
