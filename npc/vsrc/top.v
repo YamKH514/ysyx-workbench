@@ -13,8 +13,10 @@ wire    [3:0]   pc_cnt_npc_src_sel;
 wire            to_pc_valid;
 wire            pc_to_ifu_ready;
 
-wire            ifu_to_inst_valid;
-wire            inst_to_ifu_ready;
+wire            ifu_to_inst_arvalid;
+wire            inst_to_ifu_arready;
+wire            inst_to_ifu_rvalid;
+wire            ifu_to_inst_rready;
 
 wire            ifu_to_idu_valid;
 wire            idu_to_ifu_ready;
@@ -98,8 +100,10 @@ IFU u_IFU(
     .ifu_req_inst_in    	(ifu_req_inst       ),
     .ifu_inst_out       	(ifu_inst_r         ),
     .pc_to_ifu_ready_in     (pc_to_ifu_ready    ),
-    .ifu_to_inst_valid_out  (ifu_to_inst_valid  ),
-    .inst_to_ifu_ready_in   (inst_to_ifu_ready  ),
+    .ifu_to_inst_arvalid_out(ifu_to_inst_arvalid),
+    .inst_to_ifu_arready_in (inst_to_ifu_arready),
+    .inst_to_ifu_rvalid_in  (inst_to_ifu_rvalid ),
+    .ifu_to_inst_rready_out (ifu_to_inst_rready ),
     .ifu_to_idu_valid_out   (ifu_to_idu_valid   ),
     .idu_to_ifu_ready_in    (idu_to_ifu_ready   )
 );
@@ -109,8 +113,10 @@ InstSRAM u_InstSRAM(
     .rst                    (rst                ),
     .inst_sram_addr_in   	(ifu_req_addr       ),
     .inst_sram_data_out  	(ifu_req_inst       ),
-    .ifu_to_inst_valid_in   (ifu_to_inst_valid  ),
-    .inst_to_ifu_ready_out  (inst_to_ifu_ready  )
+    .ifu_to_inst_arvalid_in (ifu_to_inst_arvalid),
+    .inst_to_ifu_arready_out(inst_to_ifu_arready),
+    .inst_to_ifu_rvalid_out (inst_to_ifu_rvalid ),
+    .ifu_to_inst_rready_in  (ifu_to_inst_rready )
 );
 
 IDU u_IDU(
