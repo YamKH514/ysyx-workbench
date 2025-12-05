@@ -44,11 +44,11 @@ always @(posedge clk) begin
                 end
             end
             S_WAIT_INST: begin
-                if (inst_to_ifu_arready_in) begin
+                if (ifu_to_inst_arvalid_out & inst_to_ifu_arready_in) begin
                     ifu_to_inst_arvalid_out <= 1'b0;
                 end
 
-                if (inst_to_ifu_rvalid_in) begin
+                if (inst_to_ifu_rvalid_in & ifu_to_inst_rready_out) begin
                     ifu_inst_out            <= ifu_req_inst_in;
                     ifu_to_inst_rready_out  <= 1'b0;
                     ifu_to_idu_valid_out    <= 1'b1;
@@ -73,7 +73,7 @@ always @(*) begin
             end
         end
         S_WAIT_INST: begin
-            if (inst_to_ifu_rvalid_in) begin
+            if (inst_to_ifu_rvalid_in & ifu_to_inst_rready_out) begin
                 next_state = S_WAIT_IDU;
             end
         end
