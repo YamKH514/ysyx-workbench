@@ -34,11 +34,10 @@ always @(posedge clk) begin
             S_IDLE: begin
                 if (ifu_to_inst_arvalid_in) begin
                     r_addr_r <= inst_sram_addr_in;
-                    inst_to_ifu_arready_out <= 1'b1;
+                    inst_to_ifu_arready_out <= 1'b0;
                 end
             end
             S_GET_AR: begin
-                inst_to_ifu_arready_out <= 1'b0;
                 inst_sram_data_out <= r_data_r;
                 inst_to_ifu_rvalid_out <= 1'b1;
             end
