@@ -64,17 +64,20 @@ always @(posedge clk) begin
         arready_out <= 1'b1;
         rvalid_out  <= 1'b0;
         rresp_out   <= 2'b00;
+        delay_cnt   <= DELAY;
     end else begin
         case (r_state)
             S_IDLE: begin
+                delay_cnt <= DELAY;
                 if (arvalid_in) begin
                     araddr_r    <= araddr_in;
                     arready_out <= 1'b0;
                 end
             end
             S_GET_AR: begin
-                rvalid_out <= 1'b1;
+                rvalid_out <= 1'b1 & (delay_cnt == 1);
                 rresp_out  <= 2'b00;
+                delay_cnt  <= delay_cnt - 1;
             end
             S_SEND_R: begin
                 if (rready_in) begin
@@ -141,7 +144,9 @@ always @(*) begin
         end
         S_GET_AR: begin
             rdata_out = paddr_read(araddr_r);
-            r_next_state = S_SEND_R;
+            if (delay_cnt == 1) begin
+                r_next_state = S_SEND_R;
+            end
         end
         S_SEND_R: begin
             if (rready_in) begin
