@@ -1,4 +1,5 @@
 module IFU(
+    /* verilator lint_off UNUSEDSIGNAL */
     input               clk,
     input               rst,
 
@@ -7,16 +8,43 @@ module IFU(
 
     input               pc_to_ifu_ready_in,
 
+    // AR
     output  reg [31:0]  araddr_out,
     output  reg         arvalid_out,
     input               arready_in,
+
+    // R
     input       [31:0]  rdata_in,
+    input       [1:0]   rresp_in,
     input               rvalid_in,
     output  reg         rready_out,
+
+    // AW
+    output  reg [31:0]  awaddr_out,
+    output  reg         awvalid_out,
+    input               awready_in,
+
+    // W
+    output  reg [31:0]  wdata_out,
+    output  reg [3:0]   wstrb_out,
+    output  reg         wvalid_out,
+    input               wready_in,
+
+    // B
+    input       [1:0]   bresp_in,
+    input               bvalid_in,
+    output  reg         bready_out,
 
     output  reg         ifu_to_idu_valid_out,
     input               idu_to_ifu_ready_in
 );
+
+assign awaddr_out  = 32'b0;
+assign awvalid_out = 1'b0;
+assign wdata_out   = 32'b0;
+assign wstrb_out   = 4'b0;
+assign wvalid_out  = 1'b0;
+assign bready_out  = 1'b0;
 
 parameter S_IDLE      = 2'd0;
 parameter S_SEND_AR   = 2'd1;
@@ -51,6 +79,8 @@ always @(posedge clk) begin
             S_WAIT_INST: begin
                 if (rvalid_in) begin
                     ifu_inst_out         <= rdata_in;
+                    if (rresp_in != 2'b00) begin
+                    end
                     rready_out           <= 1'b0;
                     ifu_to_idu_valid_out <= 1'b1;
                 end

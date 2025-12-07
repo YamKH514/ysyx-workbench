@@ -60,8 +60,19 @@ wire    [31:0]  inst_araddr;
 wire            inst_arvalid;
 wire            inst_arready;
 wire    [31:0]  inst_rdata;
+wire    [1:0]   inst_rresp;
 wire            inst_rvalid;
 wire            inst_rready;
+wire    [31:0]  inst_awaddr;
+wire            inst_awvalid;
+wire            inst_awready;
+wire    [31:0]  inst_wdata;
+wire    [3:0]   inst_wstrb;
+wire            inst_wvalid;
+wire            inst_wready;
+wire    [1:0]   inst_bresp;
+wire            inst_bvalid;
+wire            inst_bready;
 
 wire    [31:0]  sram_araddr;
 wire            sram_arvalid;
@@ -103,25 +114,47 @@ IFU u_IFU(
     .ifu_current_pc_in  	(pc                 ),
     .ifu_inst_out       	(ifu_inst           ),
     .pc_to_ifu_ready_in     (pc_to_ifu_ready    ),
-    .araddr_out             (inst_araddr        ),
-    .arvalid_out            (inst_arvalid       ),
-    .arready_in             (inst_arready       ),
-    .rdata_in               (inst_rdata         ),
-    .rvalid_in              (inst_rvalid        ),
-    .rready_out             (inst_rready        ),
+    .araddr_out           	(inst_araddr        ),
+    .arvalid_out          	(inst_arvalid       ),
+    .arready_in           	(inst_arready       ),
+    .rdata_in             	(inst_rdata         ),
+    .rresp_in             	(inst_rresp         ),
+    .rvalid_in            	(inst_rvalid        ),
+    .rready_out           	(inst_rready        ),
+    .awaddr_out           	(inst_awaddr        ),
+    .awvalid_out          	(inst_awvalid       ),
+    .awready_in           	(inst_awready       ),
+    .wdata_out            	(inst_wdata         ),
+    .wstrb_out            	(inst_wstrb         ),
+    .wvalid_out           	(inst_wvalid        ),
+    .wready_in            	(inst_wready        ),
+    .bresp_in             	(inst_bresp         ),
+    .bvalid_in            	(inst_bvalid        ),
+    .bready_out           	(inst_bready        ),
     .ifu_to_idu_valid_out   (ifu_to_idu_valid   ),
     .idu_to_ifu_ready_in    (idu_to_ifu_ready   )
 );
 
-InstSRAM u_InstSRAM(
-    .clk                    (clk                ),
-    .rst                    (rst                ),
-    .inst_sram_addr_in   	(inst_araddr        ),
-    .inst_sram_data_out  	(inst_rdata         ),
-    .ifu_to_inst_arvalid_in (inst_arvalid       ),
-    .inst_to_ifu_arready_out(inst_arready       ),
-    .inst_to_ifu_rvalid_out (inst_rvalid        ),
-    .ifu_to_inst_rready_in  (inst_rready        )
+SRAM u_InstSRAM(
+    .clk         	        (clk                ),
+    .rst         	        (rst                ),
+    .araddr_in   	        (inst_araddr        ),
+    .arvalid_in  	        (inst_arvalid       ),
+    .arready_out 	        (inst_arready       ),
+    .rdata_out   	        (inst_rdata         ),
+    .rresp_out   	        (inst_rresp         ),
+    .rvalid_out  	        (inst_rvalid        ),
+    .rready_in   	        (inst_rready        ),
+    .awaddr_in   	        (inst_awaddr        ),
+    .awvalid_in  	        (inst_awvalid       ),
+    .awready_out 	        (inst_awready       ),
+    .wdata_in    	        (inst_wdata         ),
+    .wstrb_in    	        (inst_wstrb         ),
+    .wvalid_in   	        (inst_wvalid        ),
+    .wready_out  	        (inst_wready        ),
+    .bresp_out   	        (inst_bresp         ),
+    .bvalid_out  	        (inst_bvalid        ),
+    .bready_in   	        (inst_bready        )
 );
 
 IDU u_IDU(
