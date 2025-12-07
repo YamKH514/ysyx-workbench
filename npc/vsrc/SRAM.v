@@ -59,29 +59,29 @@ always @(posedge clk) begin
     // READ
     if (rst) begin
         arready_out <= 1'b1;
-        rvalid_out <= 1'b0;
-        rresp_out <= 2'b00;
+        rvalid_out  <= 1'b0;
+        rresp_out   <= 2'b00;
     end else begin
         case (r_state)
             S_IDLE: begin
                 if (arvalid_in) begin
-                    araddr_r <= araddr_in;
+                    araddr_r    <= araddr_in;
                     arready_out <= 1'b0;
                 end
             end
             S_GET_AR: begin
                 rvalid_out <= 1'b1;
-                rresp_out <= 2'b00;
+                rresp_out  <= 2'b00;
             end
             S_SEND_R: begin
                 if (rready_in) begin
                     arready_out <= 1'b1;
-                    rvalid_out <= 1'b0;
+                    rvalid_out  <= 1'b0;
                 end
             end
             default: begin
                 arready_out <= 1'b1;
-                rvalid_out <= 1'b0;
+                rvalid_out  <= 1'b0;
             end
         endcase
     end

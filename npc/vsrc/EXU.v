@@ -1,5 +1,3 @@
-`include "common.vh"
-
 module EXU(
     input               clk,
     input               rst,
@@ -21,7 +19,7 @@ module EXU(
 );
 
 parameter S_IDLE = 2'd0;
-parameter S_WAIT_LBU = 2'd1;
+parameter S_WAIT_LSU = 2'd1;
 
 reg [1:0] state, next_state;
 
@@ -42,7 +40,7 @@ always @(posedge clk) begin
                     exu_to_lsu_valid_out <= 1'b1;
                 end
             end
-            S_WAIT_LBU: begin
+            S_WAIT_LSU: begin
                 exu_to_idu_ready_out <= 1'b0;
                 if (lsu_to_exu_ready_in) begin
                     exu_to_lsu_valid_out <= 1'b0;
@@ -60,10 +58,10 @@ always @(*) begin
     case (state)
         S_IDLE: begin
             if (idu_to_exu_valid_in) begin
-                next_state = S_WAIT_LBU;
+                next_state = S_WAIT_LSU;
             end
         end
-        S_WAIT_LBU: begin
+        S_WAIT_LSU: begin
             if (lsu_to_exu_ready_in) begin
                 next_state = S_IDLE;
             end

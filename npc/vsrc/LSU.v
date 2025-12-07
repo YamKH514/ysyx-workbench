@@ -69,10 +69,10 @@ always @(posedge clk) begin
         lsu_to_exu_ready_out <= 1'b0;
         lsu_to_wbu_valid_out <= 1'b0;
         arvalid_out <= 1'b0;
-        rready_out <= 1'b1;
+        rready_out  <= 1'b1;
         awvalid_out <= 1'b0;
-        wvalid_out <= 1'b0;
-        bready_out <= 1'b1;
+        wvalid_out  <= 1'b0;
+        bready_out  <= 1'b1;
     end else begin
         case (state)    
             S_IDLE: begin
@@ -134,10 +134,10 @@ always @(posedge clk) begin
                 lsu_to_exu_ready_out <= 1'b0;
                 lsu_to_wbu_valid_out <= 1'b0;
                 arvalid_out <= 1'b0;
-                rready_out <= 1'b1;
+                rready_out  <= 1'b1;
                 awvalid_out <= 1'b0;
-                wvalid_out <= 1'b0;
-                bready_out <= 1'b1;
+                wvalid_out  <= 1'b0;
+                bready_out  <= 1'b1;
             end
         endcase
     end
