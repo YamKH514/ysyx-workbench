@@ -10,26 +10,7 @@ wire    [31:0]  trap_npc;
 wire    [31:0]  imm_ext;
 wire    [3:0]   pc_cnt_npc_src_sel;
 
-wire            to_pc_valid;
-wire            pc_to_ifu_ready;
-
-wire    [31:0]  inst_araddr;
-wire            inst_arvalid;
-wire            inst_arready;
-wire    [31:0]  inst_rdata;
-wire            inst_rvalid;
-wire            inst_rready;
-
-wire            ifu_to_idu_valid;
-wire            idu_to_ifu_ready;
-
-wire            idu_to_exu_valid;
-wire            exu_to_idu_ready;
-wire            exu_to_lsu_valid;
-wire            lsu_to_exu_ready;
-
-wire            lsu_to_wbu_valid;
-wire            wbu_to_lsu_ready;
+wire    [31:0]  ifu_inst;
 
 wire    [1:0]   exu_alu_src_sel1;
 wire    [1:0]   exu_alu_src_sel2;
@@ -52,8 +33,6 @@ wire    [31:0]  csr_r_data;
 wire    [31:0]  csr_r_mtvec;
 wire    [31:0]  csr_r_mepc;
 
-wire    [31:0]  ifu_inst;
-
 wire            is_ecall;
 wire            is_mret;
 
@@ -62,6 +41,27 @@ wire    [31:0]  lsu_r_data;
 wire    [8:0]   idu_to_lsu_data;
 
 wire    [9:0]   idu_to_wbu_data;
+
+wire            to_pc_valid;
+wire            pc_to_ifu_ready;
+
+wire            ifu_to_idu_valid;
+wire            idu_to_ifu_ready;
+
+wire            idu_to_exu_valid;
+wire            exu_to_idu_ready;
+wire            exu_to_lsu_valid;
+wire            lsu_to_exu_ready;
+
+wire            lsu_to_wbu_valid;
+wire            wbu_to_lsu_ready;
+
+wire    [31:0]  inst_araddr;
+wire            inst_arvalid;
+wire            inst_arready;
+wire    [31:0]  inst_rdata;
+wire            inst_rvalid;
+wire            inst_rready;
 
 wire    [31:0]  sram_araddr;
 wire            sram_arvalid;
@@ -101,7 +101,7 @@ IFU u_IFU(
     .clk                    (clk                ),
     .rst                    (rst                ),
     .ifu_current_pc_in  	(pc                 ),
-    .ifu_inst_out       	(ifu_inst         ),
+    .ifu_inst_out       	(ifu_inst           ),
     .pc_to_ifu_ready_in     (pc_to_ifu_ready    ),
     .araddr_out             (inst_araddr        ),
     .arvalid_out            (inst_arvalid       ),
@@ -127,7 +127,7 @@ InstSRAM u_InstSRAM(
 IDU u_IDU(
     .clk                	(clk                ),
     .rst                    (rst                ),
-    .idu_inst_in           	(ifu_inst         ),
+    .idu_inst_in           	(ifu_inst           ),
     .idu_inst_type_out     	(inst_type          ),
     .csr_we_out        	    (csr_we             ),
     .exu_alu_fun_out       	(exu_alu_func       ),
@@ -144,15 +144,15 @@ IDU u_IDU(
 
 ImmExt u_ImmExt(
     .imm_ext_inst_type_in 	(inst_type          ),
-    .imm_ext_imm_in       	(ifu_inst[31:7]   ),
+    .imm_ext_imm_in       	(ifu_inst[31:7]     ),
     .imm_ext_imm_out      	(imm_ext            )
 );
 
 GPR u_GPR(
     .clk                    (clk                ),
     .gpr_we_in    	        (gpr_we             ),
-    .gpr_r_addr1_in         (ifu_inst[19:15]  ),
-    .gpr_r_addr2_in         (ifu_inst[24:20]  ),
+    .gpr_r_addr1_in         (ifu_inst[19:15]    ),
+    .gpr_r_addr2_in         (ifu_inst[24:20]    ),
     .gpr_w_addr_in          (gpr_w_addr         ),
     .gpr_w_data_in          (gpr_w_data         ),
     .gpr_r_data1_out        (gpr_r_data1        ),
@@ -257,7 +257,7 @@ CSR u_CSR(
     .rst                    (rst                ),
     .is_ecall               (is_ecall           ),
     .is_mret                (is_mret            ),
-    .csr_func3_in           (ifu_inst[14:12]  ),
+    .csr_func3_in           (ifu_inst[14:12]    ),
     .csr_we_in              (csr_we             ),
     .csr_rw_addr_in         (csr_rw_addr        ),
     .csr_w_data_in          (csr_w_data         ),
