@@ -30,6 +30,11 @@ module SRAM(
     input               bready_in
 );
 
+parameter READ_DELAY  = 5;
+parameter WRITE_DELAY = 5;
+reg [7:0] read_delay_cnt;
+reg [7:0] write_delay_cnt;
+
 import "DPI-C" function int paddr_read(input int raddr);
 import "DPI-C" function void paddr_write(
     input int waddr, input int wdata, input byte wmask);
@@ -43,11 +48,24 @@ parameter S_SEND_R = 3'd2;
 parameter S_GET_WR = 3'd3;
 parameter S_GET_WD = 3'd4;
 parameter S_SEND_B = 3'd5;
+parameter S_WAIT_R = 3'd6;
+parameter S_WAIT_W = 3'd7;
 
 reg [2:0]   r_state, r_next_state;
 reg [2:0]   w_state, w_next_state;
 
 always @(posedge clk) begin
+    if (r_state == S_IDLE && arvalid_in) begin
+        read_delay_cnt <= READ_DELAY;
+    end else if (r_state == S_WAIT_R && read_delay_cnt != 0) begin
+        read_delay_cnt <= read_delay_cnt - 1;
+    end
+    if (w_state == S_IDLE && awvalid_in) begin
+        write_delay_cnt <= WRITE_DELAY;
+    end else if (w_state == S_WAIT_W && write_delay_cnt != 0) begin
+        write_delay_cnt <= write_delay_cnt - 1;
+    end
+
     if (rst) begin
         r_state <= S_IDLE;
         w_state <= S_IDLE;
@@ -133,6 +151,11 @@ always @(*) begin
     case (r_state)
         S_IDLE: begin
             if (arvalid_in) begin
+                r_next_state = S_WAIT_R;
+            end
+        end
+        S_WAIT_R: begin
+            if (read_delay_cnt == 0) begin
                 r_next_state = S_GET_AR;
             end
         end
@@ -154,6 +177,11 @@ always @(*) begin
     case (w_state)
         S_IDLE: begin
             if (awvalid_in) begin
+                w_next_state = S_WAIT_W;
+            end
+        end
+        S_WAIT_W: begin
+            if (write_delay_cnt == 0) begin
                 w_next_state = S_GET_WR;
             end
         end
