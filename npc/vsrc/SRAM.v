@@ -89,14 +89,14 @@ always @(posedge clk) begin
     // WRITE
     if (rst) begin
         awready_out <= 1'b1;
-        wready_out <= 1'b1;
-        bresp_out <= 2'b00;
-        bvalid_out <= 1'b0;
+        wready_out  <= 1'b1;
+        bresp_out   <= 2'b00;
+        bvalid_out  <= 1'b0;
     end else begin
         case (w_state)
             S_IDLE: begin
                 if (awvalid_in) begin
-                    awaddr_r <= awaddr_in;
+                    awaddr_r    <= awaddr_in;
                     awready_out <= 1'b0;
                 end
             end
@@ -106,19 +106,20 @@ always @(posedge clk) begin
                 end
             end
             S_GET_WD: begin
-                bresp_out <= 2'b00;
+                bresp_out  <= 2'b00;
                 bvalid_out <= 1'b1;
             end
             S_SEND_B: begin
                 if (bready_in) begin
                     awready_out <= 1'b1;
-                    bvalid_out <= 1'b0;
+                    wready_out  <=1'b1;
+                    bvalid_out  <= 1'b0;
                 end
             end
             default: begin
                 awready_out <= 1'b1;
-                wready_out <= 1'b1;
-                bvalid_out <= 1'b0;
+                wready_out  <= 1'b1;
+                bvalid_out  <= 1'b0;
             end
         endcase
     end
