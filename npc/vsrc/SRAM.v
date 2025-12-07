@@ -30,11 +30,12 @@ module SRAM(
     input               bready_in
 );
 
-reg [3:0] delay_cnt;
+reg [3:0] r_delay_cnt;
+reg [3:0] w_delay_cnt;
 reg [7:0] lfsr;
 wire lfsr_feedback = lfsr[7] ^ lfsr[5] ^ lfsr[4] ^ lfsr[3];
 
-always @(posedge clk or posedge rst) begin
+always @(posedge clk) begin
     if (rst) begin
         lfsr <= 8'hC1;
     end else begin
@@ -73,20 +74,20 @@ always @(posedge clk) begin
         arready_out <= 1'b1;
         rvalid_out  <= 1'b0;
         rresp_out   <= 2'b00;
-        delay_cnt   <= (lfsr[3:0]) + 4'd1;
+        r_delay_cnt <= (lfsr[3:0]) + 4'd1;
     end else begin
         case (r_state)
             S_IDLE: begin
-                delay_cnt <= (lfsr[3:0]) + 4'd1;
+                r_delay_cnt <= (lfsr[3:0]) + 4'd1;
                 if (arvalid_in) begin
                     araddr_r    <= araddr_in;
                     arready_out <= 1'b0;
                 end
             end
             S_GET_AR: begin
-                rvalid_out <= 1'b1 & (delay_cnt == 1);
+                rvalid_out <= 1'b1 & (r_delay_cnt == 1);
                 rresp_out  <= 2'b00;
-                delay_cnt  <= delay_cnt - 1;
+                r_delay_cnt<= r_delay_cnt - 1;
             end
             S_SEND_R: begin
                 if (rready_in) begin
@@ -107,9 +108,11 @@ always @(posedge clk) begin
         wready_out  <= 1'b1;
         bresp_out   <= 2'b00;
         bvalid_out  <= 1'b0;
+        w_delay_cnt <= (lfsr[3:0]) + 4'd1;
     end else begin
         case (w_state)
             S_IDLE: begin
+                w_delay_cnt <= (lfsr[3:0]) + 4'd1;
                 if (awvalid_in) begin
                     awaddr_r    <= awaddr_in;
                     awready_out <= 1'b0;
@@ -122,7 +125,8 @@ always @(posedge clk) begin
             end
             S_GET_WD: begin
                 bresp_out  <= 2'b00;
-                bvalid_out <= 1'b1;
+                bvalid_out <= 1'b1 & (w_delay_cnt == 1);
+                w_delay_cnt <= w_delay_cnt - 1;
             end
             S_SEND_B: begin
                 if (bready_in) begin
@@ -153,7 +157,7 @@ always @(*) begin
         end
         S_GET_AR: begin
             rdata_out = paddr_read(araddr_r);
-            if (delay_cnt == 1) begin
+            if (r_delay_cnt == 1) begin
                 r_next_state = S_SEND_R;
             end
         end
@@ -181,7 +185,9 @@ always @(*) begin
         end
         S_GET_WD: begin
             paddr_write(awaddr_r, wdata_in, {4'b0, wstrb_in});
-            w_next_state = S_SEND_B;
+            if (w_delay_cnt == 1) begin
+                w_next_state = S_SEND_B;
+            end
         end
         S_SEND_B: begin
             if (bready_in) begin
