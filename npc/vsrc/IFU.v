@@ -33,7 +33,7 @@ always @(posedge clk) begin
         ifu_req_addr_out        <= 32'b0;
         ifu_inst_out            <= 32'b0;
         ifu_to_inst_arvalid_out <= 1'b0;
-        ifu_to_inst_rready_out  <= 1'b1; // TODO 手册建议默认为高
+        ifu_to_inst_rready_out  <= 1'b1;
         ifu_to_idu_valid_out    <= 1'b0;
     end else begin
         case (state)
@@ -41,7 +41,6 @@ always @(posedge clk) begin
                 if (pc_to_ifu_ready_in) begin
                     ifu_req_addr_out        <= ifu_current_pc_in;
                     ifu_to_inst_arvalid_out <= 1'b1;
-                    ifu_to_inst_rready_out  <= 1'b1;
                 end
             end
             S_SEND_AR: begin
@@ -58,10 +57,16 @@ always @(posedge clk) begin
             end
             S_WAIT_IDU: begin
                 if (idu_to_ifu_ready_in) begin
-                    ifu_to_idu_valid_out <= 1'b0;
+                    ifu_to_inst_rready_out <= 1'b1;
+                    ifu_to_idu_valid_out   <= 1'b0;
                 end
             end
             default: begin
+                ifu_req_addr_out        <= 32'b0;
+                ifu_inst_out            <= 32'b0;
+                ifu_to_inst_arvalid_out <= 1'b0;
+                ifu_to_inst_rready_out  <= 1'b1;
+                ifu_to_idu_valid_out    <= 1'b0;
             end
         endcase
     end
