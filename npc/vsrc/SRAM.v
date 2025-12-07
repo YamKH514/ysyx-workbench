@@ -48,18 +48,12 @@ parameter S_SEND_R = 3'd2;
 parameter S_GET_WR = 3'd3;
 parameter S_GET_WD = 3'd4;
 parameter S_SEND_B = 3'd5;
-parameter S_WAIT_R = 3'd6;
-parameter S_WAIT_W = 3'd7;
+parameter S_WAIT_W = 3'd6;
 
 reg [2:0]   r_state, r_next_state;
 reg [2:0]   w_state, w_next_state;
 
 always @(posedge clk) begin
-    if (r_state == S_IDLE && arvalid_in) begin
-        read_delay_cnt <= READ_DELAY;
-    end else if (r_state == S_WAIT_R && read_delay_cnt != 0) begin
-        read_delay_cnt <= read_delay_cnt - 1;
-    end
     if (w_state == S_IDLE && awvalid_in) begin
         write_delay_cnt <= WRITE_DELAY;
     end else if (w_state == S_WAIT_W && write_delay_cnt != 0) begin
@@ -151,11 +145,6 @@ always @(*) begin
     case (r_state)
         S_IDLE: begin
             if (arvalid_in) begin
-                r_next_state = S_WAIT_R;
-            end
-        end
-        S_WAIT_R: begin
-            if (read_delay_cnt == 0) begin
                 r_next_state = S_GET_AR;
             end
         end
