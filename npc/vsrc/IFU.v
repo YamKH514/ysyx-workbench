@@ -54,10 +54,10 @@ parameter S_WAIT_IDU  = 2'd3;
 reg [1:0]   state, next_state;
 
 always @(posedge clk) begin
-    if (rst) state <= S_IDLE;
+    if (!rst) state <= S_IDLE;
     else state <= next_state;
 
-    if (rst) begin
+    if (!rst) begin
         araddr_out           <= 32'b0;
         ifu_inst_out         <= 32'b0;
         arvalid_out          <= 1'b0;

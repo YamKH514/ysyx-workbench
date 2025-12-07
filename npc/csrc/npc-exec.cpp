@@ -60,7 +60,7 @@ static void exec_once(Vtop *top, VerilatedContext *contextp, VerilatedVcdC *tfp)
 #ifdef CONFIG_VCD_TRACE
         tfp->dump(contextp->time());
 #endif
-        top->rst = 0;
+        top->rst = 1;
         npc_state.inited = true;
     }
 
