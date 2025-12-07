@@ -156,8 +156,8 @@ always @(*) begin
             end
         end
         S_GET_AR: begin
-            rdata_out = paddr_read(araddr_r);
             if (r_delay_cnt == 1) begin
+                rdata_out = paddr_read(araddr_r);
                 r_next_state = S_SEND_R;
             end
         end
@@ -184,8 +184,8 @@ always @(*) begin
             end
         end
         S_GET_WD: begin
-            paddr_write(awaddr_r, wdata_in, {4'b0, wstrb_in});
             if (w_delay_cnt == 1) begin
+                paddr_write(awaddr_r, wdata_in, {4'b0, wstrb_in});
                 w_next_state = S_SEND_B;
             end
         end
