@@ -30,7 +30,7 @@ module SRAM(
     input               bready_in
 );
 
-parameter DELAY = 5;
+parameter DELAY = 10;
 reg [7:0] delay_cnt;
 
 import "DPI-C" function int paddr_read(input int raddr);
