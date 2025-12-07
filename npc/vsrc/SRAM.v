@@ -30,9 +30,7 @@ module SRAM(
     input               bready_in
 );
 
-parameter READ_DELAY  = 5;
 parameter WRITE_DELAY = 5;
-reg [7:0] read_delay_cnt;
 reg [7:0] write_delay_cnt;
 
 import "DPI-C" function int paddr_read(input int raddr);
@@ -54,12 +52,6 @@ reg [2:0]   r_state, r_next_state;
 reg [2:0]   w_state, w_next_state;
 
 always @(posedge clk) begin
-    if (w_state == S_IDLE && awvalid_in) begin
-        write_delay_cnt <= WRITE_DELAY;
-    end else if (w_state == S_WAIT_W && write_delay_cnt != 0) begin
-        write_delay_cnt <= write_delay_cnt - 1;
-    end
-
     if (rst) begin
         r_state <= S_IDLE;
         w_state <= S_IDLE;
@@ -108,8 +100,14 @@ always @(posedge clk) begin
         case (w_state)
             S_IDLE: begin
                 if (awvalid_in) begin
+                    write_delay_cnt <= WRITE_DELAY; // TODO
                     awaddr_r    <= awaddr_in;
                     awready_out <= 1'b0;
+                end
+            end
+            S_WAIT_W: begin
+                if (write_delay_cnt != 0) begin
+                    write_delay_cnt <= write_delay_cnt - 1;
                 end
             end
             S_GET_WR: begin
