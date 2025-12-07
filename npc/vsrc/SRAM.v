@@ -1,84 +1,179 @@
 module SRAM(
     input               clk,
     input               rst,
-    input               sram_re_in,
-    input       [31:0]  sram_r_addr_in,
-    output  reg [31:0]  sram_r_data_out,
-    input               sram_we_in,
-    input       [31:0]  sram_w_addr_in,
-    input       [31:0]  sram_w_data_in,
-    input       [7:0]   sram_w_mask_in,
 
-    input               lsu_to_sram_valid_in,
-    output  reg         sram_to_lsu_ready_out
+    // AR
+    input       [31:0]  araddr_in,
+    input               arvalid_in,
+    output  reg         arready_out,
+
+    // R
+    output  reg [31:0]  rdata_out,
+    output  reg [1:0]   rresp_out,
+    output  reg         rvalid_out,
+    input               rready_in,
+
+    // AW
+    input       [31:0]  awaddr_in,
+    input               awvalid_in,
+    output  reg         awready_out,
+
+    // W
+    input       [31:0]  wdata_in,
+    input       [3:0]   wstrb_in,
+    input               wvalid_in,
+    output  reg         wready_out,
+
+    // B
+    output  reg [1:0]   bresp_out,
+    output  reg         bvalid_out,
+    input               bready_in
 );
 
 import "DPI-C" function int paddr_read(input int raddr);
 import "DPI-C" function void paddr_write(
     input int waddr, input int wdata, input byte wmask);
 
-reg     [31:0]  read_data_r;
+reg [31:0]  araddr_r;
+reg [31:0]  awaddr_r;
 
-parameter S_IDLE = 1'd0;
-parameter S_WORK = 1'd1;
+parameter S_IDLE   = 3'd0;
+parameter S_GET_AR = 3'd1;
+parameter S_SEND_R = 3'd2;
+parameter S_GET_WR = 3'd3;
+parameter S_GET_WD = 3'd4;
+parameter S_SEND_B = 3'd5;
 
-reg state, next_state;
+reg [2:0]   r_state, r_next_state;
+reg [2:0]   w_state, w_next_state;
 
 always @(posedge clk) begin
-    if (rst) state <= S_IDLE;
-    else state <= next_state;
-
     if (rst) begin
-        sram_to_lsu_ready_out <= 1'b0;
+        r_state <= S_IDLE;
+        w_state <= S_IDLE;
     end else begin
-        case (state)
+        r_state <= r_next_state;
+        w_state <= w_next_state;
+    end
+
+    // READ
+    if (rst) begin
+        arready_out <= 1'b1;
+        rvalid_out <= 1'b0;
+        rresp_out <= 2'b00;
+    end else begin
+        case (r_state)
             S_IDLE: begin
-                sram_to_lsu_ready_out <= 1'b0;
-                if (lsu_to_sram_valid_in) begin
-                    sram_to_lsu_ready_out <= 1'b1;
+                if (arvalid_in) begin
+                    araddr_r <= araddr_in;
+                    arready_out <= 1'b0;
                 end
             end
-            S_WORK: begin
-                sram_to_lsu_ready_out <= 1'b0;
+            S_GET_AR: begin
+                rvalid_out <= 1'b1;
+                rresp_out <= 2'b00;
+            end
+            S_SEND_R: begin
+                if (rready_in) begin
+                    arready_out <= 1'b1;
+                    rvalid_out <= 1'b0;
+                end
             end
             default: begin
-                sram_to_lsu_ready_out <= 1'b0;
+                arready_out <= 1'b1;
+                rvalid_out <= 1'b0;
+            end
+        endcase
+    end
+
+    // WRITE
+    if (rst) begin
+        awready_out <= 1'b1;
+        wready_out <= 1'b1;
+        bresp_out <= 2'b00;
+        bvalid_out <= 1'b0;
+    end else begin
+        case (w_state)
+            S_IDLE: begin
+                if (awvalid_in) begin
+                    awaddr_r <= awaddr_in;
+                    awready_out <= 1'b0;
+                end
+            end
+            S_GET_WR: begin
+                if (wvalid_in) begin
+                    wready_out <= 1'b0;
+                end
+            end
+            S_GET_WD: begin
+                bresp_out <= 2'b00;
+                bvalid_out <= 1'b1;
+            end
+            S_SEND_B: begin
+                if (bready_in) begin
+                    awready_out <= 1'b1;
+                    bvalid_out <= 1'b0;
+                end
+            end
+            default: begin
+                awready_out <= 1'b1;
+                wready_out <= 1'b1;
+                bvalid_out <= 1'b0;
             end
         endcase
     end
 end
 
 always @(*) begin
-    case (state)
+    r_next_state = r_state;
+    w_next_state = w_state;
+
+    // READ
+    case (r_state)
         S_IDLE: begin
-            if (lsu_to_sram_valid_in) begin
-                next_state = S_WORK;
-                if (sram_we_in & lsu_to_sram_valid_in) begin
-                    paddr_write(sram_w_addr_in, sram_w_data_in, sram_w_mask_in);
-                end else if (sram_re_in & lsu_to_sram_valid_in) begin
-                    read_data_r = paddr_read(sram_r_addr_in);
-                end
+            if (arvalid_in) begin
+                r_next_state = S_GET_AR;
             end
         end
-        S_WORK: begin
-            next_state = S_IDLE;
+        S_GET_AR: begin
+            rdata_out = paddr_read(araddr_r);
+            r_next_state = S_SEND_R;
+        end
+        S_SEND_R: begin
+            if (rready_in) begin
+                r_next_state = S_IDLE;
+            end
         end
         default: begin
-            next_state = S_IDLE;
+            r_next_state = S_IDLE;
+        end
+    endcase
+
+    // WRITE
+    case (w_state)
+        S_IDLE: begin
+            if (awvalid_in) begin
+                w_next_state = S_GET_WR;
+            end
+        end
+        S_GET_WR: begin
+            if (wvalid_in) begin
+                w_next_state = S_GET_WD;
+            end
+        end
+        S_GET_WD: begin
+            paddr_write(awaddr_r, wdata_in, {4'b0, wstrb_in});
+            w_next_state = S_SEND_B;
+        end
+        S_SEND_B: begin
+            if (bready_in) begin
+                w_next_state = S_IDLE;
+            end
+        end
+        default: begin
+            w_next_state = S_IDLE;
         end
     endcase
 end
-
-// always @(*) begin
-//     read_data_r = 0;
-//     if (sram_we_in & lsu_to_sram_valid_in) begin
-//         paddr_write(sram_w_addr_in, sram_w_data_in, sram_w_mask_in);
-//     end
-//     else if (sram_re_in & lsu_to_sram_valid_in) begin
-//         read_data_r = paddr_read(sram_r_addr_in);
-//     end
-// end
-
-assign sram_r_data_out = read_data_r;
 
 endmodule

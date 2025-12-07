@@ -33,7 +33,7 @@ always @(posedge clk) begin
         ifu_req_addr_out        <= 32'b0;
         ifu_inst_out            <= 32'b0;
         ifu_to_inst_arvalid_out <= 1'b0;
-        ifu_to_inst_rready_out  <= 1'b0;
+        ifu_to_inst_rready_out  <= 1'b0; // TODO 手册建议默认为高
         ifu_to_idu_valid_out    <= 1'b0;
     end else begin
         case (state)
