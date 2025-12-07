@@ -30,8 +30,17 @@ module SRAM(
     input               bready_in
 );
 
-parameter DELAY = 10;
-reg [7:0] delay_cnt;
+reg [3:0] delay_cnt;
+reg [7:0] lfsr;
+wire lfsr_feedback = lfsr[7] ^ lfsr[5] ^ lfsr[4] ^ lfsr[3];
+
+always @(posedge clk or posedge rst) begin
+    if (rst) begin
+        lfsr <= 8'hC1;
+    end else begin
+        lfsr <= {lfsr[6:0], lfsr_feedback};
+    end
+end
 
 import "DPI-C" function int paddr_read(input int raddr);
 import "DPI-C" function void paddr_write(
@@ -64,11 +73,11 @@ always @(posedge clk) begin
         arready_out <= 1'b1;
         rvalid_out  <= 1'b0;
         rresp_out   <= 2'b00;
-        delay_cnt   <= DELAY;
+        delay_cnt   <= (lfsr[3:0]) + 4'd1;
     end else begin
         case (r_state)
             S_IDLE: begin
-                delay_cnt <= DELAY;
+                delay_cnt <= (lfsr[3:0]) + 4'd1;
                 if (arvalid_in) begin
                     araddr_r    <= araddr_in;
                     arready_out <= 1'b0;
