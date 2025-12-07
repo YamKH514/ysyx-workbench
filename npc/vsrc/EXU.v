@@ -24,10 +24,10 @@ parameter S_WAIT_LSU = 2'd1;
 reg [1:0] state, next_state;
 
 always @(posedge clk) begin
-    if (rst) state <= S_IDLE;
+    if (!rst) state <= S_IDLE;
     else state <= next_state;
 
-    if (rst) begin
+    if (!rst) begin
         exu_to_idu_ready_out <= 1'b0;
         exu_to_lsu_valid_out <= 1'b0;
     end else begin

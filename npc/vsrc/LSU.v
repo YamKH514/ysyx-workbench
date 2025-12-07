@@ -62,10 +62,10 @@ parameter S_WAIT_WBU = 3'd6;
 reg [2:0] state, next_state;
 
 always @(posedge clk) begin
-    if (rst) state <= S_IDLE;
+    if (!rst) state <= S_IDLE;
     else state <= next_state;
 
-    if (rst) begin
+    if (!rst) begin
         lsu_to_exu_ready_out <= 1'b0;
         lsu_to_wbu_valid_out <= 1'b0;
         arvalid_out <= 1'b0;

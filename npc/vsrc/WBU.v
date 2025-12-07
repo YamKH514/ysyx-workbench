@@ -30,10 +30,10 @@ parameter S_WORK = 1'd1;
 reg state, next_state;
 
 always @(posedge clk) begin
-    if (rst) state <= S_IDLE;
+    if (!rst) state <= S_IDLE;
     else state <= next_state;
 
-    if (rst) begin
+    if (!rst) begin
         wbu_to_lsu_ready_out <= 1'b0;
         wbu_to_pc_valid_out <= 1'b0;
         gpr_we_out <= 1'b0;
