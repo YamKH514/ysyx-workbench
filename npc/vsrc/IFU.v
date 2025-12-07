@@ -3,16 +3,16 @@ module IFU(
     input               rst,
 
     input       [31:0]  ifu_current_pc_in,
-    output  reg [31:0]  ifu_req_addr_out,
-    input       [31:0]  ifu_req_inst_in,
     output  reg [31:0]  ifu_inst_out,
 
     input               pc_to_ifu_ready_in,
 
-    output  reg         ifu_to_inst_arvalid_out,
-    input               inst_to_ifu_arready_in,
-    input               inst_to_ifu_rvalid_in,
-    output  reg         ifu_to_inst_rready_out,
+    output  reg [31:0]  araddr_out,
+    output  reg         arvalid_out,
+    input               arready_in,
+    input       [31:0]  rdata_in,
+    input               rvalid_in,
+    output  reg         rready_out,
 
     output  reg         ifu_to_idu_valid_out,
     input               idu_to_ifu_ready_in
@@ -30,43 +30,43 @@ always @(posedge clk) begin
     else state <= next_state;
 
     if (rst) begin
-        ifu_req_addr_out        <= 32'b0;
-        ifu_inst_out            <= 32'b0;
-        ifu_to_inst_arvalid_out <= 1'b0;
-        ifu_to_inst_rready_out  <= 1'b1;
-        ifu_to_idu_valid_out    <= 1'b0;
+        araddr_out           <= 32'b0;
+        ifu_inst_out         <= 32'b0;
+        arvalid_out          <= 1'b0;
+        rready_out           <= 1'b1;
+        ifu_to_idu_valid_out <= 1'b0;
     end else begin
         case (state)
             S_IDLE: begin
                 if (pc_to_ifu_ready_in) begin
-                    ifu_req_addr_out        <= ifu_current_pc_in;
-                    ifu_to_inst_arvalid_out <= 1'b1;
+                    araddr_out  <= ifu_current_pc_in;
+                    arvalid_out <= 1'b1;
                 end
             end
             S_SEND_AR: begin
-                if (inst_to_ifu_arready_in) begin
-                    ifu_to_inst_arvalid_out <= 1'b0;
+                if (arready_in) begin
+                    arvalid_out <= 1'b0;
                 end
             end
             S_WAIT_INST: begin
-                if (inst_to_ifu_rvalid_in) begin
-                    ifu_inst_out            <= ifu_req_inst_in;
-                    ifu_to_inst_rready_out  <= 1'b0;
-                    ifu_to_idu_valid_out    <= 1'b1;
+                if (rvalid_in) begin
+                    ifu_inst_out         <= rdata_in;
+                    rready_out           <= 1'b0;
+                    ifu_to_idu_valid_out <= 1'b1;
                 end
             end
             S_WAIT_IDU: begin
                 if (idu_to_ifu_ready_in) begin
-                    ifu_to_inst_rready_out <= 1'b1;
-                    ifu_to_idu_valid_out   <= 1'b0;
+                    rready_out           <= 1'b1;
+                    ifu_to_idu_valid_out <= 1'b0;
                 end
             end
             default: begin
-                ifu_req_addr_out        <= 32'b0;
-                ifu_inst_out            <= 32'b0;
-                ifu_to_inst_arvalid_out <= 1'b0;
-                ifu_to_inst_rready_out  <= 1'b1;
-                ifu_to_idu_valid_out    <= 1'b0;
+                araddr_out           <= 32'b0;
+                ifu_inst_out         <= 32'b0;
+                arvalid_out          <= 1'b0;
+                rready_out           <= 1'b1;
+                ifu_to_idu_valid_out <= 1'b0;
             end
         endcase
     end
@@ -81,12 +81,12 @@ always @(*) begin
             end
         end
         S_SEND_AR: begin
-            if (inst_to_ifu_arready_in) begin
+            if (arready_in) begin
                 next_state = S_WAIT_INST;
             end
         end
         S_WAIT_INST: begin
-            if (inst_to_ifu_rvalid_in) begin
+            if (rvalid_in) begin
                 next_state = S_WAIT_IDU;
             end
         end
