@@ -10,24 +10,7 @@ wire    [31:0]  trap_npc;
 wire    [31:0]  imm_ext;
 wire    [3:0]   pc_cnt_npc_src_sel;
 
-wire            to_pc_valid;
-wire            pc_to_ifu_ready;
-
-wire            ifu_to_inst_valid;
-wire            inst_to_ifu_ready;
-
-wire            ifu_to_idu_valid;
-wire            idu_to_ifu_ready;
-
-wire            idu_to_exu_valid;
-wire            exu_to_idu_ready;
-wire            exu_to_lsu_valid;
-wire            lsu_to_exu_ready;
-
-wire            lsu_to_sram_valid;
-wire            sram_to_lsu_ready;
-wire            lsu_to_wbu_valid;
-wire            wbu_to_lsu_ready;
+wire    [31:0]  ifu_inst;
 
 wire    [1:0]   exu_alu_src_sel1;
 wire    [1:0]   exu_alu_src_sel2;
@@ -50,29 +33,64 @@ wire    [31:0]  csr_r_data;
 wire    [31:0]  csr_r_mtvec;
 wire    [31:0]  csr_r_mepc;
 
-wire    [31:0]  ifu_req_addr;
-wire    [31:0]  ifu_req_inst;
-reg     [31:0]  ifu_inst_r;
-
 wire            is_ecall;
 wire            is_mret;
 
-wire    [31:0]  mem_r_addr;
-wire    [31:0]  mem_r_data;
-wire    [31:0]  mem_w_addr;
-wire    [31:0]  mem_w_data;
+wire    [31:0]  lsu_r_data;
 
-wire    [12:0]  idu_to_lsu_data;
+wire    [8:0]   idu_to_lsu_data;
 
 wire    [9:0]   idu_to_wbu_data;
 
-wire            sram_re;
-wire    [31:0]  sram_r_addr;
-wire    [31:0]  sram_r_data;
-wire            sram_we;
-wire    [31:0]  sram_w_addr;
-wire    [31:0]  sram_w_data;
-wire    [7:0]   sram_w_mask;
+wire            to_pc_valid;
+wire            pc_to_ifu_ready;
+
+wire            ifu_to_idu_valid;
+wire            idu_to_ifu_ready;
+
+wire            idu_to_exu_valid;
+wire            exu_to_idu_ready;
+wire            exu_to_lsu_valid;
+wire            lsu_to_exu_ready;
+
+wire            lsu_to_wbu_valid;
+wire            wbu_to_lsu_ready;
+
+wire    [31:0]  inst_araddr;
+wire            inst_arvalid;
+wire            inst_arready;
+wire    [31:0]  inst_rdata;
+wire    [1:0]   inst_rresp;
+wire            inst_rvalid;
+wire            inst_rready;
+wire    [31:0]  inst_awaddr;
+wire            inst_awvalid;
+wire            inst_awready;
+wire    [31:0]  inst_wdata;
+wire    [3:0]   inst_wstrb;
+wire            inst_wvalid;
+wire            inst_wready;
+wire    [1:0]   inst_bresp;
+wire            inst_bvalid;
+wire            inst_bready;
+
+wire    [31:0]  sram_araddr;
+wire            sram_arvalid;
+wire            sram_arready;
+wire    [31:0]  sram_rdata;
+wire    [1:0]   sram_rresp;
+wire            sram_rvalid;
+wire            sram_rready;
+wire    [31:0]  sram_awaddr;
+wire            sram_awvalid;
+wire            sram_awready;
+wire    [31:0]  sram_wdata;
+wire    [3:0]   sram_wstrb;
+wire            sram_wvalid;
+wire            sram_wready;
+wire    [1:0]   sram_bresp;
+wire            sram_bvalid;
+wire            sram_bready;
 
 assign trap_npc = is_ecall ? csr_r_mtvec : csr_r_mepc;
 
@@ -94,29 +112,55 @@ IFU u_IFU(
     .clk                    (clk                ),
     .rst                    (rst                ),
     .ifu_current_pc_in  	(pc                 ),
-    .ifu_req_addr_out   	(ifu_req_addr       ),
-    .ifu_req_inst_in    	(ifu_req_inst       ),
-    .ifu_inst_out       	(ifu_inst_r         ),
+    .ifu_inst_out       	(ifu_inst           ),
     .pc_to_ifu_ready_in     (pc_to_ifu_ready    ),
-    .ifu_to_inst_valid_out  (ifu_to_inst_valid  ),
-    .inst_to_ifu_ready_in   (inst_to_ifu_ready  ),
+    .araddr_out           	(inst_araddr        ),
+    .arvalid_out          	(inst_arvalid       ),
+    .arready_in           	(inst_arready       ),
+    .rdata_in             	(inst_rdata         ),
+    .rresp_in             	(inst_rresp         ),
+    .rvalid_in            	(inst_rvalid        ),
+    .rready_out           	(inst_rready        ),
+    .awaddr_out           	(inst_awaddr        ),
+    .awvalid_out          	(inst_awvalid       ),
+    .awready_in           	(inst_awready       ),
+    .wdata_out            	(inst_wdata         ),
+    .wstrb_out            	(inst_wstrb         ),
+    .wvalid_out           	(inst_wvalid        ),
+    .wready_in            	(inst_wready        ),
+    .bresp_in             	(inst_bresp         ),
+    .bvalid_in            	(inst_bvalid        ),
+    .bready_out           	(inst_bready        ),
     .ifu_to_idu_valid_out   (ifu_to_idu_valid   ),
     .idu_to_ifu_ready_in    (idu_to_ifu_ready   )
 );
 
-InstSRAM u_InstSRAM(
-    .clk                    (clk                ),
-    .rst                    (rst                ),
-    .inst_sram_addr_in   	(ifu_req_addr       ),
-    .inst_sram_data_out  	(ifu_req_inst       ),
-    .ifu_to_inst_valid_in   (ifu_to_inst_valid  ),
-    .inst_to_ifu_ready_out  (inst_to_ifu_ready  )
+SRAM u_InstSRAM(
+    .clk         	        (clk                ),
+    .rst         	        (rst                ),
+    .araddr_in   	        (inst_araddr        ),
+    .arvalid_in  	        (inst_arvalid       ),
+    .arready_out 	        (inst_arready       ),
+    .rdata_out   	        (inst_rdata         ),
+    .rresp_out   	        (inst_rresp         ),
+    .rvalid_out  	        (inst_rvalid        ),
+    .rready_in   	        (inst_rready        ),
+    .awaddr_in   	        (inst_awaddr        ),
+    .awvalid_in  	        (inst_awvalid       ),
+    .awready_out 	        (inst_awready       ),
+    .wdata_in    	        (inst_wdata         ),
+    .wstrb_in    	        (inst_wstrb         ),
+    .wvalid_in   	        (inst_wvalid        ),
+    .wready_out  	        (inst_wready        ),
+    .bresp_out   	        (inst_bresp         ),
+    .bvalid_out  	        (inst_bvalid        ),
+    .bready_in   	        (inst_bready        )
 );
 
 IDU u_IDU(
     .clk                	(clk                ),
     .rst                    (rst                ),
-    .idu_inst_in           	(ifu_inst_r         ),
+    .idu_inst_in           	(ifu_inst           ),
     .idu_inst_type_out     	(inst_type          ),
     .csr_we_out        	    (csr_we             ),
     .exu_alu_fun_out       	(exu_alu_func       ),
@@ -133,15 +177,15 @@ IDU u_IDU(
 
 ImmExt u_ImmExt(
     .imm_ext_inst_type_in 	(inst_type          ),
-    .imm_ext_imm_in       	(ifu_inst_r[31:7]   ),
+    .imm_ext_imm_in       	(ifu_inst[31:7]     ),
     .imm_ext_imm_out      	(imm_ext            )
 );
 
 GPR u_GPR(
     .clk                    (clk                ),
     .gpr_we_in    	        (gpr_we             ),
-    .gpr_r_addr1_in         (ifu_inst_r[19:15]  ),
-    .gpr_r_addr2_in         (ifu_inst_r[24:20]  ),
+    .gpr_r_addr1_in         (ifu_inst[19:15]    ),
+    .gpr_r_addr2_in         (ifu_inst[24:20]    ),
     .gpr_w_addr_in          (gpr_w_addr         ),
     .gpr_w_data_in          (gpr_w_data         ),
     .gpr_r_data1_out        (gpr_r_data1        ),
@@ -166,12 +210,43 @@ EXU u_EXU(
     .lsu_to_exu_ready_in    (lsu_to_exu_ready   )
 );
 
+LSU u_LSU(
+    .clk                  	(clk                ),
+    .rst                  	(rst                ),
+    .idu_to_lsu_data_in   	(idu_to_lsu_data    ),
+    .lsu_r_addr_in        	(exu_res            ),
+    .lsu_r_data_out       	(lsu_r_data         ),
+    .lsu_w_addr_in        	(exu_res            ),
+    .lsu_w_data_in        	(gpr_r_data2        ),
+    .araddr_out           	(sram_araddr        ),
+    .arvalid_out          	(sram_arvalid       ),
+    .arready_in           	(sram_arready       ),
+    .rdata_in             	(sram_rdata         ),
+    .rresp_in             	(sram_rresp         ),
+    .rvalid_in            	(sram_rvalid        ),
+    .rready_out           	(sram_rready        ),
+    .awaddr_out           	(sram_awaddr        ),
+    .awvalid_out          	(sram_awvalid       ),
+    .awready_in           	(sram_awready       ),
+    .wdata_out            	(sram_wdata         ),
+    .wstrb_out            	(sram_wstrb         ),
+    .wvalid_out           	(sram_wvalid        ),
+    .wready_in            	(sram_wready        ),
+    .bresp_in             	(sram_bresp         ),
+    .bvalid_in            	(sram_bvalid        ),
+    .bready_out           	(sram_bready        ),
+    .exu_to_lsu_valid_in  	(exu_to_lsu_valid   ),
+    .lsu_to_exu_ready_out 	(lsu_to_exu_ready   ),
+    .lsu_to_wbu_valid_out 	(lsu_to_wbu_valid   ),
+    .wbu_to_lsu_ready_in  	(wbu_to_lsu_ready   )
+);
+
 WBU u_WBU(
     .clk                    (clk                ),
     .rst                    (rst                ),
     .idu_to_wbu_data_in     (idu_to_wbu_data    ),
     .exu_res_in             (exu_res            ),
-    .lsu_r_data_in          (mem_r_data         ),
+    .lsu_r_data_in          (lsu_r_data         ),
     .csr_r_data_in          (csr_r_data         ),
     .gpr_we_out     	    (gpr_we             ),
     .gpr_w_addr_out 	    (gpr_w_addr         ),
@@ -183,58 +258,39 @@ WBU u_WBU(
     .wbu_to_pc_valid_out    (to_pc_valid        )
 );
 
-assign mem_r_addr = exu_res;
-assign mem_w_addr = exu_res;
-assign mem_w_data = gpr_r_data2;
-
-LSU u_LSU(
-    .clk                    (clk                ),
-    .rst                    (rst                ),
-    .idu_to_lsu_data_in     (idu_to_lsu_data    ),
-    .lsu_r_addr_in  	    (mem_r_addr         ),
-    .lsu_r_data_out 	    (mem_r_data         ),
-    .lsu_w_addr_in 	        (mem_w_addr         ),
-    .lsu_w_data_in 	        (mem_w_data         ),
-    .sram_re_out            (sram_re            ),
-    .sram_r_addr_out        (sram_r_addr        ),
-    .sram_r_data_in         (sram_r_data        ),
-    .sram_we_out            (sram_we            ),
-    .sram_w_addr_out        (sram_w_addr        ),
-    .sram_w_data_out        (sram_w_data        ),
-    .sram_w_mask_out        (sram_w_mask        ),
-    .exu_to_lsu_valid_in    (exu_to_lsu_valid   ),
-    .lsu_to_exu_ready_out   (lsu_to_exu_ready   ),
-    .lsu_to_sram_valid_out  (lsu_to_sram_valid  ),
-    .sram_to_lsu_ready_in   (sram_to_lsu_ready  ),
-    .lsu_to_wbu_valid_out   (lsu_to_wbu_valid   ),
-    .wbu_to_lsu_ready_in    (wbu_to_lsu_ready   )
-);
-
 SRAM u_SRAM(
-    .clk                    (clk                ),
-    .rst                    (rst                ),
-    .sram_re_in      	    (sram_re            ),
-    .sram_r_addr_in  	    (sram_r_addr        ),
-    .sram_r_data_out 	    (sram_r_data        ),
-    .sram_we_in      	    (sram_we            ),
-    .sram_w_addr_in  	    (sram_w_addr        ),
-    .sram_w_data_in  	    (sram_w_data        ),
-    .sram_w_mask_in  	    (sram_w_mask        ),
-    .lsu_to_sram_valid_in   (lsu_to_sram_valid  ),
-    .sram_to_lsu_ready_out  (sram_to_lsu_ready  )
+    .clk         	        (clk                ),
+    .rst         	        (rst                ),
+    .araddr_in   	        (sram_araddr        ),
+    .arvalid_in  	        (sram_arvalid       ),
+    .arready_out 	        (sram_arready       ),
+    .rdata_out   	        (sram_rdata         ),
+    .rresp_out   	        (sram_rresp         ),
+    .rvalid_out  	        (sram_rvalid        ),
+    .rready_in   	        (sram_rready        ),
+    .awaddr_in   	        (sram_awaddr        ),
+    .awvalid_in  	        (sram_awvalid       ),
+    .awready_out 	        (sram_awready       ),
+    .wdata_in    	        (sram_wdata         ),
+    .wstrb_in    	        (sram_wstrb         ),
+    .wvalid_in   	        (sram_wvalid        ),
+    .wready_out  	        (sram_wready        ),
+    .bresp_out   	        (sram_bresp         ),
+    .bvalid_out  	        (sram_bvalid        ),
+    .bready_in   	        (sram_bready        )
 );
 
 assign csr_w_data   = gpr_r_data1;
 assign csr_w_mcause = gpr_r_a5;
 assign csr_w_mepc   = pc;
-assign csr_rw_addr  = ifu_inst_r[31:20];
+assign csr_rw_addr  = ifu_inst[31:20];
 
 CSR u_CSR(
     .clk                    (clk                ),
     .rst                    (rst                ),
     .is_ecall               (is_ecall           ),
     .is_mret                (is_mret            ),
-    .csr_func3_in           (ifu_inst_r[14:12]  ),
+    .csr_func3_in           (ifu_inst[14:12]    ),
     .csr_we_in              (csr_we             ),
     .csr_rw_addr_in         (csr_rw_addr        ),
     .csr_w_data_in          (csr_w_data         ),

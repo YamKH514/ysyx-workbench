@@ -16,8 +16,8 @@ module IDU(
 
     output  reg [3:0]   pc_cnt_npc_src_sel_out,
 
-    // idu_to_lsu_data lsu_r_func[12:10], lsu_re[9], lsu_w_mask[8:1], lsu_we[0]
-    output  reg [12:0]  idu_to_lsu_data_out,
+    // idu_to_lsu_data lsu_r_func[8:6], lsu_re[5], lsu_w_mask[4:1], lsu_we[0]
+    output  reg [8:0]  idu_to_lsu_data_out,
 
     // idu_to_wbu_data is_ecall[9], is_mret[8], wbu_we[7], wbu_w_addr[6:2], wbu_wd_sel[1:0]
     output  reg [9:0]   idu_to_wbu_data_out,
@@ -31,7 +31,7 @@ module IDU(
 
 reg [2:0]   lsu_r_func_r;
 reg         lsu_re_r;
-reg [7:0]   lsu_w_mask_r;
+reg [3:0]   lsu_w_mask_r;
 reg         lsu_we_r;
 assign idu_to_lsu_data_out = {lsu_r_func_r, lsu_re_r, lsu_w_mask_r, lsu_we_r};
 
@@ -250,10 +250,10 @@ assign wbu_wd_sel_r =   `GPR_WD_SEL_MEM_DATA & {2{inst_lb | inst_lh | inst_lw | 
                         `GPR_WD_SEL_CSR_DATA & {2{inst_csrrw | inst_csrrs}} |
                         `GPR_WD_SEL_ALU_RES;
 
-assign lsu_w_mask_r =   inst_sw ? 8'b00001111 :
-                        inst_sh ? 8'b00000011 :
-                        inst_sb ? 8'b00000001 :
-                        8'b0;
+assign lsu_w_mask_r =   inst_sw ? 4'b1111 :
+                        inst_sh ? 4'b0011 :
+                        inst_sb ? 4'b0001 :
+                        4'b0;
 
 assign lsu_re_r = (inst_lb | inst_lh | inst_lw | inst_lbu | inst_lhu);
 
