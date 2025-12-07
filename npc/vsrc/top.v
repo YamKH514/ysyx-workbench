@@ -13,10 +13,12 @@ wire    [3:0]   pc_cnt_npc_src_sel;
 wire            to_pc_valid;
 wire            pc_to_ifu_ready;
 
-wire            ifu_to_inst_arvalid;
-wire            inst_to_ifu_arready;
-wire            inst_to_ifu_rvalid;
-wire            ifu_to_inst_rready;
+wire    [31:0]  inst_araddr;
+wire            inst_arvalid;
+wire            inst_arready;
+wire    [31:0]  inst_rdata;
+wire            inst_rvalid;
+wire            inst_rready;
 
 wire            ifu_to_idu_valid;
 wire            idu_to_ifu_ready;
@@ -50,9 +52,7 @@ wire    [31:0]  csr_r_data;
 wire    [31:0]  csr_r_mtvec;
 wire    [31:0]  csr_r_mepc;
 
-wire    [31:0]  ifu_req_addr;
-wire    [31:0]  ifu_req_inst;
-reg     [31:0]  ifu_inst_r;
+wire    [31:0]  ifu_inst;
 
 wire            is_ecall;
 wire            is_mret;
@@ -101,14 +101,14 @@ IFU u_IFU(
     .clk                    (clk                ),
     .rst                    (rst                ),
     .ifu_current_pc_in  	(pc                 ),
-    .ifu_req_addr_out   	(ifu_req_addr       ),
-    .ifu_req_inst_in    	(ifu_req_inst       ),
-    .ifu_inst_out       	(ifu_inst_r         ),
+    .ifu_inst_out       	(ifu_inst         ),
     .pc_to_ifu_ready_in     (pc_to_ifu_ready    ),
-    .ifu_to_inst_arvalid_out(ifu_to_inst_arvalid),
-    .inst_to_ifu_arready_in (inst_to_ifu_arready),
-    .inst_to_ifu_rvalid_in  (inst_to_ifu_rvalid ),
-    .ifu_to_inst_rready_out (ifu_to_inst_rready ),
+    .araddr_out             (inst_araddr        ),
+    .arvalid_out            (inst_arvalid       ),
+    .arready_in             (inst_arready       ),
+    .rdata_in               (inst_rdata         ),
+    .rvalid_in              (inst_rvalid        ),
+    .rready_out             (inst_rready        ),
     .ifu_to_idu_valid_out   (ifu_to_idu_valid   ),
     .idu_to_ifu_ready_in    (idu_to_ifu_ready   )
 );
@@ -116,18 +116,18 @@ IFU u_IFU(
 InstSRAM u_InstSRAM(
     .clk                    (clk                ),
     .rst                    (rst                ),
-    .inst_sram_addr_in   	(ifu_req_addr       ),
-    .inst_sram_data_out  	(ifu_req_inst       ),
-    .ifu_to_inst_arvalid_in (ifu_to_inst_arvalid),
-    .inst_to_ifu_arready_out(inst_to_ifu_arready),
-    .inst_to_ifu_rvalid_out (inst_to_ifu_rvalid ),
-    .ifu_to_inst_rready_in  (ifu_to_inst_rready )
+    .inst_sram_addr_in   	(inst_araddr        ),
+    .inst_sram_data_out  	(inst_rdata         ),
+    .ifu_to_inst_arvalid_in (inst_arvalid       ),
+    .inst_to_ifu_arready_out(inst_arready       ),
+    .inst_to_ifu_rvalid_out (inst_rvalid        ),
+    .ifu_to_inst_rready_in  (inst_rready        )
 );
 
 IDU u_IDU(
     .clk                	(clk                ),
     .rst                    (rst                ),
-    .idu_inst_in           	(ifu_inst_r         ),
+    .idu_inst_in           	(ifu_inst         ),
     .idu_inst_type_out     	(inst_type          ),
     .csr_we_out        	    (csr_we             ),
     .exu_alu_fun_out       	(exu_alu_func       ),
@@ -144,15 +144,15 @@ IDU u_IDU(
 
 ImmExt u_ImmExt(
     .imm_ext_inst_type_in 	(inst_type          ),
-    .imm_ext_imm_in       	(ifu_inst_r[31:7]   ),
+    .imm_ext_imm_in       	(ifu_inst[31:7]   ),
     .imm_ext_imm_out      	(imm_ext            )
 );
 
 GPR u_GPR(
     .clk                    (clk                ),
     .gpr_we_in    	        (gpr_we             ),
-    .gpr_r_addr1_in         (ifu_inst_r[19:15]  ),
-    .gpr_r_addr2_in         (ifu_inst_r[24:20]  ),
+    .gpr_r_addr1_in         (ifu_inst[19:15]  ),
+    .gpr_r_addr2_in         (ifu_inst[24:20]  ),
     .gpr_w_addr_in          (gpr_w_addr         ),
     .gpr_w_data_in          (gpr_w_data         ),
     .gpr_r_data1_out        (gpr_r_data1        ),
@@ -250,14 +250,14 @@ SRAM u_SRAM(
 assign csr_w_data   = gpr_r_data1;
 assign csr_w_mcause = gpr_r_a5;
 assign csr_w_mepc   = pc;
-assign csr_rw_addr  = ifu_inst_r[31:20];
+assign csr_rw_addr  = ifu_inst[31:20];
 
 CSR u_CSR(
     .clk                    (clk                ),
     .rst                    (rst                ),
     .is_ecall               (is_ecall           ),
     .is_mret                (is_mret            ),
-    .csr_func3_in           (ifu_inst_r[14:12]  ),
+    .csr_func3_in           (ifu_inst[14:12]  ),
     .csr_we_in              (csr_we             ),
     .csr_rw_addr_in         (csr_rw_addr        ),
     .csr_w_data_in          (csr_w_data         ),
