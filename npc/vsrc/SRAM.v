@@ -64,8 +64,7 @@ always @(posedge clk) begin
     end else begin
         case (r_state)
             S_IDLE: begin
-                if (arvalid_in) begin
-                    // araddr_r    <= araddr_in;
+                if (arvalid_in & arready_out) begin
                     arready_out <= 1'b0;
                 end
             end
@@ -74,7 +73,7 @@ always @(posedge clk) begin
                 rresp_out  <= 2'b00;
             end
             S_SEND_R: begin
-                if (rready_in) begin
+                if (rvalid_out & rready_in) begin
                     arready_out <= 1'b1;
                     rvalid_out  <= 1'b0;
                 end
