@@ -65,7 +65,7 @@ always @(posedge clk) begin
         case (r_state)
             S_IDLE: begin
                 if (arvalid_in) begin
-                    araddr_r    <= araddr_in;
+                    // araddr_r    <= araddr_in;
                     arready_out <= 1'b0;
                 end
             end
@@ -133,6 +133,7 @@ always @(*) begin
     case (r_state)
         S_IDLE: begin
             if (arvalid_in & arready_out) begin
+                araddr_r     = araddr_in;
                 r_next_state = S_GET_AR;
             end
         end
