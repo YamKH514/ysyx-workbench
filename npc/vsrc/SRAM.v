@@ -94,13 +94,13 @@ always @(posedge clk) begin
     end else begin
         case (w_state)
             S_IDLE: begin
-                if (awvalid_in) begin
+                if (awvalid_in & awready_out) begin
                     awaddr_r    <= awaddr_in;
                     awready_out <= 1'b0;
                 end
             end
             S_GET_WR: begin
-                if (wvalid_in) begin
+                if (wvalid_in & wready_out) begin
                     wready_out <= 1'b0;
                 end
             end
@@ -109,7 +109,7 @@ always @(posedge clk) begin
                 bvalid_out <= 1'b1;
             end
             S_SEND_B: begin
-                if (bready_in) begin
+                if (bvalid_out & bready_in) begin
                     awready_out <= 1'b1;
                     wready_out  <=1'b1;
                     bvalid_out  <= 1'b0;
@@ -153,12 +153,12 @@ always @(*) begin
     // WRITE
     case (w_state)
         S_IDLE: begin
-            if (awvalid_in) begin
+            if (awvalid_in & awready_out) begin
                 w_next_state = S_GET_WR;
             end
         end
         S_GET_WR: begin
-            if (wvalid_in) begin
+            if (wvalid_in & wready_out) begin
                 w_next_state = S_GET_WD;
             end
         end
@@ -167,7 +167,7 @@ always @(*) begin
             w_next_state = S_SEND_B;
         end
         S_SEND_B: begin
-            if (bready_in) begin
+            if (bvalid_out & bready_in) begin
                 w_next_state = S_IDLE;
             end
         end
