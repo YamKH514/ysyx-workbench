@@ -1,6 +1,6 @@
 module top(
     input           clk,
-    input           rst,
+    input           rstn,
     output  [31:0]  pc,
     output  [31:0]  npc
 );
@@ -96,7 +96,7 @@ assign trap_npc = is_ecall ? csr_r_mtvec : csr_r_mepc;
 
 PCCnt u_PCCnt(
     .clk                 	(clk                ),
-    .rst                 	(rst                ),
+    .rstn                 	(rstn               ),
     .pc_cnt_cmp_res_in     	(exu_res[0]         ),
     .pc_cnt_rd1_in         	(gpr_r_data1        ),
     .pc_cnt_imm_in         	(imm_ext            ),
@@ -110,7 +110,7 @@ PCCnt u_PCCnt(
 
 IFU u_IFU(
     .clk                    (clk                ),
-    .rst                    (rst                ),
+    .rstn                   (rstn               ),
     .ifu_current_pc_in  	(pc                 ),
     .ifu_inst_out       	(ifu_inst           ),
     .pc_to_ifu_ready_in     (pc_to_ifu_ready    ),
@@ -137,7 +137,7 @@ IFU u_IFU(
 
 SRAM u_InstSRAM(
     .clk         	        (clk                ),
-    .rst         	        (rst                ),
+    .rstn         	        (rstn               ),
     .araddr_in   	        (inst_araddr        ),
     .arvalid_in  	        (inst_arvalid       ),
     .arready_out 	        (inst_arready       ),
@@ -159,7 +159,7 @@ SRAM u_InstSRAM(
 
 IDU u_IDU(
     .clk                	(clk                ),
-    .rst                    (rst                ),
+    .rstn                   (rstn               ),
     .idu_inst_in           	(ifu_inst           ),
     .idu_inst_type_out     	(inst_type          ),
     .csr_we_out        	    (csr_we             ),
@@ -195,7 +195,7 @@ GPR u_GPR(
 
 EXU u_EXU(
     .clk                    (clk                ),
-    .rst                    (rst                ),
+    .rstn                   (rstn               ),
     .exu_pc_in           	(pc                 ),
     .exu_alu_fun_in      	(exu_alu_func       ),
     .exu_rd1_in          	(gpr_r_data1        ),
@@ -212,7 +212,7 @@ EXU u_EXU(
 
 LSU u_LSU(
     .clk                  	(clk                ),
-    .rst                  	(rst                ),
+    .rstn                  	(rstn               ),
     .idu_to_lsu_data_in   	(idu_to_lsu_data    ),
     .lsu_r_addr_in        	(exu_res            ),
     .lsu_r_data_out       	(lsu_r_data         ),
@@ -243,7 +243,7 @@ LSU u_LSU(
 
 WBU u_WBU(
     .clk                    (clk                ),
-    .rst                    (rst                ),
+    .rstn                   (rstn               ),
     .idu_to_wbu_data_in     (idu_to_wbu_data    ),
     .exu_res_in             (exu_res            ),
     .lsu_r_data_in          (lsu_r_data         ),
@@ -260,7 +260,7 @@ WBU u_WBU(
 
 SRAM u_SRAM(
     .clk         	        (clk                ),
-    .rst         	        (rst                ),
+    .rstn         	        (rstn               ),
     .araddr_in   	        (sram_araddr        ),
     .arvalid_in  	        (sram_arvalid       ),
     .arready_out 	        (sram_arready       ),
@@ -287,7 +287,7 @@ assign csr_rw_addr  = ifu_inst[31:20];
 
 CSR u_CSR(
     .clk                    (clk                ),
-    .rst                    (rst                ),
+    .rstn                   (rstn               ),
     .is_ecall               (is_ecall           ),
     .is_mret                (is_mret            ),
     .csr_func3_in           (ifu_inst[14:12]    ),

@@ -1,6 +1,6 @@
 module SRAM(
     input               clk,
-    input               rst,
+    input               rstn,
 
     // AR
     input       [31:0]  araddr_in,
@@ -48,7 +48,7 @@ reg [2:0]   r_state, r_next_state;
 reg [2:0]   w_state, w_next_state;
 
 always @(posedge clk) begin
-    if (!rst) begin
+    if (!rstn) begin
         r_state <= S_IDLE;
         w_state <= S_IDLE;
     end else begin
@@ -57,7 +57,7 @@ always @(posedge clk) begin
     end
 
     // READ
-    if (!rst) begin
+    if (!rstn) begin
         arready_out <= 1'b1;
         rvalid_out  <= 1'b0;
         rresp_out   <= 2'b00;
@@ -86,7 +86,7 @@ always @(posedge clk) begin
     end
 
     // WRITE
-    if (!rst) begin
+    if (!rstn) begin
         awready_out <= 1'b1;
         wready_out  <= 1'b1;
         bresp_out   <= 2'b00;

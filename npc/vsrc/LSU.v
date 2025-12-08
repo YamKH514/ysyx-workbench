@@ -2,7 +2,7 @@
 
 module LSU(
     input               clk,
-    input               rst,
+    input               rstn,
 
     // idu_to_lsu_data lsu_r_func[8:6], lsu_re[5], lsu_w_mask[4:1], lsu_we[0]
     input       [8:0]   idu_to_lsu_data_in,
@@ -62,10 +62,10 @@ parameter S_WAIT_WBU = 3'd6;
 reg [2:0] state, next_state;
 
 always @(posedge clk) begin
-    if (!rst) state <= S_IDLE;
+    if (!rstn) state <= S_IDLE;
     else state <= next_state;
 
-    if (!rst) begin
+    if (!rstn) begin
         lsu_to_exu_ready_out <= 1'b0;
         lsu_to_wbu_valid_out <= 1'b0;
         arvalid_out <= 1'b0;
