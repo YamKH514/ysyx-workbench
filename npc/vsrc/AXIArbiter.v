@@ -56,78 +56,156 @@ module AXIArbiter(
     input               s_bvalid,
     output  reg         s_bready
 );
+parameter S_IDLE = 1'b0;
+parameter S_BUSY = 1'b1;
 
-parameter S_IDLE = 1'd0;
-parameter S_BUSY = 1'd1;
+reg state;
+reg cur_master;   // 0 = master0, 1 = master1
 
-reg state, next_state;
-reg cur_master;
-
-always @(posedge clk) begin
-    if (!rstn) state <= S_IDLE;
-    else state <= next_state;
-
+// --------------------------------------------------------
+// State transition
+// --------------------------------------------------------
+always @(posedge clk or negedge rstn) begin
     if (!rstn) begin
-        cur_master <= 1'd0;
-    end else begin
+        state <= S_IDLE;
+        cur_master <= 0;
+    end
+    else begin
         case (state)
             S_IDLE: begin
-                if (m0_arvalid | m0_awvalid) begin
-                    cur_master <= 1'd0;
-                end else if (m1_arvalid | m1_awvalid) begin
-                    cur_master <= 1'd1;
+                if (m0_arvalid || m0_awvalid) begin
+                    cur_master <= 0;
+                    state      <= S_BUSY;
+                end
+                else if (m1_arvalid || m1_awvalid) begin
+                    cur_master <= 1;
+                    state      <= S_BUSY;
                 end
             end
             S_BUSY: begin
-                s_araddr  <= (m0_araddr  & {32{!cur_master}}) | (m1_araddr  & {32{cur_master}});
-                s_arvalid <= (m0_arvalid & !cur_master)       | (m1_arvalid & cur_master);
-                s_rready  <= (m0_rready  & !cur_master)       | (m1_rready  & cur_master);
-                s_awaddr  <= (m0_awaddr  & {32{!cur_master}}) | (m1_awaddr  & {32{cur_master}});
-                s_awvalid <= (m0_awvalid & !cur_master)       | (m1_awvalid & cur_master);
-                s_wdata   <= (m0_wdata   & {32{!cur_master}}) | (m1_wdata   & {32{cur_master}});
-                s_wstrb   <= (m0_wstrb   & {4{!cur_master}})  | (m1_wstrb   & {4{cur_master}});
-                s_wvalid  <= (m0_wvalid  & !cur_master)       | (m1_wvalid  & cur_master);
-                s_bready  <= (m0_bready  & !cur_master)       | (m1_bready  & cur_master);
-
-                m0_arready <= s_arready & !cur_master;
-                m0_rdata   <= s_rdata   & {32{!cur_master}};
-                m0_rresp   <= s_rresp   & {2{!cur_master}};
-                m0_rvalid  <= s_rvalid  & !cur_master;
-                m0_awready <= s_awready & !cur_master;
-                m0_wready  <= s_wready  & !cur_master;
-                m0_bresp   <= s_bresp   & {2{!cur_master}};
-                m0_bvalid  <= s_bvalid  & !cur_master;
-
-                m1_arready <= s_arready & cur_master;
-                m1_rdata   <= s_rdata   & {32{cur_master}};
-                m1_rresp   <= s_rresp   & {2{cur_master}};
-                m1_rvalid  <= s_rvalid  & cur_master;
-                m1_awready <= s_awready & cur_master;
-                m1_wready  <= s_wready  & cur_master;
-                m1_bresp   <= s_bresp   & {2{cur_master}};
-                m1_bvalid  <= s_bvalid  & cur_master;
+                if (s_rvalid && ((cur_master == 0) ? m0_rready : m1_rready)) begin
+                    state <= S_IDLE;
+                end
+                else if (s_bvalid && ((cur_master == 0) ? m0_bready : m1_bready)) begin
+                    state <= S_IDLE;
+                end
             end
         endcase
     end
 end
 
 always @(*) begin
-    next_state = state;
-    if (!rstn) begin
-        next_state = S_IDLE;
-    end else begin
-        case (state)
-            S_IDLE: begin
-                if (m0_arvalid | m0_awvalid | m1_arvalid | m1_awvalid) begin
-                    next_state = S_BUSY;
-                end
+    m0_arready = 0;
+    m0_rdata = 0;
+    m0_rresp = 0;
+    m0_rvalid = 0;
+    m0_awready = 0;
+    m0_wready  = 0;
+    m0_bresp = 0;
+    m0_bvalid = 0;
+
+    m1_arready = 0;
+    m1_rdata = 0;
+    m1_rresp = 0;
+    m1_rvalid = 0;
+    m1_awready = 0;
+    m1_wready  = 0;
+    m1_bresp = 0;
+    m1_bvalid = 0;
+
+    s_araddr = 0;
+    s_arvalid = 0;
+    s_rready = 0;
+    s_awaddr = 0;
+    s_awvalid = 0;
+    s_wdata = 0;
+    s_wstrb = 0;
+    s_wvalid = 0;
+    s_bready = 0;
+
+    if (state == S_IDLE) begin
+        if (m0_arvalid || m0_awvalid) begin
+            if (m0_arvalid) begin
+                s_araddr   = m0_araddr;
+                s_arvalid  = 1;
+                m0_arready = s_arready;
             end
-            S_BUSY: begin
-                if ((m0_rvalid & m0_rready) | (m0_bvalid & m0_bready) | (m1_rvalid & m1_rready) | (m1_bvalid & m1_bready)) begin
-                    next_state = S_IDLE;
-                end
+            if (m0_awvalid) begin
+                s_awaddr   = m0_awaddr;
+                s_awvalid  = 1;
+                m0_awready = s_awready;
             end
-        endcase
+            if (m0_wvalid) begin
+                s_wdata   = m0_wdata;
+                s_wstrb   = m0_wstrb;
+                s_wvalid  = 1;
+                m0_wready = s_wready;
+            end
+        end
+        else if (m1_arvalid || m1_awvalid) begin
+            if (m1_arvalid) begin
+                s_araddr   = m1_araddr;
+                s_arvalid  = 1;
+                m1_arready = s_arready;
+            end
+            if (m1_awvalid) begin
+                s_awaddr   = m1_awaddr;
+                s_awvalid  = 1;
+                m1_awready = s_awready;
+            end
+            if (m1_wvalid) begin
+                s_wdata   = m1_wdata;
+                s_wstrb   = m1_wstrb;
+                s_wvalid  = 1;
+                m1_wready = s_wready;
+            end
+        end
+    end
+    else begin
+        if (cur_master == 0) begin
+            m0_arready = s_arready;
+            m0_awready = s_awready;
+            m0_wready  = s_wready;
+
+            s_araddr  = m0_araddr;
+            s_arvalid = m0_arvalid;
+            s_awaddr  = m0_awaddr;
+            s_awvalid = m0_awvalid;
+            s_wdata   = m0_wdata;
+            s_wstrb   = m0_wstrb;
+            s_wvalid  = m0_wvalid;
+
+            m0_rdata  = s_rdata;
+            m0_rresp  = s_rresp;
+            m0_rvalid = s_rvalid;
+            s_rready  = m0_rready;
+
+            m0_bresp  = s_bresp;
+            m0_bvalid = s_bvalid;
+            s_bready  = m0_bready;
+        end
+        else begin
+            m1_arready = s_arready;
+            m1_awready = s_awready;
+            m1_wready  = s_wready;
+
+            s_araddr  = m1_araddr;
+            s_arvalid = m1_arvalid;
+            s_awaddr  = m1_awaddr;
+            s_awvalid = m1_awvalid;
+            s_wdata   = m1_wdata;
+            s_wstrb   = m1_wstrb;
+            s_wvalid  = m1_wvalid;
+
+            m1_rdata  = s_rdata;
+            m1_rresp  = s_rresp;
+            m1_rvalid = s_rvalid;
+            s_rready  = m1_rready;
+
+            m1_bresp  = s_bresp;
+            m1_bvalid = s_bvalid;
+            s_bready  = m1_bready;
+        end
     end
 end
 
