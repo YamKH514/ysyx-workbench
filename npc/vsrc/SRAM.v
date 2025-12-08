@@ -132,7 +132,7 @@ always @(*) begin
     // READ
     case (r_state)
         S_IDLE: begin
-            if (arvalid_in) begin
+            if (arvalid_in & arready_out) begin
                 r_next_state = S_GET_AR;
             end
         end
@@ -141,7 +141,7 @@ always @(*) begin
             r_next_state = S_SEND_R;
         end
         S_SEND_R: begin
-            if (rready_in) begin
+            if (rvalid_out & rready_in) begin
                 r_next_state = S_IDLE;
             end
         end
