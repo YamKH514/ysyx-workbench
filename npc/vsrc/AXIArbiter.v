@@ -96,32 +96,32 @@ end
 
 always @(*) begin
     m0_arready = 0;
-    m0_rdata = 0;
-    m0_rresp = 0;
-    m0_rvalid = 0;
+    m0_rdata   = 0;
+    m0_rresp   = 0;
+    m0_rvalid  = 0;
     m0_awready = 0;
     m0_wready  = 0;
-    m0_bresp = 0;
-    m0_bvalid = 0;
+    m0_bresp   = 0;
+    m0_bvalid  = 0;
 
     m1_arready = 0;
-    m1_rdata = 0;
-    m1_rresp = 0;
-    m1_rvalid = 0;
+    m1_rdata   = 0;
+    m1_rresp   = 0;
+    m1_rvalid  = 0;
     m1_awready = 0;
     m1_wready  = 0;
-    m1_bresp = 0;
-    m1_bvalid = 0;
+    m1_bresp   = 0;
+    m1_bvalid  = 0;
 
-    s_araddr = 0;
-    s_arvalid = 0;
-    s_rready = 0;
-    s_awaddr = 0;
-    s_awvalid = 0;
-    s_wdata = 0;
-    s_wstrb = 0;
-    s_wvalid = 0;
-    s_bready = 0;
+    s_araddr   = 0;
+    s_arvalid  = 0;
+    s_rready   = 0;
+    s_awaddr   = 0;
+    s_awvalid  = 0;
+    s_wdata    = 0;
+    s_wstrb    = 0;
+    s_wvalid   = 0;
+    s_bready   = 0;
 
     if (state == S_IDLE) begin
         if (m0_arvalid || m0_awvalid) begin
@@ -136,10 +136,10 @@ always @(*) begin
                 m0_awready = s_awready;
             end
             if (m0_wvalid) begin
-                s_wdata   = m0_wdata;
-                s_wstrb   = m0_wstrb;
-                s_wvalid  = 1;
-                m0_wready = s_wready;
+                s_wdata    = m0_wdata;
+                s_wstrb    = m0_wstrb;
+                s_wvalid   = 1;
+                m0_wready  = s_wready;
             end
         end
         else if (m1_arvalid || m1_awvalid) begin
@@ -154,57 +154,53 @@ always @(*) begin
                 m1_awready = s_awready;
             end
             if (m1_wvalid) begin
-                s_wdata   = m1_wdata;
-                s_wstrb   = m1_wstrb;
-                s_wvalid  = 1;
-                m1_wready = s_wready;
+                s_wdata    = m1_wdata;
+                s_wstrb    = m1_wstrb;
+                s_wvalid   = 1;
+                m1_wready  = s_wready;
             end
         end
     end
     else begin
         if (cur_master == 0) begin
             m0_arready = s_arready;
+            m0_rdata   = s_rdata;
+            m0_rresp   = s_rresp;
+            m0_rvalid  = s_rvalid;
             m0_awready = s_awready;
             m0_wready  = s_wready;
+            m0_bresp   = s_bresp;
+            m0_bvalid  = s_bvalid;
 
-            s_araddr  = m0_araddr;
-            s_arvalid = m0_arvalid;
-            s_awaddr  = m0_awaddr;
-            s_awvalid = m0_awvalid;
-            s_wdata   = m0_wdata;
-            s_wstrb   = m0_wstrb;
-            s_wvalid  = m0_wvalid;
-
-            m0_rdata  = s_rdata;
-            m0_rresp  = s_rresp;
-            m0_rvalid = s_rvalid;
-            s_rready  = m0_rready;
-
-            m0_bresp  = s_bresp;
-            m0_bvalid = s_bvalid;
-            s_bready  = m0_bready;
+            s_araddr   = m0_araddr;
+            s_arvalid  = m0_arvalid;
+            s_awaddr   = m0_awaddr;
+            s_awvalid  = m0_awvalid;
+            s_wdata    = m0_wdata;
+            s_wstrb    = m0_wstrb;
+            s_wvalid   = m0_wvalid;
+            s_rready   = m0_rready;
+            s_bready   = m0_bready;
         end
         else begin
             m1_arready = s_arready;
+            m1_rdata   = s_rdata;
+            m1_rresp   = s_rresp;
+            m1_rvalid  = s_rvalid;
             m1_awready = s_awready;
             m1_wready  = s_wready;
+            m1_bresp   = s_bresp;
+            m1_bvalid  = s_bvalid;
 
-            s_araddr  = m1_araddr;
-            s_arvalid = m1_arvalid;
-            s_awaddr  = m1_awaddr;
-            s_awvalid = m1_awvalid;
-            s_wdata   = m1_wdata;
-            s_wstrb   = m1_wstrb;
-            s_wvalid  = m1_wvalid;
-
-            m1_rdata  = s_rdata;
-            m1_rresp  = s_rresp;
-            m1_rvalid = s_rvalid;
-            s_rready  = m1_rready;
-
-            m1_bresp  = s_bresp;
-            m1_bvalid = s_bvalid;
-            s_bready  = m1_bready;
+            s_araddr   = m1_araddr;
+            s_arvalid  = m1_arvalid;
+            s_awaddr   = m1_awaddr;
+            s_awvalid  = m1_awvalid;
+            s_wdata    = m1_wdata;
+            s_wstrb    = m1_wstrb;
+            s_wvalid   = m1_wvalid;
+            s_rready   = m1_rready;
+            s_bready   = m1_bready;
         end
     end
 end
