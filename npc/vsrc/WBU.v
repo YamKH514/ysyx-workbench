@@ -71,6 +71,7 @@ always @(posedge clk) begin
 end
 
 always @(*) begin
+    next_state = state;
     case (state)
         S_IDLE: begin
             if (lsu_to_wbu_valid_in) begin

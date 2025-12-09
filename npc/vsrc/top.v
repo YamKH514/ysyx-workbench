@@ -153,28 +153,6 @@ IFU u_IFU(
     .idu_to_ifu_ready_in    (idu_to_ifu_ready   )
 );
 
-// SRAM u_InstSRAM(
-//     .clk         	        (clk                ),
-//     .rstn         	        (rstn               ),
-//     .araddr_in   	        (inst_araddr        ),
-//     .arvalid_in  	        (inst_arvalid       ),
-//     .arready_out 	        (inst_arready       ),
-//     .rdata_out   	        (inst_rdata         ),
-//     .rresp_out   	        (inst_rresp         ),
-//     .rvalid_out  	        (inst_rvalid        ),
-//     .rready_in   	        (inst_rready        ),
-//     .awaddr_in   	        (inst_awaddr        ),
-//     .awvalid_in  	        (inst_awvalid       ),
-//     .awready_out 	        (inst_awready       ),
-//     .wdata_in    	        (inst_wdata         ),
-//     .wstrb_in    	        (inst_wstrb         ),
-//     .wvalid_in   	        (inst_wvalid        ),
-//     .wready_out  	        (inst_wready        ),
-//     .bresp_out   	        (inst_bresp         ),
-//     .bvalid_out  	        (inst_bvalid        ),
-//     .bready_in   	        (inst_bready        )
-// );
-
 IDU u_IDU(
     .clk                	(clk                ),
     .rstn                   (rstn               ),

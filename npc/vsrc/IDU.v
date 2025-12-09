@@ -81,6 +81,7 @@ always @(posedge clk) begin
 end
 
 always @(*) begin
+    next_state = state;
     case (state)
         S_IDLE: begin
             if (ifu_to_idu_valid_in) begin

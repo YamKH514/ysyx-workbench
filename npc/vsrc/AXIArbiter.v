@@ -60,12 +60,9 @@ parameter S_IDLE = 1'b0;
 parameter S_BUSY = 1'b1;
 
 reg state;
-reg cur_master;   // 0 = master0, 1 = master1
+reg cur_master;
 
-// --------------------------------------------------------
-// State transition
-// --------------------------------------------------------
-always @(posedge clk or negedge rstn) begin
+always @(posedge clk) begin
     if (!rstn) begin
         state <= S_IDLE;
         cur_master <= 0;
