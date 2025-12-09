@@ -31,7 +31,7 @@ module UART(
     input               bready_in
 );
 
-import "DPI-C" function void uart_difftest_skip();
+import "DPI-C" function void uart_difftest_skip(input int waddr);
 
 reg [31:0]  awaddr_r;
 reg [31:0]  wdata_r;
@@ -79,7 +79,7 @@ always @(posedge clk) begin
                 end
             end
             S_GET_WD: begin
-                $write("%c", wdata_r[7:0]);
+                // $write("%c", wdata_r[7:0]);
                 bresp_out  <= 2'b00;
                 bvalid_out <= 1'b1;
             end
@@ -115,7 +115,7 @@ always @(*) begin
             end
         end
         S_GET_WD: begin
-            uart_difftest_skip();
+            uart_difftest_skip(wdata_in);
             w_next_state = S_SEND_B;
         end
         S_SEND_B: begin
