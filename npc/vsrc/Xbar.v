@@ -123,35 +123,35 @@ always @(posedge clk) begin
 end
 
     // READ
-    assign m_arready  = (cur_slave_r) ? s1_arready : s0_arready;
-    assign m_rdata    = (cur_slave_r) ? s1_rdata : s0_rdata;
-    assign m_rresp    = (cur_slave_r) ? s1_rresp : s0_rresp;
-    assign m_rvalid   = (cur_slave_r) ? s1_rvalid : s0_rvalid;
-    assign s0_araddr  = m_araddr& {32{!cur_slave_r}};
-    assign s0_arvalid = m_arvalid& !cur_slave_r;
-    assign s0_rready  = m_rready& !cur_slave_r;
+    assign m_arready  = r_state & ((cur_slave_r) ? s1_arready : s0_arready);
+    assign m_rdata    = {32{r_state}} & ((cur_slave_r) ? s1_rdata : s0_rdata);
+    assign m_rresp    = {2{r_state}} & ((cur_slave_r) ? s1_rresp : s0_rresp);
+    assign m_rvalid   = r_state & ((cur_slave_r) ? s1_rvalid : s0_rvalid);
+    assign s0_araddr  = {32{r_state}} & (m_araddr& {32{!cur_slave_r}});
+    assign s0_arvalid = r_state & (m_arvalid& !cur_slave_r);
+    assign s0_rready  = r_state & (m_rready& !cur_slave_r);
 
-    assign s1_araddr  = m_araddr& {32{cur_slave_r}};
-    assign s1_arvalid = m_arvalid& cur_slave_r;
-    assign s1_rready  = m_rready& cur_slave_r;
+    assign s1_araddr  = {32{r_state}} & (m_araddr & {32{cur_slave_r}});
+    assign s1_arvalid = r_state & (m_arvalid & cur_slave_r);
+    assign s1_rready  = r_state & (m_rready & cur_slave_r);
 
     // WRITE
-    assign m_awready  = (cur_slave_w) ? s1_awready : s0_awready;
-    assign m_wready   = (cur_slave_w) ? s1_wready : s0_wready;
-    assign m_bresp    = (cur_slave_w) ? s1_bresp : s0_bresp;
-    assign m_bvalid   = (cur_slave_w) ? s1_bvalid : s0_bvalid;
-    assign s0_awaddr  = m_awaddr & {32{!cur_slave_w}};
-    assign s0_awvalid = m_awvalid & !cur_slave_w;
-    assign s0_wdata   = m_wdata & {32{!cur_slave_w}};
-    assign s0_wstrb   = m_wstrb & {4{!cur_slave_w}};
-    assign s0_wvalid  = m_wvalid & !cur_slave_w;
-    assign s0_bready  = m_bready & !cur_slave_w;
+    assign m_awready  = w_state & ((cur_slave_w) ? s1_awready : s0_awready);
+    assign m_wready   = w_state & ((cur_slave_w) ? s1_wready : s0_wready);
+    assign m_bresp    = {2{w_state}} & ((cur_slave_w) ? s1_bresp : s0_bresp);
+    assign m_bvalid   = w_state & ((cur_slave_w) ? s1_bvalid : s0_bvalid);
+    assign s0_awaddr  = {32{w_state}} & (m_awaddr & {32{!cur_slave_w}});
+    assign s0_awvalid = w_state & (m_awvalid & !cur_slave_w);
+    assign s0_wdata   = {32{w_state}} & (m_wdata & {32{!cur_slave_w}});
+    assign s0_wstrb   = {4{w_state}} & (m_wstrb & {4{!cur_slave_w}});
+    assign s0_wvalid  = w_state & (m_wvalid & !cur_slave_w);
+    assign s0_bready  = w_state & (m_bready & !cur_slave_w);
 
-    assign s1_awaddr  = m_awaddr & {32{cur_slave_w}};
-    assign s1_awvalid = m_awvalid & cur_slave_w;
-    assign s1_wdata   = m_wdata & {32{cur_slave_w}};
-    assign s1_wstrb   = m_wstrb & {4{cur_slave_w}};
-    assign s1_wvalid  = m_wvalid & cur_slave_w;
-    assign s1_bready  = m_bready & cur_slave_w;
+    assign s1_awaddr  = {32{w_state}} & (m_awaddr & {32{cur_slave_w}});
+    assign s1_awvalid = w_state & (m_awvalid & cur_slave_w);
+    assign s1_wdata   = {32{w_state}} & (m_wdata & {32{cur_slave_w}});
+    assign s1_wstrb   = {4{w_state}} & (m_wstrb & {4{cur_slave_w}});
+    assign s1_wvalid  = w_state & (m_wvalid & cur_slave_w);
+    assign s1_bready  = w_state & (m_bready & cur_slave_w);
 
 endmodule
