@@ -110,3 +110,10 @@ extern "C" void paddr_write(uint32_t waddr, uint32_t wdata, uint8_t wmask)
 
     out_of_bound(addr);
 }
+
+extern "C" void uart_difftest_skip()
+{
+#ifdef CONFIG_DIFFTEST
+        difftest_skip_ref();
+#endif
+}

@@ -55,35 +55,70 @@ module AXIArbiter(
     input       [1:0]   s_bresp,
     input               s_bvalid,
     output  reg         s_bready
+
+    // output  reg [31:0]  s1_araddr,
+    // output  reg         s1_arvalid,
+    // input               s1_arready,
+    // input       [31:0]  s1_rdata,
+    // input       [1:0]   s1_rresp,
+    // input               s1_rvalid,
+    // output  reg         s1_rready,
+    // output  reg [31:0]  s1_awaddr,
+    // output  reg         s1_awvalid,
+    // input               s1_awready,
+    // output  reg [31:0]  s1_wdata,
+    // output  reg [3:0]   s1_wstrb,
+    // output  reg         s1_wvalid,
+    // input               s1_wready,
+    // input       [1:0]   s1_bresp,
+    // input               s1_bvalid,
+    // output  reg         s1_bready
 );
+
+// parameter DEVICE_BASE = 32'ha0000000;
+// parameter SERIAL_PORT = DEVICE_BASE + 32'h00003f8;
+
 parameter S_IDLE = 1'b0;
 parameter S_BUSY = 1'b1;
 
 reg state;
 reg cur_master;
+// reg cur_slave;
 
 always @(posedge clk) begin
     if (!rstn) begin
-        state <= S_IDLE;
+        state      <= S_IDLE;
         cur_master <= 0;
+        // cur_slave  <= 0;
     end
     else begin
         case (state)
             S_IDLE: begin
                 if (m0_arvalid || m0_awvalid) begin
                     cur_master <= 0;
+                    // if (m0_arvalid) begin
+                    //     cur_slave <= ((32'h10000000 <= m0_araddr) & (m0_araddr <= 32'h10000fff)) ? 1 : 0;
+                    // end else begin
+                    //     cur_slave <= ((32'h10000000 <= m0_awaddr) & (m0_awaddr <= 32'h10000fff)) ? 1 : 0;
+                    // end
                     state      <= S_BUSY;
                 end
                 else if (m1_arvalid || m1_awvalid) begin
                     cur_master <= 1;
+                    // if (m1_arvalid) begin
+                    //     cur_slave <= ((32'h10000000 <= m1_araddr) & (m1_araddr <= 32'h10000fff)) ? 1 : 0;
+                    // end else begin
+                    //     cur_slave <= ((32'h10000000 <= m1_awaddr) & (m1_awaddr <= 32'h10000fff)) ? 1 : 0;
+                    // end
                     state      <= S_BUSY;
                 end
             end
             S_BUSY: begin
+                // if (((cur_slave == 0) ? s_rvalid : s1_rvalid) && ((cur_master == 0) ? m0_rready : m1_rready)) begin
                 if (s_rvalid && ((cur_master == 0) ? m0_rready : m1_rready)) begin
                     state <= S_IDLE;
-                end
-                else if (s_bvalid && ((cur_master == 0) ? m0_bready : m1_bready)) begin
+                // end else if (((cur_slave == 0) ? s_bvalid : s1_bvalid) && ((cur_master == 0) ? m0_bready : m1_bready)) begin
+                end else if (s_bvalid && ((cur_master == 0) ? m0_bready : m1_bready)) begin
                     state <= S_IDLE;
                 end
             end
@@ -119,6 +154,16 @@ always @(*) begin
     s_wstrb    = 0;
     s_wvalid   = 0;
     s_bready   = 0;
+
+    // s1_araddr   = 0;
+    // s1_arvalid  = 0;
+    // s1_rready   = 0;
+    // s1_awaddr   = 0;
+    // s1_awvalid  = 0;
+    // s1_wdata    = 0;
+    // s1_wstrb    = 0;
+    // s1_wvalid   = 0;
+    // s1_bready   = 0;
 
     if (state == S_IDLE) begin
         if (m0_arvalid || m0_awvalid) begin
