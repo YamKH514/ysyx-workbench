@@ -92,6 +92,24 @@ wire    [1:0]   lsu_bresp;
 wire            lsu_bvalid;
 wire            lsu_bready;
 
+wire    [31:0]  xbar_araddr;
+wire            xbar_arvalid;
+wire            xbar_arready;
+wire    [31:0]  xbar_rdata;
+wire    [1:0]   xbar_rresp;
+wire            xbar_rvalid;
+wire            xbar_rready;
+wire    [31:0]  xbar_awaddr;
+wire            xbar_awvalid;
+wire            xbar_awready;
+wire    [31:0]  xbar_wdata;
+wire    [3:0]   xbar_wstrb;
+wire            xbar_wvalid;
+wire            xbar_wready;
+wire    [1:0]   xbar_bresp;
+wire            xbar_bvalid;
+wire            xbar_bready;
+
 wire    [31:0]  sram_araddr;
 wire            sram_arvalid;
 wire            sram_arready;
@@ -293,7 +311,7 @@ CSR u_CSR(
     .csr_r_mepc_out         (csr_r_mepc         )
 );
 
-Xbar u_Xbar(
+Arbiter u_Arbiter(
     .clk        	        (clk                ),
     .rstn       	        (rstn               ),
     .m0_araddr  	        (inst_araddr        ),
@@ -330,40 +348,79 @@ Xbar u_Xbar(
     .m1_bresp   	        (lsu_bresp          ),
     .m1_bvalid  	        (lsu_bvalid         ),
     .m1_bready  	        (lsu_bready         ),
-    .s_araddr   	        (sram_araddr        ),
-    .s_arvalid  	        (sram_arvalid       ),
-    .s_arready  	        (sram_arready       ),
-    .s_rdata    	        (sram_rdata         ),
-    .s_rresp    	        (sram_rresp         ),
-    .s_rvalid   	        (sram_rvalid        ),
-    .s_rready   	        (sram_rready        ),
-    .s_awaddr   	        (sram_awaddr        ),
-    .s_awvalid  	        (sram_awvalid       ),
-    .s_awready  	        (sram_awready       ),
-    .s_wdata    	        (sram_wdata         ),
-    .s_wstrb    	        (sram_wstrb         ),
-    .s_wvalid   	        (sram_wvalid        ),
-    .s_wready   	        (sram_wready        ),
-    .s_bresp    	        (sram_bresp         ),
-    .s_bvalid   	        (sram_bvalid        ),
-    .s_bready   	        (sram_bready        ),
-    .s1_araddr  	        (uart_araddr        ),
-    .s1_arvalid 	        (uart_arvalid       ),
-    .s1_arready 	        (uart_arready       ),
-    .s1_rdata   	        (uart_rdata         ),
-    .s1_rresp   	        (uart_rresp         ),
-    .s1_rvalid  	        (uart_rvalid        ),
-    .s1_rready  	        (uart_rready        ),
-    .s1_awaddr  	        (uart_awaddr        ),
-    .s1_awvalid 	        (uart_awvalid       ),
-    .s1_awready 	        (uart_awready       ),
-    .s1_wdata   	        (uart_wdata         ),
-    .s1_wstrb   	        (uart_wstrb         ),
-    .s1_wvalid  	        (uart_wvalid        ),
-    .s1_wready  	        (uart_wready        ),
-    .s1_bresp   	        (uart_bresp         ),
-    .s1_bvalid  	        (uart_bvalid        ),
-    .s1_bready  	        (uart_bready        )
+    .s_araddr   	        (xbar_araddr        ),
+    .s_arvalid  	        (xbar_arvalid       ),
+    .s_arready  	        (xbar_arready       ),
+    .s_rdata    	        (xbar_rdata         ),
+    .s_rresp    	        (xbar_rresp         ),
+    .s_rvalid   	        (xbar_rvalid        ),
+    .s_rready   	        (xbar_rready        ),
+    .s_awaddr   	        (xbar_awaddr        ),
+    .s_awvalid  	        (xbar_awvalid       ),
+    .s_awready  	        (xbar_awready       ),
+    .s_wdata    	        (xbar_wdata         ),
+    .s_wstrb    	        (xbar_wstrb         ),
+    .s_wvalid   	        (xbar_wvalid        ),
+    .s_wready   	        (xbar_wready        ),
+    .s_bresp    	        (xbar_bresp         ),
+    .s_bvalid   	        (xbar_bvalid        ),
+    .s_bready   	        (xbar_bready        )
+);
+
+Xbar u_Xbar(
+    .clk        	        (clk                ),
+    .rstn       	        (rstn               ),
+    .m_araddr   	        (xbar_araddr        ),
+    .m_arvalid  	        (xbar_arvalid       ),
+    .m_arready  	        (xbar_arready       ),
+    .m_rdata    	        (xbar_rdata         ),
+    .m_rresp    	        (xbar_rresp         ),
+    .m_rvalid   	        (xbar_rvalid        ),
+    .m_rready   	        (xbar_rready        ),
+    .m_awaddr   	        (xbar_awaddr        ),
+    .m_awvalid  	        (xbar_awvalid       ),
+    .m_awready  	        (xbar_awready       ),
+    .m_wdata    	        (xbar_wdata         ),
+    .m_wstrb    	        (xbar_wstrb         ),
+    .m_wvalid   	        (xbar_wvalid        ),
+    .m_wready   	        (xbar_wready        ),
+    .m_bresp    	        (xbar_bresp         ),
+    .m_bvalid   	        (xbar_bvalid        ),
+    .m_bready   	        (xbar_bready        ),
+    .s0_araddr  	        (uart_araddr        ),
+    .s0_arvalid 	        (uart_arvalid       ),
+    .s0_arready 	        (uart_arready       ),
+    .s0_rdata   	        (uart_rdata         ),
+    .s0_rresp   	        (uart_rresp         ),
+    .s0_rvalid  	        (uart_rvalid        ),
+    .s0_rready  	        (uart_rready        ),
+    .s0_awaddr  	        (uart_awaddr        ),
+    .s0_awvalid 	        (uart_awvalid       ),
+    .s0_awready 	        (uart_awready       ),
+    .s0_wdata   	        (uart_wdata         ),
+    .s0_wstrb   	        (uart_wstrb         ),
+    .s0_wvalid  	        (uart_wvalid        ),
+    .s0_wready  	        (uart_wready        ),
+    .s0_bresp   	        (uart_bresp         ),
+    .s0_bvalid  	        (uart_bvalid        ),
+    .s0_bready  	        (uart_bready        ),
+    .s1_araddr  	        (sram_araddr        ),
+    .s1_arvalid 	        (sram_arvalid       ),
+    .s1_arready 	        (sram_arready       ),
+    .s1_rdata   	        (sram_rdata         ),
+    .s1_rresp   	        (sram_rresp         ),
+    .s1_rvalid  	        (sram_rvalid        ),
+    .s1_rready  	        (sram_rready        ),
+    .s1_awaddr  	        (sram_awaddr        ),
+    .s1_awvalid 	        (sram_awvalid       ),
+    .s1_awready 	        (sram_awready       ),
+    .s1_wdata   	        (sram_wdata         ),
+    .s1_wstrb   	        (sram_wstrb         ),
+    .s1_wvalid  	        (sram_wvalid        ),
+    .s1_wready  	        (sram_wready        ),
+    .s1_bresp   	        (sram_bresp         ),
+    .s1_bvalid  	        (sram_bvalid        ),
+    .s1_bready  	        (sram_bready        )
 );
 
 SRAM u_SRAM(
