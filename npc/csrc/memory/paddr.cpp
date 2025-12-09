@@ -110,13 +110,3 @@ extern "C" void paddr_write(uint32_t waddr, uint32_t wdata, uint8_t wmask)
 
     out_of_bound(addr);
 }
-
-// extern "C" int get_inst(int pc)
-// {
-//     uint32_t inst = 0;
-//     if((uint32_t)pc >= MEM_BASE)
-//     {
-//         inst = paddr_read((uint32_t)pc);
-//     }
-//     return (int)inst;
-// }
