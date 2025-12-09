@@ -166,42 +166,42 @@ always @(*) begin
     // s1_bready   = 0;
 
     if (state == S_IDLE) begin
-        if (m0_arvalid || m0_awvalid) begin
-            if (m0_arvalid) begin
-                s_araddr   = m0_araddr;
-                s_arvalid  = 1;
-                m0_arready = s_arready;
-            end
-            if (m0_awvalid) begin
-                s_awaddr   = m0_awaddr;
-                s_awvalid  = 1;
-                m0_awready = s_awready;
-            end
-            if (m0_wvalid) begin
-                s_wdata    = m0_wdata;
-                s_wstrb    = m0_wstrb;
-                s_wvalid   = 1;
-                m0_wready  = s_wready;
-            end
-        end
-        else if (m1_arvalid || m1_awvalid) begin
-            if (m1_arvalid) begin
-                s_araddr   = m1_araddr;
-                s_arvalid  = 1;
-                m1_arready = s_arready;
-            end
-            if (m1_awvalid) begin
-                s_awaddr   = m1_awaddr;
-                s_awvalid  = 1;
-                m1_awready = s_awready;
-            end
-            if (m1_wvalid) begin
-                s_wdata    = m1_wdata;
-                s_wstrb    = m1_wstrb;
-                s_wvalid   = 1;
-                m1_wready  = s_wready;
-            end
-        end
+        // if (m0_arvalid || m0_awvalid) begin
+        //     if (m0_arvalid) begin
+        //         s_araddr   = m0_araddr;
+        //         s_arvalid  = 1;
+        //         m0_arready = s_arready;
+        //     end
+        //     if (m0_awvalid) begin
+        //         s_awaddr   = m0_awaddr;
+        //         s_awvalid  = 1;
+        //         m0_awready = s_awready;
+        //     end
+        //     if (m0_wvalid) begin
+        //         s_wdata    = m0_wdata;
+        //         s_wstrb    = m0_wstrb;
+        //         s_wvalid   = 1;
+        //         m0_wready  = s_wready;
+        //     end
+        // end
+        // else if (m1_arvalid || m1_awvalid) begin
+        //     if (m1_arvalid) begin
+        //         s_araddr   = m1_araddr;
+        //         s_arvalid  = 1;
+        //         m1_arready = s_arready;
+        //     end
+        //     if (m1_awvalid) begin
+        //         s_awaddr   = m1_awaddr;
+        //         s_awvalid  = 1;
+        //         m1_awready = s_awready;
+        //     end
+        //     if (m1_wvalid) begin
+        //         s_wdata    = m1_wdata;
+        //         s_wstrb    = m1_wstrb;
+        //         s_wvalid   = 1;
+        //         m1_wready  = s_wready;
+        //     end
+        // end
     end
     else begin
         if (cur_master == 0) begin
