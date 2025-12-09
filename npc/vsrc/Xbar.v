@@ -11,50 +11,50 @@ module Xbar(
     input               m_rready,
     input       [31:0]  m_awaddr,
     input               m_awvalid,
-    output  reg         m_awready,
+    output              m_awready,
     input       [31:0]  m_wdata,
     input       [3:0]   m_wstrb,
     input               m_wvalid,
-    output  reg         m_wready,
-    output  reg [1:0]   m_bresp,
-    output  reg         m_bvalid,
+    output              m_wready,
+    output      [1:0]   m_bresp,
+    output              m_bvalid,
     input               m_bready,
 
-    output  reg [31:0]  s0_araddr,
-    output  reg         s0_arvalid,
+    output      [31:0]  s0_araddr,
+    output              s0_arvalid,
     input               s0_arready,
     input       [31:0]  s0_rdata,
     input       [1:0]   s0_rresp,
     input               s0_rvalid,
-    output  reg         s0_rready,
-    output  reg [31:0]  s0_awaddr,
-    output  reg         s0_awvalid,
+    output              s0_rready,
+    output      [31:0]  s0_awaddr,
+    output              s0_awvalid,
     input               s0_awready,
-    output  reg [31:0]  s0_wdata,
-    output  reg [3:0]   s0_wstrb,
-    output  reg         s0_wvalid,
+    output      [31:0]  s0_wdata,
+    output      [3:0]   s0_wstrb,
+    output              s0_wvalid,
     input               s0_wready,
     input       [1:0]   s0_bresp,
     input               s0_bvalid,
-    output  reg         s0_bready,
+    output              s0_bready,
 
-    output  reg [31:0]  s1_araddr,
-    output  reg         s1_arvalid,
+    output      [31:0]  s1_araddr,
+    output              s1_arvalid,
     input               s1_arready,
     input       [31:0]  s1_rdata,
     input       [1:0]   s1_rresp,
     input               s1_rvalid,
-    output  reg         s1_rready,
-    output  reg [31:0]  s1_awaddr,
-    output  reg         s1_awvalid,
+    output              s1_rready,
+    output      [31:0]  s1_awaddr,
+    output              s1_awvalid,
     input               s1_awready,
-    output  reg [31:0]  s1_wdata,
-    output  reg [3:0]   s1_wstrb,
-    output  reg         s1_wvalid,
+    output      [31:0]  s1_wdata,
+    output      [3:0]   s1_wstrb,
+    output              s1_wvalid,
     input               s1_wready,
     input       [1:0]   s1_bresp,
     input               s1_bvalid,
-    output  reg         s1_bready
+    output              s1_bready
 );
 
 parameter S_IDLE = 1'b0;
@@ -122,85 +122,36 @@ always @(posedge clk) begin
     end
 end
 
-always @(*) begin
-    m_arready  = 0;
-    m_rdata    = 0;
-    m_rresp    = 0;
-    m_rvalid   = 0;
-    m_awready  = 0;
-    m_wready   = 0;
-    m_bresp    = 0;
-    m_bvalid   = 0;
-
-    s0_araddr  = 0;
-    s0_arvalid = 0;
-    s0_rready  = 0;
-    s0_awaddr  = 0;
-    s0_awvalid = 0;
-    s0_wdata   = 0;
-    s0_wstrb   = 0;
-    s0_wvalid  = 0;
-    s0_bready  = 0;
-
-    s1_araddr  = 0;
-    s1_arvalid = 0;
-    s1_rready  = 0;
-    s1_awaddr  = 0;
-    s1_awvalid = 0;
-    s1_wdata   = 0;
-    s1_wstrb   = 0;
-    s1_wvalid  = 0;
-    s1_bready  = 0;
-
     // READ
-    if(r_state==S_BUSY || m_arvalid) begin
-        if(cur_slave_r==0) begin
-            m_arready  = s0_arready;
-            m_rdata    = s0_rdata;
-            m_rresp    = s0_rresp;
-            m_rvalid   = s0_rvalid;
-            s0_araddr  = m_araddr;
-            s0_arvalid = m_arvalid;
-            s0_rready  = m_rready;
-        end else begin
-            m_arready  = s1_arready;
-            m_rdata    = s1_rdata;
-            m_rresp    = s1_rresp;
-            m_rvalid   = s1_rvalid;
-            s1_araddr  = m_araddr;
-            s1_arvalid = m_arvalid;
-            s1_rready  = m_rready;
-        end
-    end
+    assign m_arready  = (cur_slave_r) ? s1_arready : s0_arready;
+    assign m_rdata    = (cur_slave_r) ? s1_rdata : s0_rdata;
+    assign m_rresp    = (cur_slave_r) ? s1_rresp : s0_rresp;
+    assign m_rvalid   = (cur_slave_r) ? s1_rvalid : s0_rvalid;
+    assign s0_araddr  = m_araddr& {32{!cur_slave_r}};
+    assign s0_arvalid = m_arvalid& !cur_slave_r;
+    assign s0_rready  = m_rready& !cur_slave_r;
+
+    assign s1_araddr  = m_araddr& {32{cur_slave_r}};
+    assign s1_arvalid = m_arvalid& cur_slave_r;
+    assign s1_rready  = m_rready& cur_slave_r;
 
     // WRITE
-    if(w_state==S_BUSY || m_awvalid || m_wvalid) begin
-        if(cur_slave_w==0) begin
-            m_awready = s0_awready;
-            m_wready  = s0_wready;
-            m_bresp   = s0_bresp;
-            m_bvalid  = s0_bvalid;
+    assign m_awready  = (cur_slave_w) ? s1_awready : s0_awready;
+    assign m_wready   = (cur_slave_w) ? s1_wready : s0_wready;
+    assign m_bresp    = (cur_slave_w) ? s1_bresp : s0_bresp;
+    assign m_bvalid   = (cur_slave_w) ? s1_bvalid : s0_bvalid;
+    assign s0_awaddr  = m_awaddr & {32{!cur_slave_w}};
+    assign s0_awvalid = m_awvalid & !cur_slave_w;
+    assign s0_wdata   = m_wdata & {32{!cur_slave_w}};
+    assign s0_wstrb   = m_wstrb & {4{!cur_slave_w}};
+    assign s0_wvalid  = m_wvalid & !cur_slave_w;
+    assign s0_bready  = m_bready & !cur_slave_w;
 
-            s0_awaddr  = m_awaddr;
-            s0_awvalid = m_awvalid;
-            s0_wdata   = m_wdata;
-            s0_wstrb   = m_wstrb;
-            s0_wvalid  = m_wvalid;
-            s0_bready  = m_bready;
-        end else begin
-            m_awready = s1_awready;
-            m_wready  = s1_wready;
-            m_bresp   = s1_bresp;
-            m_bvalid  = s1_bvalid;
-
-            s1_awaddr  = m_awaddr;
-            s1_awvalid = m_awvalid;
-            s1_wdata   = m_wdata;
-            s1_wstrb   = m_wstrb;
-            s1_wvalid  = m_wvalid;
-            s1_bready  = m_bready;
-        end
-    end
-end
+    assign s1_awaddr  = m_awaddr & {32{cur_slave_w}};
+    assign s1_awvalid = m_awvalid & cur_slave_w;
+    assign s1_wdata   = m_wdata & {32{cur_slave_w}};
+    assign s1_wstrb   = m_wstrb & {4{cur_slave_w}};
+    assign s1_wvalid  = m_wvalid & cur_slave_w;
+    assign s1_bready  = m_bready & cur_slave_w;
 
 endmodule
