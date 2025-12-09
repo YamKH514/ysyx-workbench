@@ -2,7 +2,7 @@
 
 module WBU(
     input               clk,
-    input               rst,
+    input               rstn,
 
     // idu_to_wbu_data is_ecall[9], is_mret[8], wbu_we[7], wbu_w_addr[6:2], wbu_wd_sel[1:0]
     input       [9:0]   idu_to_wbu_data_in,
@@ -30,10 +30,10 @@ parameter S_WORK = 1'd1;
 reg state, next_state;
 
 always @(posedge clk) begin
-    if (!rst) state <= S_IDLE;
+    if (!rstn) state <= S_IDLE;
     else state <= next_state;
 
-    if (!rst) begin
+    if (!rstn) begin
         wbu_to_lsu_ready_out <= 1'b0;
         wbu_to_pc_valid_out <= 1'b0;
         gpr_we_out <= 1'b0;
@@ -71,6 +71,7 @@ always @(posedge clk) begin
 end
 
 always @(*) begin
+    next_state = state;
     case (state)
         S_IDLE: begin
             if (lsu_to_wbu_valid_in) begin

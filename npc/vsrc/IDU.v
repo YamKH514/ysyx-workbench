@@ -2,7 +2,7 @@
 
 module IDU(
     input               clk,
-    input               rst,
+    input               rstn,
 
     input       [31:0]  idu_inst_in,
 
@@ -48,10 +48,10 @@ parameter S_WAIT_EXU = 1'd1;
 reg state, next_state;
 
 always @(posedge clk) begin
-    if (!rst) state <= S_IDLE;
+    if (!rstn) state <= S_IDLE;
     else state <= next_state;
 
-    if (!rst) begin
+    if (!rstn) begin
         idu_to_ifu_ready_out <= 1'b0;
         idu_to_exu_valid_out <= 1'b0;
         inst_r <= 32'b0;
@@ -81,6 +81,7 @@ always @(posedge clk) begin
 end
 
 always @(*) begin
+    next_state = state;
     case (state)
         S_IDLE: begin
             if (ifu_to_idu_valid_in) begin

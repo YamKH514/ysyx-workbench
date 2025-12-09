@@ -13,7 +13,7 @@ void cpu_single_cycle(Vtop* top)
 
 void cpu_reset(int n, Vtop* top)
 {
-    top->rst = 0;
+    top->rstn = 0;
     while (n-- > 0)
     {
         cpu_single_cycle(top);
