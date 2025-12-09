@@ -110,6 +110,24 @@ wire    [1:0]   sram_bresp;
 wire            sram_bvalid;
 wire            sram_bready;
 
+wire    [31:0]  uart_araddr;
+wire            uart_arvalid;
+wire            uart_arready;
+wire    [31:0]  uart_rdata;
+wire    [1:0]   uart_rresp;
+wire            uart_rvalid;
+wire            uart_rready;
+wire    [31:0]  uart_awaddr;
+wire            uart_awvalid;
+wire            uart_awready;
+wire    [31:0]  uart_wdata;
+wire    [3:0]   uart_wstrb;
+wire            uart_wvalid;
+wire            uart_wready;
+wire    [1:0]   uart_bresp;
+wire            uart_bvalid;
+wire            uart_bready;
+
 assign trap_npc = is_ecall ? csr_r_mtvec : csr_r_mepc;
 
 PCCnt u_PCCnt(
@@ -275,7 +293,7 @@ CSR u_CSR(
     .csr_r_mepc_out         (csr_r_mepc         )
 );
 
-AXIArbiter u_AXIArbiter(
+Xbar u_Xbar(
     .clk        	        (clk                ),
     .rstn       	        (rstn               ),
     .m0_araddr  	        (inst_araddr        ),
@@ -328,7 +346,24 @@ AXIArbiter u_AXIArbiter(
     .s_wready   	        (sram_wready        ),
     .s_bresp    	        (sram_bresp         ),
     .s_bvalid   	        (sram_bvalid        ),
-    .s_bready   	        (sram_bready        )
+    .s_bready   	        (sram_bready        ),
+    .s1_araddr  	        (uart_araddr        ),
+    .s1_arvalid 	        (uart_arvalid       ),
+    .s1_arready 	        (uart_arready       ),
+    .s1_rdata   	        (uart_rdata         ),
+    .s1_rresp   	        (uart_rresp         ),
+    .s1_rvalid  	        (uart_rvalid        ),
+    .s1_rready  	        (uart_rready        ),
+    .s1_awaddr  	        (uart_awaddr        ),
+    .s1_awvalid 	        (uart_awvalid       ),
+    .s1_awready 	        (uart_awready       ),
+    .s1_wdata   	        (uart_wdata         ),
+    .s1_wstrb   	        (uart_wstrb         ),
+    .s1_wvalid  	        (uart_wvalid        ),
+    .s1_wready  	        (uart_wready        ),
+    .s1_bresp   	        (uart_bresp         ),
+    .s1_bvalid  	        (uart_bvalid        ),
+    .s1_bready  	        (uart_bready        )
 );
 
 SRAM u_SRAM(
@@ -351,6 +386,28 @@ SRAM u_SRAM(
     .bresp_out   	        (sram_bresp         ),
     .bvalid_out  	        (sram_bvalid        ),
     .bready_in   	        (sram_bready        )
+);
+
+UART u_UART(
+    .clk         	        (clk                ),
+    .rstn        	        (rstn               ),
+    .araddr_in   	        (uart_araddr        ),
+    .arvalid_in  	        (uart_arvalid       ),
+    .arready_out 	        (uart_arready       ),
+    .rdata_out   	        (uart_rdata         ),
+    .rresp_out   	        (uart_rresp         ),
+    .rvalid_out  	        (uart_rvalid        ),
+    .rready_in   	        (uart_rready        ),
+    .awaddr_in   	        (uart_awaddr        ),
+    .awvalid_in  	        (uart_awvalid       ),
+    .awready_out 	        (uart_awready       ),
+    .wdata_in    	        (uart_wdata         ),
+    .wstrb_in    	        (uart_wstrb         ),
+    .wvalid_in   	        (uart_wvalid        ),
+    .wready_out  	        (uart_wready        ),
+    .bresp_out   	        (uart_bresp         ),
+    .bvalid_out  	        (uart_bvalid        ),
+    .bready_in   	        (uart_bready        )
 );
 
 endmodule
