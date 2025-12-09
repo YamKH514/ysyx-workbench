@@ -71,7 +71,7 @@ always @(posedge clk) begin
         case (state)
             S_IDLE: begin
                 if (m_arvalid || m_awvalid) begin
-                    if (m_araddr[31:12] == 20'h10000) begin
+                    if (m_araddr[31:24] == 8'h10) begin
                         cur_slave <= 1'b0;
                     end else if (m_araddr[31:24] == 8'h80) begin
                         cur_slave <= 1'b1;
