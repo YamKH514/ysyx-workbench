@@ -4,14 +4,14 @@ module Xbar(
 
     input       [31:0]  m_araddr,
     input               m_arvalid,
-    output              m_arready,
+    output reg          m_arready,
     output      [31:0]  m_rdata,
     output      [1:0]   m_rresp,
     output              m_rvalid,
     input               m_rready,
     input       [31:0]  m_awaddr,
     input               m_awvalid,
-    output              m_awready,
+    output reg          m_awready,
     input       [31:0]  m_wdata,
     input       [3:0]   m_wstrb,
     input               m_wvalid,
@@ -21,14 +21,14 @@ module Xbar(
     input               m_bready,
 
     output      [31:0]  s0_araddr,
-    output              s0_arvalid,
+    output reg          s0_arvalid,
     input               s0_arready,
     input       [31:0]  s0_rdata,
     input       [1:0]   s0_rresp,
     input               s0_rvalid,
     output              s0_rready,
     output      [31:0]  s0_awaddr,
-    output              s0_awvalid,
+    output reg          s0_awvalid,
     input               s0_awready,
     output      [31:0]  s0_wdata,
     output      [3:0]   s0_wstrb,
@@ -39,14 +39,14 @@ module Xbar(
     output              s0_bready,
 
     output      [31:0]  s1_araddr,
-    output              s1_arvalid,
+    output reg          s1_arvalid,
     input               s1_arready,
     input       [31:0]  s1_rdata,
     input       [1:0]   s1_rresp,
     input               s1_rvalid,
     output              s1_rready,
     output      [31:0]  s1_awaddr,
-    output              s1_awvalid,
+    output reg          s1_awvalid,
     input               s1_awready,
     output      [31:0]  s1_wdata,
     output      [3:0]   s1_wstrb,
@@ -57,101 +57,176 @@ module Xbar(
     output              s1_bready
 );
 
-parameter S_IDLE = 1'b0;
-parameter S_BUSY = 1'b1;
+parameter S_IDLE = 2'd0;
+parameter S_SEL  = 2'd1;
+parameter S_CNT  = 2'd2;
+parameter S_BUSY = 2'd3;
 
-reg r_state;
-reg w_state;
+reg [1:0]   r_state, r_next_state;
+reg [1:0]   w_state, w_next_state;
 
 reg cur_slave_r;
 reg cur_slave_w;
 
-reg aw_handshake_done;
-reg w_handshake_done;
+reg [31:0]  araddr_r;
+reg [31:0]  awaddr_r;
 
 always @(posedge clk) begin
-    // READ
-    if(!rstn) begin
+    if (!rstn) begin
         r_state <= S_IDLE;
-        cur_slave_r <= 0;
+        w_state <= S_IDLE;
     end else begin
-        case(r_state)
+        r_state <= r_next_state;
+        w_state <= w_next_state;
+    end
+
+    // READ
+    if (!rstn) begin
+        cur_slave_r <= 1'b0;
+        m_arready <= 1'b1;
+        s0_arvalid <= 1'b0;
+        s1_arvalid <= 1'b0;
+    end else begin
+        case (r_state)
             S_IDLE: begin
-                if(m_arvalid) begin
-                    cur_slave_r <= (m_araddr[31:24]==8'h10) ? 1'b0 : 1'b1;
-                    r_state <= S_BUSY;
+                if (m_arvalid) begin
+                    araddr_r  <= m_araddr;
+                    m_arready <= 1'b0;
+                    cur_slave_r <= (m_araddr[31:12] == 20'h10000) ? 1'b0 : 1'b1;
+                end
+            end
+            S_SEL: begin
+                case (cur_slave_r)
+                    1'b0: begin
+                        s0_arvalid <= 1'b1;
+                        s0_araddr  <= araddr_r;
+                    end
+                    1'b1: begin
+                        s1_arvalid <= 1'b1;
+                        s1_araddr  <= araddr_r;
+                    end
+                endcase
+            end
+            S_CNT: begin
+                if ((!cur_slave_r & s0_arready) | (cur_slave_r & s1_arready)) begin
+                    s0_arvalid <= 1'b0;
+                    s1_arvalid <= 1'b0;
                 end
             end
             S_BUSY: begin
-                if(m_rready && ((cur_slave_r==0) ? s0_rvalid : s1_rvalid))
-                    r_state <= S_IDLE;
+                if ((!cur_slave_r & s0_rvalid & s0_rready) | (cur_slave_r & s1_rvalid & s1_rready)) begin
+                    m_arready <= 1'b1;
+                end
             end
         endcase
     end
 
-    // WRITE
-    if(!rstn) begin
-        w_state <= S_IDLE;
-        cur_slave_w <= 0;
-        aw_handshake_done <= 0;
-        w_handshake_done  <= 0;
+    //WRITE
+    if (!rstn) begin
+        cur_slave_w <= 1'b0;
+        m_awready <= 1'b1;
+        s0_awvalid <= 1'b0;
+        s1_awvalid <= 1'b0;
     end else begin
-        case(w_state)
+        case (w_state)
             S_IDLE: begin
-                if(m_awvalid || m_wvalid) begin
-                    cur_slave_w <= (m_awaddr[31:24]==8'h80) ? 1'b1 : 1'b0;
-                    aw_handshake_done <= 0;
-                    w_handshake_done  <= 0;
-                    w_state <= S_BUSY;
+                if (m_awvalid) begin
+                    awaddr_r  <= m_awaddr;
+                    m_awready <= 1'b0;
+                    cur_slave_w <= (m_awaddr[31:12] == 20'h10000) ? 1'b0 : 1'b1;
+                end
+            end
+            S_SEL: begin
+                case (cur_slave_w)
+                    1'b0: begin
+                        s0_awvalid <= 1'b1;
+                        s0_awaddr  <= awaddr_r;
+                    end
+                    1'b1: begin
+                        s1_awvalid <= 1'b1;
+                        s1_awaddr  <= awaddr_r;
+                    end
+                endcase
+            end
+            S_CNT: begin
+                if ((!cur_slave_w & s0_awready) | (cur_slave_w & s1_awready)) begin
+                    s0_awvalid <= 1'b0;
+                    s1_awvalid <= 1'b0;
                 end
             end
             S_BUSY: begin
-                if(cur_slave_w==0) begin
-                    if(s0_awready && m_awvalid) aw_handshake_done <= 1;
-                    if(s0_wready  && m_wvalid)  w_handshake_done  <= 1;
-                    if(aw_handshake_done && w_handshake_done && s0_bvalid && m_bready)
-                        w_state <= S_IDLE;
-                end else begin
-                    if(s1_awready && m_awvalid) aw_handshake_done <= 1;
-                    if(s1_wready  && m_wvalid)  w_handshake_done  <= 1;
-                    if(aw_handshake_done && w_handshake_done && s1_bvalid && m_bready)
-                        w_state <= S_IDLE;
+                if ((!cur_slave_w & s0_bvalid & s0_bready) | (cur_slave_w & s1_bvalid & s1_bready)) begin
+                    m_awready <= 1'b1;
                 end
             end
         endcase
     end
 end
 
+always @(*) begin
+    r_next_state = r_state;
+    w_next_state = w_state;
+
     // READ
-    assign m_arready  = r_state & ((cur_slave_r) ? s1_arready : s0_arready);
-    assign m_rdata    = {32{r_state}} & ((cur_slave_r) ? s1_rdata : s0_rdata);
-    assign m_rresp    = {2{r_state}} & ((cur_slave_r) ? s1_rresp : s0_rresp);
-    assign m_rvalid   = r_state & ((cur_slave_r) ? s1_rvalid : s0_rvalid);
-    assign s0_araddr  = {32{r_state}} & (m_araddr& {32{!cur_slave_r}});
-    assign s0_arvalid = r_state & (m_arvalid& !cur_slave_r);
-    assign s0_rready  = r_state & (m_rready& !cur_slave_r);
+    case (r_state)
+        S_IDLE: begin
+            if (m_arvalid) begin
+                r_next_state = S_SEL;
+            end
+        end
+        S_SEL: begin
+            r_next_state = S_CNT;
+        end
+        S_CNT: begin
+            if ((!cur_slave_r & s0_arready) | (cur_slave_r & s1_arready)) begin
+                r_next_state = S_BUSY;
+            end
+        end
+        S_BUSY: begin
+            if ((!cur_slave_r & s0_rvalid & s0_rready) | (cur_slave_r & s1_rvalid & s1_rready)) begin
+                r_next_state = S_IDLE;
+            end
+        end
+    endcase
 
-    assign s1_araddr  = {32{r_state}} & (m_araddr & {32{cur_slave_r}});
-    assign s1_arvalid = r_state & (m_arvalid & cur_slave_r);
-    assign s1_rready  = r_state & (m_rready & cur_slave_r);
+    //WRITE
+    case (w_state)
+        S_IDLE: begin
+            if (m_awvalid) begin
+                w_next_state = S_SEL;
+            end
+        end
+        S_SEL: begin
+            w_next_state = S_CNT;
+        end
+        S_CNT: begin
+            if ((!cur_slave_w & s0_awready) | (cur_slave_w & s1_awready)) begin
+                w_next_state = S_BUSY;
+            end
+        end
+        S_BUSY: begin
+            if ((!cur_slave_w & s0_bvalid & s0_bready) | (cur_slave_w & s1_bvalid & s1_bready)) begin
+                w_next_state = S_IDLE;
+            end
+        end
+    endcase
+end
 
-    // WRITE
-    assign m_awready  = w_state & ((cur_slave_w) ? s1_awready : s0_awready);
-    assign m_wready   = w_state & ((cur_slave_w) ? s1_wready : s0_wready);
-    assign m_bresp    = {2{w_state}} & ((cur_slave_w) ? s1_bresp : s0_bresp);
-    assign m_bvalid   = w_state & ((cur_slave_w) ? s1_bvalid : s0_bvalid);
-    assign s0_awaddr  = {32{w_state}} & (m_awaddr & {32{!cur_slave_w}});
-    assign s0_awvalid = w_state & (m_awvalid & !cur_slave_w);
-    assign s0_wdata   = {32{w_state}} & (m_wdata & {32{!cur_slave_w}});
-    assign s0_wstrb   = {4{w_state}} & (m_wstrb & {4{!cur_slave_w}});
-    assign s0_wvalid  = w_state & (m_wvalid & !cur_slave_w);
-    assign s0_bready  = w_state & (m_bready & !cur_slave_w);
+assign m_rdata   = ((cur_slave_r) ? s1_rdata : s0_rdata) & {32{(r_state == S_BUSY)}};
+assign m_rresp   = ((cur_slave_r) ? s1_rresp : s0_rresp) & {2{(r_state == S_BUSY)}};
+assign m_rvalid  = ((cur_slave_r) ? s1_rvalid : s0_rvalid) & (r_state == S_BUSY);
+assign s0_rready = (!cur_slave_r & m_rready) & (r_state == S_BUSY);
+assign s1_rready = (cur_slave_r & m_rready) & (r_state == S_BUSY);
 
-    assign s1_awaddr  = {32{w_state}} & (m_awaddr & {32{cur_slave_w}});
-    assign s1_awvalid = w_state & (m_awvalid & cur_slave_w);
-    assign s1_wdata   = {32{w_state}} & (m_wdata & {32{cur_slave_w}});
-    assign s1_wstrb   = {4{w_state}} & (m_wstrb & {4{cur_slave_w}});
-    assign s1_wvalid  = w_state & (m_wvalid & cur_slave_w);
-    assign s1_bready  = w_state & (m_bready & cur_slave_w);
-
+assign m_wready  = ((cur_slave_w) ? s1_wready : s0_wready) & (w_state == S_BUSY);
+assign m_bresp   = ((cur_slave_w) ? s1_bresp : s0_bresp) & {2{(w_state == S_BUSY)}};
+assign m_bvalid  = ((cur_slave_w) ? s1_bvalid : s0_bvalid) & (w_state == S_BUSY);
+assign s0_wdata  = ({32{!cur_slave_w}} & m_wdata) & {32{(w_state == S_BUSY)}};
+assign s0_wstrb  = ({4{!cur_slave_w}} & m_wstrb) & {4{(w_state == S_BUSY)}};
+assign s0_wvalid = (!cur_slave_w & m_wvalid) & (w_state == S_BUSY);
+assign s0_bready = (!cur_slave_w & m_bready) & (w_state == S_BUSY);
+assign s1_wdata  = ({32{cur_slave_w}} & m_wdata) & {32{(w_state == S_BUSY)}};
+assign s1_wstrb  = ({4{cur_slave_w}} & m_wstrb) & {4{(w_state == S_BUSY)}};
+assign s1_wvalid = (cur_slave_w & m_wvalid) & (w_state == S_BUSY);
+assign s1_bready = (cur_slave_w & m_bready) & (w_state == S_BUSY);
 endmodule
