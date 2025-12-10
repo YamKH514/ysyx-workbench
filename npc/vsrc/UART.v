@@ -160,7 +160,7 @@ always @(*) begin
             end
         end
         S_GET_WD: begin
-            $write("%c", wdata_in);
+            $write("%c", wdata_in[7:0]);
             uart_difftest_skip();
             // paddr_write(awaddr_r, wdata_in, {4'b0, wstrb_in});
             w_next_state = S_SEND_B;
