@@ -78,7 +78,7 @@ always @(posedge clk) begin
         case(r_state)
             S_IDLE: begin
                 if(m_arvalid) begin
-                    cur_slave_r <= (m_araddr[31:24]==8'h80) ? 1'b1 : 1'b0;
+                    cur_slave_r <= (m_araddr[31:24]==8'h10) ? 1'b0 : 1'b1;
                     r_state <= S_BUSY;
                 end
             end
