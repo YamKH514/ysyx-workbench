@@ -36,7 +36,7 @@ import "DPI-C" function void paddr_write(
     input int waddr, input int wdata, input byte wmask);
 
 reg [31:0]  awaddr_r;
-reg [31:0]  wdata_r;
+// reg [31:0]  wdata_r;
 
 parameter S_IDLE   = 3'd0;
 parameter S_GET_WR = 3'd3;
@@ -54,7 +54,7 @@ always @(posedge clk) begin
 
     // READ
     if (!rstn) begin
-        arready_out <= 1'b1;
+        arready_out <= 1'b0;
         rdata_out   <= 32'b0;
         rresp_out   <= 2'b00;
         rvalid_out  <= 1'b0;
@@ -76,12 +76,10 @@ always @(posedge clk) begin
             end
             S_GET_WR: begin
                 if (wvalid_in & wready_out) begin
-                    // wdata_r    <= wdata_in;
                     wready_out <= 1'b0;
                 end
             end
             S_GET_WD: begin
-                // $write("%c", wdata_r[7:0]);
                 bresp_out  <= 2'b00;
                 bvalid_out <= 1'b1;
             end
