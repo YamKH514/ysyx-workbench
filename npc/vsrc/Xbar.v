@@ -112,6 +112,7 @@ always @(posedge clk) begin
                     if(aw_handshake_done && w_handshake_done && s0_bvalid && m_bready)
                         w_state <= S_IDLE;
                 end else begin
+                    $display("UART");
                     if(s1_awready && m_awvalid) aw_handshake_done <= 1;
                     if(s1_wready  && m_wvalid)  w_handshake_done  <= 1;
                     if(aw_handshake_done && w_handshake_done && s1_bvalid && m_bready)
