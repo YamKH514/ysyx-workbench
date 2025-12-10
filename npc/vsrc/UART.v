@@ -72,6 +72,7 @@ always @(posedge clk) begin
                 if (awvalid_in & awready_out) begin
                     awaddr_r    <= awaddr_in;
                     awready_out <= 1'b0;
+                    $display("UART");
                 end
             end
             S_GET_WR: begin

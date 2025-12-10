@@ -103,9 +103,6 @@ always @(posedge clk) begin
                     aw_handshake_done <= 0;
                     w_handshake_done  <= 0;
                     w_state <= S_BUSY;
-                    if (m_awaddr[31:24]!=8'h80) begin
-                        $display("UART");
-                    end
                 end
             end
             S_BUSY: begin
