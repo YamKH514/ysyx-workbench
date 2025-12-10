@@ -31,7 +31,9 @@ module UART(
     input               bready_in
 );
 
-import "DPI-C" function void uart_difftest_skip(input int waddr);
+// import "DPI-C" function void uart_difftest_skip(input int waddr);
+import "DPI-C" function void paddr_write(
+    input int waddr, input int wdata, input byte wmask);
 
 reg [31:0]  awaddr_r;
 reg [31:0]  wdata_r;
@@ -74,7 +76,7 @@ always @(posedge clk) begin
             end
             S_GET_WR: begin
                 if (wvalid_in & wready_out) begin
-                    wdata_r    <= wdata_in;
+                    // wdata_r    <= wdata_in;
                     wready_out <= 1'b0;
                 end
             end
@@ -115,7 +117,7 @@ always @(*) begin
             end
         end
         S_GET_WD: begin
-            uart_difftest_skip(wdata_in);
+            paddr_write(awaddr_r, wdata_in, {4'b0, wstrb_in});
             w_next_state = S_SEND_B;
         end
         S_SEND_B: begin

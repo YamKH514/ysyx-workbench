@@ -445,7 +445,7 @@ SRAM u_SRAM(
     .bready_in   	        (sram_bready        )
 );
 
-SRAM u_UART(
+UART u_UART(
     .clk         	        (clk                ),
     .rstn        	        (rstn               ),
     .araddr_in   	        (uart_araddr        ),
