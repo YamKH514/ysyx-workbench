@@ -1,4 +1,4 @@
-module UART(
+module CLINT(
     /* verilator lint_off UNUSEDSIGNAL */
     input               clk,
     input               rstn,
@@ -31,9 +31,7 @@ module UART(
     input               bready_in
 );
 
-import "DPI-C" function void uart_difftest_skip();
-
-reg [31:0]  awaddr_r;
+reg [31:0]  araddr_r;
 
 parameter S_IDLE   = 3'd0;
 parameter S_GET_AR = 3'd1;
@@ -58,16 +56,17 @@ always @(posedge clk) begin
     if (!rstn) begin
         arready_out <= 1'b1;
         rvalid_out  <= 1'b0;
-        rdata_out   <= 32'b0;
         rresp_out   <= 2'b00;
     end else begin
         case (r_state)
             S_IDLE: begin
                 if (arvalid_in & arready_out) begin
+                    araddr_r    <= araddr_in;
                     arready_out <= 1'b0;
                 end
             end
             S_GET_AR: begin
+                rdata_out  <= (araddr_r[7:0] == 8'h48) ? mtime[31:0] : mtime[63:32];
                 rvalid_out <= 1'b1;
                 rresp_out  <= 2'b00;
             end
@@ -94,7 +93,6 @@ always @(posedge clk) begin
         case (w_state)
             S_IDLE: begin
                 if (awvalid_in & awready_out) begin
-                    awaddr_r    <= awaddr_in;
                     awready_out <= 1'b0;
                 end
             end
@@ -160,8 +158,6 @@ always @(*) begin
             end
         end
         S_GET_WD: begin
-            $write("%c", wdata_in[7:0]);
-            uart_difftest_skip();
             w_next_state = S_SEND_B;
         end
         S_SEND_B: begin
@@ -173,6 +169,13 @@ always @(*) begin
             w_next_state = S_IDLE;
         end
     endcase
+end
+
+reg [63:0]  mtime;
+
+always @(posedge clk) begin
+    if (!rstn) mtime <= 64'b0;
+    else mtime <= mtime + 1;
 end
 
 endmodule
