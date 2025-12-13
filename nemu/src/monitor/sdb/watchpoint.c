@@ -105,6 +105,7 @@ bool wp_scan() {
       changed = true;
     }
     current = current->next;
+    res = expr(current->expression, success);
   }
   
   free(success);
