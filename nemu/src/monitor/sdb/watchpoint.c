@@ -94,9 +94,10 @@ bool wp_scan() {
 
   bool *success;
   success = (bool *)malloc(sizeof(bool));
-  word_t res = expr(current->expression, success);
+  word_t res = 0;
 
   while (current != NULL) {
+    res = expr(current->expression, success);
     if(current->old_value != res) {
       printf("wp %d: %s changed\n\n", current->NO, current->expression);
       printf("Old value = %u\n", current->old_value);
@@ -105,7 +106,6 @@ bool wp_scan() {
       changed = true;
     }
     current = current->next;
-    res = expr(current->expression, success);
   }
   
   free(success);
