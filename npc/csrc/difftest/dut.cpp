@@ -18,7 +18,8 @@ void (*ref_difftest_raise_intr)(uint64_t NO) = NULL;
 #define MAX_SKIP_NUM 16
 static bool is_skip_ref = false;
 
-void difftest_skip_ref(){
+extern "C" void difftest_skip_ref()
+{
   is_skip_ref = true;
 }
 

@@ -1,5 +1,4 @@
 module CLINT(
-    /* verilator lint_off UNUSEDSIGNAL */
     input               clk,
     input               rstn,
 
