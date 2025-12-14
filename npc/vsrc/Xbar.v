@@ -133,7 +133,7 @@ always @(posedge clk) begin
                 if (m_awvalid) begin
                     awaddr_r  <= m_awaddr;
                     m_awready <= 1'b0;
-                    cur_slave_w <= (m_awaddr[31:12] == 20'h10000) ? 1'b0 : 1'b1;
+                    cur_slave_w <= (m_araddr == 32'ha00003f8) ? 1'b0 : 1'b1;
                 end
             end
             S_SEL: begin
