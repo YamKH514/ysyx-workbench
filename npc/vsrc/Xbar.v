@@ -92,7 +92,7 @@ always @(posedge clk) begin
                 if (m_arvalid) begin
                     araddr_r  <= m_araddr;
                     m_arready <= 1'b0;
-                    cur_slave_r <= (m_araddr[31:12] == 20'h10000) ? 1'b0 : 1'b1;
+                    cur_slave_r <= (m_araddr == 32'ha00003f8) ? 1'b0 : 1'b1;
                 end
             end
             S_SEL: begin
