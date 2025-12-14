@@ -92,10 +92,11 @@ bool wp_scan()
 
     bool *success;
     success = (bool *)malloc(sizeof(bool));
-    uint32_t res = expr(current->expression, success);
+    uint32_t res = 0;
 
     while (current != NULL)
     {
+        res = expr(current->expression, success);
         if (current->old_value != res)
         {
             printf("wp %d: %s changed\n\n", current->NO, current->expression);
