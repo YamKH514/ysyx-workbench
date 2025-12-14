@@ -197,7 +197,6 @@ always @(*) begin
             end
         end
         S_SEL: begin
-            $display("UART");
             w_next_state = S_CNT;
         end
         S_CNT: begin
