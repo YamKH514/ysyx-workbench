@@ -115,7 +115,7 @@ always @(posedge clk) begin
                     araddr_r    <= m_araddr;
                     m_arready   <= 1'b0;
                     cur_slave_r <=  (m_araddr == `SERIAL_PORT) ? 2'd0 :
-                                    (m_araddr == `RTC_ADDR | m_araddr == `RTC_ADDR + 32'h4) ? 2'd1 : // TODO
+                                    (m_araddr == `RTC_ADDR | m_araddr == `RTC_ADDR + 32'h4) ? 2'd2 :
                                     2'd1;
                 end
             end
@@ -183,7 +183,7 @@ always @(posedge clk) begin
                     awaddr_r    <= m_awaddr;
                     m_awready   <= 1'b0;
                     cur_slave_w <=  (m_awaddr == `SERIAL_PORT) ? 2'd0 :
-                                    (m_awaddr == `RTC_ADDR | m_awaddr == `RTC_ADDR + 32'h4) ? 2'd1 : // TODO
+                                    (m_awaddr == `RTC_ADDR | m_awaddr == `RTC_ADDR + 32'h4) ? 2'd2 :
                                     2'd1;
                 end
             end
@@ -276,12 +276,12 @@ always @(*) begin
             w_next_state = S_CNT;
         end
         S_CNT: begin
-            if (((cur_slave_r == 2'd0) & s0_awready) | ((cur_slave_r == 2'd1) & s1_awready) | ((cur_slave_r == 2'd2) & s2_awready)) begin
+            if (((cur_slave_w == 2'd0) & s0_awready) | ((cur_slave_w == 2'd1) & s1_awready) | ((cur_slave_w == 2'd2) & s2_awready)) begin
                 w_next_state = S_BUSY;
             end
         end
         S_BUSY: begin
-            if (((cur_slave_r == 2'd0) & s0_bvalid & s0_bready) | ((cur_slave_r == 2'd1) & s1_bvalid & s1_bready) | ((cur_slave_r == 2'd2) & s2_bvalid & s2_bready)) begin
+            if (((cur_slave_w == 2'd0) & s0_bvalid & s0_bready) | ((cur_slave_w == 2'd1) & s1_bvalid & s1_bready) | ((cur_slave_w == 2'd2) & s2_bvalid & s2_bready)) begin
                 w_next_state = S_IDLE;
             end
         end
@@ -302,27 +302,27 @@ assign s0_rready = ((cur_slave_r == 2'd0) & m_rready) & (r_state == S_BUSY);
 assign s1_rready = ((cur_slave_r == 2'd1) & m_rready) & (r_state == S_BUSY);
 assign s2_rready = ((cur_slave_r == 2'd2) & m_rready) & (r_state == S_BUSY);
 
-assign m_wready  = (w_state == S_BUSY)&((cur_slave_r == 2'd0) ? s0_wready :
-                                        (cur_slave_r == 2'd1) ? s1_wready :
+assign m_wready  = (w_state == S_BUSY)&((cur_slave_w == 2'd0) ? s0_wready :
+                                        (cur_slave_w == 2'd1) ? s1_wready :
                                         s2_wready);
-assign m_bresp   = {2{(w_state == S_BUSY)}} &  ((cur_slave_r == 2'd0) ? s0_bresp :
-                                                (cur_slave_r == 2'd1) ? s1_bresp :
+assign m_bresp   = {2{(w_state == S_BUSY)}} &  ((cur_slave_w == 2'd0) ? s0_bresp :
+                                                (cur_slave_w == 2'd1) ? s1_bresp :
                                                 s2_bresp);
-assign m_bvalid  = (w_state == S_BUSY)&((cur_slave_r == 2'd0) ? s0_bvalid :
-                                        (cur_slave_r == 2'd1) ? s1_bvalid :
+assign m_bvalid  = (w_state == S_BUSY)&((cur_slave_w == 2'd0) ? s0_bvalid :
+                                        (cur_slave_w == 2'd1) ? s1_bvalid :
                                         s2_bvalid);
 
-assign s0_wdata  = ({32{(cur_slave_r == 2'd0)}} & m_wdata) & {32{(w_state == S_BUSY)}};
-assign s0_wstrb  = ({4{(cur_slave_r == 2'd0)}} & m_wstrb) & {4{(w_state == S_BUSY)}};
-assign s0_wvalid = ((cur_slave_r == 2'd0) & m_wvalid) & (w_state == S_BUSY);
-assign s0_bready = ((cur_slave_r == 2'd0) & m_bready) & (w_state == S_BUSY);
-assign s1_wdata  = ({32{(cur_slave_r == 2'd1)}} & m_wdata) & {32{(w_state == S_BUSY)}};
-assign s1_wstrb  = ({4{(cur_slave_r == 2'd1)}} & m_wstrb) & {4{(w_state == S_BUSY)}};
-assign s1_wvalid = ((cur_slave_r == 2'd1) & m_wvalid) & (w_state == S_BUSY);
-assign s1_bready = ((cur_slave_r == 2'd1) & m_bready) & (w_state == S_BUSY);
-assign s2_wdata  = ({32{(cur_slave_r == 2'd2)}} & m_wdata) & {32{(w_state == S_BUSY)}};
-assign s2_wstrb  = ({4{(cur_slave_r == 2'd2)}} & m_wstrb) & {4{(w_state == S_BUSY)}};
-assign s2_wvalid = ((cur_slave_r == 2'd2) & m_wvalid) & (w_state == S_BUSY);
-assign s2_bready = ((cur_slave_r == 2'd2) & m_bready) & (w_state == S_BUSY);
+assign s0_wdata  = ({32{(cur_slave_w == 2'd0)}} & m_wdata) & {32{(w_state == S_BUSY)}};
+assign s0_wstrb  = ({4{(cur_slave_w == 2'd0)}} & m_wstrb) & {4{(w_state == S_BUSY)}};
+assign s0_wvalid = ((cur_slave_w == 2'd0) & m_wvalid) & (w_state == S_BUSY);
+assign s0_bready = ((cur_slave_w == 2'd0) & m_bready) & (w_state == S_BUSY);
+assign s1_wdata  = ({32{(cur_slave_w == 2'd1)}} & m_wdata) & {32{(w_state == S_BUSY)}};
+assign s1_wstrb  = ({4{(cur_slave_w == 2'd1)}} & m_wstrb) & {4{(w_state == S_BUSY)}};
+assign s1_wvalid = ((cur_slave_w == 2'd1) & m_wvalid) & (w_state == S_BUSY);
+assign s1_bready = ((cur_slave_w == 2'd1) & m_bready) & (w_state == S_BUSY);
+assign s2_wdata  = ({32{(cur_slave_w == 2'd2)}} & m_wdata) & {32{(w_state == S_BUSY)}};
+assign s2_wstrb  = ({4{(cur_slave_w == 2'd2)}} & m_wstrb) & {4{(w_state == S_BUSY)}};
+assign s2_wvalid = ((cur_slave_w == 2'd2) & m_wvalid) & (w_state == S_BUSY);
+assign s2_bready = ((cur_slave_w == 2'd2) & m_bready) & (w_state == S_BUSY);
 
 endmodule
