@@ -114,7 +114,7 @@ extern "C" void paddr_write(uint32_t waddr, uint32_t wdata, uint8_t wmask)
 extern "C" void uart_difftest_skip()
 {
     // putchar(wdata);
-    // fflush(stdout);
+    fflush(stdout);
 #ifdef CONFIG_DIFFTEST
     difftest_skip_ref();
 #endif
