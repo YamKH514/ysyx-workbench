@@ -115,7 +115,7 @@ always @(posedge clk) begin
                     araddr_r    <= m_araddr;
                     m_arready   <= 1'b0;
                     cur_slave_r <=  (m_araddr == `SERIAL_PORT) ? 2'd0 :
-                                    (m_araddr == `RTC_ADDR | m_araddr == `RTC_ADDR + 32'h4) ? 2'd2 :
+                                    (m_araddr == `RTC_ADDR | m_araddr == `RTC_ADDR + 32'h4) ? 2'd1 : // TODO
                                     2'd1;
                 end
             end
@@ -183,7 +183,7 @@ always @(posedge clk) begin
                     awaddr_r    <= m_awaddr;
                     m_awready   <= 1'b0;
                     cur_slave_w <=  (m_awaddr == `SERIAL_PORT) ? 2'd0 :
-                                    (m_awaddr == `RTC_ADDR | m_awaddr == `RTC_ADDR + 32'h4) ? 2'd2 :
+                                    (m_awaddr == `RTC_ADDR | m_awaddr == `RTC_ADDR + 32'h4) ? 2'd1 : // TODO
                                     2'd1;
                 end
             end
