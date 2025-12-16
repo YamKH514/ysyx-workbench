@@ -110,3 +110,11 @@ extern "C" void uart_difftest_skip()
 #endif
     return;
 }
+
+extern "C" void clint_difftest_skip()
+{
+#ifdef CONFIG_DIFFTEST
+    difftest_skip_ref();
+#endif
+    return;
+}

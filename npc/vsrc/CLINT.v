@@ -1,4 +1,5 @@
 module CLINT(
+    /* verilator lint_off UNUSEDSIGNAL */
     input               clk,
     input               rstn,
 
@@ -29,6 +30,8 @@ module CLINT(
     output  reg         bvalid_out,
     input               bready_in
 );
+
+import "DPI-C" function void clint_difftest_skip();
 
 reg [31:0]  araddr_r;
 
@@ -132,6 +135,7 @@ always @(*) begin
             end
         end
         S_GET_AR: begin
+            clint_difftest_skip();
             r_next_state = S_SEND_R;
         end
         S_SEND_R: begin

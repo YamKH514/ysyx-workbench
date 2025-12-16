@@ -146,6 +146,24 @@ wire    [1:0]   uart_bresp;
 wire            uart_bvalid;
 wire            uart_bready;
 
+wire    [31:0]  clint_araddr;
+wire            clint_arvalid;
+wire            clint_arready;
+wire    [31:0]  clint_rdata;
+wire    [1:0]   clint_rresp;
+wire            clint_rvalid;
+wire            clint_rready;
+wire    [31:0]  clint_awaddr;
+wire            clint_awvalid;
+wire            clint_awready;
+wire    [31:0]  clint_wdata;
+wire    [3:0]   clint_wstrb;
+wire            clint_wvalid;
+wire            clint_wready;
+wire    [1:0]   clint_bresp;
+wire            clint_bvalid;
+wire            clint_bready;
+
 assign trap_npc = is_ecall ? csr_r_mtvec : csr_r_mepc;
 
 PCCnt u_PCCnt(
@@ -420,7 +438,24 @@ Xbar u_Xbar(
     .s1_wready  	        (sram_wready        ),
     .s1_bresp   	        (sram_bresp         ),
     .s1_bvalid  	        (sram_bvalid        ),
-    .s1_bready  	        (sram_bready        )
+    .s1_bready  	        (sram_bready        ),
+    .s2_araddr  	        (clint_araddr       ),
+    .s2_arvalid 	        (clint_arvalid      ),
+    .s2_arready 	        (clint_arready      ),
+    .s2_rdata   	        (clint_rdata        ),
+    .s2_rresp   	        (clint_rresp        ),
+    .s2_rvalid  	        (clint_rvalid       ),
+    .s2_rready  	        (clint_rready       ),
+    .s2_awaddr  	        (clint_awaddr       ),
+    .s2_awvalid 	        (clint_awvalid      ),
+    .s2_awready 	        (clint_awready      ),
+    .s2_wdata   	        (clint_wdata        ),
+    .s2_wstrb   	        (clint_wstrb        ),
+    .s2_wvalid  	        (clint_wvalid       ),
+    .s2_wready  	        (clint_wready       ),
+    .s2_bresp   	        (clint_bresp        ),
+    .s2_bvalid  	        (clint_bvalid       ),
+    .s2_bready  	        (clint_bready       )
 );
 
 SRAM u_SRAM(
@@ -465,6 +500,28 @@ UART u_UART(
     .bresp_out   	        (uart_bresp         ),
     .bvalid_out  	        (uart_bvalid        ),
     .bready_in   	        (uart_bready        )
+);
+
+CLINT u_CLINT(
+    .clk         	        (clk                ),
+    .rstn        	        (rstn               ),
+    .araddr_in   	        (clint_araddr       ),
+    .arvalid_in  	        (clint_arvalid      ),
+    .arready_out 	        (clint_arready      ),
+    .rdata_out   	        (clint_rdata        ),
+    .rresp_out   	        (clint_rresp        ),
+    .rvalid_out  	        (clint_rvalid       ),
+    .rready_in   	        (clint_rready       ),
+    .awaddr_in   	        (clint_awaddr       ),
+    .awvalid_in  	        (clint_awvalid      ),
+    .awready_out 	        (clint_awready      ),
+    .wdata_in    	        (clint_wdata        ),
+    .wstrb_in    	        (clint_wstrb        ),
+    .wvalid_in   	        (clint_wvalid       ),
+    .wready_out  	        (clint_wready       ),
+    .bresp_out   	        (clint_bresp        ),
+    .bvalid_out  	        (clint_bvalid       ),
+    .bready_in   	        (clint_bready       )
 );
 
 endmodule
