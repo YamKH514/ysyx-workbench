@@ -134,16 +134,18 @@ always @(posedge clk) begin
                 if (m_awvalid) begin
                     awaddr_r  <= m_awaddr;
                     m_awready <= 1'b0;
-                    cur_slave_w <= (m_araddr == 32'ha00003f8) ? 1'b0 : 1'b1;
+                    // cur_slave_w <= (m_araddr == 32'ha00003f8) ? 1'b0 : 1'b1;
                 end
             end
             S_SEL: begin
-                case (cur_slave_w)
-                    1'b0: begin
+                case (awaddr_r)
+                    32'ha00003f8: begin
+                        cur_slave_w <= 1'b0;
                         s0_awvalid <= 1'b1;
                         s0_awaddr  <= awaddr_r;
                     end
-                    1'b1: begin
+                    default: begin
+                        cur_slave_w <= 1'b1;
                         s1_awvalid <= 1'b1;
                         s1_awaddr  <= awaddr_r;
                     end
