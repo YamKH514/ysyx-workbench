@@ -87,6 +87,7 @@ always @(posedge clk) begin
             end
             S_SEND_AR: begin
                 if (arready_in) begin
+                    araddr_out  <= 32'b0;
                     arvalid_out <= 1'b0;
                 end
             end

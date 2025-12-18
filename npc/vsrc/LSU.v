@@ -73,11 +73,15 @@ always @(posedge clk) begin
     if (!rstn) begin
         lsu_to_exu_ready_out <= 1'b0;
         lsu_to_wbu_valid_out <= 1'b0;
-        arvalid_out <= 1'b0;
-        rready_out  <= 1'b1;
-        awvalid_out <= 1'b0;
-        wvalid_out  <= 1'b0;
-        bready_out  <= 1'b1;
+        araddr_out           <= 32'b0;
+        arvalid_out          <= 1'b0;
+        rready_out           <= 1'b1;
+        awaddr_out           <= 32'b0;
+        awvalid_out          <= 1'b0;
+        wdata_out            <= 32'b0;
+        wstrb_out            <= 4'b0;
+        wvalid_out           <= 1'b0;
+        bready_out           <= 1'b1;
         br_out               <= 1'b0;
         bs_out               <= 1'b0;
     end else begin
@@ -90,11 +94,12 @@ always @(posedge clk) begin
             end
             S_WAIT_ARB: begin
                 if (bg_in) begin
-                    if (lsu_re_r | lsu_we_r) begin
-                        arvalid_out <= lsu_re_r;
+                    if (lsu_re_r) begin
                         araddr_out  <= lsu_r_addr_in;
-                        awvalid_out <= lsu_we_r;
+                        arvalid_out <= lsu_re_r;
+                    end else if (lsu_we_r) begin
                         awaddr_out  <= lsu_w_addr_in;
+                        awvalid_out <= lsu_we_r;
                     end else begin
                         lsu_to_wbu_valid_out <= 1'b1;
                     end
@@ -104,6 +109,7 @@ always @(posedge clk) begin
             end
             S_SEND_AR: begin
                 if (arready_in) begin
+                    araddr_out  <= 32'b0;
                     arvalid_out <= 1'b0;
                 end
             end
@@ -118,6 +124,7 @@ always @(posedge clk) begin
             end
             S_SEND_AW: begin
                 if (awready_in) begin
+                    awaddr_out  <= 32'b0;
                     awvalid_out <= 1'b0;
                     wdata_out   <= lsu_w_data_in;
                     wstrb_out   <= lsu_w_mask_r;
@@ -126,7 +133,9 @@ always @(posedge clk) begin
             end
             S_SEND_W: begin
                 if (wready_in) begin
-                    wvalid_out <= 1'b0;
+                    wdata_out   <= 32'b0;
+                    wstrb_out   <= 4'b0;
+                    wvalid_out  <= 1'b0;
                 end
             end
             S_GET_B: begin
