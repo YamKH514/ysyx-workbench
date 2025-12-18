@@ -34,6 +34,7 @@ module UART(
 import "DPI-C" function void uart_difftest_skip();
 
 reg [31:0]  awaddr_r;
+reg [31:0]  wdata_r;
 
 parameter S_IDLE   = 3'd0;
 parameter S_GET_AR = 3'd1;
@@ -100,6 +101,7 @@ always @(posedge clk) begin
             end
             S_GET_WR: begin
                 if (wvalid_in & wready_out) begin
+                    wdata_r    <= wdata_in;
                     wready_out <= 1'b0;
                 end
             end
@@ -160,7 +162,7 @@ always @(*) begin
             end
         end
         S_GET_WD: begin
-            $write("%c", wdata_in[7:0]);
+            $write("%c", wdata_r[7:0]);
             uart_difftest_skip();
             w_next_state = S_SEND_B;
         end
