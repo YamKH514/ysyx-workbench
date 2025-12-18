@@ -223,13 +223,13 @@ always @(posedge clk) begin
             S_BUSY: begin
                 case (cur_slave_w)
                     2'd0: begin
-                        if (s0_bvalid & s0_bready) m_awready <= 1'b0;
+                        if (s0_bvalid & s0_bready) m_awready <= 1'b1;
                     end
                     2'd1: begin
-                        if (s1_bvalid & s1_bready) m_awready <= 1'b0;
+                        if (s1_bvalid & s1_bready) m_awready <= 1'b1;
                     end
                     2'd2: begin
-                        if (s2_bvalid & s2_bready) m_awready <= 1'b0;
+                        if (s2_bvalid & s2_bready) m_awready <= 1'b1;
                     end
                     default: begin
                     end
