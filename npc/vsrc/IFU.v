@@ -36,7 +36,11 @@ module IFU(
     output  reg         bready_out,
 
     output  reg         ifu_to_idu_valid_out,
-    input               idu_to_ifu_ready_in
+    input               idu_to_ifu_ready_in,
+
+    output  reg         bs_out,
+    output  reg         br_out,
+    input               bg_in
 );
 
 assign awaddr_out  = 32'b0;
@@ -46,12 +50,13 @@ assign wstrb_out   = 4'b0;
 assign wvalid_out  = 1'b0;
 assign bready_out  = 1'b0;
 
-parameter S_IDLE      = 2'd0;
-parameter S_SEND_AR   = 2'd1;
-parameter S_WAIT_INST = 2'd2;
-parameter S_WAIT_IDU  = 2'd3;
+localparam S_IDLE      = 3'd0;
+localparam S_WAIT_ARB  = 3'd1;
+localparam S_SEND_AR   = 3'd2;
+localparam S_WAIT_INST = 3'd3;
+localparam S_WAIT_IDU  = 3'd4;
 
-reg [1:0]   state, next_state;
+reg [2:0]   state, next_state;
 
 always @(posedge clk) begin
     if (!rstn) state <= S_IDLE;
@@ -63,12 +68,21 @@ always @(posedge clk) begin
         arvalid_out          <= 1'b0;
         rready_out           <= 1'b1;
         ifu_to_idu_valid_out <= 1'b0;
+        br_out               <= 1'b0;
+        bs_out               <= 1'b0;
     end else begin
         case (state)
             S_IDLE: begin
                 if (pc_to_ifu_ready_in) begin
+                    br_out <= 1'b1;
+                end
+            end
+            S_WAIT_ARB: begin
+                if (bg_in) begin
                     araddr_out  <= ifu_current_pc_in;
                     arvalid_out <= 1'b1;
+                    br_out      <= 1'b0;
+                    bs_out      <= 1'b1;
                 end
             end
             S_SEND_AR: begin
@@ -89,6 +103,7 @@ always @(posedge clk) begin
                 if (idu_to_ifu_ready_in) begin
                     rready_out           <= 1'b1;
                     ifu_to_idu_valid_out <= 1'b0;
+                    bs_out               <= 1'b0;
                 end
             end
             default: begin
@@ -97,6 +112,8 @@ always @(posedge clk) begin
                 arvalid_out          <= 1'b0;
                 rready_out           <= 1'b1;
                 ifu_to_idu_valid_out <= 1'b0;
+                br_out               <= 1'b0;
+                bs_out               <= 1'b0;
             end
         endcase
     end
@@ -107,6 +124,11 @@ always @(*) begin
     case (state)
         S_IDLE: begin
             if (pc_to_ifu_ready_in) begin
+                next_state = S_WAIT_ARB;
+            end
+        end
+        S_WAIT_ARB: begin
+            if (bg_in) begin
                 next_state = S_SEND_AR;
             end
         end

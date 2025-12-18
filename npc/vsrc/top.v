@@ -56,6 +56,14 @@ wire            lsu_to_exu_ready;
 wire            lsu_to_wbu_valid;
 wire            wbu_to_lsu_ready;
 
+wire bs;
+wire bs1;
+wire br1;
+wire bg1;
+wire bs2;
+wire br2;
+wire bg2;
+
 wire    [31:0]  inst_araddr;
 wire            inst_arvalid;
 wire            inst_arready;
@@ -204,7 +212,10 @@ IFU u_IFU(
     .bvalid_in            	(inst_bvalid        ),
     .bready_out           	(inst_bready        ),
     .ifu_to_idu_valid_out   (ifu_to_idu_valid   ),
-    .idu_to_ifu_ready_in    (idu_to_ifu_ready   )
+    .idu_to_ifu_ready_in    (idu_to_ifu_ready   ),
+    .bs_out                 (bs1                ),
+    .br_out                 (br1                ),
+    .bg_in                  (bg1                )
 );
 
 IDU u_IDU(
@@ -288,7 +299,10 @@ LSU u_LSU(
     .exu_to_lsu_valid_in  	(exu_to_lsu_valid   ),
     .lsu_to_exu_ready_out 	(lsu_to_exu_ready   ),
     .lsu_to_wbu_valid_out 	(lsu_to_wbu_valid   ),
-    .wbu_to_lsu_ready_in  	(wbu_to_lsu_ready   )
+    .wbu_to_lsu_ready_in  	(wbu_to_lsu_ready   ),
+    .bs_out                 (bs2                ),
+    .br_out                 (br2                ),
+    .bg_in                  (bg2                )
 );
 
 WBU u_WBU(
@@ -329,61 +343,43 @@ CSR u_CSR(
     .csr_r_mepc_out         (csr_r_mepc         )
 );
 
+assign bs = bs1 | bs2;
+
 Arbiter u_Arbiter(
-    .clk        	        (clk                ),
-    .rstn       	        (rstn               ),
-    .m0_araddr  	        (inst_araddr        ),
-    .m0_arvalid 	        (inst_arvalid       ),
-    .m0_arready 	        (inst_arready       ),
-    .m0_rdata   	        (inst_rdata         ),
-    .m0_rresp   	        (inst_rresp         ),
-    .m0_rvalid  	        (inst_rvalid        ),
-    .m0_rready  	        (inst_rready        ),
-    .m0_awaddr  	        (inst_awaddr        ),
-    .m0_awvalid 	        (inst_awvalid       ),
-    .m0_awready 	        (inst_awready       ),
-    .m0_wdata   	        (inst_wdata         ),
-    .m0_wstrb   	        (inst_wstrb         ),
-    .m0_wvalid  	        (inst_wvalid        ),
-    .m0_wready  	        (inst_wready        ),
-    .m0_bresp   	        (inst_bresp         ),
-    .m0_bvalid  	        (inst_bvalid        ),
-    .m0_bready  	        (inst_bready        ),
-    .m1_araddr  	        (lsu_araddr         ),
-    .m1_arvalid 	        (lsu_arvalid        ),
-    .m1_arready 	        (lsu_arready        ),
-    .m1_rdata   	        (lsu_rdata          ),
-    .m1_rresp   	        (lsu_rresp          ),
-    .m1_rvalid  	        (lsu_rvalid         ),
-    .m1_rready  	        (lsu_rready         ),
-    .m1_awaddr  	        (lsu_awaddr         ),
-    .m1_awvalid 	        (lsu_awvalid        ),
-    .m1_awready 	        (lsu_awready        ),
-    .m1_wdata   	        (lsu_wdata          ),
-    .m1_wstrb   	        (lsu_wstrb          ),
-    .m1_wvalid  	        (lsu_wvalid         ),
-    .m1_wready  	        (lsu_wready         ),
-    .m1_bresp   	        (lsu_bresp          ),
-    .m1_bvalid  	        (lsu_bvalid         ),
-    .m1_bready  	        (lsu_bready         ),
-    .s_araddr   	        (xbar_araddr        ),
-    .s_arvalid  	        (xbar_arvalid       ),
-    .s_arready  	        (xbar_arready       ),
-    .s_rdata    	        (xbar_rdata         ),
-    .s_rresp    	        (xbar_rresp         ),
-    .s_rvalid   	        (xbar_rvalid        ),
-    .s_rready   	        (xbar_rready        ),
-    .s_awaddr   	        (xbar_awaddr        ),
-    .s_awvalid  	        (xbar_awvalid       ),
-    .s_awready  	        (xbar_awready       ),
-    .s_wdata    	        (xbar_wdata         ),
-    .s_wstrb    	        (xbar_wstrb         ),
-    .s_wvalid   	        (xbar_wvalid        ),
-    .s_wready   	        (xbar_wready        ),
-    .s_bresp    	        (xbar_bresp         ),
-    .s_bvalid   	        (xbar_bvalid        ),
-    .s_bready   	        (xbar_bready        )
+    .clk     	            (clk                ),
+    .rstn    	            (rstn               ),
+    .bs_in   	            (bs                 ),
+    .br1_in  	            (br1                ),
+    .bg1_out 	            (bg1                ),
+    .br2_in  	            (br2                ),
+    .bg2_out 	            (bg2                )
 );
+
+assign xbar_araddr = inst_araddr | lsu_araddr;
+assign xbar_arvalid = inst_arvalid | lsu_arvalid;
+assign inst_arready = xbar_arready;
+assign lsu_arready = xbar_arready;
+assign inst_rdata = xbar_rdata;
+assign lsu_rdata = xbar_rdata;
+assign inst_rresp = xbar_rresp;
+assign lsu_rresp = xbar_rresp;
+assign inst_rvalid = xbar_rvalid;
+assign lsu_rvalid = xbar_rvalid;
+assign xbar_rready = inst_rready | lsu_rready;
+assign xbar_awaddr = inst_awaddr | lsu_awaddr;
+assign xbar_awvalid = inst_awvalid | lsu_awvalid;
+assign inst_awready = xbar_awready;
+assign lsu_awready = xbar_awready;
+assign xbar_wdata = inst_wdata | lsu_wdata;
+assign xbar_wstrb = inst_wstrb | lsu_wstrb;
+assign xbar_wvalid = inst_wvalid | lsu_wvalid;
+assign inst_wready = xbar_wready;
+assign lsu_wready = xbar_wready;
+assign inst_bresp = xbar_bresp;
+assign lsu_bresp = xbar_bresp;
+assign inst_bvalid = xbar_bvalid;
+assign lsu_bvalid = xbar_bvalid;
+assign xbar_bready = inst_bready | lsu_bready;
 
 Xbar u_Xbar(
     .clk        	        (clk                ),
