@@ -115,7 +115,7 @@ always @(posedge clk) begin
             end
             S_GET_R: begin
                 if (rvalid_in) begin
-                    rdata_r          <= rdata_in;
+                    rdata_r              <= rdata_in;
                     if (rresp_in != 2'b00) begin
                     end
                     rready_out           <= 1'b0;
