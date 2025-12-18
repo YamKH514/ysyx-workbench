@@ -155,13 +155,13 @@ always @(posedge clk) begin
             S_BUSY: begin
                 case (cur_slave_r)
                     2'd0: begin
-                        if (s0_rvalid & s0_rready) m_arready <= 1'b0;
+                        if (s0_rvalid & s0_rready) m_arready <= 1'b1;
                     end
                     2'd1: begin
-                        if (s1_rvalid & s1_rready) m_arready <= 1'b0;
+                        if (s1_rvalid & s1_rready) m_arready <= 1'b1;
                     end
                     2'd2: begin
-                        if (s2_rvalid & s2_rready) m_arready <= 1'b0;
+                        if (s2_rvalid & s2_rready) m_arready <= 1'b1;
                     end
                     default: begin
                     end
