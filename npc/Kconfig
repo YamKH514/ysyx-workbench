@@ -47,7 +47,7 @@ config MTRACE
 config FTRACE
   depends on TRACE
   bool "Enable func tracer"
-  default y
+  default n
 
 config DIFFTEST
   bool "Enable differential testing"
