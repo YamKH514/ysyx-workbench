@@ -1,4 +1,5 @@
-module SRAM(
+module UART(
+    /* verilator lint_off UNUSEDSIGNAL */
     input               clk,
     input               rstn,
 
@@ -30,14 +31,10 @@ module SRAM(
     input               bready_in
 );
 
-import "DPI-C" function int paddr_read(input int raddr);
-import "DPI-C" function void paddr_write(
-    input int waddr, input int wdata, input byte wmask);
+import "DPI-C" function void uart_difftest_skip();
 
-reg [31:0]  araddr_r;
 reg [31:0]  awaddr_r;
 reg [31:0]  wdata_r;
-reg [3:0]   wstrb_r;
 
 parameter S_IDLE   = 3'd0;
 parameter S_GET_AR = 3'd1;
@@ -62,6 +59,7 @@ always @(posedge clk) begin
     if (!rstn) begin
         arready_out <= 1'b1;
         rvalid_out  <= 1'b0;
+        rdata_out   <= 32'b0;
         rresp_out   <= 2'b00;
     end else begin
         case (r_state)
@@ -104,7 +102,6 @@ always @(posedge clk) begin
             S_GET_WR: begin
                 if (wvalid_in & wready_out) begin
                     wdata_r    <= wdata_in;
-                    wstrb_r    <= wstrb_in;
                     wready_out <= 1'b0;
                 end
             end
@@ -136,12 +133,10 @@ always @(*) begin
     case (r_state)
         S_IDLE: begin
             if (arvalid_in & arready_out) begin
-                araddr_r     = araddr_in;
                 r_next_state = S_GET_AR;
             end
         end
         S_GET_AR: begin
-            rdata_out = paddr_read(araddr_r);
             r_next_state = S_SEND_R;
         end
         S_SEND_R: begin
@@ -167,7 +162,8 @@ always @(*) begin
             end
         end
         S_GET_WD: begin
-            paddr_write(awaddr_r, wdata_r, {4'b0, wstrb_r});
+            $write("%c", wdata_r[7:0]);
+            uart_difftest_skip();
             w_next_state = S_SEND_B;
         end
         S_SEND_B: begin

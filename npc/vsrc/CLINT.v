@@ -1,4 +1,5 @@
-module SRAM(
+module CLINT(
+    /* verilator lint_off UNUSEDSIGNAL */
     input               clk,
     input               rstn,
 
@@ -30,14 +31,9 @@ module SRAM(
     input               bready_in
 );
 
-import "DPI-C" function int paddr_read(input int raddr);
-import "DPI-C" function void paddr_write(
-    input int waddr, input int wdata, input byte wmask);
+import "DPI-C" function void clint_difftest_skip();
 
 reg [31:0]  araddr_r;
-reg [31:0]  awaddr_r;
-reg [31:0]  wdata_r;
-reg [3:0]   wstrb_r;
 
 parameter S_IDLE   = 3'd0;
 parameter S_GET_AR = 3'd1;
@@ -67,10 +63,12 @@ always @(posedge clk) begin
         case (r_state)
             S_IDLE: begin
                 if (arvalid_in & arready_out) begin
+                    araddr_r    <= araddr_in;
                     arready_out <= 1'b0;
                 end
             end
             S_GET_AR: begin
+                rdata_out  <= (araddr_r[7:0] == 8'h48) ? mtime[31:0] : mtime[63:32];
                 rvalid_out <= 1'b1;
                 rresp_out  <= 2'b00;
             end
@@ -97,14 +95,11 @@ always @(posedge clk) begin
         case (w_state)
             S_IDLE: begin
                 if (awvalid_in & awready_out) begin
-                    awaddr_r    <= awaddr_in;
                     awready_out <= 1'b0;
                 end
             end
             S_GET_WR: begin
                 if (wvalid_in & wready_out) begin
-                    wdata_r    <= wdata_in;
-                    wstrb_r    <= wstrb_in;
                     wready_out <= 1'b0;
                 end
             end
@@ -136,12 +131,11 @@ always @(*) begin
     case (r_state)
         S_IDLE: begin
             if (arvalid_in & arready_out) begin
-                araddr_r     = araddr_in;
                 r_next_state = S_GET_AR;
             end
         end
         S_GET_AR: begin
-            rdata_out = paddr_read(araddr_r);
+            clint_difftest_skip();
             r_next_state = S_SEND_R;
         end
         S_SEND_R: begin
@@ -167,7 +161,6 @@ always @(*) begin
             end
         end
         S_GET_WD: begin
-            paddr_write(awaddr_r, wdata_r, {4'b0, wstrb_r});
             w_next_state = S_SEND_B;
         end
         S_SEND_B: begin
@@ -179,6 +172,13 @@ always @(*) begin
             w_next_state = S_IDLE;
         end
     endcase
+end
+
+reg [63:0]  mtime;
+
+always @(posedge clk) begin
+    if (!rstn) mtime <= 64'b0;
+    else mtime <= mtime + 1;
 end
 
 endmodule

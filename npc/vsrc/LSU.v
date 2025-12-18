@@ -42,7 +42,11 @@ module LSU(
     output  reg         lsu_to_exu_ready_out,
 
     output  reg         lsu_to_wbu_valid_out,
-    input               wbu_to_lsu_ready_in
+    input               wbu_to_lsu_ready_in,
+
+    output  reg         bs_out,
+    output  reg         br_out,
+    input               bg_in
 );
 
 reg [2:0]   lsu_r_func_r;
@@ -51,13 +55,14 @@ reg [3:0]   lsu_w_mask_r;
 reg         lsu_we_r;
 assign {lsu_r_func_r, lsu_re_r, lsu_w_mask_r, lsu_we_r} = idu_to_lsu_data_in;
 
-parameter S_IDLE     = 3'd0;
-parameter S_SEND_AR  = 3'd1;
-parameter S_GET_R    = 3'd2;
-parameter S_SEND_AW  = 3'd3;
-parameter S_SEND_W   = 3'd4;
-parameter S_GET_B    = 3'd5;
-parameter S_WAIT_WBU = 3'd6;
+localparam S_IDLE     = 3'd0;
+localparam S_WAIT_ARB = 3'd1;
+localparam S_SEND_AR  = 3'd2;
+localparam S_GET_R    = 3'd3;
+localparam S_SEND_AW  = 3'd4;
+localparam S_SEND_W   = 3'd5;
+localparam S_GET_B    = 3'd6;
+localparam S_WAIT_WBU = 3'd7;
 
 reg [2:0] state, next_state;
 
@@ -68,34 +73,49 @@ always @(posedge clk) begin
     if (!rstn) begin
         lsu_to_exu_ready_out <= 1'b0;
         lsu_to_wbu_valid_out <= 1'b0;
-        arvalid_out <= 1'b0;
-        rready_out  <= 1'b1;
-        awvalid_out <= 1'b0;
-        wvalid_out  <= 1'b0;
-        bready_out  <= 1'b1;
+        araddr_out           <= 32'b0;
+        arvalid_out          <= 1'b0;
+        rready_out           <= 1'b1;
+        awaddr_out           <= 32'b0;
+        awvalid_out          <= 1'b0;
+        wdata_out            <= 32'b0;
+        wstrb_out            <= 4'b0;
+        wvalid_out           <= 1'b0;
+        bready_out           <= 1'b1;
+        br_out               <= 1'b0;
+        bs_out               <= 1'b0;
     end else begin
         case (state)    
             S_IDLE: begin
                 if (exu_to_lsu_valid_in) begin
                     lsu_to_exu_ready_out <= 1'b1;
-                    if (lsu_re_r | lsu_we_r) begin
-                        arvalid_out <= lsu_re_r;
+                    br_out               <= 1'b1;
+                end
+            end
+            S_WAIT_ARB: begin
+                if (bg_in) begin
+                    if (lsu_re_r) begin
                         araddr_out  <= lsu_r_addr_in;
-                        awvalid_out <= lsu_we_r;
+                        arvalid_out <= lsu_re_r;
+                    end else if (lsu_we_r) begin
                         awaddr_out  <= lsu_w_addr_in;
+                        awvalid_out <= lsu_we_r;
                     end else begin
                         lsu_to_wbu_valid_out <= 1'b1;
                     end
+                    br_out      <= 1'b0;
+                    bs_out      <= 1'b1;
                 end
             end
             S_SEND_AR: begin
                 if (arready_in) begin
+                    araddr_out  <= 32'b0;
                     arvalid_out <= 1'b0;
                 end
             end
             S_GET_R: begin
                 if (rvalid_in) begin
-                    rdata_r          <= rdata_in;
+                    rdata_r              <= rdata_in;
                     if (rresp_in != 2'b00) begin
                     end
                     rready_out           <= 1'b0;
@@ -104,6 +124,7 @@ always @(posedge clk) begin
             end
             S_SEND_AW: begin
                 if (awready_in) begin
+                    awaddr_out  <= 32'b0;
                     awvalid_out <= 1'b0;
                     wdata_out   <= lsu_w_data_in;
                     wstrb_out   <= lsu_w_mask_r;
@@ -112,7 +133,9 @@ always @(posedge clk) begin
             end
             S_SEND_W: begin
                 if (wready_in) begin
-                    wvalid_out <= 1'b0;
+                    wdata_out   <= 32'b0;
+                    wstrb_out   <= 4'b0;
+                    wvalid_out  <= 1'b0;
                 end
             end
             S_GET_B: begin
@@ -128,16 +151,19 @@ always @(posedge clk) begin
                     lsu_to_wbu_valid_out <= 1'b0;
                     rready_out <= 1'b1;
                     bready_out <= 1'b1;
+                    bs_out     <= 1'b0;
                 end
             end
             default: begin
                 lsu_to_exu_ready_out <= 1'b0;
                 lsu_to_wbu_valid_out <= 1'b0;
-                arvalid_out <= 1'b0;
-                rready_out  <= 1'b1;
-                awvalid_out <= 1'b0;
-                wvalid_out  <= 1'b0;
-                bready_out  <= 1'b1;
+                arvalid_out          <= 1'b0;
+                rready_out           <= 1'b1;
+                awvalid_out          <= 1'b0;
+                wvalid_out           <= 1'b0;
+                bready_out           <= 1'b1;
+                br_out               <= 1'b0;
+                bs_out               <= 1'b0;
             end
         endcase
     end
@@ -148,6 +174,11 @@ always @(*) begin
     case (state)
         S_IDLE: begin
             if (exu_to_lsu_valid_in) begin
+                next_state = S_WAIT_ARB;
+            end
+        end
+        S_WAIT_ARB: begin
+            if (bg_in) begin
                 if (lsu_re_r | lsu_we_r) begin
                     next_state = S_SEND_AR & {3{lsu_re_r}} | S_SEND_AW & {3{lsu_we_r}};
                 end else begin

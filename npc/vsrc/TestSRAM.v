@@ -1,4 +1,5 @@
-module SRAM(
+module TestSRAM(
+    /* verilator lint_off UNUSEDSIGNAL */
     input               clk,
     input               rstn,
 
@@ -30,14 +31,12 @@ module SRAM(
     input               bready_in
 );
 
-import "DPI-C" function int paddr_read(input int raddr);
-import "DPI-C" function void paddr_write(
-    input int waddr, input int wdata, input byte wmask);
-
-reg [31:0]  araddr_r;
-reg [31:0]  awaddr_r;
-reg [31:0]  wdata_r;
-reg [3:0]   wstrb_r;
+reg [7:0] ReadAddr1;
+reg [31:0] ReadData1;
+reg [7:0] WriteAddr;
+reg [31:0] WriteData;
+reg [3:0] WriteMask;
+reg RegWrite;
 
 parameter S_IDLE   = 3'd0;
 parameter S_GET_AR = 3'd1;
@@ -67,10 +66,12 @@ always @(posedge clk) begin
         case (r_state)
             S_IDLE: begin
                 if (arvalid_in & arready_out) begin
+                    ReadAddr1 <= araddr_in[7:0];
                     arready_out <= 1'b0;
                 end
             end
             S_GET_AR: begin
+                rdata_out <= ReadData1;
                 rvalid_out <= 1'b1;
                 rresp_out  <= 2'b00;
             end
@@ -97,18 +98,20 @@ always @(posedge clk) begin
         case (w_state)
             S_IDLE: begin
                 if (awvalid_in & awready_out) begin
-                    awaddr_r    <= awaddr_in;
+                    WriteAddr   <= awaddr_in[7:0];
                     awready_out <= 1'b0;
                 end
             end
             S_GET_WR: begin
                 if (wvalid_in & wready_out) begin
-                    wdata_r    <= wdata_in;
-                    wstrb_r    <= wstrb_in;
+                    WriteData  <= wdata_in;
+                    WriteMask  <= wstrb_in;
+                    RegWrite   <= 1'b1;
                     wready_out <= 1'b0;
                 end
             end
             S_GET_WD: begin
+                RegWrite   <= 1'b0;
                 bresp_out  <= 2'b00;
                 bvalid_out <= 1'b1;
             end
@@ -136,12 +139,10 @@ always @(*) begin
     case (r_state)
         S_IDLE: begin
             if (arvalid_in & arready_out) begin
-                araddr_r     = araddr_in;
                 r_next_state = S_GET_AR;
             end
         end
         S_GET_AR: begin
-            rdata_out = paddr_read(araddr_r);
             r_next_state = S_SEND_R;
         end
         S_SEND_R: begin
@@ -167,7 +168,6 @@ always @(*) begin
             end
         end
         S_GET_WD: begin
-            paddr_write(awaddr_r, wdata_r, {4'b0, wstrb_r});
             w_next_state = S_SEND_B;
         end
         S_SEND_B: begin
@@ -180,5 +180,20 @@ always @(*) begin
         end
     endcase
 end
+
+wire [31:0] ReadData2, ReadData_a5;
+
+RegisterFile #(8, 32) u_RegisterFile(
+    .clk         	(clk          ),
+    .ReadAddr1   	(ReadAddr1    ),
+    .ReadAddr2   	(8'b0         ),
+    .WriteAddr   	(WriteAddr    ),
+    .WriteData   	(WriteData    ),
+    .RegWrite    	(RegWrite     ),
+    .ReadData1   	(ReadData1    ),
+    .ReadData2   	(ReadData2    ),
+    .ReadData_a5 	(ReadData_a5  )
+);
+
 
 endmodule
