@@ -10,7 +10,7 @@ void __am_timer_uptime(AM_TIMER_UPTIME_T *uptime) {
   uint32_t hi, lo;
   asm volatile("lw %0, 4(%1)" : "=r"(hi):  "r"(RTC_ADDR));
   asm volatile("lw %0, 0(%1)" : "=r"(lo):  "r"(RTC_ADDR));
-  uptime->us = (((uint64_t)hi << 32) | (uint64_t)lo);
+  uptime->us = (((uint64_t)hi << 32) | (uint64_t)lo) / 2;
 }
 
 void __am_timer_rtc(AM_TIMER_RTC_T *rtc) {
