@@ -93,7 +93,11 @@ always @(posedge clk) begin
             S_IDLE: begin
                 if (exu_to_lsu_valid_in) begin
                     lsu_to_exu_ready_out <= 1'b1;
-                    br_out               <= 1'b1;
+                    if (lsu_re_r | lsu_we_r) begin
+                        br_out           <= 1'b1;
+                    end else begin
+                        lsu_to_wbu_valid_out <= 1'b1;
+                    end
                 end
             end
             S_WAIT_ARB: begin
@@ -107,8 +111,6 @@ always @(posedge clk) begin
                         wdata_out   <= lsu_w_data_in;
                         wstrb_out   <= lsu_w_mask_r;
                         wvalid_out  <= 1'b1;
-                    end else begin
-                        lsu_to_wbu_valid_out <= 1'b1;
                     end
                     br_out      <= 1'b0;
                     bs_out      <= 1'b1;
@@ -128,6 +130,7 @@ always @(posedge clk) begin
                     end
                     rready_out           <= 1'b0;
                     lsu_to_wbu_valid_out <= 1'b1;
+                    bs_out <= 1'b0;
                 end
             end
             S_W_SEND: begin
@@ -152,12 +155,12 @@ always @(posedge clk) begin
                     end
                     bready_out <= 1'b0;
                     lsu_to_wbu_valid_out <= 1'b1;
+                    bs_out <= 1'b0;
                 end
             end
             S_WAIT_WBU: begin
                 if (wbu_to_lsu_ready_in) begin
                     lsu_to_wbu_valid_out <= 1'b0;
-                    bs_out <= 1'b0;
                 end
             end
             default: begin
@@ -182,16 +185,16 @@ always @(*) begin
     case (state)
         S_IDLE: begin
             if (exu_to_lsu_valid_in) begin
-                next_state = S_WAIT_ARB;
+                if (lsu_re_r | lsu_we_r) begin
+                    next_state = S_WAIT_ARB;
+                end else begin
+                    next_state = S_WAIT_WBU;
+                end
             end
         end
         S_WAIT_ARB: begin
             if (bg_in) begin
-                if (lsu_re_r | lsu_we_r) begin
-                    next_state = S_SEND_AR & {3{lsu_re_r}} | S_W_SEND & {3{lsu_we_r}};
-                end else begin
-                    next_state = S_WAIT_WBU;
-                end
+                next_state = S_SEND_AR & {3{lsu_re_r}} | S_W_SEND & {3{lsu_we_r}};
             end
         end
         S_SEND_AR: begin
