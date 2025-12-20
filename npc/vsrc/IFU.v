@@ -66,7 +66,7 @@ always @(posedge clk) begin
         araddr_out           <= 32'b0;
         ifu_inst_out         <= 32'b0;
         arvalid_out          <= 1'b0;
-        rready_out           <= 1'b1;
+        rready_out           <= 1'b0;
         ifu_to_idu_valid_out <= 1'b0;
         br_out               <= 1'b0;
         bs_out               <= 1'b0;
@@ -86,13 +86,14 @@ always @(posedge clk) begin
                 end
             end
             S_SEND_AR: begin
-                if (arready_in) begin
+                if (arvalid_out & arready_in) begin
                     araddr_out  <= 32'b0;
                     arvalid_out <= 1'b0;
+                    rready_out  <= 1'b1;
                 end
             end
             S_WAIT_INST: begin
-                if (rvalid_in) begin
+                if (rvalid_in & rready_out) begin
                     ifu_inst_out         <= rdata_in;
                     if (rresp_in != 2'b00) begin
                     end
@@ -102,7 +103,6 @@ always @(posedge clk) begin
             end
             S_WAIT_IDU: begin
                 if (idu_to_ifu_ready_in) begin
-                    rready_out           <= 1'b1;
                     ifu_to_idu_valid_out <= 1'b0;
                     bs_out               <= 1'b0;
                 end
@@ -111,7 +111,7 @@ always @(posedge clk) begin
                 araddr_out           <= 32'b0;
                 ifu_inst_out         <= 32'b0;
                 arvalid_out          <= 1'b0;
-                rready_out           <= 1'b1;
+                rready_out           <= 1'b0;
                 ifu_to_idu_valid_out <= 1'b0;
                 br_out               <= 1'b0;
                 bs_out               <= 1'b0;
@@ -134,12 +134,12 @@ always @(*) begin
             end
         end
         S_SEND_AR: begin
-            if (arready_in) begin
+            if (arvalid_out & arready_in) begin
                 next_state = S_WAIT_INST;
             end
         end
         S_WAIT_INST: begin
-            if (rvalid_in) begin
+            if (rvalid_in & rready_out) begin
                 next_state = S_WAIT_IDU;
             end
         end
