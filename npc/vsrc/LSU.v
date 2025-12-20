@@ -128,7 +128,6 @@ always @(posedge clk) begin
                     end
                     rready_out           <= 1'b0;
                     lsu_to_wbu_valid_out <= 1'b1;
-                    bs_out <= 1'b0;
                 end
             end
             S_W_SEND: begin
@@ -153,12 +152,12 @@ always @(posedge clk) begin
                     end
                     bready_out <= 1'b0;
                     lsu_to_wbu_valid_out <= 1'b1;
-                    bs_out <= 1'b0;
                 end
             end
             S_WAIT_WBU: begin
                 if (wbu_to_lsu_ready_in) begin
                     lsu_to_wbu_valid_out <= 1'b0;
+                    bs_out <= 1'b0;
                 end
             end
             default: begin
