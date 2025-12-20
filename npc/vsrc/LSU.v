@@ -115,18 +115,20 @@ always @(posedge clk) begin
                 end
             end
             S_SEND_AR: begin
-                if (arready_in) begin
+                if (arvalid_out & arready_in) begin
                     araddr_out  <= 32'b0;
                     arvalid_out <= 1'b0;
+                    rready_out  <= 1'b1;
                 end
             end
             S_GET_R: begin
-                if (rvalid_in) begin
+                if (rvalid_in & rready_out) begin
                     rdata_r              <= rdata_in;
                     if (rresp_in != 2'b00) begin
                     end
                     rready_out           <= 1'b0;
                     lsu_to_wbu_valid_out <= 1'b1;
+                    bs_out <= 1'b0;
                 end
             end
             S_W_SEND: begin
@@ -151,13 +153,12 @@ always @(posedge clk) begin
                     end
                     bready_out <= 1'b0;
                     lsu_to_wbu_valid_out <= 1'b1;
+                    bs_out <= 1'b0;
                 end
             end
             S_WAIT_WBU: begin
                 if (wbu_to_lsu_ready_in) begin
                     lsu_to_wbu_valid_out <= 1'b0;
-                    rready_out <= 1'b1;
-                    bs_out     <= 1'b0;
                 end
             end
             default: begin
@@ -166,7 +167,7 @@ always @(posedge clk) begin
                 lsu_to_exu_ready_out <= 1'b0;
                 lsu_to_wbu_valid_out <= 1'b0;
                 arvalid_out          <= 1'b0;
-                rready_out           <= 1'b1;
+                rready_out           <= 1'b0;
                 awvalid_out          <= 1'b0;
                 wvalid_out           <= 1'b0;
                 bready_out           <= 1'b0;
@@ -195,12 +196,12 @@ always @(*) begin
             end
         end
         S_SEND_AR: begin
-            if (arready_in) begin
+            if (arvalid_out & arready_in) begin
                 next_state = S_GET_R;
             end
         end
         S_GET_R: begin
-            if (rvalid_in) begin
+            if (rvalid_in & rready_out) begin
                 next_state = S_WAIT_WBU;
             end
         end
@@ -210,7 +211,7 @@ always @(*) begin
             end
         end
         S_GET_B: begin
-            if (bvalid_in) begin
+            if (bvalid_in & bready_out) begin
                 next_state = S_WAIT_WBU;
             end
         end
