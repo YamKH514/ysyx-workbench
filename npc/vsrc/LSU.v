@@ -130,32 +130,32 @@ always @(posedge clk) begin
                     end
                     rready_out           <= 1'b0;
                     lsu_to_wbu_valid_out <= 1'b1;
-                    bs_out <= 1'b0;
+                    bs_out               <= 1'b0;
                 end
             end
             S_W_SEND: begin
                 if (awvalid_out & awready_in) begin
                     aw_handshake_r <= 1'b1;
-                    awaddr_out  <= 32'b0;
-                    awvalid_out <= 1'b0;
+                    awaddr_out     <= 32'b0;
+                    awvalid_out    <= 1'b0;
                 end
                 if (wvalid_out & wready_in) begin
                     w_handshake_r <= 1'b1;
-                    wdata_out   <= 32'b0;
-                    wstrb_out   <= 4'b0;
-                    wvalid_out  <= 1'b0;
+                    wdata_out     <= 32'b0;
+                    wstrb_out     <= 4'b0;
+                    wvalid_out    <= 1'b0;
                 end
                 if (aw_handshake_r & aw_handshake_r) begin
-                    bready_out <= 1'b1;
+                    bready_out    <= 1'b1;
                 end
             end
             S_GET_B: begin
                 if (bvalid_in & bready_out) begin
                     if (bresp_in != 2'b00) begin
                     end
-                    bready_out <= 1'b0;
+                    bready_out           <= 1'b0;
                     lsu_to_wbu_valid_out <= 1'b1;
-                    bs_out <= 1'b0;
+                    bs_out               <= 1'b0;
                 end
             end
             S_WAIT_WBU: begin
