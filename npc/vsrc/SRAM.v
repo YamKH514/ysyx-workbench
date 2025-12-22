@@ -3,28 +3,40 @@ module SRAM(
     input               rstn,
 
     // AR
+    input       [3:0]   arid_in,
     input       [31:0]  araddr_in,
+    input       [3:0]   arlen_in,
+    input       [2:0]   arsize_in,
+    input       [1:0]   arburst_in,
     input               arvalid_in,
     output  reg         arready_out,
 
     // R
+    output  reg [3:0]   rid_out,
     output  reg [31:0]  rdata_out,
     output  reg [1:0]   rresp_out,
+    output  reg         rlast_out,
     output  reg         rvalid_out,
     input               rready_in,
 
     // AW
+    input       [3:0]   awid_in,
     input       [31:0]  awaddr_in,
+    input       [3:0]   awlen_in,
+    input       [2:0]   awsize_in,
+    input       [1:0]   awburst_in,
     input               awvalid_in,
     output  reg         awready_out,
 
     // W
     input       [31:0]  wdata_in,
     input       [3:0]   wstrb_in,
+    input               wlast_in,
     input               wvalid_in,
     output  reg         wready_out,
 
     // B
+    output  reg [3:0]   bid_out,
     output  reg [1:0]   bresp_out,
     output  reg         bvalid_out,
     input               bready_in
