@@ -332,8 +332,7 @@ GPR u_GPR(
     .gpr_w_addr_in          (gpr_w_addr         ),
     .gpr_w_data_in          (gpr_w_data         ),
     .gpr_r_data1_out        (gpr_r_data1        ),
-    .gpr_r_data2_out        (gpr_r_data2        ),
-    .gpr_r_a5_out           (gpr_r_a5           )
+    .gpr_r_data2_out        (gpr_r_data2        )
 );
 
 EXU u_EXU(
