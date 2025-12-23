@@ -262,11 +262,11 @@ always @(posedge clk) begin
         case (w_state)
             S_IDLE: begin
                 if (m_awvalid) begin
-                    arid_r      <= m_awid;
-                    araddr_r    <= m_awaddr;
-                    arlen_r     <= m_awlen;
-                    arsize_r    <= m_awsize;
-                    arburst_r   <= m_awburst;
+                    awid_r      <= m_awid;
+                    awaddr_r    <= m_awaddr;
+                    awlen_r     <= m_awlen;
+                    awsize_r    <= m_awsize;
+                    awburst_r   <= m_awburst;
                     m_awready   <= 1'b0;
                     cur_slave_w <=  (m_awaddr == `SERIAL_PORT) ? 2'd0 :
                                     ((m_awaddr == `RTC_ADDR) | (m_awaddr == `RTC_ADDR + 32'h4)) ? 2'd2 :
