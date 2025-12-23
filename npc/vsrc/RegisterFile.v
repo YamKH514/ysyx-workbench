@@ -6,8 +6,7 @@ module RegisterFile #(ADDR_WIDTH = 1, DATA_WIDTH = 1) (
     input [DATA_WIDTH-1:0] WriteData,
     input RegWrite,
     output [DATA_WIDTH-1:0] ReadData1,
-    output [DATA_WIDTH-1:0] ReadData2,
-    output [DATA_WIDTH-1:0] ReadData_a5
+    output [DATA_WIDTH-1:0] ReadData2
 );
 reg [DATA_WIDTH-1:0] rf [2**ADDR_WIDTH-1:0];
 
@@ -18,7 +17,6 @@ end
 
 assign ReadData1 = (ReadAddr1 == 0) ? 0 : rf[ReadAddr1];
 assign ReadData2 = (ReadAddr2 == 0) ? 0 : rf[ReadAddr2];
-assign ReadData_a5 = rf[15];
 
 export "DPI-C" function get_gpr;
 function void get_gpr(output int out_gpr[16]);

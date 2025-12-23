@@ -48,8 +48,8 @@ word_t *csr(word_t imm)
 #define immB() do { *imm = (SEXT(((BITS(i, 31, 31) << 12) | (BITS(i, 7, 7) << 11) | (BITS(i, 30, 25) << 5) | (BITS(i, 11, 8) << 1)), 13)); } while(0)
 #define CSR(imm) *csr(imm)
 #define ECALL() { \
-                      s->dnpc = isa_raise_intr(11, s->pc); \
-                    }
+                  s->dnpc = isa_raise_intr(11, s->pc); \
+                }
 #define MRET() { \
                   s->dnpc = CSR(MEPC); \
                   CSR(MSTATUS) &= ~MSTATUS_MIE; \

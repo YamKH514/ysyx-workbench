@@ -22,13 +22,11 @@ wire    [4:0]   gpr_w_addr;
 wire    [31:0]  gpr_w_data;
 wire    [31:0]  gpr_r_data1;
 wire    [31:0]  gpr_r_data2;
-wire    [31:0]  gpr_r_a5;
 
 wire            csr_we;
 wire    [11:0]  csr_rw_addr;
 wire    [31:0]  csr_w_data;
 wire    [31:0]  csr_w_mepc;
-wire    [31:0]  csr_w_mcause;
 wire    [31:0]  csr_r_data;
 wire    [31:0]  csr_r_mtvec;
 wire    [31:0]  csr_r_mepc;
@@ -419,7 +417,6 @@ WBU u_WBU(
 );
 
 assign csr_w_data   = gpr_r_data1;
-assign csr_w_mcause = gpr_r_a5;
 assign csr_w_mepc   = pc;
 assign csr_rw_addr  = ifu_inst[31:20];
 
@@ -432,7 +429,6 @@ CSR u_CSR(
     .csr_we_in              (csr_we             ),
     .csr_rw_addr_in         (csr_rw_addr        ),
     .csr_w_data_in          (csr_w_data         ),
-    .csr_w_mcause_in 	    (csr_w_mcause       ),
     .csr_w_mepc_in   	    (csr_w_mepc         ),
     .csr_r_data_out         (csr_r_data         ),
     .csr_r_mtvec_out   	    (csr_r_mtvec        ),

@@ -1,4 +1,5 @@
 module SRAM(
+    /* verilator lint_off UNUSEDSIGNAL */
     input               clk,
     input               rstn,
 
@@ -46,10 +47,19 @@ import "DPI-C" function int paddr_read(input int raddr);
 import "DPI-C" function void paddr_write(
     input int waddr, input int wdata, input byte wmask);
 
+reg [3:0]   arid_r;
 reg [31:0]  araddr_r;
+reg [3:0]   arlen_r;
+reg [2:0]   arsize_r;
+reg [1:0]   arburst_r;
+reg [3:0]   awid_r;
 reg [31:0]  awaddr_r;
+reg [3:0]   awlen_r;
+reg [2:0]   awsize_r;
+reg [1:0]   awburst_r;
 reg [31:0]  wdata_r;
 reg [3:0]   wstrb_r;
+reg [3:0]   bid_r;
 
 parameter S_IDLE   = 3'd0;
 parameter S_GET_AR = 3'd1;
@@ -72,23 +82,38 @@ always @(posedge clk) begin
 
     // READ
     if (!rstn) begin
+        arid_r      <= 4'b0;
+        arlen_r     <= 4'b0;
+        arsize_r    <= 3'b0;
+        arburst_r   <= 2'b0;
         arready_out <= 1'b1;
-        rvalid_out  <= 1'b0;
+        rid_out     <= 4'b0;
+        rlast_out   <= 1'b0;
         rresp_out   <= 2'b00;
+        rvalid_out  <= 1'b0;
     end else begin
         case (r_state)
             S_IDLE: begin
                 if (arvalid_in & arready_out) begin
+                    arid_r      <= arid_in;
+                    arlen_r     <= arlen_in;
+                    arsize_r    <= arsize_in;
+                    arburst_r   <= arburst_in;
                     arready_out <= 1'b0;
                 end
             end
             S_GET_AR: begin
-                rvalid_out <= 1'b1;
+                rid_out    <= arid_r;
+                rlast_out  <= 1'b1;
                 rresp_out  <= 2'b00;
+                rvalid_out <= 1'b1;
             end
             S_SEND_R: begin
                 if (rvalid_out & rready_in) begin
                     arready_out <= 1'b1;
+                    rid_out     <= 4'b0;
+                    rlast_out   <= 1'b0;
+                    rresp_out   <= 2'b00;
                     rvalid_out  <= 1'b0;
                 end
             end
@@ -101,15 +126,24 @@ always @(posedge clk) begin
 
     // WRITE
     if (!rstn) begin
+        awid_r      <= 4'b0;
+        awlen_r     <= 4'b0;
+        awsize_r    <= 3'b0;
+        awburst_r   <= 2'b0;
         awready_out <= 1'b1;
         wready_out  <= 1'b1;
+        bid_r       <= 4'b0;
         bresp_out   <= 2'b00;
         bvalid_out  <= 1'b0;
     end else begin
         case (w_state)
             S_IDLE: begin
                 if (awvalid_in & awready_out) begin
+                    awid_r      <= awid_in;
                     awaddr_r    <= awaddr_in;
+                    awlen_r     <= awlen_in;
+                    awsize_r    <= awsize_in;
+                    awburst_r   <= awburst_in;
                     awready_out <= 1'b0;
                 end
             end
@@ -121,6 +155,7 @@ always @(posedge clk) begin
                 end
             end
             S_GET_WD: begin
+                bid_out    <= 4'b0;
                 bresp_out  <= 2'b00;
                 bvalid_out <= 1'b1;
             end

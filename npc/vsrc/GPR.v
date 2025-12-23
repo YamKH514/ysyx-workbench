@@ -6,8 +6,7 @@ module GPR(
     input       [4:0]   gpr_r_addr1_in,
     input       [4:0]   gpr_r_addr2_in,
     output  reg [31:0]  gpr_r_data1_out,
-    output  reg [31:0]  gpr_r_data2_out,
-    output      [31:0]  gpr_r_a5_out
+    output  reg [31:0]  gpr_r_data2_out
 );
 
 RegisterFile #(5, 32) u_RegisterFile
@@ -19,8 +18,7 @@ RegisterFile #(5, 32) u_RegisterFile
     .WriteData   	(gpr_w_data_in  ),
     .RegWrite    	(gpr_we_in      ),
     .ReadData1   	(gpr_r_data1_out),
-    .ReadData2   	(gpr_r_data2_out),
-    .ReadData_a5    (gpr_r_a5_out   )
+    .ReadData2   	(gpr_r_data2_out)
 );
 
 endmodule

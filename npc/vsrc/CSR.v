@@ -7,7 +7,6 @@ module CSR(
     input           csr_we_in,
     input   [11:0]  csr_rw_addr_in,
     input   [31:0]  csr_w_data_in,
-    input   [31:0]  csr_w_mcause_in,
     input   [31:0]  csr_w_mepc_in,
     output  [31:0]  csr_r_data_out,
     output  [31:0]  csr_r_mtvec_out,
@@ -47,7 +46,7 @@ always @(posedge clk) begin
             mstatus_r[12:11]  <= 2'b11;
             mstatus_r[7]      <= mstatus_r[3];
             mstatus_r[3]      <= 1'b0;
-            mcause_r          <= csr_w_mcause_in;
+            mcause_r          <= 32'd11;
             mepc_r            <= csr_w_mepc_in;
         end
         else if(is_mret) begin
