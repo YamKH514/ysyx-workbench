@@ -56,7 +56,7 @@ static void exec_once(Vtop *top, VerilatedContext *contextp, VerilatedVcdC *tfp)
 
     if (top->rootp->top__DOT__pc_to_ifu_ready)
     {
-        npc_state.halt_pc = top->pc;
+        npc_state.halt_pc = top->rootp->top__DOT__pc;
         npc_state.halt_ret = top->rootp->top__DOT__u_GPR__DOT__u_RegisterFile__DOT__rf[10];
     }
 
@@ -64,8 +64,8 @@ static void exec_once(Vtop *top, VerilatedContext *contextp, VerilatedVcdC *tfp)
 
     if (top->rootp->top__DOT__pc_to_ifu_ready)
     {
-        cpu.pc = top->pc;
-        cpu.npc = top->npc;
+        cpu.pc = top->rootp->top__DOT__pc;
+        cpu.npc = top->rootp->top__DOT__npc;
         svSetScope(svGetScopeFromName("TOP.top.u_GPR.u_RegisterFile"));
         get_gpr(cpu.gpr);
         svSetScope(svGetScopeFromName("TOP.top.u_CSR"));

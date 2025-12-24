@@ -1,9 +1,10 @@
 module top(
     input           clock,
-    input           reset,
-    output  [31:0]  pc,
-    output  [31:0]  npc
+    input           reset
 );
+
+wire    [31:0]  pc;
+wire    [31:0]  npc;
 
 wire    [2:0]   inst_type;
 wire    [31:0]  trap_npc;
