@@ -1,6 +1,6 @@
 module CSR(
     input           clk,
-    input           rstn,
+    input           rst,
     input           is_ecall,
     input           is_mret,
     input   [2:0]   csr_func3_in,
@@ -35,7 +35,7 @@ assign csr_r_mtvec_out = mtvec_r;
 assign csr_r_mepc_out  = mepc_r;
 
 always @(posedge clk) begin
-    if(!rstn) begin
+    if(rst) begin
         mepc_r    <= 32'b0;
         mcause_r  <= 32'b0;
         mtvec_r   <= 32'b0;

@@ -1,6 +1,6 @@
 module Arbiter(
     input               clk,
-    input               rstn,
+    input               rst,
 
     input               bs_in,
 
@@ -17,10 +17,10 @@ localparam S_BUSY = 1'd1;
 reg state, next_state;
 
 always @(posedge clk) begin
-    if (!rstn) state <= S_IDLE;
+    if (rst) state <= S_IDLE;
     else state <= next_state;
 
-    if (!rstn) begin
+    if (rst) begin
         bg1_out <= 1'b0;
         bg2_out <= 1'b0;
     end else begin

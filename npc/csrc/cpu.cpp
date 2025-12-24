@@ -3,19 +3,29 @@
 
 int running_cycle = 0;
 
-void cpu_single_cycle(Vtop* top)
+void cpu_single_cycle(Vtop* top, VerilatedContext *contextp, VerilatedVcdC *tfp)
 {
-    top->clk = 0;
+    contextp->timeInc(1);
+    top->clock = 0;
     top->eval();
-    top->clk = 1;
+#ifdef CONFIG_VCD_TRACE
+    tfp->dump(contextp->time());
+#endif
+    contextp->timeInc(1);
+    top->clock = 1;
     top->eval();
+#ifdef CONFIG_VCD_TRACE
+    tfp->dump(contextp->time());
+#endif
 }
 
-void cpu_reset(int n, Vtop* top)
+void cpu_reset(int n, Vtop* top, VerilatedContext *contextp, VerilatedVcdC *tfp)
 {
-    top->rstn = 0;
+    top->reset = 1;
     while (n-- > 0)
     {
-        cpu_single_cycle(top);
+        cpu_single_cycle(top, contextp, tfp);
     }
+    top->reset = 0;
+    npc_state.inited = true;
 }

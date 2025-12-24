@@ -1,7 +1,7 @@
 module UART(
     /* verilator lint_off UNUSEDSIGNAL */
     input               clk,
-    input               rstn,
+    input               rst,
 
     // AR
     input       [3:0]   arid_in,
@@ -70,7 +70,7 @@ reg [2:0]   r_state, r_next_state;
 reg [2:0]   w_state, w_next_state;
 
 always @(posedge clk) begin
-    if (!rstn) begin
+    if (rst) begin
         r_state <= S_IDLE;
         w_state <= S_IDLE;
     end else begin
@@ -79,7 +79,7 @@ always @(posedge clk) begin
     end
 
     // READ
-    if (!rstn) begin
+    if (rst) begin
         arid_r      <= 4'b0;
         arlen_r     <= 4'b0;
         arsize_r    <= 3'b0;
@@ -102,6 +102,7 @@ always @(posedge clk) begin
             end
             S_GET_AR: begin
                 rid_out    <= arid_r;
+                rdata_out  <= 32'b0;
                 rlast_out  <= 1'b1;
                 rresp_out  <= 2'b00;
                 rvalid_out <= 1'b1;
@@ -123,7 +124,7 @@ always @(posedge clk) begin
     end
 
     // WRITE
-    if (!rstn) begin
+    if (rst) begin
         awid_r      <= 4'b0;
         awlen_r     <= 4'b0;
         awsize_r    <= 3'b0;

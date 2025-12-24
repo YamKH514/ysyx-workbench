@@ -1,7 +1,7 @@
 module IFU(
     /* verilator lint_off UNUSEDSIGNAL */
     input               clk,
-    input               rstn,
+    input               rst,
 
     input       [31:0]  ifu_current_pc_in,
     output  reg [31:0]  ifu_inst_out,
@@ -78,10 +78,10 @@ reg [2:0]   state, next_state;
 reg [3:0]   rid_r;
 
 always @(posedge clk) begin
-    if (!rstn) state <= S_IDLE;
+    if (rst) state <= S_IDLE;
     else state <= next_state;
 
-    if (!rstn) begin
+    if (rst) begin
         arid_out             <= 4'b0;
         araddr_out           <= 32'b0;
         arlen_out            <= 4'b0;

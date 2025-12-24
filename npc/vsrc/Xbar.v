@@ -4,7 +4,7 @@
 
 module Xbar(
     input               clk,
-    input               rstn,
+    input               rst,
 
     input       [3:0]   m_arid,
     input       [31:0]  m_araddr,
@@ -150,7 +150,7 @@ reg [2:0]   awsize_r;
 reg [1:0]   awburst_r;
 
 always @(posedge clk) begin
-    if (!rstn) begin
+    if (rst) begin
         r_state <= S_IDLE;
         w_state <= S_IDLE;
     end else begin
@@ -159,7 +159,7 @@ always @(posedge clk) begin
     end
 
     // READ
-    if (!rstn) begin
+    if (rst) begin
         cur_slave_r <= 2'b0;
         arid_r      <= 4'b0;
         araddr_r    <= 32'b0;
@@ -248,7 +248,7 @@ always @(posedge clk) begin
     end
 
     //WRITE
-    if (!rstn) begin
+    if (rst) begin
         cur_slave_w <= 2'b0;
         awid_r      <= 4'b0;
         awaddr_r    <= 32'b0;

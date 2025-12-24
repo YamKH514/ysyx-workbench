@@ -52,17 +52,7 @@ static void exec_once(Vtop *top, VerilatedContext *contextp, VerilatedVcdC *tfp)
 {
     char logbuf[128];
 
-    if (!npc_state.inited)
-    {
-        contextp->timeInc(1);
-        top->clk = 1;
-        top->eval();
-#ifdef CONFIG_VCD_TRACE
-        tfp->dump(contextp->time());
-#endif
-        top->rstn = 1;
-        npc_state.inited = true;
-    }
+    if (!npc_state.inited) cpu_reset(10, top, contextp, tfp);
 
     if (top->rootp->top__DOT__pc_to_ifu_ready)
     {
@@ -70,11 +60,7 @@ static void exec_once(Vtop *top, VerilatedContext *contextp, VerilatedVcdC *tfp)
         npc_state.halt_ret = top->rootp->top__DOT__u_GPR__DOT__u_RegisterFile__DOT__rf[10];
     }
 
-    contextp->timeInc(1);
-    cpu_single_cycle(top);
-#ifdef CONFIG_VCD_TRACE
-    tfp->dump(contextp->time());
-#endif
+    cpu_single_cycle(top, contextp, tfp);
 
     if (top->rootp->top__DOT__pc_to_ifu_ready)
     {

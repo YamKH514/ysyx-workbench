@@ -1,6 +1,6 @@
 module top(
-    input           clk,
-    input           rstn,
+    input           clock,
+    input           reset,
     output  [31:0]  pc,
     output  [31:0]  npc
 );
@@ -245,8 +245,8 @@ wire            clint_bready;
 assign trap_npc = is_ecall ? csr_r_mtvec : csr_r_mepc;
 
 PCCnt u_PCCnt(
-    .clk                 	(clk                ),
-    .rstn                 	(rstn               ),
+    .clk                 	(clock              ),
+    .rst                  	(reset              ),
     .pc_cnt_cmp_res_in     	(exu_res[0]         ),
     .pc_cnt_rd1_in         	(gpr_r_data1        ),
     .pc_cnt_imm_in         	(imm_ext            ),
@@ -259,8 +259,8 @@ PCCnt u_PCCnt(
 );
 
 IFU u_IFU(
-    .clk                    (clk                ),
-    .rstn                   (rstn               ),
+    .clk                    (clock              ),
+    .rst                    (reset              ),
     .ifu_current_pc_in  	(pc                 ),
     .ifu_inst_out       	(ifu_inst           ),
     .pc_to_ifu_ready_in     (pc_to_ifu_ready    ),
@@ -301,8 +301,8 @@ IFU u_IFU(
 );
 
 IDU u_IDU(
-    .clk                	(clk                ),
-    .rstn                   (rstn               ),
+    .clk                	(clock              ),
+    .rst                    (reset              ),
     .idu_inst_in           	(ifu_inst           ),
     .idu_inst_type_out     	(inst_type          ),
     .csr_we_out        	    (csr_we             ),
@@ -325,7 +325,7 @@ ImmExt u_ImmExt(
 );
 
 GPR u_GPR(
-    .clk                    (clk                ),
+    .clk                    (clock              ),
     .gpr_we_in    	        (gpr_we             ),
     .gpr_r_addr1_in         (ifu_inst[19:15]    ),
     .gpr_r_addr2_in         (ifu_inst[24:20]    ),
@@ -336,8 +336,8 @@ GPR u_GPR(
 );
 
 EXU u_EXU(
-    .clk                    (clk                ),
-    .rstn                   (rstn               ),
+    .clk                    (clock              ),
+    .rst                    (reset              ),
     .exu_pc_in           	(pc                 ),
     .exu_alu_fun_in      	(exu_alu_func       ),
     .exu_rd1_in          	(gpr_r_data1        ),
@@ -353,8 +353,8 @@ EXU u_EXU(
 );
 
 LSU u_LSU(
-    .clk                  	(clk                ),
-    .rstn                  	(rstn               ),
+    .clk                  	(clock              ),
+    .rst                  	(reset              ),
     .idu_to_lsu_data_in   	(idu_to_lsu_data    ),
     .lsu_r_addr_in        	(exu_res            ),
     .lsu_r_data_out       	(lsu_r_data         ),
@@ -399,8 +399,8 @@ LSU u_LSU(
 );
 
 WBU u_WBU(
-    .clk                    (clk                ),
-    .rstn                   (rstn               ),
+    .clk                    (clock              ),
+    .rst                    (reset              ),
     .idu_to_wbu_data_in     (idu_to_wbu_data    ),
     .exu_res_in             (exu_res            ),
     .lsu_r_data_in          (lsu_r_data         ),
@@ -420,8 +420,8 @@ assign csr_w_mepc   = pc;
 assign csr_rw_addr  = ifu_inst[31:20];
 
 CSR u_CSR(
-    .clk                    (clk                ),
-    .rstn                   (rstn               ),
+    .clk                    (clock              ),
+    .rst                    (reset              ),
     .is_ecall               (is_ecall           ),
     .is_mret                (is_mret            ),
     .csr_func3_in           (ifu_inst[14:12]    ),
@@ -437,8 +437,8 @@ CSR u_CSR(
 assign bs = bs1 | bs2;
 
 Arbiter u_Arbiter(
-    .clk     	            (clk                ),
-    .rstn    	            (rstn               ),
+    .clk     	            (clock              ),
+    .rst    	            (reset              ),
     .bs_in   	            (bs                 ),
     .br1_in  	            (br1                ),
     .bg1_out 	            (bg1                ),
@@ -488,8 +488,8 @@ assign lsu_bvalid = io_master_bvalid;
 assign io_master_bready = inst_bready | lsu_bready;
 
 Xbar u_Xbar(
-    .clk        	        (clk                ),
-    .rstn       	        (rstn               ),
+    .clk        	        (clock              ),
+    .rst       	            (reset              ),
     .m_arid                 (io_master_arid     ),
     .m_araddr           	(io_master_araddr   ),
     .m_arlen                (io_master_arlen    ),
@@ -609,8 +609,8 @@ Xbar u_Xbar(
 );
 
 SRAM u_SRAM(
-    .clk         	        (clk                ),
-    .rstn        	        (rstn               ),
+    .clk         	        (clock              ),
+    .rst        	        (reset              ),
     .arid_in     	        (sram_arid          ),
     .araddr_in   	        (sram_araddr        ),
     .arlen_in    	        (sram_arlen         ),
@@ -643,8 +643,8 @@ SRAM u_SRAM(
 );
 
 UART u_UART(
-    .clk         	        (clk                ),
-    .rstn        	        (rstn               ),
+    .clk         	        (clock              ),
+    .rst        	        (reset              ),
     .arid_in     	        (uart_arid          ),
     .araddr_in   	        (uart_araddr        ),
     .arlen_in    	        (uart_arlen         ),
@@ -677,8 +677,8 @@ UART u_UART(
 );
 
 CLINT u_CLINT(
-    .clk         	        (clk                ),
-    .rstn        	        (rstn               ),
+    .clk         	        (clock              ),
+    .rst        	        (reset              ),
     .arid_in     	        (clint_arid         ),
     .araddr_in   	        (clint_araddr       ),
     .arlen_in    	        (clint_arlen        ),

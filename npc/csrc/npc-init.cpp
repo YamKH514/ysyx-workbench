@@ -91,7 +91,7 @@ void init_npc(int argc, char *argv[], Vtop* top, VerilatedContext* contextp, Ver
 
     long img_size = load_img();
 
-    cpu_reset(10, top);
+    cpu_reset(10, top, contextp, tfp);
 
     init_difftest(diff_so_file, img_size, difftest_port);
 

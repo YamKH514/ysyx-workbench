@@ -3,7 +3,7 @@
 module LSU(
     /* verilator lint_off UNUSEDSIGNAL */
     input               clk,
-    input               rstn,
+    input               rst,
 
     // idu_to_lsu_data lsu_r_func[8:6], lsu_re[5], lsu_w_mask[4:1], lsu_we[0]
     input       [8:0]   idu_to_lsu_data_in,
@@ -84,10 +84,10 @@ reg [31:0]  rdata_r;
 reg [3:0]   bid_r;
 
 always @(posedge clk) begin
-    if (!rstn) state <= S_IDLE;
+    if (rst) state <= S_IDLE;
     else state <= next_state;
 
-    if (!rstn) begin
+    if (rst) begin
         aw_handshake_r       <= 1'b0;
         lsu_to_exu_ready_out <= 1'b0;
         lsu_to_wbu_valid_out <= 1'b0;
