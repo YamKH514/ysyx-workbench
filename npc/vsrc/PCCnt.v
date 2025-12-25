@@ -21,7 +21,7 @@ always @(posedge clk) begin
     pc_to_ifu_ready_out <= 1'b0;
     if (rst) begin
         pc_to_ifu_ready_out <= 1'b1;
-        pc_cnt_pc_out <= 32'h80000000;
+        pc_cnt_pc_out <= 32'h20000000;
     end else if (idu_to_pc_valid_in) begin
         pc_to_ifu_ready_out <= 1'b1;
         pc_cnt_pc_out <= pc_cnt_npc_out;
