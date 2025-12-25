@@ -20,7 +20,8 @@ int main(int argc, char *argv[])
     contextp->traceEverOn(true);
     contextp->commandArgs(argc, argv);
 
-    Vtop *top = new Vtop{contextp, "TOP"};
+    VysyxSoCFull *top = new VysyxSoCFull{contextp, "TOP"};
+    // Vtop *top = new Vtop{contextp, "TOP"};
     VerilatedVcdC *tfp = new VerilatedVcdC;
     top->trace(tfp, 5);
     tfp->open("logs/sim_wave.vcd");

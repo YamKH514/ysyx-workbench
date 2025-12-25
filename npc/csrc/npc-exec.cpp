@@ -48,7 +48,7 @@ static void trace_and_difftest(Vtop *top, char *logbuf)
 #endif
 }
 
-static void exec_once(Vtop *top, VerilatedContext *contextp, VerilatedVcdC *tfp)
+static void exec_once(VysyxSoCFull *top, VerilatedContext *contextp, VerilatedVcdC *tfp)
 {
     char logbuf[128];
 
@@ -133,7 +133,7 @@ static void exec_once(Vtop *top, VerilatedContext *contextp, VerilatedVcdC *tfp)
     }
 }
 
-static void execute(Vtop *top, VerilatedContext *contextp, VerilatedVcdC *tfp, uint64_t n)
+static void execute(VysyxSoCFull *top, VerilatedContext *contextp, VerilatedVcdC *tfp, uint64_t n)
 {
     for (; n > 0; n--)
     {
@@ -149,7 +149,7 @@ void assert_fail_msg()
 {
 }
 
-void npc_exec(Vtop *top, VerilatedContext *contextp, VerilatedVcdC *tfp, uint64_t n)
+void npc_exec(VysyxSoCFull *top, VerilatedContext *contextp, VerilatedVcdC *tfp, uint64_t n)
 {
     g_print_step = (n < MAX_INST_TO_PRINT);
     if ((contextp->gotFinish()) || (npc_state.state == NPC_ABORT))

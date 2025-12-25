@@ -1,5 +1,5 @@
 #include "reg.h"
-#include "Vtop.h"
+#include "VysyxSoCFull.h"
 #include "Vtop__Dpi.h"
 #include "cpu.h"
 
