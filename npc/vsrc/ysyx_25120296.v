@@ -1,7 +1,80 @@
-module top(
+module ysyx_25120296(
     input           clock,
-    input           reset
+    input           reset,
+    input           io_interrupt,
+
+    output  [3:0]   io_master_arid,
+    output  [31:0]  io_master_araddr,
+    output  [3:0]   io_master_arlen,
+    output  [2:0]   io_master_arsize,
+    output  [1:0]   io_master_arburst,
+    output          io_master_arvalid,
+    input           io_master_arready,
+    input   [3:0]   io_master_rid,
+    input   [31:0]  io_master_rdata,
+    input   [1:0]   io_master_rresp,
+    input           io_master_rlast,
+    input           io_master_rvalid,
+    output          io_master_rready,
+    output  [3:0]   io_master_awid,
+    output  [31:0]  io_master_awaddr,
+    output  [3:0]   io_master_awlen,
+    output  [2:0]   io_master_awsize,
+    output  [1:0]   io_master_awburst,
+    output          io_master_awvalid,
+    input           io_master_awready,
+    output  [31:0]  io_master_wdata,
+    output  [3:0]   io_master_wstrb,
+    output          io_master_wlast,
+    output          io_master_wvalid,
+    input           io_master_wready,
+    input   [3:0]   io_master_bid,
+    input   [1:0]   io_master_bresp,
+    input           io_master_bvalid,
+    output          io_master_bready,
+
+    input   [3:0]   io_slave_arid,
+    input   [31:0]  io_slave_araddr,
+    input   [3:0]   io_slave_arlen,
+    input   [2:0]   io_slave_arsize,
+    input   [1:0]   io_slave_arburst,
+    input           io_slave_arvalid,
+    output          io_slave_arready,
+    output  [3:0]   io_slave_rid,
+    output  [31:0]  io_slave_rdata,
+    output  [1:0]   io_slave_rresp,
+    output          io_slave_rlast,
+    output          io_slave_rvalid,
+    input           io_slave_rready,
+    input   [3:0]   io_slave_awid,
+    input   [31:0]  io_slave_awaddr,
+    input   [3:0]   io_slave_awlen,
+    input   [2:0]   io_slave_awsize,
+    input   [1:0]   io_slave_awburst,
+    input           io_slave_awvalid,
+    output          io_slave_awready,
+    input   [31:0]  io_slave_wdata,
+    input   [3:0]   io_slave_wstrb,
+    input           io_slave_wlast,
+    input           io_slave_wvalid,
+    output          io_slave_wready,
+    output  [3:0]   io_slave_bid,
+    output  [1:0]   io_slave_bresp,
+    output          io_slave_bvalid,
+    input           io_slave_bready
 );
+
+assign io_slave_arready = 0;
+assign io_slave_rid = 0;
+assign io_slave_rdata = 0;
+assign io_slave_rresp = 0;
+assign io_slave_rlast = 0;
+assign io_slave_rvalid = 0;
+assign io_slave_awready = 0;
+assign io_slave_wready = 0;
+assign io_slave_bid = 0;
+assign io_slave_bresp = 0;
+assign io_slave_bvalid = 0;
 
 wire    [31:0]  pc;
 wire    [31:0]  npc;
@@ -123,95 +196,35 @@ wire    [1:0]   lsu_bresp;
 wire            lsu_bvalid;
 wire            lsu_bready;
 
-wire    [3:0]   io_master_arid;
-wire    [31:0]  io_master_araddr;
-wire    [3:0]   io_master_arlen;
-wire    [2:0]   io_master_arsize;
-wire    [1:0]   io_master_arburst;
-wire            io_master_arvalid;
-wire            io_master_arready;
-wire    [3:0]   io_master_rid;
-wire    [31:0]  io_master_rdata;
-wire    [1:0]   io_master_rresp;
-wire            io_master_rlast;
-wire            io_master_rvalid;
-wire            io_master_rready;
-wire    [3:0]   io_master_awid;
-wire    [31:0]  io_master_awaddr;
-wire    [3:0]   io_master_awlen;
-wire    [2:0]   io_master_awsize;
-wire    [1:0]   io_master_awburst;
-wire            io_master_awvalid;
-wire            io_master_awready;
-wire    [31:0]  io_master_wdata;
-wire    [3:0]   io_master_wstrb;
-wire            io_master_wlast;
-wire            io_master_wvalid;
-wire            io_master_wready;
-wire    [3:0]   io_master_bid;
-wire    [1:0]   io_master_bresp;
-wire            io_master_bvalid;
-wire            io_master_bready;
-
-wire    [3:0]   sram_arid;
-wire    [31:0]  sram_araddr;
-wire    [3:0]   sram_arlen;
-wire    [2:0]   sram_arsize;
-wire    [1:0]   sram_arburst;
-wire            sram_arvalid;
-wire            sram_arready;
-wire    [3:0]   sram_rid;
-wire    [31:0]  sram_rdata;
-wire    [1:0]   sram_rresp;
-wire            sram_rlast;
-wire            sram_rvalid;
-wire            sram_rready;
-wire    [3:0]   sram_awid;
-wire    [31:0]  sram_awaddr;
-wire    [3:0]   sram_awlen;
-wire    [2:0]   sram_awsize;
-wire    [1:0]   sram_awburst;
-wire            sram_awvalid;
-wire            sram_awready;
-wire    [31:0]  sram_wdata;
-wire    [3:0]   sram_wstrb;
-wire            sram_wlast;
-wire            sram_wvalid;
-wire            sram_wready;
-wire    [3:0]   sram_bid;
-wire    [1:0]   sram_bresp;
-wire            sram_bvalid;
-wire            sram_bready;
-
-wire    [3:0]   uart_arid;
-wire    [31:0]  uart_araddr;
-wire    [3:0]   uart_arlen;
-wire    [2:0]   uart_arsize;
-wire    [1:0]   uart_arburst;
-wire            uart_arvalid;
-wire            uart_arready;
-wire    [3:0]   uart_rid;
-wire    [31:0]  uart_rdata;
-wire    [1:0]   uart_rresp;
-wire            uart_rlast;
-wire            uart_rvalid;
-wire            uart_rready;
-wire    [3:0]   uart_awid;
-wire    [31:0]  uart_awaddr;
-wire    [3:0]   uart_awlen;
-wire    [2:0]   uart_awsize;
-wire    [1:0]   uart_awburst;
-wire            uart_awvalid;
-wire            uart_awready;
-wire    [31:0]  uart_wdata;
-wire    [3:0]   uart_wstrb;
-wire            uart_wlast;
-wire            uart_wvalid;
-wire            uart_wready;
-wire    [3:0]   uart_bid;
-wire    [1:0]   uart_bresp;
-wire            uart_bvalid;
-wire            uart_bready;
+wire    [3:0]   xbar_arid;
+wire    [31:0]  xbar_araddr;
+wire    [3:0]   xbar_arlen;
+wire    [2:0]   xbar_arsize;
+wire    [1:0]   xbar_arburst;
+wire            xbar_arvalid;
+wire            xbar_arready;
+wire    [3:0]   xbar_rid;
+wire    [31:0]  xbar_rdata;
+wire    [1:0]   xbar_rresp;
+wire            xbar_rlast;
+wire            xbar_rvalid;
+wire            xbar_rready;
+wire    [3:0]   xbar_awid;
+wire    [31:0]  xbar_awaddr;
+wire    [3:0]   xbar_awlen;
+wire    [2:0]   xbar_awsize;
+wire    [1:0]   xbar_awburst;
+wire            xbar_awvalid;
+wire            xbar_awready;
+wire    [31:0]  xbar_wdata;
+wire    [3:0]   xbar_wstrb;
+wire            xbar_wlast;
+wire            xbar_wvalid;
+wire            xbar_wready;
+wire    [3:0]   xbar_bid;
+wire    [1:0]   xbar_bresp;
+wire            xbar_bvalid;
+wire            xbar_bready;
 
 wire    [3:0]   clint_arid;
 wire    [31:0]  clint_araddr;
@@ -447,235 +460,206 @@ Arbiter u_Arbiter(
     .bg2_out 	            (bg2                )
 );
 
-assign io_master_arid = inst_arid | lsu_arid;
-assign io_master_araddr = inst_araddr | lsu_araddr;
-assign io_master_arlen = inst_arlen | lsu_arlen;
-assign io_master_arsize = inst_arsize | lsu_arsize;
-assign io_master_arburst = inst_arburst | lsu_arburst;
-assign io_master_arvalid = inst_arvalid | lsu_arvalid;
-assign inst_arready = io_master_arready;
-assign lsu_arready = io_master_arready;
-assign inst_rid = io_master_rid;
-assign lsu_rid = io_master_rid;
-assign inst_rdata = io_master_rdata;
-assign lsu_rdata = io_master_rdata;
-assign inst_rresp = io_master_rresp;
-assign lsu_rresp = io_master_rresp;
-assign inst_rlast = io_master_rlast;
-assign lsu_rlast = io_master_rlast;
-assign inst_rvalid = io_master_rvalid;
-assign lsu_rvalid = io_master_rvalid;
-assign io_master_rready = inst_rready | lsu_rready;
-assign io_master_awid = inst_awid | lsu_awid;
-assign io_master_awaddr = inst_awaddr | lsu_awaddr;
-assign io_master_awlen = inst_awlen | lsu_awlen;
-assign io_master_awsize = inst_awsize | lsu_awsize;
-assign io_master_awburst = inst_awburst | lsu_awburst;
-assign io_master_awvalid = inst_awvalid | lsu_awvalid;
-assign inst_awready = io_master_awready;
-assign lsu_awready = io_master_awready;
-assign io_master_wdata = inst_wdata | lsu_wdata;
-assign io_master_wstrb = inst_wstrb | lsu_wstrb;
-assign io_master_wlast = inst_wlast | lsu_wlast;
-assign io_master_wvalid = inst_wvalid | lsu_wvalid;
-assign inst_wready = io_master_wready;
-assign lsu_wready = io_master_wready;
-assign inst_bid = io_master_bid;
-assign lsu_bid = io_master_bid;
-assign inst_bresp = io_master_bresp;
-assign lsu_bresp = io_master_bresp;
-assign inst_bvalid = io_master_bvalid;
-assign lsu_bvalid = io_master_bvalid;
-assign io_master_bready = inst_bready | lsu_bready;
+assign xbar_arid = inst_arid | lsu_arid;
+assign xbar_araddr = inst_araddr | lsu_araddr;
+assign xbar_arlen = inst_arlen | lsu_arlen;
+assign xbar_arsize = inst_arsize | lsu_arsize;
+assign xbar_arburst = inst_arburst | lsu_arburst;
+assign xbar_arvalid = inst_arvalid | lsu_arvalid;
+assign inst_arready = xbar_arready;
+assign lsu_arready = xbar_arready;
+assign inst_rid = xbar_rid;
+assign lsu_rid = xbar_rid;
+assign inst_rdata = xbar_rdata;
+assign lsu_rdata = xbar_rdata;
+assign inst_rresp = xbar_rresp;
+assign lsu_rresp = xbar_rresp;
+assign inst_rlast = xbar_rlast;
+assign lsu_rlast = xbar_rlast;
+assign inst_rvalid = xbar_rvalid;
+assign lsu_rvalid = xbar_rvalid;
+assign xbar_rready = inst_rready | lsu_rready;
+assign xbar_awid = inst_awid | lsu_awid;
+assign xbar_awaddr = inst_awaddr | lsu_awaddr;
+assign xbar_awlen = inst_awlen | lsu_awlen;
+assign xbar_awsize = inst_awsize | lsu_awsize;
+assign xbar_awburst = inst_awburst | lsu_awburst;
+assign xbar_awvalid = inst_awvalid | lsu_awvalid;
+assign inst_awready = xbar_awready;
+assign lsu_awready = xbar_awready;
+assign xbar_wdata = inst_wdata | lsu_wdata;
+assign xbar_wstrb = inst_wstrb | lsu_wstrb;
+assign xbar_wlast = inst_wlast | lsu_wlast;
+assign xbar_wvalid = inst_wvalid | lsu_wvalid;
+assign inst_wready = xbar_wready;
+assign lsu_wready = xbar_wready;
+assign inst_bid = xbar_bid;
+assign lsu_bid = xbar_bid;
+assign inst_bresp = xbar_bresp;
+assign lsu_bresp = xbar_bresp;
+assign inst_bvalid = xbar_bvalid;
+assign lsu_bvalid = xbar_bvalid;
+assign xbar_bready = inst_bready | lsu_bready;
 
 Xbar u_Xbar(
     .clk        	        (clock              ),
     .rst       	            (reset              ),
-    .m_arid                 (io_master_arid     ),
-    .m_araddr           	(io_master_araddr   ),
-    .m_arlen                (io_master_arlen    ),
-    .m_arsize               (io_master_arsize   ),
-    .m_arburst              (io_master_arburst  ),
-    .m_arvalid          	(io_master_arvalid  ),
-    .m_arready           	(io_master_arready  ),
-    .m_rid                  (io_master_rid      ),
-    .m_rdata             	(io_master_rdata    ),
-    .m_rresp             	(io_master_rresp    ),
-    .m_rlast                (io_master_rlast    ),
-    .m_rvalid            	(io_master_rvalid   ),
-    .m_rready           	(io_master_rready   ),
-    .m_awid                 (io_master_awid     ),
-    .m_awaddr           	(io_master_awaddr   ),
-    .m_awlen                (io_master_awlen    ),
-    .m_awsize               (io_master_awsize   ),
-    .m_awburst              (io_master_awburst  ),
-    .m_awvalid          	(io_master_awvalid  ),
-    .m_awready           	(io_master_awready  ),
-    .m_wdata            	(io_master_wdata    ),
-    .m_wstrb            	(io_master_wstrb    ),
-    .m_wlast                (io_master_wlast    ),
-    .m_wvalid           	(io_master_wvalid   ),
-    .m_wready            	(io_master_wready   ),
-    .m_bid                  (io_master_bid      ),
-    .m_bresp             	(io_master_bresp    ),
-    .m_bvalid            	(io_master_bvalid   ),
-    .m_bready           	(io_master_bready   ),
-    .s0_arid                (uart_arid          ),
-    .s0_araddr           	(uart_araddr        ),
-    .s0_arlen               (uart_arlen         ),
-    .s0_arsize              (uart_arsize        ),
-    .s0_arburst             (uart_arburst       ),
-    .s0_arvalid          	(uart_arvalid       ),
-    .s0_arready           	(uart_arready       ),
-    .s0_rid                 (uart_rid           ),
-    .s0_rdata             	(uart_rdata         ),
-    .s0_rresp             	(uart_rresp         ),
-    .s0_rlast               (uart_rlast         ),
-    .s0_rvalid            	(uart_rvalid        ),
-    .s0_rready           	(uart_rready        ),
-    .s0_awid                (uart_awid          ),
-    .s0_awaddr           	(uart_awaddr        ),
-    .s0_awlen               (uart_awlen         ),
-    .s0_awsize              (uart_awsize        ),
-    .s0_awburst             (uart_awburst       ),
-    .s0_awvalid          	(uart_awvalid       ),
-    .s0_awready           	(uart_awready       ),
-    .s0_wdata            	(uart_wdata         ),
-    .s0_wstrb            	(uart_wstrb         ),
-    .s0_wlast               (uart_wlast         ),
-    .s0_wvalid           	(uart_wvalid        ),
-    .s0_wready            	(uart_wready        ),
-    .s0_bid                 (uart_bid           ),
-    .s0_bresp             	(uart_bresp         ),
-    .s0_bvalid            	(uart_bvalid        ),
-    .s0_bready           	(uart_bready        ),
-    .s1_arid                (sram_arid          ),
-    .s1_araddr           	(sram_araddr        ),
-    .s1_arlen               (sram_arlen         ),
-    .s1_arsize              (sram_arsize        ),
-    .s1_arburst             (sram_arburst       ),
-    .s1_arvalid          	(sram_arvalid       ),
-    .s1_arready           	(sram_arready       ),
-    .s1_rid                 (sram_rid           ),
-    .s1_rdata             	(sram_rdata         ),
-    .s1_rresp             	(sram_rresp         ),
-    .s1_rlast               (sram_rlast         ),
-    .s1_rvalid            	(sram_rvalid        ),
-    .s1_rready           	(sram_rready        ),
-    .s1_awid                (sram_awid          ),
-    .s1_awaddr           	(sram_awaddr        ),
-    .s1_awlen               (sram_awlen         ),
-    .s1_awsize              (sram_awsize        ),
-    .s1_awburst             (sram_awburst       ),
-    .s1_awvalid          	(sram_awvalid       ),
-    .s1_awready           	(sram_awready       ),
-    .s1_wdata            	(sram_wdata         ),
-    .s1_wstrb            	(sram_wstrb         ),
-    .s1_wlast               (sram_wlast         ),
-    .s1_wvalid           	(sram_wvalid        ),
-    .s1_wready            	(sram_wready        ),
-    .s1_bid                 (sram_bid           ),
-    .s1_bresp             	(sram_bresp         ),
-    .s1_bvalid            	(sram_bvalid        ),
-    .s1_bready           	(sram_bready        ),
-    .s2_arid                (clint_arid          ),
-    .s2_araddr           	(clint_araddr        ),
-    .s2_arlen               (clint_arlen         ),
-    .s2_arsize              (clint_arsize        ),
-    .s2_arburst             (clint_arburst       ),
-    .s2_arvalid          	(clint_arvalid       ),
-    .s2_arready           	(clint_arready       ),
-    .s2_rid                 (clint_rid           ),
-    .s2_rdata             	(clint_rdata         ),
-    .s2_rresp             	(clint_rresp         ),
-    .s2_rlast               (clint_rlast         ),
-    .s2_rvalid            	(clint_rvalid        ),
-    .s2_rready           	(clint_rready        ),
-    .s2_awid                (clint_awid          ),
-    .s2_awaddr           	(clint_awaddr        ),
-    .s2_awlen               (clint_awlen         ),
-    .s2_awsize              (clint_awsize        ),
-    .s2_awburst             (clint_awburst       ),
-    .s2_awvalid          	(clint_awvalid       ),
-    .s2_awready           	(clint_awready       ),
-    .s2_wdata            	(clint_wdata         ),
-    .s2_wstrb            	(clint_wstrb         ),
-    .s2_wlast               (clint_wlast         ),
-    .s2_wvalid           	(clint_wvalid        ),
-    .s2_wready            	(clint_wready        ),
-    .s2_bid                 (clint_bid           ),
-    .s2_bresp             	(clint_bresp         ),
-    .s2_bvalid            	(clint_bvalid        ),
-    .s2_bready           	(clint_bready        )
+    .m_arid                 (xbar_arid          ),
+    .m_araddr           	(xbar_araddr        ),
+    .m_arlen                (xbar_arlen         ),
+    .m_arsize               (xbar_arsize        ),
+    .m_arburst              (xbar_arburst       ),
+    .m_arvalid          	(xbar_arvalid       ),
+    .m_arready           	(xbar_arready       ),
+    .m_rid                  (xbar_rid           ),
+    .m_rdata             	(xbar_rdata         ),
+    .m_rresp             	(xbar_rresp         ),
+    .m_rlast                (xbar_rlast         ),
+    .m_rvalid            	(xbar_rvalid        ),
+    .m_rready           	(xbar_rready        ),
+    .m_awid                 (xbar_awid          ),
+    .m_awaddr           	(xbar_awaddr        ),
+    .m_awlen                (xbar_awlen         ),
+    .m_awsize               (xbar_awsize        ),
+    .m_awburst              (xbar_awburst       ),
+    .m_awvalid          	(xbar_awvalid       ),
+    .m_awready           	(xbar_awready       ),
+    .m_wdata            	(xbar_wdata         ),
+    .m_wstrb            	(xbar_wstrb         ),
+    .m_wlast                (xbar_wlast         ),
+    .m_wvalid           	(xbar_wvalid        ),
+    .m_wready            	(xbar_wready        ),
+    .m_bid                  (xbar_bid           ),
+    .m_bresp             	(xbar_bresp         ),
+    .m_bvalid            	(xbar_bvalid        ),
+    .m_bready           	(xbar_bready        ),
+    .s0_arid                (io_master_arid     ),
+    .s0_araddr           	(io_master_araddr   ),
+    .s0_arlen               (io_master_arlen    ),
+    .s0_arsize              (io_master_arsize   ),
+    .s0_arburst             (io_master_arburst  ),
+    .s0_arvalid          	(io_master_arvalid  ),
+    .s0_arready           	(io_master_arready  ),
+    .s0_rid                 (io_master_rid      ),
+    .s0_rdata             	(io_master_rdata    ),
+    .s0_rresp             	(io_master_rresp    ),
+    .s0_rlast               (io_master_rlast    ),
+    .s0_rvalid            	(io_master_rvalid   ),
+    .s0_rready           	(io_master_rready   ),
+    .s0_awid                (io_master_awid     ),
+    .s0_awaddr           	(io_master_awaddr   ),
+    .s0_awlen               (io_master_awlen    ),
+    .s0_awsize              (io_master_awsize   ),
+    .s0_awburst             (io_master_awburst  ),
+    .s0_awvalid          	(io_master_awvalid  ),
+    .s0_awready           	(io_master_awready  ),
+    .s0_wdata            	(io_master_wdata    ),
+    .s0_wstrb            	(io_master_wstrb    ),
+    .s0_wlast               (io_master_wlast    ),
+    .s0_wvalid           	(io_master_wvalid   ),
+    .s0_wready            	(io_master_wready   ),
+    .s0_bid                 (io_master_bid      ),
+    .s0_bresp             	(io_master_bresp    ),
+    .s0_bvalid            	(io_master_bvalid   ),
+    .s0_bready           	(io_master_bready   ),
+    .s1_arid                (clint_arid         ),
+    .s1_araddr           	(clint_araddr       ),
+    .s1_arlen               (clint_arlen        ),
+    .s1_arsize              (clint_arsize       ),
+    .s1_arburst             (clint_arburst      ),
+    .s1_arvalid          	(clint_arvalid      ),
+    .s1_arready           	(clint_arready      ),
+    .s1_rid                 (clint_rid          ),
+    .s1_rdata             	(clint_rdata        ),
+    .s1_rresp             	(clint_rresp        ),
+    .s1_rlast               (clint_rlast        ),
+    .s1_rvalid            	(clint_rvalid       ),
+    .s1_rready           	(clint_rready       ),
+    .s1_awid                (clint_awid         ),
+    .s1_awaddr           	(clint_awaddr       ),
+    .s1_awlen               (clint_awlen        ),
+    .s1_awsize              (clint_awsize       ),
+    .s1_awburst             (clint_awburst      ),
+    .s1_awvalid          	(clint_awvalid      ),
+    .s1_awready           	(clint_awready      ),
+    .s1_wdata            	(clint_wdata        ),
+    .s1_wstrb            	(clint_wstrb        ),
+    .s1_wlast               (clint_wlast        ),
+    .s1_wvalid           	(clint_wvalid       ),
+    .s1_wready            	(clint_wready       ),
+    .s1_bid                 (clint_bid          ),
+    .s1_bresp             	(clint_bresp        ),
+    .s1_bvalid            	(clint_bvalid       ),
+    .s1_bready           	(clint_bready       )
 );
 
-SRAM u_SRAM(
-    .clk         	        (clock              ),
-    .rst        	        (reset              ),
-    .arid_in     	        (sram_arid          ),
-    .araddr_in   	        (sram_araddr        ),
-    .arlen_in    	        (sram_arlen         ),
-    .arsize_in   	        (sram_arsize        ),
-    .arburst_in  	        (sram_arburst       ),
-    .arvalid_in  	        (sram_arvalid       ),
-    .arready_out 	        (sram_arready       ),
-    .rid_out     	        (sram_rid           ),
-    .rdata_out   	        (sram_rdata         ),
-    .rresp_out   	        (sram_rresp         ),
-    .rlast_out              (sram_rlast         ),
-    .rvalid_out  	        (sram_rvalid        ),
-    .rready_in   	        (sram_rready        ),
-    .awid_in     	        (sram_awid          ),
-    .awaddr_in   	        (sram_awaddr        ),
-    .awlen_in    	        (sram_awlen         ),
-    .awsize_in   	        (sram_awsize        ),
-    .awburst_in  	        (sram_awburst       ),
-    .awvalid_in  	        (sram_awvalid       ),
-    .awready_out 	        (sram_awready       ),
-    .wdata_in    	        (sram_wdata         ),
-    .wstrb_in    	        (sram_wstrb         ),
-    .wlast_in               (sram_wlast         ),
-    .wvalid_in   	        (sram_wvalid        ),
-    .wready_out  	        (sram_wready        ),
-    .bid_out     	        (sram_bid           ),
-    .bresp_out   	        (sram_bresp         ),
-    .bvalid_out  	        (sram_bvalid        ),
-    .bready_in   	        (sram_bready        )
-);
+// SRAM u_SRAM(
+//     .clk         	        (clock              ),
+//     .rst        	        (reset              ),
+//     .arid_in     	        (sram_arid          ),
+//     .araddr_in   	        (sram_araddr        ),
+//     .arlen_in    	        (sram_arlen         ),
+//     .arsize_in   	        (sram_arsize        ),
+//     .arburst_in  	        (sram_arburst       ),
+//     .arvalid_in  	        (sram_arvalid       ),
+//     .arready_out 	        (sram_arready       ),
+//     .rid_out     	        (sram_rid           ),
+//     .rdata_out   	        (sram_rdata         ),
+//     .rresp_out   	        (sram_rresp         ),
+//     .rlast_out              (sram_rlast         ),
+//     .rvalid_out  	        (sram_rvalid        ),
+//     .rready_in   	        (sram_rready        ),
+//     .awid_in     	        (sram_awid          ),
+//     .awaddr_in   	        (sram_awaddr        ),
+//     .awlen_in    	        (sram_awlen         ),
+//     .awsize_in   	        (sram_awsize        ),
+//     .awburst_in  	        (sram_awburst       ),
+//     .awvalid_in  	        (sram_awvalid       ),
+//     .awready_out 	        (sram_awready       ),
+//     .wdata_in    	        (sram_wdata         ),
+//     .wstrb_in    	        (sram_wstrb         ),
+//     .wlast_in               (sram_wlast         ),
+//     .wvalid_in   	        (sram_wvalid        ),
+//     .wready_out  	        (sram_wready        ),
+//     .bid_out     	        (sram_bid           ),
+//     .bresp_out   	        (sram_bresp         ),
+//     .bvalid_out  	        (sram_bvalid        ),
+//     .bready_in   	        (sram_bready        )
+// );
 
-UART u_UART(
-    .clk         	        (clock              ),
-    .rst        	        (reset              ),
-    .arid_in     	        (uart_arid          ),
-    .araddr_in   	        (uart_araddr        ),
-    .arlen_in    	        (uart_arlen         ),
-    .arsize_in   	        (uart_arsize        ),
-    .arburst_in  	        (uart_arburst       ),
-    .arvalid_in  	        (uart_arvalid       ),
-    .arready_out 	        (uart_arready       ),
-    .rid_out     	        (uart_rid           ),
-    .rdata_out   	        (uart_rdata         ),
-    .rresp_out   	        (uart_rresp         ),
-    .rlast_out              (uart_rlast         ),
-    .rvalid_out  	        (uart_rvalid        ),
-    .rready_in   	        (uart_rready        ),
-    .awid_in     	        (uart_awid          ),
-    .awaddr_in   	        (uart_awaddr        ),
-    .awlen_in    	        (uart_awlen         ),
-    .awsize_in   	        (uart_awsize        ),
-    .awburst_in  	        (uart_awburst       ),
-    .awvalid_in  	        (uart_awvalid       ),
-    .awready_out 	        (uart_awready       ),
-    .wdata_in    	        (uart_wdata         ),
-    .wstrb_in    	        (uart_wstrb         ),
-    .wlast_in               (uart_wlast         ),
-    .wvalid_in   	        (uart_wvalid        ),
-    .wready_out  	        (uart_wready        ),
-    .bid_out     	        (uart_bid           ),
-    .bresp_out   	        (uart_bresp         ),
-    .bvalid_out  	        (uart_bvalid        ),
-    .bready_in   	        (uart_bready        )
-);
+// UART u_UART(
+//     .clk         	        (clock              ),
+//     .rst        	        (reset              ),
+//     .arid_in     	        (uart_arid          ),
+//     .araddr_in   	        (uart_araddr        ),
+//     .arlen_in    	        (uart_arlen         ),
+//     .arsize_in   	        (uart_arsize        ),
+//     .arburst_in  	        (uart_arburst       ),
+//     .arvalid_in  	        (uart_arvalid       ),
+//     .arready_out 	        (uart_arready       ),
+//     .rid_out     	        (uart_rid           ),
+//     .rdata_out   	        (uart_rdata         ),
+//     .rresp_out   	        (uart_rresp         ),
+//     .rlast_out              (uart_rlast         ),
+//     .rvalid_out  	        (uart_rvalid        ),
+//     .rready_in   	        (uart_rready        ),
+//     .awid_in     	        (uart_awid          ),
+//     .awaddr_in   	        (uart_awaddr        ),
+//     .awlen_in    	        (uart_awlen         ),
+//     .awsize_in   	        (uart_awsize        ),
+//     .awburst_in  	        (uart_awburst       ),
+//     .awvalid_in  	        (uart_awvalid       ),
+//     .awready_out 	        (uart_awready       ),
+//     .wdata_in    	        (uart_wdata         ),
+//     .wstrb_in    	        (uart_wstrb         ),
+//     .wlast_in               (uart_wlast         ),
+//     .wvalid_in   	        (uart_wvalid        ),
+//     .wready_out  	        (uart_wready        ),
+//     .bid_out     	        (uart_bid           ),
+//     .bresp_out   	        (uart_bresp         ),
+//     .bvalid_out  	        (uart_bvalid        ),
+//     .bready_in   	        (uart_bready        )
+// );
 
 CLINT u_CLINT(
     .clk         	        (clock              ),

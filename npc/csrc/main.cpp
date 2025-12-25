@@ -7,8 +7,12 @@
 // #include <nvboard.h>
 #include "Vtop__Dpi.h"
 
+extern "C" void flash_read(int32_t addr, int32_t *data) { assert(0); }
+extern "C" void mrom_read(int32_t addr, int32_t *data) { assert(0); }
+
 int main(int argc, char *argv[])
 {
+    Verilated::commandArgs(argc, argv);
 
     Verilated::mkdir("logs");
     VerilatedContext *contextp = new VerilatedContext;
