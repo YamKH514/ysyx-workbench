@@ -7,7 +7,7 @@ SPI_INC_PATH ?= $(YSYXSOC_HOME)/perip/spi/rtl
 
 VERILATOR = verilator
 VERILATOR_COVERAGE = verilator_coverage
-VERILATOR_FLAGS += --timescale "1ns/1ns" --no-timing --cc --trace -j 0 --top-module $(TOPNAME)
+VERILATOR_FLAGS += --autoflush --timescale "1ns/1ns" --no-timing --cc --trace -j 0 --top-module $(TOPNAME)
 VERILATOR_FLAGS += $(addprefix -I, $(V_INC_PATH))
 VERILATOR_FLAGS += $(addprefix -I, $(UART_INC_PATH))
 VERILATOR_FLAGS += $(addprefix -I, $(SPI_INC_PATH))
