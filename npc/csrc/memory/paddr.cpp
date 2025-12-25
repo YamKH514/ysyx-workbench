@@ -68,6 +68,15 @@ extern "C" uint32_t paddr_read(uint32_t raddr)
     return 0;
 }
 
+extern "C" void mrom_read(int32_t addr, int32_t *data)
+{
+    // *data = 0x100073;
+    uint32_t raddr = ((uint32_t)addr) & ~0x3u;
+    uint32_t rdata = pmem_read(raddr, 4);
+    *data = (int32_t)rdata;
+    return;
+}
+
 extern "C" void paddr_write(uint32_t waddr, uint32_t wdata, uint8_t wmask)
 {
     uint32_t addr = waddr & ~0x3u;

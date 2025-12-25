@@ -3,7 +3,7 @@
 
 #include "common.h"
 
-#define MEM_BASE 0x80000000
+#define MEM_BASE 0x20000000
 #define MEM_MSIZE 0x8000000
 
 #define PMEM_LEFT ((uint32_t)MEM_BASE)
@@ -19,5 +19,6 @@ static inline bool in_pmem(uint32_t addr)
 }
 
 void init_mem();
+extern "C" void mrom_read(int32_t addr, int32_t *data);
 
 #endif
