@@ -5,7 +5,7 @@
 #include "difftest-def.h"
 #include "disasm.h"
 #include "ftrace.h"
-#include "VysyxSocFull__Syms.h"
+#include "VysyxSoCFull__Syms.h"
 #include "Vtop__Dpi.h"
 #include "cpu.h"
 #include "watchpoint.h"
@@ -22,7 +22,7 @@ uint64_t g_nr_guest_inst = 0;
 bool g_print_step = false;
 CPU_state cpu = {};
 
-static void trace_and_difftest(Vtop *top, char *logbuf)
+static void trace_and_difftest(VysyxSoCFull *top, char *logbuf)
 {
 #ifdef CONFIG_ITRACE_COND
     if (ITRACE_COND)
