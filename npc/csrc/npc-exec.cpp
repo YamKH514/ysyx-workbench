@@ -54,21 +54,24 @@ static void exec_once(VysyxSoCFull *top, VerilatedContext *contextp, VerilatedVc
 
     if (!npc_state.inited) cpu_reset(10, top, contextp, tfp);
 
-    if (top->rootp->top__DOT__pc_to_ifu_ready)
+    // if (top->rootp->top__DOT__pc_to_ifu_ready)
+    if (top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__pc_to_ifu_ready)
     {
-        npc_state.halt_pc = top->rootp->top__DOT__pc;
-        npc_state.halt_ret = top->rootp->top__DOT__u_GPR__DOT__u_RegisterFile__DOT__rf[10];
+        // npc_state.halt_pc = top->rootp->top__DOT__pc;
+        npc_state.halt_pc = top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__pc;
+        // npc_state.halt_ret = top->rootp->top__DOT__u_GPR__DOT__u_RegisterFile__DOT__rf[10];
+        npc_state.halt_ret = top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__u_GPR__DOT__u_RegisterFile__DOT__rf[10];
     }
 
     cpu_single_cycle(top, contextp, tfp);
 
-    if (top->rootp->top__DOT__pc_to_ifu_ready)
+    if (top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__pc_to_ifu_ready)
     {
-        cpu.pc = top->rootp->top__DOT__pc;
-        cpu.npc = top->rootp->top__DOT__npc;
-        svSetScope(svGetScopeFromName("TOP.top.u_GPR.u_RegisterFile"));
+        cpu.pc = top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__pc;
+        cpu.npc = top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__npc;
+        svSetScope(svGetScopeFromName("TOP.ysyxSoCFull.asic.cpu.cpu.u_GPR.u_RegisterFile"));
         get_gpr(cpu.gpr);
-        svSetScope(svGetScopeFromName("TOP.top.u_CSR"));
+        svSetScope(svGetScopeFromName("TOP.ysyxSoCFull.asic.cpu.cpu.u_CSR"));
         get_csr((int *)(&cpu.csr));
     }
 
