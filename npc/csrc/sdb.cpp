@@ -4,7 +4,6 @@
 #include "reg.h"
 #include <readline/readline.h>
 #include <readline/history.h>
-#include "Vtop.h"
 #include "verilated_vcd_c.h"
 #include "Vtop__Dpi.h"
 #include "watchpoint.h"
