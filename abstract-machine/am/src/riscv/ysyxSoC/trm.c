@@ -16,14 +16,25 @@ extern char _pmem_start;
 Area heap = RANGE(&_heap_start, &_heap_end);
 static const char mainargs[MAINARGS_MAX_LEN] = MAINARGS_PLACEHOLDER; // defined in CFLAGS
 
-// extern char _data_start_load, _data_start, _data_end;
+extern char _data_start_load, _data_start, _data_end;
 // extern char _bss_start, _bss_end;
 
 void putch(char ch) {
   *(volatile char *)(UART_BASE + UART_TX) = ch;
 }
 
+void cp_data_to_sram () {
+  char *dst = &_data_start;
+  char *src = &_data_start_load;
+
+  while (dst < &_data_end)
+  {
+    *dst++ = *src++;
+  }
+}
+
 void halt(int code) {
+  cp_data_to_sram();
   npc_trap(code);
 
   while (1);
