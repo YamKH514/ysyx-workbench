@@ -27,7 +27,7 @@ $(SRC_AUTO_BIND): $(NXDC_FILES)
 
 # project source
 VSRCS += $(YSYXSOC_HOME)/build/ysyxSoCFull.v
-VSRCS += $(shell find $(abspath ./vsrc) -name "*.v")
+VSRCS += $(shell find $(abspath ./vsrc) -name "*.v" ! -name "top.v")
 VSRCS += $(shell find $(abspath $(YSYXSOC_HOME)/perip) -name "*.v")
 CSRCS = $(shell find $(abspath ./csrc) -name "*.c" -or -name "*.cc" -or -name "*.cpp")
 
