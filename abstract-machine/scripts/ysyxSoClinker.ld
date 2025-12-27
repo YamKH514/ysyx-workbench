@@ -4,7 +4,7 @@ MEMORY {
   }
 
 ENTRY(_start)
-PHDRS { text PT_LOAD; data PT_LOAD; }
+/* PHDRS { text PT_LOAD; data PT_LOAD; } */
 
 SECTIONS {
   /* _pmem_start and _entry_offset are defined in LDFLAGS */
@@ -12,19 +12,19 @@ SECTIONS {
   .text : {
     *(entry)
     *(.text*)
-  } > MROM : text
+  } > MROM
   .rodata : {
     *(.rodata*)
   } > MROM
   etext = .;
   _etext = .;
 
-  .data : AT(etext) {
+  .data : {
     _data_start_load = LOADADDR(.data);
     _data_start = ORIGIN(SRAM);
     *(.data*)
     _data_end = ORIGIN(SRAM) + SIZEOF(.data);
-  } > SRAM : data
+  } > SRAM AT > MROM
   edata = .;
   _data = .;
 
