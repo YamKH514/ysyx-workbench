@@ -11,7 +11,6 @@ AM_SRCS := riscv/ysyxSoC/start.S \
 CFLAGS    += -fdata-sections -ffunction-sections
 LDSCRIPTS += $(AM_HOME)/scripts/ysyxSoClinker.ld
 LDFLAGS   += --defsym=_pmem_start=0x20000000 --defsym=_entry_offset=0x0
-LDFLAGS   += --defsym=_sram_start=0x0f000000 --defsym=_sram_size=0x2000
 LDFLAGS   += --gc-sections -e _start
 NPCFLAGS  += -b
 NPCFLAGS  += -l $(shell dirname $(IMAGE).elf)/npc-log.txt
@@ -27,7 +26,7 @@ insert-arg: image
 image: image-dep
 	@$(OBJDUMP) -d $(IMAGE).elf > $(IMAGE).txt
 	@echo + OBJCOPY "->" $(IMAGE_REL).bin
-	@$(OBJCOPY) -S --set-section-flags .bss=alloc,contents -O binary $(IMAGE).elf $(IMAGE).bin
+	@$(OBJCOPY) -O binary -j .text -j .rodata -j .data $(IMAGE).elf $(IMAGE).bin
 
 run: insert-arg
 	$(MAKE) -C $(NPC_HOME) ISA=$(ISA) run ARGS="$(NPCFLAGS)" IMG=$(IMAGE).bin
