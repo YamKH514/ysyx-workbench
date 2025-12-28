@@ -53,7 +53,11 @@ static void exec_once(VysyxSoCFull *top, VerilatedContext *contextp, VerilatedVc
 {
     char logbuf[128];
 
-    if (!npc_state.inited) cpu_reset(10, top, contextp, tfp);
+    if (!npc_state.inited)
+    {
+        cpu_reset(10, top, contextp, tfp);
+        npc_state.inited = true;
+    }
 
     // if (top->rootp->top__DOT__pc_to_ifu_ready)
     if ((top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__pc_to_ifu_valid) & (top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__ifu_to_pc_ready))

@@ -27,5 +27,5 @@ void cpu_reset(int n, VysyxSoCFull *top, VerilatedContext *contextp, VerilatedVc
         cpu_single_cycle(top, contextp, tfp);
     }
     top->reset = 0;
-    npc_state.inited = true;
+    // npc_state.inited = true;
 }
