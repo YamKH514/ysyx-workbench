@@ -7,6 +7,7 @@
 // #include <nvboard.h>
 #include "Vtop__Dpi.h"
 
+int is_exit_status_bad();
 extern "C" void flash_read(int32_t addr, int32_t *data) { assert(0); }
 
 int main(int argc, char *argv[])
@@ -39,5 +40,5 @@ int main(int argc, char *argv[])
     tfp->close();
     top->final();
 
-    return 0;
+    return is_exit_status_bad();
 }
