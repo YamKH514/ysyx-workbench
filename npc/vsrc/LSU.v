@@ -159,18 +159,14 @@ always @(posedge clk) begin
                 end
             end
             S_GET_R: begin
-                if (rvalid_in & rready_out) begin
+                if (rvalid_in & rready_out & rlast_in) begin
                     rid_r                <= rid_in;
-                    lsu_r_data_out       <= rdata_r;
+                    rdata_r              <= rdata_in;
                     if (rresp_in != 2'b00) begin
                     end
-                    if (rlast_in) begin
-                        rready_out           <= 1'b0;
-                        lsu_to_wbu_valid_out <= 1'b1;
-                        bs_out               <= 1'b0;
-                    end else begin
-                        rready_out           <= 1'b1;
-                    end
+                    rready_out           <= 1'b0;
+                    lsu_to_wbu_valid_out <= 1'b1;
+                    bs_out               <= 1'b0;
                 end
             end
             S_W_SEND: begin
@@ -278,17 +274,17 @@ wire    [15:0]  data_h;
 
 assign byte_off_r = lsu_r_addr_in[1:0];
 
-assign data_b = {8{byte_off_r == 2'b00}} & rdata_in[7:0]  |
-                {8{byte_off_r == 2'b01}} & rdata_in[15:8] |
-                {8{byte_off_r == 2'b10}} & rdata_in[23:16]|
-                {8{byte_off_r == 2'b11}} & rdata_in[31:24];
+assign data_b = {8{byte_off_r == 2'b00}} & rdata_r[7:0]  |
+                {8{byte_off_r == 2'b01}} & rdata_r[15:8] |
+                {8{byte_off_r == 2'b10}} & rdata_r[23:16]|
+                {8{byte_off_r == 2'b11}} & rdata_r[31:24];
 
-assign data_h = byte_off_r[1] == 1'b0 ? rdata_in[15:0] : rdata_in[31:16];
+assign data_h = byte_off_r[1] == 1'b0 ? rdata_r[15:0] : rdata_r[31:16];
 
-assign rdata_r =    {32{lsu_r_func_r == `MEM_READ_FUNC_LBU}} & {24'b0, data_b[7:0]} |
-                    {32{lsu_r_func_r == `MEM_READ_FUNC_LB}}  & {{24{data_b[7]}}, data_b[7:0]} |
-                    {32{lsu_r_func_r == `MEM_READ_FUNC_LHU}} & {16'b0, data_h[15:0]} |
-                    {32{lsu_r_func_r == `MEM_READ_FUNC_LH}}  & {{16{data_h[15]}}, data_h[15:0]} |
-                    {32{lsu_r_func_r == `MEM_READ_FUNC_LW}}  & rdata_in;
+assign lsu_r_data_out = {32{lsu_r_func_r == `MEM_READ_FUNC_LBU}} & {24'b0, data_b[7:0]} |
+                        {32{lsu_r_func_r == `MEM_READ_FUNC_LB}}  & {{24{data_b[7]}}, data_b[7:0]} |
+                        {32{lsu_r_func_r == `MEM_READ_FUNC_LHU}} & {16'b0, data_h[15:0]} |
+                        {32{lsu_r_func_r == `MEM_READ_FUNC_LH}}  & {{16{data_h[15]}}, data_h[15:0]} |
+                        {32{lsu_r_func_r == `MEM_READ_FUNC_LW}}  & rdata_r;
 
 endmodule
