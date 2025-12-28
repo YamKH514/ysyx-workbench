@@ -9,7 +9,8 @@ module PCCnt(
     output  reg [31:0]  pc_cnt_pc_out,
     output  reg [31:0]  pc_cnt_npc_out,
 
-    input               idu_to_pc_valid_in,
+    input               wbu_to_pc_valid_in,
+    output  reg         pc_to_wbu_ready_out,
     output  reg         pc_to_ifu_valid_out,
     input               ifu_to_pc_ready_in
 );
@@ -25,6 +26,7 @@ assign pc_cnt_npc_out = (pc_cnt_npc_src_sel_in[3] == 1'b0) ?
 
 always @(posedge clk) begin
     if (rst) begin
+        pc_to_wbu_ready_out <= 1'b0;
         pc_to_ifu_valid_out <= 1'b1;
         pc_cnt_pc_out       <= 32'h20000000;
         state               <= S_IDLE;
@@ -32,7 +34,8 @@ always @(posedge clk) begin
 
     case (state)
         S_IDLE: begin
-            if (idu_to_pc_valid_in) begin
+            if (wbu_to_pc_valid_in & pc_to_wbu_ready_out) begin
+                pc_to_wbu_ready_out <= 1'b0;
                 pc_to_ifu_valid_out <= 1'b1;
                 pc_cnt_pc_out       <= pc_cnt_npc_out;
                 state               <= S_BUSY;
@@ -40,6 +43,7 @@ always @(posedge clk) begin
         end
         S_BUSY: begin
             if (pc_to_ifu_valid_out & ifu_to_pc_ready_in) begin
+                pc_to_wbu_ready_out <= 1'b1;
                 pc_to_ifu_valid_out <= 1'b0;
                 state               <= S_IDLE;
             end

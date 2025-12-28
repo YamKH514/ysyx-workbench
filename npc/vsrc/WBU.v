@@ -21,7 +21,8 @@ module WBU(
     input               lsu_to_wbu_valid_in,
     output reg          wbu_to_lsu_ready_out,
 
-    output reg          wbu_to_pc_valid_out
+    output reg          wbu_to_pc_valid_out,
+    input               pc_to_wbu_ready_in
 );
 
 parameter S_IDLE = 1'd0;
@@ -57,10 +58,12 @@ always @(posedge clk) begin
             end
             S_WORK: begin
                 wbu_to_lsu_ready_out <= 1'b0;
-                wbu_to_pc_valid_out <= 1'b0;
                 gpr_we_out <= 1'b0;
                 csr_w_ecall_out <= 1'b0;
                 csr_w_mret_out <= 1'b0;
+                if (wbu_to_pc_valid_out & pc_to_wbu_ready_in) begin
+                    wbu_to_pc_valid_out <= 1'b0;
+                end
             end
             default: begin
                 wbu_to_lsu_ready_out <= 1'b0;
@@ -79,7 +82,9 @@ always @(*) begin
             end
         end
         S_WORK: begin
-            next_state = S_IDLE;
+            if (wbu_to_pc_valid_out & pc_to_wbu_ready_in) begin
+                next_state = S_IDLE;
+            end
         end
         default: begin
             next_state = S_IDLE;

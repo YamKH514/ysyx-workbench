@@ -114,7 +114,8 @@ wire    [8:0]   idu_to_lsu_data;
 
 wire    [9:0]   idu_to_wbu_data;
 
-wire            to_pc_valid;
+wire            wbu_to_pc_valid;
+wire            pc_to_wbu_ready;
 wire            pc_to_ifu_valid;
 wire            ifu_to_pc_ready;
 
@@ -269,7 +270,8 @@ PCCnt u_PCCnt(
     .pc_cnt_trap_npc_in    	(trap_npc           ),
     .pc_cnt_pc_out         	(pc                 ),
     .pc_cnt_npc_out        	(npc                ),
-    .idu_to_pc_valid_in     (to_pc_valid        ),
+    .wbu_to_pc_valid_in     (wbu_to_pc_valid    ),
+    .pc_to_wbu_ready_out    (pc_to_wbu_ready    ),
     .pc_to_ifu_valid_out    (pc_to_ifu_valid    ),
     .ifu_to_pc_ready_in     (ifu_to_pc_ready    )
 );
@@ -429,7 +431,8 @@ WBU u_WBU(
     .csr_w_mret_out         (is_mret            ),
     .lsu_to_wbu_valid_in    (lsu_to_wbu_valid   ),
     .wbu_to_lsu_ready_out   (wbu_to_lsu_ready   ),
-    .wbu_to_pc_valid_out    (to_pc_valid        )
+    .wbu_to_pc_valid_out    (wbu_to_pc_valid    ),
+    .pc_to_wbu_ready_in     (pc_to_wbu_ready    )
 );
 
 assign csr_w_data   = gpr_r_data1;
