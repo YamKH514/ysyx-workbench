@@ -23,18 +23,18 @@ void putch(char ch) {
   *(volatile char *)(UART_BASE + UART_TX) = ch;
 }
 
-void cp_data_to_sram () {
-  char *dst = &_data_start;
-  char *src = &_data_start_load;
+// void cp_data_to_sram () {
+//   char *dst = &_data_start;
+//   char *src = &_data_start_load;
 
-  while (dst < &_data_end)
-  {
-    *dst++ = *src++;
-  }
-}
+//   while (dst < &_data_end)
+//   {
+//     *dst++ = *src++;
+//   }
+// }
 
 void halt(int code) {
-  cp_data_to_sram();
+  // cp_data_to_sram();
   npc_trap(code);
 
   while (1);
