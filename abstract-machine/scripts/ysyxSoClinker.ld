@@ -13,12 +13,13 @@ SECTIONS {
   .rodata : {
     *(.rodata*)
   }
-  . = _sram_start;
+  /* . = _sram_start; */
   .data : AT(etext) {
     *(.data)
   } :data
   edata = .;
   _data = .;
+  . = _sram_start + SIZEOF(.data);
   .bss : {
     _bss_start = .;
     *(.bss*)
