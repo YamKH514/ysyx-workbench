@@ -10,7 +10,7 @@
 #define SERIAL_PORT (DEVICE_BASE + 0x00003f8)
 #define RTC_ADDR    (DEVICE_BASE + 0x0000048)
 
-static uint8_t pmem[MEM_MSIZE] PG_ALIGN = {};
+static uint8_t pmem[CONFIG_MSIZE] PG_ALIGN = {};
 
 uint8_t *guest_to_host(uint32_t paddr) { return pmem + paddr - MEM_BASE; }
 uint32_t host_to_guest(uint8_t *haddr) { return haddr - pmem + MEM_BASE; }
