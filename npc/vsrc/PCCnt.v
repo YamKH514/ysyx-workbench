@@ -18,7 +18,7 @@ module PCCnt(
 localparam S_IDLE = 1'd0;
 localparam S_BUSY = 1'd1;
 
-reg state;
+reg state, next_state;
 
 assign pc_cnt_npc_out = (pc_cnt_npc_src_sel_in[3] == 1'b0) ?
                         (pc_cnt_npc_src_sel_in[2] == 1'b1 ? pc_cnt_trap_npc_in : (((pc_cnt_npc_src_sel_in[1] == 1'b0) ? pc_cnt_pc_out : pc_cnt_rd1_in) + ((pc_cnt_npc_src_sel_in[0] == 1'b0) ? 32'd4 : pc_cnt_imm_in))) :
@@ -29,7 +29,6 @@ always @(posedge clk) begin
         pc_to_wbu_ready_out <= 1'b0;
         pc_to_ifu_valid_out <= 1'b1;
         pc_cnt_pc_out       <= 32'h20000000;
-        state               <= S_BUSY;
     end
 
     case (state)
@@ -38,14 +37,32 @@ always @(posedge clk) begin
                 pc_to_wbu_ready_out <= 1'b0;
                 pc_to_ifu_valid_out <= 1'b1;
                 pc_cnt_pc_out       <= pc_cnt_npc_out;
-                state               <= S_BUSY;
             end
         end
         S_BUSY: begin
             if (pc_to_ifu_valid_out & ifu_to_pc_ready_in) begin
                 pc_to_wbu_ready_out <= 1'b1;
                 pc_to_ifu_valid_out <= 1'b0;
-                state               <= S_IDLE;
+            end
+        end
+    endcase
+end
+
+always @(posedge clk) begin
+    if (rst) state <= S_BUSY;
+    else state <= next_state;
+end
+
+always @(*) begin
+    case (state)
+        S_IDLE: begin
+            if (wbu_to_pc_valid_in & pc_to_wbu_ready_out) begin
+                next_state = S_BUSY;
+            end
+        end
+        S_BUSY: begin
+            if (pc_to_ifu_valid_out & ifu_to_pc_ready_in) begin
+                next_state = S_IDLE;
             end
         end
     endcase
