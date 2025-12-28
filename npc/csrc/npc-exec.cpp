@@ -37,7 +37,7 @@ static void trace_and_difftest(VysyxSoCFull *top, char *logbuf)
 #endif
     }
 #ifdef CONFIG_DIFFTEST
-    if ((top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__pc_to_ifu_valid) & (top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__ifu_to_pc_ready))
+    if ((top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__wbu_to_pc_valid) & (top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__pc_to_wbu_ready))
         difftest_step(npc_state.halt_pc);
 #endif
 #ifdef CONFIG_WATCHPOINT
@@ -56,7 +56,7 @@ static void exec_once(VysyxSoCFull *top, VerilatedContext *contextp, VerilatedVc
     if (!npc_state.inited) cpu_reset(10, top, contextp, tfp);
 
     // if (top->rootp->top__DOT__pc_to_ifu_ready)
-    if ((top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__pc_to_ifu_valid) & (top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__ifu_to_pc_ready))
+    if ((top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__wbu_to_pc_valid) & (top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__pc_to_wbu_ready))
     {
         // npc_state.halt_pc = top->rootp->top__DOT__pc;
         npc_state.halt_pc = top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__pc;
@@ -66,7 +66,7 @@ static void exec_once(VysyxSoCFull *top, VerilatedContext *contextp, VerilatedVc
 
     cpu_single_cycle(top, contextp, tfp);
 
-    if ((top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__pc_to_ifu_valid) & (top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__ifu_to_pc_ready))
+    if ((top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__wbu_to_pc_valid) & (top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__pc_to_wbu_ready))
     {
         cpu.pc = top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__pc;
         cpu.npc = top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__npc;
