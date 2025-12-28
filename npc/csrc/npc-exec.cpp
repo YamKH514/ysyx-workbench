@@ -53,11 +53,7 @@ static void exec_once(VysyxSoCFull *top, VerilatedContext *contextp, VerilatedVc
 {
     char logbuf[128];
 
-    if (!npc_state.inited)
-    {
-        cpu_reset(10, top, contextp, tfp);
-        npc_state.inited = true;
-    }
+    if (!npc_state.inited) cpu_reset(10, top, contextp, tfp);
 
     // if (top->rootp->top__DOT__pc_to_ifu_ready)
     if ((top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__pc_to_ifu_valid) & (top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__ifu_to_pc_ready))
@@ -103,8 +99,8 @@ static void exec_once(VysyxSoCFull *top, VerilatedContext *contextp, VerilatedVc
         p += space_len;
 
         disassemble(p, logbuf + sizeof(logbuf) - p, npc_state.halt_pc, inst, ilen);
-        trace_and_difftest(top, logbuf);
 #endif
+        trace_and_difftest(top, logbuf);
 
         // 函数调用 ftrace
         uint8_t opcode = BITS(inst_val, 6, 0);
