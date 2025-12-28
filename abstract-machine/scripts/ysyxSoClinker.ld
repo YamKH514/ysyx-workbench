@@ -11,14 +11,13 @@ SECTIONS {
   .text : {
     *(entry)
     *(.text*)
-  }
+  } > MROM
   .rodata : {
     *(.rodata*)
-  }
+  } > MROM
   etext = .;
   _etext = .;
 
-  . = ORIGIN(SRAM);
   .data : AT(etext) {
     _data_start_load = LOADADDR(.data);
     _data_start = ORIGIN(SRAM);
