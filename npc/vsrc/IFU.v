@@ -6,7 +6,8 @@ module IFU(
     input       [31:0]  ifu_current_pc_in,
     output  reg [31:0]  ifu_inst_out,
 
-    input               pc_to_ifu_ready_in,
+    input               pc_to_ifu_valid_in,
+    output  reg         ifu_to_pc_ready_out,
 
     // AR
     output  reg [3:0]   arid_out,
@@ -90,13 +91,15 @@ always @(posedge clk) begin
         ifu_inst_out         <= 32'b0;
         arvalid_out          <= 1'b0;
         rready_out           <= 1'b0;
+        ifu_to_pc_ready_out  <= 1'b0;
         ifu_to_idu_valid_out <= 1'b0;
         br_out               <= 1'b0;
         bs_out               <= 1'b0;
     end else begin
         case (state)
             S_IDLE: begin
-                if (pc_to_ifu_ready_in) begin
+                if (pc_to_ifu_valid_in & ifu_to_pc_ready_out) begin
+                    ifu_to_pc_ready_out <= 1'b0;
                     br_out <= 1'b1;
                 end
             end
@@ -139,6 +142,7 @@ always @(posedge clk) begin
             end
             S_WAIT_IDU: begin
                 if (idu_to_ifu_ready_in) begin
+                    ifu_to_pc_ready_out  <= 1'b1;
                     ifu_to_idu_valid_out <= 1'b0;
                 end
             end
@@ -159,7 +163,7 @@ always @(*) begin
     next_state = state;
     case (state)
         S_IDLE: begin
-            if (pc_to_ifu_ready_in) begin
+            if (pc_to_ifu_valid_in & ifu_to_pc_ready_out) begin
                 next_state = S_WAIT_ARB;
             end
         end

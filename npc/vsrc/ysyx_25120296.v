@@ -115,7 +115,8 @@ wire    [8:0]   idu_to_lsu_data;
 wire    [9:0]   idu_to_wbu_data;
 
 wire            to_pc_valid;
-wire            pc_to_ifu_ready;
+wire            pc_to_ifu_valid;
+wire            ifu_to_pc_ready;
 
 wire            ifu_to_idu_valid;
 wire            idu_to_ifu_ready;
@@ -269,7 +270,8 @@ PCCnt u_PCCnt(
     .pc_cnt_pc_out         	(pc                 ),
     .pc_cnt_npc_out        	(npc                ),
     .idu_to_pc_valid_in     (to_pc_valid        ),
-    .pc_to_ifu_ready_out    (pc_to_ifu_ready    )
+    .pc_to_ifu_valid_out    (pc_to_ifu_valid    ),
+    .ifu_to_pc_ready_in     (ifu_to_pc_ready    )
 );
 
 IFU u_IFU(
@@ -277,7 +279,8 @@ IFU u_IFU(
     .rst                    (reset              ),
     .ifu_current_pc_in  	(pc                 ),
     .ifu_inst_out       	(ifu_inst           ),
-    .pc_to_ifu_ready_in     (pc_to_ifu_ready    ),
+    .pc_to_ifu_valid_in     (pc_to_ifu_valid    ),
+    .ifu_to_pc_ready_out    (ifu_to_pc_ready    ),
     .arid_out               (inst_arid          ),
     .araddr_out           	(inst_araddr        ),
     .arlen_out              (inst_arlen         ),
