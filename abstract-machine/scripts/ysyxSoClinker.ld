@@ -19,7 +19,7 @@ SECTIONS {
   } :data
   edata = .;
   _data = .;
-  . = _sram_start + SIZEOF(.data);
+  /* . = _sram_start + SIZEOF(.data); */
   .bss : {
     _bss_start = .;
     *(.bss*)
