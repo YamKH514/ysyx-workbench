@@ -11,6 +11,7 @@ AM_SRCS := riscv/ysyxSoC/start.S \
 CFLAGS    += -fdata-sections -ffunction-sections
 LDSCRIPTS += $(AM_HOME)/scripts/ysyxSoClinker.ld
 LDFLAGS   += --defsym=_pmem_start=0x20000000 --defsym=_entry_offset=0x0
+LDFLAGS   += --defsym=_sram_start=0x0f000000
 LDFLAGS   += --gc-sections -e _start
 NPCFLAGS  += -b
 NPCFLAGS  += -l $(shell dirname $(IMAGE).elf)/npc-log.txt
