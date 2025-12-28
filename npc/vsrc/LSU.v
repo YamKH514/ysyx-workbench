@@ -128,6 +128,7 @@ always @(posedge clk) begin
                     if (lsu_re_r) begin
                         arid_out    <= 4'b0;
                         araddr_out  <= lsu_r_addr_in;
+                        byte_off_r  <= lsu_r_addr_in[1:0];
                         arlen_out   <= 4'b0;
                         arsize_out  <= 3'b010;
                         arburst_out <= 2'b01;
@@ -272,7 +273,7 @@ reg     [1:0]   byte_off_r;
 wire    [7:0]   data_b;
 wire    [15:0]  data_h;
 
-assign byte_off_r = lsu_r_addr_in[1:0];
+// assign byte_off_r = lsu_r_addr_in[1:0];
 
 assign data_b = {8{byte_off_r == 2'b00}} & rdata_r[7:0]  |
                 {8{byte_off_r == 2'b01}} & rdata_r[15:8] |
