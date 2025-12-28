@@ -294,14 +294,6 @@ assign wdata_aligned =  {32{w_byte_off == 2'b00}} & lsu_w_data_in      |
                         {32{w_byte_off == 2'b01}} & lsu_w_data_in << 8 |
                         {32{w_byte_off == 2'b10}} & lsu_w_data_in << 16|
                         {32{w_byte_off == 2'b11}} & lsu_w_data_in << 24;
-// always @(*) begin
-//     case (w_byte_off)
-//         2'b00: wdata_aligned = lsu_w_data_in;
-//         2'b01: wdata_aligned = lsu_w_data_in << 8;
-//         2'b10: wdata_aligned = lsu_w_data_in << 16;
-//         2'b11: wdata_aligned = lsu_w_data_in << 24;
-//     endcase
-// end
 assign wstrb_aligned = lsu_w_mask_r << w_byte_off;
 
 endmodule
