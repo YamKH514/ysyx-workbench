@@ -12,8 +12,8 @@
 
 static uint8_t pmem[CONFIG_MSIZE] PG_ALIGN = {};
 
-uint8_t *guest_to_host(uint32_t paddr) { return pmem + paddr - MEM_BASE; }
-uint32_t host_to_guest(uint8_t *haddr) { return haddr - pmem + MEM_BASE; }
+uint8_t *guest_to_host(uint32_t paddr) { return pmem + paddr - CONFIG_MBASE; }
+uint32_t host_to_guest(uint8_t *haddr) { return haddr - pmem + CONFIG_MBASE; }
 
 static uint32_t pmem_read(uint32_t addr, int len)
 {
