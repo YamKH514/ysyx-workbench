@@ -14,8 +14,8 @@ SECTIONS {
     *(.rodata*)
   }
   . = _sram_start;
-  .data : {
-    *(.data*)
+  .data : AT(etext) {
+    *(.data)
   } :data
   edata = .;
   _data = .;
@@ -25,11 +25,10 @@ SECTIONS {
     *(.sbss*)
     *(.scommon)
   }
-  _heap_start = ALIGN(0x1000);
   _stack_top = ALIGN(0x1000);
-  . = _sram_start + 0x2000;
+  . = _sram_start + 0x1000;
   _stack_pointer = .;
   end = .;
   _end = .;
-  _heap_end = .;
+  _heap_start = ALIGN(0x1000);
 }
