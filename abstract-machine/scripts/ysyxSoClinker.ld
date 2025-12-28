@@ -19,12 +19,12 @@ SECTIONS {
   _etext = .;
 
   . = ORIGIN(SRAM);
-  .data : AT(etext){
+  .data : AT(etext) {
     _data_start_load = LOADADDR(.data);
     _data_start = ORIGIN(SRAM);
     *(.data*)
     _data_end = ORIGIN(SRAM) + SIZEOF(.data);
-  } > SRAM
+  }
   edata = .;
   _data = .;
 
@@ -35,7 +35,7 @@ SECTIONS {
     *(.sbss*)
     *(.scommon)
     _bss_end = .;
-  } > SRAM
+  }
   _heap_start = ALIGN(0x1000);
   _heap_end = ORIGIN(SRAM) + LENGTH(SRAM);
   _stack_top = ALIGN(0x1000);
