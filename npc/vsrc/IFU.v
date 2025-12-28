@@ -76,6 +76,7 @@ localparam S_WAIT_IDU  = 3'd4;
 
 reg [2:0]   state, next_state;
 
+reg [31:0]  ifu_current_pc_r;
 reg [3:0]   rid_r;
 
 always @(posedge clk) begin
@@ -83,6 +84,7 @@ always @(posedge clk) begin
     else state <= next_state;
 
     if (rst) begin
+        ifu_current_pc_r     <= 32'b0;
         arid_out             <= 4'b0;
         araddr_out           <= 32'b0;
         arlen_out            <= 4'b0;
@@ -100,13 +102,14 @@ always @(posedge clk) begin
             S_IDLE: begin
                 if (pc_to_ifu_valid_in & ifu_to_pc_ready_out) begin
                     ifu_to_pc_ready_out <= 1'b0;
-                    br_out <= 1'b1;
+                    ifu_current_pc_r    <= ifu_current_pc_in;
+                    br_out              <= 1'b1;
                 end
             end
             S_WAIT_ARB: begin
                 if (bg_in) begin
                     arid_out    <= 4'b0;
-                    araddr_out  <= ifu_current_pc_in;
+                    araddr_out  <= ifu_current_pc_r;
                     arlen_out   <= 4'b0;
                     arsize_out  <= 3'b010;
                     arburst_out <= 2'b01;
