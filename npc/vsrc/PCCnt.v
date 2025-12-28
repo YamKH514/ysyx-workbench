@@ -25,7 +25,7 @@ assign pc_cnt_npc_out = (pc_cnt_npc_src_sel_in[3] == 1'b0) ?
 
 always @(posedge clk) begin
     if (rst) begin
-        pc_to_ifu_valid_out <= 1'b0;
+        pc_to_ifu_valid_out <= 1'b1;
         pc_cnt_pc_out       <= 32'h20000000;
         state               <= S_IDLE;
     end
