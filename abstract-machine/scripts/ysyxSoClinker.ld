@@ -19,7 +19,7 @@ SECTIONS {
   _etext = .;
 
   . = ORIGIN(SRAM);
-  .data : AT(etext){
+  .data : AT(etext) {
     _data_start_load = LOADADDR(.data);
     _data_start = ORIGIN(SRAM);
     *(.data*)
