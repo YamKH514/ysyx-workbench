@@ -29,7 +29,6 @@ static const uint32_t img [] = {
 static void restart() {
   /* Set the initial program counter. */
   cpu.pc = RESET_VECTOR;
-  printf("RESET_VECTOR: 0x%08x\n", RESET_VECTOR);
 
   /* The zero register is always 0. */
   cpu.gpr[0] = 0;

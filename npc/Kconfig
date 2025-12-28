@@ -57,3 +57,5 @@ config DIFFTEST
     Note that this will significantly reduce the performance of NPC.
 
 endmenu
+
+source "csrc/memory/Kconfig"
