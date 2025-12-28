@@ -16,7 +16,7 @@ SECTIONS {
   . = _sram_start;
   .data : {
     *(.data*)
-  }
+  } :data
   edata = .;
   _data = .;
   .bss : {
