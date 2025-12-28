@@ -91,7 +91,7 @@ always @(posedge clk) begin
         ifu_inst_out         <= 32'b0;
         arvalid_out          <= 1'b0;
         rready_out           <= 1'b0;
-        ifu_to_pc_ready_out  <= 1'b0;
+        ifu_to_pc_ready_out  <= 1'b1;
         ifu_to_idu_valid_out <= 1'b0;
         br_out               <= 1'b0;
         bs_out               <= 1'b0;
