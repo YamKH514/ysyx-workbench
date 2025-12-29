@@ -37,7 +37,6 @@ static void trace_and_difftest(VysyxSoCFull *top, char *logbuf)
 #endif
     }
 #ifdef CONFIG_DIFFTEST
-    // if ((top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__wbu_to_pc_valid) & (top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__pc_to_wbu_ready))
     difftest_step(npc_state.halt_pc);
 #endif
 #ifdef CONFIG_WATCHPOINT
