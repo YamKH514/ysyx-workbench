@@ -17,9 +17,12 @@ SECTIONS {
   .rodata : {
     *(.rodata*)
   } > mrom AT > mrom
+  _data_start = ORIGIN(sram);
+  _data_load_start = .;
   .data : {
     *(.data)
   } > sram AT > mrom : data
+  _data_load_size = SIZEOF(.data);
   edata = .;
   _data = .;
   .bss : {
@@ -29,7 +32,7 @@ SECTIONS {
     *(.scommon)
   } > sram
   . = ORIGIN(sram);
-  _heap_start = .;
+  _heap_start = . + SIZEOF(.data);
   . = ORIGIN(sram) + 0x1000;
   _heap_end = .;
   _stack_top = ALIGN(0x1000);
