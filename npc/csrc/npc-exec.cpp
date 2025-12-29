@@ -37,7 +37,8 @@ static void trace_and_difftest(VysyxSoCFull *top, char *logbuf)
 #endif
     }
 #ifdef CONFIG_DIFFTEST
-    difftest_step(npc_state.halt_pc);
+    if ((top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__wbu_to_pc_valid) & (top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__pc_to_wbu_ready))
+        difftest_step(npc_state.halt_pc);
 #endif
 #ifdef CONFIG_WATCHPOINT
     bool changed = wp_scan();
@@ -70,65 +71,65 @@ static void exec_once(VysyxSoCFull *top, VerilatedContext *contextp, VerilatedVc
         get_gpr(cpu.gpr);
         svSetScope(svGetScopeFromName("TOP.ysyxSoCFull.asic.cpu.cpu.u_CSR"));
         get_csr((int *)(&cpu.csr));
+    }
 
-        if (npc_state.halt_pc >= 0x20000000)
-        {
-            // 反汇编 itrace
-            char *p = logbuf;
-            p += snprintf(p, sizeof(logbuf), "0x%08x:", npc_state.halt_pc);
-            int ilen = 4;
-            int i;
-            uint32_t inst_val = paddr_read(npc_state.halt_pc);
-            uint8_t *inst = (uint8_t *)&inst_val;
+    if (npc_state.halt_pc >= 0x20000000)
+    {
+        // 反汇编 itrace
+        char *p = logbuf;
+        p += snprintf(p, sizeof(logbuf), "0x%08x:", npc_state.halt_pc);
+        int ilen = 4;
+        int i;
+        uint32_t inst_val = paddr_read(npc_state.halt_pc);
+        uint8_t *inst = (uint8_t *)&inst_val;
 #ifdef CONFIG_ITRACE
-            for (i = ilen - 1; i >= 0; i--)
-            {
-                p += snprintf(p, 4, " %02x", inst[i]);
-            }
-            int ilen_max = 4;
-            int space_len = ilen_max - ilen;
-            if (space_len < 0)
-                space_len = 0;
-            space_len = space_len * 3 + 1;
-            memset(p, ' ', space_len);
-            p += space_len;
+        for (i = ilen - 1; i >= 0; i--)
+        {
+            p += snprintf(p, 4, " %02x", inst[i]);
+        }
+        int ilen_max = 4;
+        int space_len = ilen_max - ilen;
+        if (space_len < 0)
+            space_len = 0;
+        space_len = space_len * 3 + 1;
+        memset(p, ' ', space_len);
+        p += space_len;
 
-            disassemble(p, logbuf + sizeof(logbuf) - p, npc_state.halt_pc, inst, ilen);
+        disassemble(p, logbuf + sizeof(logbuf) - p, npc_state.halt_pc, inst, ilen);
 #endif
-            trace_and_difftest(top, logbuf);
+        trace_and_difftest(top, logbuf);
 
-            // 函数调用 ftrace
-            uint8_t opcode = BITS(inst_val, 6, 0);
-            int rd = BITS(inst_val, 11, 7);
-            int rs1 = BITS(inst_val, 19, 15);
-            uint32_t dnpc = 0x0;
-            if (opcode == inst_jar)
-            {
-                uint32_t imm = (SEXT((BITS(inst_val, 31, 31) << 20) | (BITS(inst_val, 19, 12) << 12) | (BITS(inst_val, 20, 20) << 11) | (BITS(inst_val, 30, 21) << 1), 21));
-                dnpc = npc_state.halt_pc + imm;
+        // 函数调用 ftrace
+        uint8_t opcode = BITS(inst_val, 6, 0);
+        int rd = BITS(inst_val, 11, 7);
+        int rs1 = BITS(inst_val, 19, 15);
+        uint32_t dnpc = 0x0;
+        if (opcode == inst_jar)
+        {
+            uint32_t imm = (SEXT((BITS(inst_val, 31, 31) << 20) | (BITS(inst_val, 19, 12) << 12) | (BITS(inst_val, 20, 20) << 11) | (BITS(inst_val, 30, 21) << 1), 21));
+            dnpc = npc_state.halt_pc + imm;
 #ifdef CONFIG_FTRACE
-                if (rd == 1)
-                {
-                    ftrace_call(npc_state.halt_pc, dnpc);
-                }
-#endif
-            }
-            else if (opcode == inst_jarl)
+            if (rd == 1)
             {
-                uint32_t imm = SEXT(BITS(i, 31, 20), 12);
-                uint32_t src1 = cpu.gpr[rs1];
-                dnpc = src1 + imm;
-#ifdef CONFIG_FTRACE
-                if (inst_val == 0x00008067)
-                {
-                    ftrace_ret(npc_state.halt_pc);
-                }
-                else if ((rd == 1) || (imm == 0 && rd == 0))
-                {
-                    ftrace_call(npc_state.halt_pc, dnpc);
-                }
-#endif
+                ftrace_call(npc_state.halt_pc, dnpc);
             }
+#endif
+        }
+        else if (opcode == inst_jarl)
+        {
+            uint32_t imm = SEXT(BITS(i, 31, 20), 12);
+            uint32_t src1 = cpu.gpr[rs1];
+            dnpc = src1 + imm;
+#ifdef CONFIG_FTRACE
+            if (inst_val == 0x00008067)
+            {
+                ftrace_ret(npc_state.halt_pc);
+            }
+            else if ((rd == 1) || (imm == 0 && rd == 0))
+            {
+                ftrace_call(npc_state.halt_pc, dnpc);
+            }
+#endif
         }
     }
 }
