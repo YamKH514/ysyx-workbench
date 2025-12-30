@@ -17,14 +17,15 @@ extern char _pmem_start;
 Area heap = RANGE(&_heap_start, &_heap_end);
 static const char mainargs[MAINARGS_MAX_LEN] = MAINARGS_PLACEHOLDER; // defined in CFLAGS
 
-extern char _data_start[], _data_load_start[], _data_load_size;
+extern char _data_start[], _data_load_start[], _data_load_end;
 
 void putch(char ch) {
   *(volatile char *)(UART_BASE + UART_TX) = ch;
 }
 
-void bootloader () {
-  memcpy(_data_start, _data_load_start, (size_t)_data_load_size);
+void bootloader() {
+  size_t load_size = (uintptr_t)&_data_load_end - (uintptr_t)_data_load_start;
+  memcpy(_data_start, _data_load_start, load_size);
 }
 
 void halt(int code) {

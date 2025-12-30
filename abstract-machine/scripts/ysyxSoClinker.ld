@@ -22,7 +22,7 @@ SECTIONS {
   .data : {
     *(.data)
   } > sram AT > mrom : data
-  _data_load_size = SIZEOF(.data);
+  _data_load_end = .;
   edata = .;
   _data = .;
   .bss : {
