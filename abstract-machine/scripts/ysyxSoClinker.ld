@@ -1,28 +1,31 @@
+ENTRY(_start)
+PHDRS { text PT_LOAD; data PT_LOAD; }
+
 MEMORY {
   mrom : ORIGIN = 0x20000000, LENGTH = 4K
   sram : ORIGIN = 0x0f000000, LENGTH = 8K
 }
-
-ENTRY(_start)
-PHDRS { text PT_LOAD; data PT_LOAD; }
 
 SECTIONS {
   . = ORIGIN(mrom);
   .text : {
     *(entry)
     *(.text*)
-  } > mrom AT > mrom : text
+    ASSERT(. <= ORIGIN(mrom) + LENGTH(mrom), ".text section too large for mrom");
+  } > mrom : text
   etext = .;
   _etext = .;
   .rodata : {
     *(.rodata*)
-  } > mrom AT > mrom
-  _data_start = ORIGIN(sram);
-  _data_load_start = .;
+    ASSERT(. <= ORIGIN(mrom) + LENGTH(mrom), ".rodata section too large for mrom");
+  } > mrom
   .data : {
+    _data_start = .;
     *(.data*)
+    _data_end = .;
   } > sram AT > mrom : data
-  _data_load_end = _data_load_start + SIZEOF(.data);
+  _load_data_start = LOADADDR(.data);
+  _load_data_size = SIZEOF(.data);
   edata = .;
   _data = .;
   .bss : {
@@ -30,11 +33,9 @@ SECTIONS {
     *(.bss*)
     *(.sbss*)
     *(.scommon)
+    _bss_end = .;
   } > sram
-  . = ORIGIN(sram) + SIZEOF(.data);
-  _heap_start = .;
-  . = . + 0x1000;
-  _heap_end = .;
+  _heap_start = ALIGN(0x1000);
   _stack_top = ALIGN(0x1000);
   _stack_pointer = ORIGIN(sram) + LENGTH(sram);
   end = .;
