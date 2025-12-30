@@ -20,7 +20,7 @@ SECTIONS {
   _data_start = ORIGIN(sram);
   _data_load_start = .;
   .data : {
-    *(.data)
+    *(.data*)
   } > sram AT > mrom : data
   _data_load_end = .;
   edata = .;
