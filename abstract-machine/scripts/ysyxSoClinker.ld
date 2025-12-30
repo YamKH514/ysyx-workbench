@@ -30,10 +30,10 @@ SECTIONS {
     *(.bss*)
     *(.sbss*)
     *(.scommon)
-  } > sram
-  . = ORIGIN(sram);
-  _heap_start = . + SIZEOF(.data);
-  . = ORIGIN(sram) + 0x1000;
+  } > sram AT > sram
+  . = ORIGIN(sram) + SIZEOF(.data);
+  _heap_start = .;
+  . = . + 0x1000;
   _heap_end = .;
   _stack_top = ALIGN(0x1000);
   _stack_pointer = ORIGIN(sram) + LENGTH(sram);
