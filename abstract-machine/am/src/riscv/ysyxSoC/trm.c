@@ -28,13 +28,13 @@ void bootloader () {
 }
 
 void halt(int code) {
-  bootloader();
   npc_trap(code);
 
   while (1);
 }
 
 void _trm_init() {
+  bootloader();
   int ret = main(mainargs);
   halt(ret);
 }
