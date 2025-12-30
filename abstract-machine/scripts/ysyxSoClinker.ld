@@ -30,7 +30,7 @@ SECTIONS {
     *(.bss*)
     *(.sbss*)
     *(.scommon)
-  } > sram AT > sram
+  } > sram
   . = ORIGIN(sram) + SIZEOF(.data);
   _heap_start = .;
   . = . + 0x1000;
