@@ -35,9 +35,11 @@ SECTIONS {
     *(.scommon)
     _bss_end = .;
   } > sram
-  _heap_start = ALIGN(0x1000);
-  _stack_top = ALIGN(0x1000);
-  _stack_pointer = ORIGIN(sram) + LENGTH(sram);
+  _stack_top = ALIGN(0x4);
+  . = _stack_top + 0x800;
+  _stack_pointer = .;
   end = .;
   _end = .;
+  _heap_start = ALIGN(0x4);
+  _heap_end = . + 0x400;
 }
