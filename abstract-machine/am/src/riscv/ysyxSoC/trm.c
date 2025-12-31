@@ -22,7 +22,7 @@ void putch(char ch) {
 }
 
 static void bootloader() {
-  extern char _data_start[], _load_data_start[], _load_data_size[];
+  extern char _data_start[], _load_data_start[], _load_data_size;
     memcpy(_data_start, _load_data_start, (size_t)_load_data_size);
 }
 
