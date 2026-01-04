@@ -65,6 +65,9 @@ extern "C" void mrom_read(int32_t addr, int32_t *data)
 {
     uint32_t raddr = ((uint32_t)addr) & ~0x3u;
     uint32_t rdata = pmem_read(raddr, 4);
+#ifdef CONFIG_MTRACE
+    print_paddr_read(raddr, 4);
+#endif
     *data = (int32_t)rdata;
     return;
 }
