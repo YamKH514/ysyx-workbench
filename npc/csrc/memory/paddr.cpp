@@ -37,6 +37,20 @@ void init_mem()
     Log("physical memory area [ 0x%08x, 0x%08x]", PMEM_LEFT, PMEM_RIGHT);
 }
 
+extern "C" void mem_tracer_read(int32_t addr, int32_t data)
+{
+#ifdef CONFIG_MTRACE
+    printf("MEM READ,  raddr=0x%08x, rdata=0x%08x\n", addr, data);
+#endif
+}
+
+extern "C" void mem_tracer_write(int32_t addr, int32_t data)
+{
+#ifdef CONFIG_MTRACE
+    printf("MEM WRITE, waddr=0x%08x, wdata=0x%08x\n", addr, data);
+#endif
+}
+
 void print_paddr_read(uint32_t addr, int len)
 {
     printf("MEM_READ  data: 0x%08x, at 0x%08x , len = %d\n", pmem_read(addr, len), addr, len);
@@ -65,9 +79,6 @@ extern "C" void mrom_read(int32_t addr, int32_t *data)
 {
     uint32_t raddr = ((uint32_t)addr) & ~0x3u;
     uint32_t rdata = pmem_read(raddr, 4);
-#ifdef CONFIG_MTRACE
-    print_paddr_read(raddr, 4);
-#endif
     *data = (int32_t)rdata;
     return;
 }

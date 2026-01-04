@@ -56,6 +56,8 @@ module IFU(
     input               bg_in
 );
 
+import "DPI-C" function void mem_tracer_read(input int addr,input int data);
+
 assign awid_out    = 4'b0;
 assign awaddr_out  = 32'b0;
 assign awlen_out   = 4'b0;
@@ -130,6 +132,7 @@ always @(posedge clk) begin
             end
             S_WAIT_INST: begin
                 if (rvalid_in & rready_out) begin
+                    mem_tracer_read(ifu_current_pc_r, rdata_in);
                     rid_r                <= rid_in;
                     ifu_inst_out         <= rdata_in;
                     if (rresp_in != 2'b00) begin
