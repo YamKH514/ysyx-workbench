@@ -65,7 +65,7 @@ extern "C" uint32_t paddr_read(uint32_t raddr)
 {
     uint32_t addr = raddr & ~0x3u;
 #ifdef CONFIG_MTRACE
-    print_paddr_read(addr, 4);
+    // print_paddr_read(addr, 4);
 #endif
     if(likely(in_pmem(addr)))
     {
