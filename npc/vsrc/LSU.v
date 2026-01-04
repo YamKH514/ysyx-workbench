@@ -62,6 +62,9 @@ module LSU(
     input               bg_in
 );
 
+import "DPI-C" function void mem_tracer_read(input int addr,input int data);
+import "DPI-C" function void mem_tracer_write(input int addr,input int data);
+
 reg [2:0]   lsu_r_func_r;
 reg         lsu_re_r;
 reg [3:0]   lsu_w_mask_r;
@@ -133,14 +136,15 @@ always @(posedge clk) begin
                         arburst_out <= 2'b01;
                         arvalid_out <= 1'b1;
                     end else if (lsu_we_r) begin
+                        mem_tracer_write(waddr_aligned, wdata_aligned);
                         awid_out    <= 4'b0;
-                        awaddr_out <= waddr_aligned;
+                        awaddr_out  <= waddr_aligned;
                         awlen_out   <= 4'b0;
                         awsize_out  <= 3'b010;
                         awburst_out <= 2'b01;
                         awvalid_out <= 1'b1;
-                        wdata_out  <= wdata_aligned;
-                        wstrb_out  <= wstrb_aligned;
+                        wdata_out   <= wdata_aligned;
+                        wstrb_out   <= wstrb_aligned;
                         wlast_out   <= 1'b1;
                         wvalid_out  <= 1'b1;
                     end
@@ -160,6 +164,7 @@ always @(posedge clk) begin
             end
             S_GET_R: begin
                 if (rvalid_in & rready_out & rlast_in) begin
+                    mem_tracer_read(lsu_r_addr_in, rdata_in);
                     rid_r                <= rid_in;
                     rdata_r              <= rdata_in;
                     if (rresp_in != 2'b00) begin
