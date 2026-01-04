@@ -14,20 +14,20 @@ SECTIONS {
     *(entry)
     *(.text*)
     ASSERT(. <= ORIGIN(mrom) + LENGTH(mrom), ".text section too large for mrom");
-  } > mrom
+  } > REGION_TEXT
   etext = .;
   _etext = .;
   .rodata : {
     *(.rodata*)
+    rodata_end = .;
     ASSERT(. <= ORIGIN(mrom) + LENGTH(mrom), ".rodata section too large for mrom");
-  } > mrom
-  .data : {
-    _data_start = .;
+  } > REGION_RODATA
+  .data : AT (rodata_end) {
+    data_start = .;
     *(.data*)
-    _data_end = .;
-  } > sram AT > mrom
-  _load_data_start = LOADADDR(.data);
-  _load_data_size = _data_end - _data_start;
+  } > REGION_DATA
+  data_size = SIZEOF(.data);
+  data_load_start = LOADADDR(.data);
   edata = .;
   _data = .;
   .bss : {
@@ -36,7 +36,7 @@ SECTIONS {
     *(.sbss*)
     *(.scommon)
     _bss_end = .;
-  } > sram
+  } > REGION_BSS
   _stack_top = ALIGN(0x4);
   . = _stack_top + 0x800;
   _stack_pointer = .;
