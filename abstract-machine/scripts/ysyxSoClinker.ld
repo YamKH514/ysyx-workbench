@@ -22,10 +22,10 @@ SECTIONS {
     rodata_end = .;
     ASSERT(. <= ORIGIN(mrom) + LENGTH(mrom), ".rodata section too large for mrom");
   } > REGION_RODATA
-  .data : AT (rodata_end) {
+  .data : {
     data_start = .;
     *(.data*)
-  } > REGION_DATA
+  } > REGION_DATA AT > mrom
   data_size = SIZEOF(.data);
   data_load_start = LOADADDR(.data);
   edata = .;
