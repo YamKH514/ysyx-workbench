@@ -51,19 +51,14 @@ char *strcat(char *dst, const char *src) {
 int strcmp(const char *s1, const char *s2) {
   while (*s1 != '\0' && *s2 != '\0')
   {
-    unsigned char c1 = (unsigned char) *s1;
-    unsigned char c2 = (unsigned char) *s2;
-    if(c1 != c2)
-    {
-      return (c1 < c2) ? -1 : 1;
-    }
+    int ret = *s1 - *s2;
+    if (ret != 0) return ret;
     s1 ++;
     s2 ++;
   }
-  unsigned char c1 = (unsigned char) *s1;
-  unsigned char c2 = (unsigned char) *s2;
-  if(c1 == c2) return 0;
-  return (c1 < c2) ? -1 : 1;
+  if(*s1 == *s2) return 0;
+
+  return (*s1 < *s2) ? -1 : 1;
 }
 
 int strncmp(const char *s1, const char *s2, size_t n) {
