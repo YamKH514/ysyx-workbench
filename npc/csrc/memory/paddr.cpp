@@ -40,7 +40,7 @@ void init_mem()
 extern "C" void mem_tracer_read(int32_t addr, int32_t data)
 {
 #ifdef CONFIG_MTRACE
-    printf("MEM READ,  raddr=0x%08x, rdata=0x%08x\n", addr, data);
+    printf("MEM READ , raddr=0x%08x, rdata=0x%08x\n", addr, data);
 #endif
 }
 
