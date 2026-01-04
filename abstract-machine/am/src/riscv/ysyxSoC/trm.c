@@ -21,16 +21,14 @@ void putch(char ch) {
   *(volatile char *)(UART_BASE + UART_TX) = ch;
 }
 
-extern char data_start [];
-extern char data_size [];
-extern char data_load_start [];
+
 
 void bootloader(void)
 {
-  // if (data_start != data_load_start)
-    {
-      memcpy(data_start, data_load_start, (size_t) data_size);
-    }
+  extern char data_start [];
+extern char data_size [];
+extern char data_load_start [];
+  memcpy(data_start, data_load_start, (size_t) data_size);
 }
 
 // static void bootloader() {
