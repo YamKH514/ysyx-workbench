@@ -25,6 +25,7 @@ SECTIONS {
   .data : {
     data_start = .;
     *(.data*)
+    *(.sdata*)
   } > REGION_DATA AT > mrom
   data_size = SIZEOF(.data);
   data_load_start = LOADADDR(.data);
