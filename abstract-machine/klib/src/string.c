@@ -49,7 +49,6 @@ char *strcat(char *dst, const char *src) {
 }
 
 int strcmp(const char *s1, const char *s2) {
-  assert(0);
   while (*s1 != '\0' && *s2 != '\0')
   {
     int ret = *s1 - *s2;
