@@ -73,7 +73,7 @@ static void exec_once(VysyxSoCFull *top, VerilatedContext *contextp, VerilatedVc
         get_csr((int *)(&cpu.csr));
     }
 
-    if (npc_state.halt_pc >= 0x20000000)
+    if (npc_state.halt_pc >= CONFIG_MBASE)
     {
         // 反汇编 itrace
         char *p = logbuf;
