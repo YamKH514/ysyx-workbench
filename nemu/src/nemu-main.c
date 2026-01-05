@@ -34,5 +34,5 @@ int main(int argc, char *argv[]) {
 
   IFDEF(CONFIG_FTRACE, {void ftrace_end();});
   // return is_exit_status_bad();
-  return 0;
+  return -1;
 }
