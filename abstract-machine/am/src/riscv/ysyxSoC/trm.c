@@ -28,6 +28,7 @@ Area heap = RANGE(&_heap_start, _heap_end);
 static const char mainargs[MAINARGS_MAX_LEN] = MAINARGS_PLACEHOLDER; // defined in CFLAGS
 
 static void uart_init() {
+  // *(volatile char *)(UART_BASE + UART_FCR) = 0x06; // Clear & reset RX&TX FIFOs
   // Set Divisor Latch register
   *(volatile char *)(UART_BASE + UART_LCR) = (1 << 7);
   *(volatile char *)(UART_BASE + UART_MSB) = 0x00;
@@ -35,11 +36,8 @@ static void uart_init() {
   *(volatile char *)(UART_BASE + UART_LCR) = 0x00;
 
   *(volatile char *)(UART_BASE + UART_IER) = 0x00; // Disable all interrupts
-  *(volatile char *)(UART_BASE + UART_IIR) = 0xC1;
-  *(volatile char *)(UART_BASE + UART_FCR) = 0x06; // Clear & reset RX&TX FIFOs
   *(volatile char *)(UART_BASE + UART_FCR) = 0xC0;
   *(volatile char *)(UART_BASE + UART_LCR) = 0x03; // Set LCR 8 bits of data, np parity and 1 stop bit
-  *(volatile char *)(UART_BASE + UART_MCR) = 0x00;
 }
 
 void putch(char ch) {
