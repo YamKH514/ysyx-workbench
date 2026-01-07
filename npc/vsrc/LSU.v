@@ -143,8 +143,8 @@ always @(posedge clk) begin
                         awsize_out  <= awsize;
                         awburst_out <= 2'b01;
                         awvalid_out <= 1'b1;
-                        wdata_out   <= lsu_w_data_in;
-                        wstrb_out   <= lsu_w_mask_r;
+                        wdata_out   <= wdata_aligned;
+                        wstrb_out   <= wstrb_aligned;
                         wlast_out   <= 1'b1;
                         wvalid_out  <= 1'b1;
                     end
@@ -278,6 +278,10 @@ wire    [7:0]   data_b;
 wire    [15:0]  data_h;
 wire    [2:0]   arsize;
 wire    [2:0]   awsize;
+wire    [31:0]  waddr_aligned;
+wire    [1:0]   w_byte_off;
+reg     [31:0]  wdata_aligned;
+reg     [3:0]   wstrb_aligned;
 
 assign byte_off_r = lsu_r_addr_in[1:0];
 assign data_b = {8{byte_off_r == 2'b00}} & rdata_r[7:0]  |
@@ -300,5 +304,12 @@ assign arsize = (lsu_r_func_r == `MEM_READ_FUNC_LBU) ? 3'b000 :
 assign awsize = (lsu_w_mask_r == 4'b0001) ? 3'b000 :
                 (lsu_w_mask_r == 4'b0011) ? 3'b001 :
                 3'b010;
+                assign waddr_aligned = {lsu_w_addr_in[31:2], 2'b00};
+assign w_byte_off = lsu_w_addr_in[1:0];
+assign wdata_aligned =  {32{w_byte_off == 2'b00}} & lsu_w_data_in      |
+                        {32{w_byte_off == 2'b01}} & lsu_w_data_in << 8 |
+                        {32{w_byte_off == 2'b10}} & lsu_w_data_in << 16|
+                        {32{w_byte_off == 2'b11}} & lsu_w_data_in << 24;
+assign wstrb_aligned = lsu_w_mask_r << w_byte_off;
 
 endmodule
