@@ -32,11 +32,10 @@ static void uart_init() {
   *(volatile char *)(UART_BASE + UART_LCR) = (1 << 7);
   *(volatile char *)(UART_BASE + UART_MSB) = 0x00;
   *(volatile char *)(UART_BASE + UART_LSB) = 0x01;
-  *(volatile char *)(UART_BASE + UART_LCR) = 0x00;
-  
+
+  *(volatile char *)(UART_BASE + UART_LCR) = 0x03; // Set LCR 8N1
   *(volatile char *)(UART_BASE + UART_IER) = 0x00; // Disable all interrupts
   *(volatile char *)(UART_BASE + UART_FCR) = 0xC7; // Clear & reset RX&TX FIFOs, receiver FIFO Interrupt trigger level 14bytes
-  *(volatile char *)(UART_BASE + UART_LCR) = 0x03; // Set LCR 8 bits of data, np parity and 1 stop bit
 }
 
 void putch(char ch) {
