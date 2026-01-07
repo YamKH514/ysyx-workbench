@@ -39,7 +39,7 @@ static void uart_init() {
 }
 
 void putch(char ch) {
-  // while ((*(volatile char *)(UART_BASE + UART_LSR) & (1 << 5)) == 0); // Waiting the Transmit FIFO empty
+  while ((*(volatile char *)(UART_BASE + UART_LSR) & (1 << 5)) == 0); // Waiting the Transmit FIFO empty
   *(volatile char *)(UART_BASE + UART_TX) = ch;
 }
 
