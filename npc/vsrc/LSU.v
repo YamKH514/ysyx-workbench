@@ -138,7 +138,7 @@ always @(posedge clk) begin
                     end else if (lsu_we_r) begin
                         mem_tracer_write(waddr_aligned, wdata_aligned);
                         awid_out    <= 4'b0;
-                        awaddr_out  <= waddr_aligned;
+                        awaddr_out  <= lsu_w_addr_in;
                         awlen_out   <= 4'b0;
                         awsize_out  <= 3'b010;
                         awburst_out <= 2'b01;
