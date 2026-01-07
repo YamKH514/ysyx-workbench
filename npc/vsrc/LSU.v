@@ -67,8 +67,8 @@ import "DPI-C" function void mem_tracer_write(input int addr,input int data);
 
 reg [2:0]   lsu_r_func_r;
 reg         lsu_re_r;
-reg [3:0]   lsu_w_mask_r;
-reg         lsu_we_r;
+wire    [3:0]   lsu_w_mask_r;
+wire            lsu_we_r;
 assign {lsu_r_func_r, lsu_re_r, lsu_w_mask_r, lsu_we_r} = idu_to_lsu_data_in;
 
 localparam S_IDLE     = 3'd0;
