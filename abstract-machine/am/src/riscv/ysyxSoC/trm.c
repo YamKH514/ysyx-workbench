@@ -32,7 +32,7 @@ static void uart_init() {
   // Set Divisor Latch register
   *(volatile char *)(UART_BASE + UART_LCR) = (1 << 7);
   *(volatile char *)(UART_BASE + UART_MSB) = 0x00;
-  *(volatile char *)(UART_BASE + UART_LSB) = 0x01;
+  *(volatile char *)(UART_BASE + UART_LSB) = 0x02;
   *(volatile char *)(UART_BASE + UART_LCR) = 0x00;
 
   *(volatile char *)(UART_BASE + UART_IER) = 0x00; // Disable all interrupts
