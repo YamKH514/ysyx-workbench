@@ -31,7 +31,7 @@ static void uart_init() {
   *(volatile char *)(UART_BASE + UART_FCR) = 0x06; // Clear & reset RX&TX FIFOs
 
   // Set Divisor Latch register
-  // *(volatile char *)(UART_BASE + UART_LCR) = 0x80;
+  *(volatile char *)(UART_BASE + UART_LCR) = 0x80;
   *(volatile char *)(UART_BASE + UART_MSB) = 0x00;
   *(volatile char *)(UART_BASE + UART_LSB) = 0x01;
 
