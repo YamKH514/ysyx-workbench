@@ -32,8 +32,8 @@ static void uart_init() {
 
   // Set Divisor Latch register
   // *(volatile char *)(UART_BASE + UART_LCR) = 0x80;
-  // *(volatile char *)(UART_BASE + UART_MSB) = 0x00;
-  // *(volatile char *)(UART_BASE + UART_LSB) = 0x01;
+  *(volatile char *)(UART_BASE + UART_MSB) = 0x00;
+  *(volatile char *)(UART_BASE + UART_LSB) = 0x01;
 
   *(volatile char *)(UART_BASE + UART_LCR) = 0x03; // Set LCR 8 bits of data, np parity and 1 stop bit
   *(volatile char *)(UART_BASE + UART_IER) = 0x00; // Disable all interrupts
