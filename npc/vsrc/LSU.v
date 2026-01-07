@@ -132,7 +132,7 @@ always @(posedge clk) begin
                         arid_out    <= 4'b0;
                         araddr_out  <= lsu_r_addr_in;
                         arlen_out   <= 4'b0;
-                        arsize_out  <= 3'b010;
+                        arsize_out  <= arsize;
                         arburst_out <= 2'b01;
                         arvalid_out <= 1'b1;
                     end else if (lsu_we_r) begin
@@ -276,6 +276,7 @@ end
 reg     [1:0]   byte_off_r;
 wire    [7:0]   data_b;
 wire    [15:0]  data_h;
+wire    [2:0]   arsize;
 wire    [2:0]   awsize;
 
 assign byte_off_r = lsu_r_addr_in[1:0];
@@ -289,6 +290,12 @@ assign lsu_r_data_out = {32{lsu_r_func_r == `MEM_READ_FUNC_LBU}} & {24'b0, data_
                         {32{lsu_r_func_r == `MEM_READ_FUNC_LHU}} & {16'b0, data_h[15:0]} |
                         {32{lsu_r_func_r == `MEM_READ_FUNC_LH}}  & {{16{data_h[15]}}, data_h[15:0]} |
                         {32{lsu_r_func_r == `MEM_READ_FUNC_LW}}  & rdata_r;
+
+assign arsize = (lsu_r_func_r == `MEM_READ_FUNC_LBU) ? 3'b000 :
+                (lsu_r_func_r == `MEM_READ_FUNC_LB) ? 3'b000 :
+                (lsu_r_func_r == `MEM_READ_FUNC_LHU) ? 3'b001 :
+                (lsu_r_func_r == `MEM_READ_FUNC_LH) ? 3'b001 :
+                3'b010;
 
 assign awsize = (lsu_w_mask_r == 4'b0001) ? 3'b000 :
                 (lsu_w_mask_r == 4'b0011) ? 3'b001 :
