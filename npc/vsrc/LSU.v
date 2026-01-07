@@ -136,15 +136,15 @@ always @(posedge clk) begin
                         arburst_out <= 2'b01;
                         arvalid_out <= 1'b1;
                     end else if (lsu_we_r) begin
-                        mem_tracer_write(waddr_aligned, wdata_aligned);
+                        mem_tracer_write(lsu_w_addr_in, lsu_w_data_in);
                         awid_out    <= 4'b0;
                         awaddr_out  <= lsu_w_addr_in;
                         awlen_out   <= 4'b0;
-                        awsize_out  <= 3'b010;
+                        awsize_out  <= awsize;
                         awburst_out <= 2'b01;
                         awvalid_out <= 1'b1;
-                        wdata_out   <= wdata_aligned;
-                        wstrb_out   <= wstrb_aligned;
+                        wdata_out   <= lsu_w_data_in;
+                        wstrb_out   <= lsu_w_mask_r;
                         wlast_out   <= 1'b1;
                         wvalid_out  <= 1'b1;
                     end
@@ -276,10 +276,7 @@ end
 reg     [1:0]   byte_off_r;
 wire    [7:0]   data_b;
 wire    [15:0]  data_h;
-wire    [31:0]  waddr_aligned;
-wire    [1:0]   w_byte_off;
-reg     [31:0]  wdata_aligned;
-reg     [3:0]   wstrb_aligned;
+wire    [2:0]   awsize;
 
 assign byte_off_r = lsu_r_addr_in[1:0];
 assign data_b = {8{byte_off_r == 2'b00}} & rdata_r[7:0]  |
@@ -293,12 +290,8 @@ assign lsu_r_data_out = {32{lsu_r_func_r == `MEM_READ_FUNC_LBU}} & {24'b0, data_
                         {32{lsu_r_func_r == `MEM_READ_FUNC_LH}}  & {{16{data_h[15]}}, data_h[15:0]} |
                         {32{lsu_r_func_r == `MEM_READ_FUNC_LW}}  & rdata_r;
 
-assign waddr_aligned = {lsu_w_addr_in[31:2], 2'b00};
-assign w_byte_off = lsu_w_addr_in[1:0];
-assign wdata_aligned =  {32{w_byte_off == 2'b00}} & lsu_w_data_in      |
-                        {32{w_byte_off == 2'b01}} & lsu_w_data_in << 8 |
-                        {32{w_byte_off == 2'b10}} & lsu_w_data_in << 16|
-                        {32{w_byte_off == 2'b11}} & lsu_w_data_in << 24;
-assign wstrb_aligned = lsu_w_mask_r << w_byte_off;
+assign awsize = (lsu_w_mask_r == 4'b0001) ? 3'b000 :
+                (lsu_w_mask_r == 4'b0011) ? 3'b001 :
+                3'b010;
 
 endmodule
