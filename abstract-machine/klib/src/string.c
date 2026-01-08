@@ -22,7 +22,6 @@ char *strcpy(char *dst, const char *src) {
     dst ++;
     src ++;
   }
-  dst ++;
   *dst = '\0';
 
   return ret;

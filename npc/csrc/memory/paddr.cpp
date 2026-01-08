@@ -10,10 +10,10 @@
 #define SERIAL_PORT (DEVICE_BASE + 0x00003f8)
 #define RTC_ADDR    (DEVICE_BASE + 0x0000048)
 
-static uint8_t pmem[MEM_MSIZE] PG_ALIGN = {};
+static uint8_t pmem[CONFIG_MSIZE] PG_ALIGN = {};
 
-uint8_t *guest_to_host(uint32_t paddr) { return pmem + paddr - MEM_BASE; }
-uint32_t host_to_guest(uint8_t *haddr) { return haddr - pmem + MEM_BASE; }
+uint8_t *guest_to_host(uint32_t paddr) { return pmem + paddr - CONFIG_MBASE; }
+uint32_t host_to_guest(uint8_t *haddr) { return haddr - pmem + CONFIG_MBASE; }
 
 static uint32_t pmem_read(uint32_t addr, int len)
 {
@@ -37,6 +37,20 @@ void init_mem()
     Log("physical memory area [ 0x%08x, 0x%08x]", PMEM_LEFT, PMEM_RIGHT);
 }
 
+extern "C" void mem_tracer_read(int32_t addr, int32_t data)
+{
+#ifdef CONFIG_MTRACE
+    printf("MEM_READ , raddr=0x%08x, rdata=0x%08x\n", addr, data);
+#endif
+}
+
+extern "C" void mem_tracer_write(int32_t addr, int32_t data)
+{
+#ifdef CONFIG_MTRACE
+    printf("MEM_WRITE, waddr=0x%08x, wdata=0x%08x\n", addr, data);
+#endif
+}
+
 void print_paddr_read(uint32_t addr, int len)
 {
     printf("MEM_READ  data: 0x%08x, at 0x%08x , len = %d\n", pmem_read(addr, len), addr, len);
@@ -50,15 +64,8 @@ void print_paddr_write(uint32_t addr, int len, uint32_t data)
 extern "C" uint32_t paddr_read(uint32_t raddr)
 {
     uint32_t addr = raddr & ~0x3u;
-//     if(addr == RTC_ADDR || addr == RTC_ADDR + 0x4) {
-//     uint64_t us = get_time();
-// #ifdef CONFIG_DIFFTEST
-//     difftest_skip_ref();
-// #endif
-//     return (addr == RTC_ADDR) ? (uint32_t)us : (uint32_t)(us >> 32);
-//     }
 #ifdef CONFIG_MTRACE
-    print_paddr_read(addr, 4);
+    // print_paddr_read(addr, 4);
 #endif
     if(likely(in_pmem(addr)))
     {
@@ -66,6 +73,14 @@ extern "C" uint32_t paddr_read(uint32_t raddr)
     }
     out_of_bound(addr);
     return 0;
+}
+
+extern "C" void mrom_read(int32_t addr, int32_t *data)
+{
+    uint32_t raddr = ((uint32_t)addr) & ~0x3u;
+    uint32_t rdata = pmem_read(raddr, 4);
+    *data = (int32_t)rdata;
+    return;
 }
 
 extern "C" void paddr_write(uint32_t waddr, uint32_t wdata, uint8_t wmask)

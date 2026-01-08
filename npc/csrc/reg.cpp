@@ -1,5 +1,5 @@
 #include "reg.h"
-#include "Vtop.h"
+#include "VysyxSoCFull.h"
 #include "Vtop__Dpi.h"
 #include "cpu.h"
 
@@ -14,7 +14,7 @@ int reg_length = sizeof(regs) / sizeof(regs[0]);
 void reg_display()
 {
     int gpr[16] = {0};
-    svSetScope(svGetScopeFromName("TOP.top.u_GPR.u_RegisterFile"));
+    svSetScope(svGetScopeFromName("TOP.ysyxSoCFull.asic.cpu.cpu.u_GPR.u_RegisterFile"));
     get_gpr(gpr);
     for (int i = 0; i < reg_length; i++)
     {

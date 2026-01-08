@@ -7,8 +7,12 @@
 // #include <nvboard.h>
 #include "Vtop__Dpi.h"
 
+int is_exit_status_bad();
+extern "C" void flash_read(int32_t addr, int32_t *data) { assert(0); }
+
 int main(int argc, char *argv[])
 {
+    Verilated::commandArgs(argc, argv);
 
     Verilated::mkdir("logs");
     VerilatedContext *contextp = new VerilatedContext;
@@ -16,7 +20,7 @@ int main(int argc, char *argv[])
     contextp->traceEverOn(true);
     contextp->commandArgs(argc, argv);
 
-    Vtop *top = new Vtop{contextp, "TOP"};
+    VysyxSoCFull *top = new VysyxSoCFull{contextp, "TOP"};
     VerilatedVcdC *tfp = new VerilatedVcdC;
     top->trace(tfp, 5);
     tfp->open("logs/sim_wave.vcd");
@@ -36,5 +40,5 @@ int main(int argc, char *argv[])
     tfp->close();
     top->final();
 
-    return 0;
+    return is_exit_status_bad();
 }

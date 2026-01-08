@@ -1,13 +1,12 @@
 module CSR(
     input           clk,
-    input           rstn,
+    input           rst,
     input           is_ecall,
     input           is_mret,
     input   [2:0]   csr_func3_in,
     input           csr_we_in,
     input   [11:0]  csr_rw_addr_in,
     input   [31:0]  csr_w_data_in,
-    input   [31:0]  csr_w_mcause_in,
     input   [31:0]  csr_w_mepc_in,
     output  [31:0]  csr_r_data_out,
     output  [31:0]  csr_r_mtvec_out,
@@ -36,7 +35,7 @@ assign csr_r_mtvec_out = mtvec_r;
 assign csr_r_mepc_out  = mepc_r;
 
 always @(posedge clk) begin
-    if(!rstn) begin
+    if(rst) begin
         mepc_r    <= 32'b0;
         mcause_r  <= 32'b0;
         mtvec_r   <= 32'b0;
@@ -47,7 +46,7 @@ always @(posedge clk) begin
             mstatus_r[12:11]  <= 2'b11;
             mstatus_r[7]      <= mstatus_r[3];
             mstatus_r[3]      <= 1'b0;
-            mcause_r          <= csr_w_mcause_in;
+            mcause_r          <= 32'd11;
             mepc_r            <= csr_w_mepc_in;
         end
         else if(is_mret) begin

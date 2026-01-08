@@ -241,3 +241,9 @@ config RT_CHECK
   default y
 
 endmenu
+
+if TARGET_SHARE
+config YSYXSOC
+  bool "ysyxSoC difftest support"
+  default y
+endif

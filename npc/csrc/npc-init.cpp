@@ -77,7 +77,7 @@ static int parse_args(int argc, char *argv[])
     return 0;
 }
 
-void init_npc(int argc, char *argv[], Vtop* top, VerilatedContext* contextp, VerilatedVcdC* tfp)
+void init_npc(int argc, char *argv[], VysyxSoCFull *top, VerilatedContext *contextp, VerilatedVcdC *tfp)
 {
     parse_args(argc, argv);
 
@@ -91,7 +91,7 @@ void init_npc(int argc, char *argv[], Vtop* top, VerilatedContext* contextp, Ver
 
     long img_size = load_img();
 
-    cpu_reset(10, top);
+    cpu_reset(10, top, contextp, tfp);
 
     init_difftest(diff_so_file, img_size, difftest_port);
 

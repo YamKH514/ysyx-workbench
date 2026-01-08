@@ -5,7 +5,7 @@
 #include "difftest-def.h"
 #include "disasm.h"
 #include "ftrace.h"
-#include "Vtop__Syms.h"
+#include "VysyxSoCFull__Syms.h"
 #include "Vtop__Dpi.h"
 #include "cpu.h"
 #include "watchpoint.h"
@@ -22,7 +22,7 @@ uint64_t g_nr_guest_inst = 0;
 bool g_print_step = false;
 CPU_state cpu = {};
 
-static void trace_and_difftest(Vtop *top, char *logbuf)
+static void trace_and_difftest(VysyxSoCFull *top, char *logbuf)
 {
 #ifdef CONFIG_ITRACE_COND
     if (ITRACE_COND)
@@ -37,7 +37,8 @@ static void trace_and_difftest(Vtop *top, char *logbuf)
 #endif
     }
 #ifdef CONFIG_DIFFTEST
-    if (top->rootp->top__DOT__pc_to_ifu_ready) difftest_step(npc_state.halt_pc);
+    if ((top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__wbu_to_pc_valid) & (top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__pc_to_wbu_ready))
+        difftest_step(npc_state.halt_pc);
 #endif
 #ifdef CONFIG_WATCHPOINT
     bool changed = wp_scan();
@@ -48,45 +49,31 @@ static void trace_and_difftest(Vtop *top, char *logbuf)
 #endif
 }
 
-static void exec_once(Vtop *top, VerilatedContext *contextp, VerilatedVcdC *tfp)
+static void exec_once(VysyxSoCFull *top, VerilatedContext *contextp, VerilatedVcdC *tfp)
 {
     char logbuf[128];
 
-    if (!npc_state.inited)
+    if (!npc_state.inited) cpu_reset(10, top, contextp, tfp);
+
+    if ((top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__wbu_to_pc_valid) & (top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__pc_to_wbu_ready))
     {
-        contextp->timeInc(1);
-        top->clk = 1;
-        top->eval();
-#ifdef CONFIG_VCD_TRACE
-        tfp->dump(contextp->time());
-#endif
-        top->rstn = 1;
-        npc_state.inited = true;
+        npc_state.halt_pc = top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__pc;
+        npc_state.halt_ret = top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__u_GPR__DOT__u_RegisterFile__DOT__rf[10];
     }
 
-    if (top->rootp->top__DOT__pc_to_ifu_ready)
-    {
-        npc_state.halt_pc = top->pc;
-        npc_state.halt_ret = top->rootp->top__DOT__u_GPR__DOT__u_RegisterFile__DOT__rf[10];
-    }
+    cpu_single_cycle(top, contextp, tfp);
 
-    contextp->timeInc(1);
-    cpu_single_cycle(top);
-#ifdef CONFIG_VCD_TRACE
-    tfp->dump(contextp->time());
-#endif
-
-    if (top->rootp->top__DOT__pc_to_ifu_ready)
+    if ((top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__wbu_to_pc_valid) & (top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__pc_to_wbu_ready))
     {
-        cpu.pc = top->pc;
-        cpu.npc = top->npc;
-        svSetScope(svGetScopeFromName("TOP.top.u_GPR.u_RegisterFile"));
+        cpu.pc = top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__pc;
+        cpu.npc = top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__npc;
+        svSetScope(svGetScopeFromName("TOP.ysyxSoCFull.asic.cpu.cpu.u_GPR.u_RegisterFile"));
         get_gpr(cpu.gpr);
-        svSetScope(svGetScopeFromName("TOP.top.u_CSR"));
+        svSetScope(svGetScopeFromName("TOP.ysyxSoCFull.asic.cpu.cpu.u_CSR"));
         get_csr((int *)(&cpu.csr));
     }
 
-    if (npc_state.halt_pc >= 0x80000000)
+    if (npc_state.halt_pc >= CONFIG_MBASE)
     {
         // 反汇编 itrace
         char *p = logbuf;
@@ -109,8 +96,8 @@ static void exec_once(Vtop *top, VerilatedContext *contextp, VerilatedVcdC *tfp)
         p += space_len;
 
         disassemble(p, logbuf + sizeof(logbuf) - p, npc_state.halt_pc, inst, ilen);
-        trace_and_difftest(top, logbuf);
 #endif
+        trace_and_difftest(top, logbuf);
 
         // 函数调用 ftrace
         uint8_t opcode = BITS(inst_val, 6, 0);
@@ -147,7 +134,7 @@ static void exec_once(Vtop *top, VerilatedContext *contextp, VerilatedVcdC *tfp)
     }
 }
 
-static void execute(Vtop *top, VerilatedContext *contextp, VerilatedVcdC *tfp, uint64_t n)
+static void execute(VysyxSoCFull *top, VerilatedContext *contextp, VerilatedVcdC *tfp, uint64_t n)
 {
     for (; n > 0; n--)
     {
@@ -163,7 +150,7 @@ void assert_fail_msg()
 {
 }
 
-void npc_exec(Vtop *top, VerilatedContext *contextp, VerilatedVcdC *tfp, uint64_t n)
+void npc_exec(VysyxSoCFull *top, VerilatedContext *contextp, VerilatedVcdC *tfp, uint64_t n)
 {
     g_print_step = (n < MAX_INST_TO_PRINT);
     if ((contextp->gotFinish()) || (npc_state.state == NPC_ABORT))

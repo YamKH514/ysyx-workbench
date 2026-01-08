@@ -32,6 +32,8 @@ static uint64_t g_timer = 0; // unit: us
 static bool g_print_step = false;
 
 void device_update();
+IFDEF(CONFIG_ITRACE, void iringbuf_get_inst(Decode *s));
+IFDEF(CONFIG_ITRACE, void iringbuf_print());
 
 static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
 #ifdef CONFIG_ITRACE_COND
@@ -99,10 +101,8 @@ static void statistic() {
   else Log("Finish running in less than 1 us and can not calculate the simulation frequency");
 }
 
-IFDEF(CONFIG_ITRACE, void iringbuf_get_inst());
-
 void assert_fail_msg() {
-  IFDEF(CONFIG_ITRACE, iringbuf_get_inst());
+  IFDEF(CONFIG_ITRACE, iringbuf_print());
   isa_reg_display();
   statistic();
 }
@@ -128,7 +128,7 @@ void cpu_exec(uint64_t n) {
     case NEMU_RUNNING: nemu_state.state = NEMU_STOP; break;
 
     case NEMU_END: case NEMU_ABORT:
-      if(nemu_state.halt_ret != 0) IFDEF(CONFIG_ITRACE, iringbuf_get_inst());
+      if ((nemu_state.state == NEMU_ABORT) | (nemu_state.halt_ret != 0)) IFDEF(CONFIG_ITRACE, iringbuf_print());
       Log("nemu: %s at pc = " FMT_WORD,
           (nemu_state.state == NEMU_ABORT ? ANSI_FMT("ABORT", ANSI_FG_RED) :
            (nemu_state.halt_ret == 0 ? ANSI_FMT("HIT GOOD TRAP", ANSI_FG_GREEN) :
