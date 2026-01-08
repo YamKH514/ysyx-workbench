@@ -10,7 +10,6 @@
 #define SERIAL_PORT (DEVICE_BASE + 0x00003f8)
 #define RTC_ADDR    (DEVICE_BASE + 0x0000048)
 
-#define FLASH_BASE 0x30000000
 static uint8_t flash_data[10] = {0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88, 0x99};
 
 static uint8_t pmem[CONFIG_MSIZE] PG_ALIGN = {};
@@ -89,7 +88,7 @@ extern "C" void mrom_read(int32_t addr, int32_t *data)
 extern "C" void flash_read(int32_t addr, int32_t *data)
 {
     printf("FLASH READ ADDR=0x%08x\n", addr);
-    *data = (int32_t)flash_data[(addr - FLASH_BASE)];
+    *data = (int32_t)flash_data[addr];
 }
 
 extern "C" void paddr_write(uint32_t waddr, uint32_t wdata, uint8_t wmask)
