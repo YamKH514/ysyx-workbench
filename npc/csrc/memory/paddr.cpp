@@ -10,6 +10,9 @@
 #define SERIAL_PORT (DEVICE_BASE + 0x00003f8)
 #define RTC_ADDR    (DEVICE_BASE + 0x0000048)
 
+#define FLASH_BASE 0x30000000
+static int32_t flash_data[10] = {0x0, 0x11, 0x222, 0x3333, 0x44444, 0x555555, 0x6666666, 0x77777777, 0x8888888, 0x999999};
+
 static uint8_t pmem[CONFIG_MSIZE] PG_ALIGN = {};
 
 uint8_t *guest_to_host(uint32_t paddr) { return pmem + paddr - CONFIG_MBASE; }
@@ -81,6 +84,11 @@ extern "C" void mrom_read(int32_t addr, int32_t *data)
     uint32_t rdata = pmem_read(raddr, 4);
     *data = (int32_t)rdata;
     return;
+}
+
+extern "C" void flash_read(int32_t addr, int32_t *data)
+{
+    *data = flash_data[(addr - FLASH_BASE)/4];
 }
 
 extern "C" void paddr_write(uint32_t waddr, uint32_t wdata, uint8_t wmask)
