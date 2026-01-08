@@ -27,16 +27,16 @@ extern char _pmem_start;
 Area heap = RANGE(&_heap_start, _heap_end);
 static const char mainargs[MAINARGS_MAX_LEN] = MAINARGS_PLACEHOLDER; // defined in CFLAGS
 
-static void uart_init() {
-  // Set Divisor Latch register
-  *(volatile char *)(UART_BASE + UART_LCR) = (1 << 7);
-  *(volatile char *)(UART_BASE + UART_MSB) = 0x00;
-  *(volatile char *)(UART_BASE + UART_LSB) = 0x01;
+// static void uart_init() {
+//   // Set Divisor Latch register
+//   *(volatile char *)(UART_BASE + UART_LCR) = (1 << 7);
+//   *(volatile char *)(UART_BASE + UART_MSB) = 0x00;
+//   *(volatile char *)(UART_BASE + UART_LSB) = 0x01;
 
-  *(volatile char *)(UART_BASE + UART_LCR) = 0x03; // Set LCR 8N1
-  *(volatile char *)(UART_BASE + UART_IER) = 0x00; // Disable all interrupts
-  *(volatile char *)(UART_BASE + UART_FCR) = 0xC7; // Clear & reset RX&TX FIFOs, receiver FIFO Interrupt trigger level 14bytes
-}
+//   *(volatile char *)(UART_BASE + UART_LCR) = 0x03; // Set LCR 8N1
+//   *(volatile char *)(UART_BASE + UART_IER) = 0x00; // Disable all interrupts
+//   *(volatile char *)(UART_BASE + UART_FCR) = 0xC7; // Clear & reset RX&TX FIFOs, receiver FIFO Interrupt trigger level 14bytes
+// }
 
 void putch(char ch) {
   while ((*(volatile char *)(UART_BASE + UART_LSR) & (1 << 5)) == 0); // Waiting the Transmit FIFO empty
@@ -59,7 +59,7 @@ void halt(int code) {
 }
 
 void _trm_init() {
-  uart_init();
+  // uart_init();
   bootloader();
   int ret = main(mainargs);
   halt(ret);
