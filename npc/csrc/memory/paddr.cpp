@@ -15,7 +15,6 @@ static uint32_t flash_data[10] =   {0x100007b7, // lui	a5,0x10000
                                     0x00e78023, // sb	a4,0(a5) # 10000000
                                     0x00a00713, // li	a4,10
                                     0x00e78023, // sb	a4,0(a5)
-                                    0x00100073, // ebreak
                                     0x00008067  // ret
                                     };
 
