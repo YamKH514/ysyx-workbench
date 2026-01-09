@@ -94,7 +94,7 @@ extern "C" void mrom_read(int32_t addr, int32_t *data)
 
 extern "C" void flash_read(int32_t addr, int32_t *data)
 {
-    printf("FLASH READ ADDR=0x%08x\n", addr);
+    printf("FLASH READ, raddr=0x%08x, rdata=0x%08x\n", addr, flash_data[addr/4]);
     *data = (int32_t)flash_data[addr/4];
 }
 
