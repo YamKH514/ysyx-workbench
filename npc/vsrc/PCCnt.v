@@ -28,7 +28,7 @@ always @(posedge clk) begin
     if (rst) begin
         pc_to_wbu_ready_out <= 1'b0;
         pc_to_ifu_valid_out <= 1'b1;
-        pc_cnt_pc_out       <= 32'h20000000;
+        pc_cnt_pc_out       <= 32'h30000000;
     end else begin
         case (state)
             S_IDLE: begin
