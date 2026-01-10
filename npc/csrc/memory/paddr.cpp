@@ -80,7 +80,6 @@ extern "C" void mrom_read(int32_t addr, int32_t *data)
 
 extern "C" void flash_read(int32_t addr, int32_t *data)
 {
-    printf("FLASH READ, raddr=0x%08x, rdata=0x%08x\n", 0x30000000 + addr, flash_data[addr/4]);
     *data = (int32_t)flash_data[addr/4];
     // uint32_t raddr = CONFIG_MBASE + (((uint32_t)addr) & ~0x3u);
     // if(likely(in_pmem(raddr)))
@@ -97,7 +96,8 @@ extern "C" uint32_t paddr_read(uint32_t raddr)
 {
     uint32_t rdata = 0;
     if ((0x20000000 <= raddr) & (raddr < 0x2000ffff)) mrom_read(raddr, (int32_t *)&rdata);
-    else flash_read(raddr - 0x30000000, (int32_t *)&rdata);
+    else if ((0x30000000 <= raddr) & (raddr < 0x3fffffff)) flash_read(raddr - 0x30000000, (int32_t *)&rdata);
+    else assert(0);
     return rdata;
 }
 
