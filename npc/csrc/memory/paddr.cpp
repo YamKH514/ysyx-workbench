@@ -69,14 +69,6 @@ void print_paddr_write(uint32_t addr, int len, uint32_t data)
     printf("MEM_WRITE data: 0x%08x, at 0x%08x , len = %d\n", data, addr, len);
 }
 
-extern "C" uint32_t paddr_read(uint32_t raddr)
-{
-    uint32_t rdata = 0;
-    if ((0x20000000 <= raddr) | (raddr < 0x2000ffff)) mrom_read(raddr, (int32_t *)&rdata);
-    else flash_read(raddr, (int32_t *)&rdata);
-    return rdata;
-}
-
 extern "C" void mrom_read(int32_t addr, int32_t *data)
 {
     // assert(0);
@@ -99,6 +91,14 @@ extern "C" void flash_read(int32_t addr, int32_t *data)
     // }
     // out_of_bound(raddr);
     // return;
+}
+
+extern "C" uint32_t paddr_read(uint32_t raddr)
+{
+    uint32_t rdata = 0;
+    if ((0x20000000 <= raddr) | (raddr < 0x2000ffff)) mrom_read(raddr, (int32_t *)&rdata);
+    else flash_read(raddr, (int32_t *)&rdata);
+    return rdata;
 }
 
 extern "C" void paddr_write(uint32_t waddr, uint32_t wdata, uint8_t wmask)
