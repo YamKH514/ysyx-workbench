@@ -95,13 +95,13 @@ extern "C" void mrom_read(int32_t addr, int32_t *data)
 extern "C" void flash_read(int32_t addr, int32_t *data)
 {
     uint32_t raddr = CONFIG_MBASE + (((uint32_t)addr) & ~0x3u);
-    if(likely(in_pmem(addr)))
+    if(likely(in_pmem(raddr)))
     {
         uint32_t rdata = pmem_read(raddr, 4);
         *data = (int32_t)rdata;
         return;
     }
-    out_of_bound(addr);
+    out_of_bound(raddr);
     return;
 }
 
