@@ -85,7 +85,7 @@ extern "C" uint32_t paddr_read(uint32_t raddr)
 
 extern "C" void mrom_read(int32_t addr, int32_t *data)
 {
-    assert(0);
+    // assert(0);
     uint32_t raddr = ((uint32_t)addr) & ~0x3u;
     uint32_t rdata = pmem_read(raddr, 4);
     *data = (int32_t)rdata;
