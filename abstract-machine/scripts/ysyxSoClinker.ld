@@ -1,11 +1,12 @@
 ENTRY(_start)
 
 MEMORY {
+  mrom (rx)  : ORIGIN = 0x20000000, LENGTH = 4K
   flash (rx) : ORIGIN = 0x30000000, LENGTH = 128M
   sram (rwx) : ORIGIN = 0x0f000000, LENGTH = 8K
 }
-REGION_ALIAS("REGION_TEXT", flash);
-REGION_ALIAS("REGION_RODATA", flash);
+REGION_ALIAS("REGION_TEXT", mrom);
+REGION_ALIAS("REGION_RODATA", mrom);
 REGION_ALIAS("REGION_DATA", sram);
 REGION_ALIAS("REGION_BSS", sram);
 
@@ -13,20 +14,20 @@ SECTIONS {
   .text : {
     *(entry)
     *(.text*)
-    ASSERT(. <= ORIGIN(flash) + LENGTH(flash), ".text section too large for flash");
+    ASSERT(. <= ORIGIN(mrom) + LENGTH(mrom), ".text section too large for flash");
   } > REGION_TEXT
   etext = .;
   _etext = .;
   .rodata : {
     *(.rodata*)
     rodata_end = .;
-    ASSERT(. <= ORIGIN(flash) + LENGTH(flash), ".rodata section too large for flash");
+    ASSERT(. <= ORIGIN(mrom) + LENGTH(mrom), ".rodata section too large for flash");
   } > REGION_RODATA
   .data : {
     data_start = .;
     *(.data*)
     *(.sdata*)
-  } > REGION_DATA AT > flash
+  } > REGION_DATA AT > mrom
   data_size = SIZEOF(.data);
   data_load_start = LOADADDR(.data);
   edata = .;

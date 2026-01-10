@@ -10,13 +10,13 @@
 #define SERIAL_PORT (DEVICE_BASE + 0x00003f8)
 #define RTC_ADDR    (DEVICE_BASE + 0x0000048)
 
-// static uint32_t flash_data[10] =   {0x100007b7, // lui	a5,0x10000
-//                                     0x04100713, // li	a4,65
-//                                     0x00e78023, // sb	a4,0(a5) # 10000000
-//                                     0x00a00713, // li	a4,10
-//                                     0x00e78023, // sb	a4,0(a5)
-//                                     0x00008067  // ret
-//                                     };
+static uint32_t flash_data[10] =   {0x100007b7, // lui	a5,0x10000
+                                    0x04100713, // li	a4,65
+                                    0x00e78023, // sb	a4,0(a5) # 10000000
+                                    0x00a00713, // li	a4,10
+                                    0x00e78023, // sb	a4,0(a5)
+                                    0x00008067  // ret
+                                    };
 
 static uint8_t pmem[CONFIG_MSIZE] PG_ALIGN = {};
 
@@ -86,23 +86,25 @@ extern "C" uint32_t paddr_read(uint32_t raddr)
 extern "C" void mrom_read(int32_t addr, int32_t *data)
 {
     assert(0);
-    // uint32_t raddr = ((uint32_t)addr) & ~0x3u;
-    // uint32_t rdata = pmem_read(raddr, 4);
-    // *data = (int32_t)rdata;
-    // return;
+    uint32_t raddr = ((uint32_t)addr) & ~0x3u;
+    uint32_t rdata = pmem_read(raddr, 4);
+    *data = (int32_t)rdata;
+    return;
 }
 
 extern "C" void flash_read(int32_t addr, int32_t *data)
 {
-    uint32_t raddr = CONFIG_MBASE + (((uint32_t)addr) & ~0x3u);
-    if(likely(in_pmem(raddr)))
-    {
-        uint32_t rdata = pmem_read(raddr, 4);
-        *data = (int32_t)rdata;
-        return;
-    }
-    out_of_bound(raddr);
-    return;
+    printf("FLASH READ, raddr=0x%08x, rdata=0x%08x\n", addr, flash_data[addr/4]);
+    *data = (int32_t)flash_data[addr/4];
+    // uint32_t raddr = CONFIG_MBASE + (((uint32_t)addr) & ~0x3u);
+    // if(likely(in_pmem(raddr)))
+    // {
+    //     uint32_t rdata = pmem_read(raddr, 4);
+    //     *data = (int32_t)rdata;
+    //     return;
+    // }
+    // out_of_bound(raddr);
+    // return;
 }
 
 extern "C" void paddr_write(uint32_t waddr, uint32_t wdata, uint8_t wmask)
