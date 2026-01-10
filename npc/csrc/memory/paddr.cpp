@@ -71,17 +71,10 @@ void print_paddr_write(uint32_t addr, int len, uint32_t data)
 
 extern "C" uint32_t paddr_read(uint32_t raddr)
 {
-    assert(0);
-    uint32_t addr = raddr & ~0x3u;
-#ifdef CONFIG_MTRACE
-    // print_paddr_read(addr, 4);
-#endif
-    if(likely(in_pmem(addr)))
-    {
-        return pmem_read(addr, 4);
-    }
-    out_of_bound(addr);
-    return 0;
+    uint32_t rdata = 0;
+    if ((0x20000000 <= raddr) | (raddr < 0x2000ffff)) mrom_read(raddr, (int32_t *)&rdata);
+    else flash_read(raddr, (int32_t *)&rdata);
+    return rdata;
 }
 
 extern "C" void mrom_read(int32_t addr, int32_t *data)
