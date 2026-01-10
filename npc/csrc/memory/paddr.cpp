@@ -96,7 +96,7 @@ extern "C" void flash_read(int32_t addr, int32_t *data)
 extern "C" uint32_t paddr_read(uint32_t raddr)
 {
     uint32_t rdata = 0;
-    if ((0x20000000 <= raddr) | (raddr < 0x2000ffff)) mrom_read(raddr, (int32_t *)&rdata);
+    if ((0x20000000 <= raddr) & (raddr < 0x2000ffff)) mrom_read(raddr, (int32_t *)&rdata);
     else flash_read(raddr, (int32_t *)&rdata);
     return rdata;
 }
