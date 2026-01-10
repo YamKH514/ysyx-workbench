@@ -71,6 +71,7 @@ void print_paddr_write(uint32_t addr, int len, uint32_t data)
 
 extern "C" uint32_t paddr_read(uint32_t raddr)
 {
+    assert(0);
     uint32_t addr = raddr & ~0x3u;
 #ifdef CONFIG_MTRACE
     // print_paddr_read(addr, 4);
