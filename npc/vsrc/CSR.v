@@ -17,6 +17,8 @@ reg [31:0]  mepc_r;
 reg [31:0]  mcause_r;
 reg [31:0]  mtvec_r;
 reg [31:0]  mstatus_r;
+reg [31:0]  mvendorid_r = 32'h79737978;
+reg [31:0]  marchid_r = 32'h17F4E28;
 
 wire        mepc_we      = csr_we_in & (csr_rw_addr_in == 12'h341);
 wire        mcause_we    = csr_we_in & (csr_rw_addr_in == 12'h342);
@@ -29,7 +31,9 @@ wire [31:0] csr_r_data   =  {32{csr_func3_in == 3'b001}} & csr_w_data_in |
 assign csr_r_data_out = {32{csr_rw_addr_in == 12'h341}} & mepc_r |
                         {32{csr_rw_addr_in == 12'h342}} & mcause_r |
                         {32{csr_rw_addr_in == 12'h305}} & mtvec_r |
-                        {32{csr_rw_addr_in == 12'h300}} & mstatus_r;
+                        {32{csr_rw_addr_in == 12'h300}} & mstatus_r |
+                        {32{csr_rw_addr_in == 12'hF11}} & mvendorid_r |
+                        {32{csr_rw_addr_in == 12'hF12}} & marchid_r;
 
 assign csr_r_mtvec_out = mtvec_r;
 assign csr_r_mepc_out  = mepc_r;
@@ -72,11 +76,13 @@ always @(posedge clk) begin
 end
 
 export "DPI-C" function get_csr;
-function void get_csr(output int csr[4]);
+function void get_csr(output int csr[6]);
     csr[0] = mepc_r;
     csr[1] = mcause_r;
     csr[2] = mtvec_r;
     csr[3] = mstatus_r;
+    csr[4] = mvendorid_r;
+    csr[5] = marchid_r;
 endfunction
 
 endmodule

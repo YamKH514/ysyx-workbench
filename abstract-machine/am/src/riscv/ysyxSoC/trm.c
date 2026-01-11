@@ -47,9 +47,22 @@ extern char data_start [];
 extern char data_size [];
 extern char data_load_start [];
 
-static void bootloader()
-{
+static void bootloader() {
   memcpy(data_start, data_load_start, (size_t) data_size);
+}
+
+static void print_id() {
+  uint32_t mvendorid;
+  uint32_t marchid;
+  asm volatile("csrr %0, mvendorid" : "=r"(mvendorid):);
+  asm volatile("csrr %0, marchid" : "=r"(marchid):);
+  for (int i = 0; i < 4; i++) {
+    putch((char)(mvendorid >> i * 8));
+  }
+  putch('_');
+  for (int i = 0; i < 4; i++) {
+    putch((char)(marchid >> i * 8));
+  }
 }
 
 void halt(int code) {
@@ -61,6 +74,7 @@ void halt(int code) {
 void _trm_init() {
   uart_init();
   bootloader();
+  print_id();
   int ret = main(mainargs);
   halt(ret);
 }
