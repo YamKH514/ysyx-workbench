@@ -143,6 +143,7 @@ static void execute(VysyxSoCFull *top, VerilatedContext *contextp, VerilatedVcdC
         g_nr_guest_inst++;
         if ((contextp->gotFinish()) || (npc_state.state == NPC_ABORT) || (npc_state.state == NPC_STOP))
             break;
+        if ((running_cycle % 1000000) == 0) printf("NPC has been runned %d cycle\n", running_cycle);
     }
 }
 
