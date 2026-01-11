@@ -51,7 +51,7 @@ static void bootloader() {
   memcpy(data_start, data_load_start, (size_t) data_size);
 }
 
-static void print_id() {
+static void print_info() {
   uint32_t mvendorid;
   uint32_t marchid;
   asm volatile("csrr %0, mvendorid" : "=r"(mvendorid):);
@@ -68,7 +68,7 @@ void halt(int code) {
 void _trm_init() {
   uart_init();
   bootloader();
-  print_id();
+  print_info();
   int ret = main(mainargs);
   halt(ret);
 }
