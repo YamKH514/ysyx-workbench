@@ -59,10 +59,7 @@ static void print_id() {
   for (int i = 0; i < 4; i++) {
     putch((char)(mvendorid >> i * 8));
   }
-  putch('_');
-  for (int i = 0; i < 4; i++) {
-    putch((char)(marchid >> i * 8));
-  }
+  printf("_%d\n", marchid);
 }
 
 void halt(int code) {
