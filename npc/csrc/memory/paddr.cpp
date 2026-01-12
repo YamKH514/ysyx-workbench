@@ -92,6 +92,7 @@ extern "C" void flash_read(int32_t addr, int32_t *data)
 }
 
 extern "C" void psram_read(int32_t addr, int32_t *data) {
+    printf("psram_read, raddr = 0x%08x\n", addr);
     uint32_t raddr = CONFIG_PSRAM_MBASE + (uint32_t)addr;
     *data = pmem_read(raddr, 4);
     return;
