@@ -92,13 +92,14 @@ extern "C" void flash_read(int32_t addr, int32_t *data)
 }
 
 extern "C" void psram_read(int32_t addr, int32_t *data) {
-    printf("psram_read, raddr = 0x%08x\n", addr);
     uint32_t raddr = CONFIG_PSRAM_MBASE + (uint32_t)addr;
     *data = pmem_read(raddr, 4);
+    printf("psram_read, raddr=0x%08x\n", addr);
     return;
 }
 
 extern "C" void psram_write(int32_t addr, int32_t data, int32_t mask) {
+    printf("psram_write, waddr=0x%08x, wdata=0x%08x, mask=0x%x\n", addr, data, mask);
     uint32_t waddr = CONFIG_PSRAM_MBASE + (uint32_t)addr;
     uint32_t wdata = data >> ((8-mask)*4);
     pmem_write(addr, wdata, mask/2);
