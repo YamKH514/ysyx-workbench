@@ -22,7 +22,6 @@ static uint8_t pmem[CONFIG_MSIZE] PG_ALIGN = {};
 static uint8_t psram[CONFIG_PSRAM_MSIZE] PG_ALIGN = {};
 
 uint8_t *guest_to_host(uint32_t paddr) {
-    printf("guest_to_host, paddr=0x%08x\n", paddr);
     if ((CONFIG_MBASE <= paddr) && (paddr <= CONFIG_MBASE + CONFIG_MSIZE)) return pmem + paddr - CONFIG_MBASE;
     else if ((CONFIG_PSRAM_MBASE <= paddr) && (paddr <= CONFIG_PSRAM_MBASE + CONFIG_PSRAM_MSIZE)) return psram + paddr - CONFIG_PSRAM_MBASE;
     assert(0);
@@ -115,7 +114,7 @@ extern "C" void psram_write(int32_t addr, int32_t data, int32_t mask) {
             break;
     }
     printf("psram_write, waddr=0x%08x, wdata=0x%08x, mask=0x%x, len=%d\n", waddr, wdata, mask/2, len);
-    pmem_write(addr, len, wdata);
+    pmem_write(waddr, len, wdata);
     return;
 }
 
