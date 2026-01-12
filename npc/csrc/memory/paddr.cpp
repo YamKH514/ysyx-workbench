@@ -101,8 +101,20 @@ extern "C" void psram_read(int32_t addr, int32_t *data) {
 extern "C" void psram_write(int32_t addr, int32_t data, int32_t mask) {
     uint32_t waddr = CONFIG_PSRAM_MBASE + (uint32_t)addr;
     uint32_t wdata = data >> ((8-mask)*4);
-    printf("psram_write, waddr=0x%08x, wdata=0x%08x, mask=0x%x\n", waddr, wdata, mask/2);
-    pmem_write(addr, wdata, mask/2);
+    int len;
+    switch (mask/2) {
+        case 0x1: case 0x10: case 0x100: case 0x1000:
+            len = 1;
+            break;
+        case 0x11: case 0x110: case 0x1100:
+            len = 2;
+            break;
+        case 0x1111:
+            len = 4;
+            break;
+    }
+    printf("psram_write, waddr=0x%08x, wdata=0x%08x, mask=0x%x, len=%d\n", waddr, wdata, mask/2, len);
+    pmem_write(addr, len, wdata);
     return;
 }
 
