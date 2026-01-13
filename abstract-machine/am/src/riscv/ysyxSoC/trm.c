@@ -58,8 +58,12 @@ void putch(char ch) {
 void _trm_init();
 __attribute__((section("fsbl"))) __attribute__((used))
 void _bootloader() {
-  memcpy(text_start, text_load_start, (size_t) text_size);
-  memcpy(rodata_start, rodata_load_start, (size_t) rodata_size);
+  for (size_t i = 0; i < (size_t)text_size; i++) {
+    *(text_start + i) = *(text_load_start + i);
+  }
+  for (size_t i = 0; i < (size_t)rodata_size; i++) {
+    *(rodata_start + i) = *(rodata_load_start + i);
+  }
   _trm_init();
 }
 
