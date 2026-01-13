@@ -24,7 +24,7 @@ SECTIONS {
     text_start = .;
     *(.text*)
     ASSERT(. <= ORIGIN(flash) + LENGTH(flash), ".text section too large for flash");
-  } > REGION_TEXT
+  } > REGION_TEXT AT > flash
   text_size = SIZEOF(.text);
   text_load_start = LOADADDR(.text);
   etext = .;
