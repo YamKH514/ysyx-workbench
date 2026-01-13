@@ -43,9 +43,6 @@ extern char rodata_load_start [];
 extern char data_start [];
 extern char data_size [];
 extern char data_load_start [];
-extern char test_start [];
-extern char test_size [];
-extern char test_load_start [];
 extern char _bss_start [];
 extern char _bss_end [];
 
