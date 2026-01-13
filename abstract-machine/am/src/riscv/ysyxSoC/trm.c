@@ -67,6 +67,7 @@ void _ssbl() {
   extern char text_size [];
   extern char text_load_start [];
   extern char rodata_start [];
+  extern char rodata_end [];
   extern char rodata_size [];
   extern char rodata_load_start [];
   extern char data_start [];
@@ -74,7 +75,7 @@ void _ssbl() {
   extern char data_size [];
   extern char data_load_start [];
   MEMCOPY(text_start, text_load_start, text_size);
-  MEMCOPY(rodata_start, rodata_load_start, rodata_size);
+  if (rodata_end - rodata_start) MEMCOPY(rodata_start, rodata_load_start, rodata_size);
   if (data_end - data_start) MEMCOPY(data_start, data_load_start, data_size);
   _trm_init();
 }
