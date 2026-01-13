@@ -5,7 +5,8 @@ MEMORY {
   sram  (rwx) : ORIGIN = 0x0f000000, LENGTH = 8K
   psram (rwx) : ORIGIN = 0x80000000, LENGTH = 4M
 }
-REGION_ALIAS("REGION_BOOT", flash);
+REGION_ALIAS("REGION_FSBL", flash);
+REGION_ALIAS("REGION_SSBL", psram);
 REGION_ALIAS("REGION_TEXT", psram);
 REGION_ALIAS("REGION_RODATA", psram);
 REGION_ALIAS("REGION_DATA", psram);
@@ -13,12 +14,18 @@ REGION_ALIAS("REGION_BSS", psram);
 
 SECTIONS {
   . = ORIGIN(flash);
-  .boot : {
-    boot_start = .;
+  .fsbl : {
+    fsbl_start = .;
     *(entry)
     *(fsbl)
-    boot_start = .;
-  } > REGION_BOOT
+    fsbl_end = .;
+  } > REGION_FSBL AT > flash
+  .ssbl : {
+    ssbl_start = .;
+    *(ssbl)
+  } > REGION_SSBL AT > flash
+  ssbl_size = SIZEOF(.ssbl);
+  ssbl_load_start = LOADADDR(.ssbl);
   .text : {
     text_start = .;
     *(.text*)

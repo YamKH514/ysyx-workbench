@@ -34,18 +34,6 @@ extern char _pmem_start;
 Area heap = RANGE(&_heap_start, _heap_end);
 static const char mainargs[MAINARGS_MAX_LEN] = MAINARGS_PLACEHOLDER; // defined in CFLAGS
 
-extern char text_start [];
-extern char text_size [];
-extern char text_load_start [];
-extern char rodata_start [];
-extern char rodata_size [];
-extern char rodata_load_start [];
-extern char data_start [];
-extern char data_size [];
-extern char data_load_start [];
-extern char _bss_start [];
-extern char _bss_end [];
-
 static void uart_init() {
   // Set Divisor Latch register
   *(volatile char *)(UART_BASE + UART_LCR) = (1 << 7);
@@ -62,13 +50,31 @@ void putch(char ch) {
   *(volatile char *)(UART_BASE + UART_TX) = ch;
 }
 
-void _trm_init();
+void _ssbl();
 __attribute__((section("fsbl"))) __attribute__((used))
-void _bootloader() {
+void _fsbl() {
+  extern char ssbl_start [];
+  extern char ssbl_size [];
+  extern char ssbl_load_start [];
+  MEMCOPY(ssbl_start, ssbl_load_start, ssbl_size);
+  _ssbl();
+}
+
+void _trm_init();
+__attribute__((section("ssbl"))) __attribute__((used))
+void _ssbl() {
+  extern char text_start [];
+  extern char text_size [];
+  extern char text_load_start [];
+  extern char rodata_start [];
+  extern char rodata_size [];
+  extern char rodata_load_start [];
+  extern char data_start [];
+  extern char data_size [];
+  extern char data_load_start [];
   MEMCOPY(text_start, text_load_start, text_size);
   MEMCOPY(rodata_start, rodata_load_start, rodata_size);
   MEMCOPY(data_start, data_load_start, data_size);
-  MEMSETZ(_bss_start, _bss_end - _bss_start);
   _trm_init();
 }
 
