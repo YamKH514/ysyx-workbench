@@ -6,11 +6,10 @@ MEMORY {
   psram (rwx) : ORIGIN = 0x80000000, LENGTH = 4M
 }
 REGION_ALIAS("REGION_BOOT", flash);
-REGION_ALIAS("REGION_TEXT", flash);
-REGION_ALIAS("REGION_RODATA", sram);
-REGION_ALIAS("REGION_DATA", sram);
-REGION_ALIAS("REGION_BSS", sram);
-REGION_ALIAS("REGION_TEST", sram);
+REGION_ALIAS("REGION_TEXT", psram);
+REGION_ALIAS("REGION_RODATA", psram);
+REGION_ALIAS("REGION_DATA", psram);
+REGION_ALIAS("REGION_BSS", psram);
 
 SECTIONS {
   . = ORIGIN(flash);
@@ -44,12 +43,6 @@ SECTIONS {
   } > REGION_DATA AT > flash
   data_size = SIZEOF(.data);
   data_load_start = LOADADDR(.data);
-  .mem_test : {
-    test_start = .;
-    *(test)
-  } > REGION_TEST AT > flash
-  test_size = SIZEOF(.mem_test);
-  test_load_start = LOADADDR(.mem_test);
   edata = .;
   _data = .;
   .bss : {
@@ -59,10 +52,9 @@ SECTIONS {
     *(.scommon)
     _bss_end = .;
   } > REGION_BSS
-  _stack_top = ALIGN(0x4);
-  . = _stack_top + 0x800;
-  _stack_pointer = .;
   end = .;
   _end = .;
   _heap_start = ALIGN(0x1000);
+  _stack_top = ORIGIN(sram);
+  _stack_pointer = ORIGIN(sram) + LENGTH(sram);
 }
