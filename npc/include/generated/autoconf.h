@@ -4,6 +4,7 @@
  * NPC Configuration Menu
  *
  */
+#define CONFIG_WATCHPOINT 1
 #define CONFIG_MSIZE 0xFFFFFFF
 #define CONFIG_PSRAM_MBASE 0x80000000
 #define CONFIG_TRACE_END 10000
