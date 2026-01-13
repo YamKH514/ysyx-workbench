@@ -3,7 +3,7 @@
 
 #include "common.h"
 
-extern int running_cycle;
+extern unsigned long long running_cycle;
 
 typedef struct
 {
