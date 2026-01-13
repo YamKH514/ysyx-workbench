@@ -11,6 +11,7 @@ REGION_ALIAS("REGION_DATA", psram);
 REGION_ALIAS("REGION_BSS", psram);
 
 SECTIONS {
+  . = ORIGIN(flash);
   .text : {
     *(entry)
     *(.text*)
@@ -39,11 +40,10 @@ SECTIONS {
     *(.scommon)
     _bss_end = .;
   } > REGION_BSS
-  _stack_top = ALIGN(0x4);
+  _stack_top = ALIGN(0x1000);
   . = _stack_top + 0x8000;
   _stack_pointer = .;
   end = .;
   _end = .;
-  _heap_start = ALIGN(0x4);
-  _heap_end = ORIGIN(psram) + LENGTH(psram);
+  _heap_start = ALIGN(0x1000);
 }

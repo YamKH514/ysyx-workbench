@@ -46,9 +46,12 @@ void putch(char ch) {
 extern char data_start [];
 extern char data_size [];
 extern char data_load_start [];
+extern char _bss_start [];
+extern char _bss_end [];
 
 static void bootloader() {
   memcpy(data_start, data_load_start, (size_t) data_size);
+  memset(_bss_start, 0, _bss_end - _bss_start);
 }
 
 static void print_info() {
