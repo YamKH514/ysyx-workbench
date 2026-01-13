@@ -1,14 +1,14 @@
 ENTRY(_start)
 
 MEMORY {
-  flash (rx) : ORIGIN = 0x30000000, LENGTH = 128M
-  sram (rwx) : ORIGIN = 0x0f000000, LENGTH = 8K
-  psram (rwx): ORIGIN = 0x80000000, LENGTH = 4M
+  flash (r x) : ORIGIN = 0x30000000, LENGTH = 128M
+  sram  (rwx) : ORIGIN = 0x0f000000, LENGTH = 8K
+  psram (rwx) : ORIGIN = 0x80000000, LENGTH = 4M
 }
 REGION_ALIAS("REGION_TEXT", flash);
 REGION_ALIAS("REGION_RODATA", flash);
-REGION_ALIAS("REGION_DATA", sram);
-REGION_ALIAS("REGION_BSS", sram);
+REGION_ALIAS("REGION_DATA", psram);
+REGION_ALIAS("REGION_BSS", psram);
 
 SECTIONS {
   .text : {
@@ -39,12 +39,11 @@ SECTIONS {
     *(.scommon)
     _bss_end = .;
   } > REGION_BSS
-
-  end = .;
-  _end = .;
-
-  _stack_top = ALIGN(0x1000);
+  _stack_top = ALIGN(0x4);
   . = _stack_top + 0x8000;
   _stack_pointer = .;
-  _heap_start = ALIGN(0x1000);
+  end = .;
+  _end = .;
+  _heap_start = ALIGN(0x4);
+  _heap_end = ORIGIN(psram) + LENGTH(psram);
 }
