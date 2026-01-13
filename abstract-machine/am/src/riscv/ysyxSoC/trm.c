@@ -27,15 +27,18 @@ extern char _pmem_start;
 Area heap = RANGE(&_heap_start, _heap_end);
 static const char mainargs[MAINARGS_MAX_LEN] = MAINARGS_PLACEHOLDER; // defined in CFLAGS
 
-extern char text_start [];
-extern char text_size [];
-extern char text_load_start [];
-extern char rodata_start [];
-extern char rodata_size [];
-extern char rodata_load_start [];
+// extern char text_start [];
+// extern char text_size [];
+// extern char text_load_start [];
+// extern char rodata_start [];
+// extern char rodata_size [];
+// extern char rodata_load_start [];
 extern char data_start [];
 extern char data_size [];
 extern char data_load_start [];
+extern char test_start [];
+extern char test_size [];
+extern char test_load_start [];
 extern char _bss_start [];
 extern char _bss_end [];
 
@@ -58,12 +61,15 @@ void putch(char ch) {
 void _trm_init();
 __attribute__((section("fsbl"))) __attribute__((used))
 void _bootloader() {
-  for (size_t i = 0; i < (size_t)text_size; i++) {
-    *(text_start + i) = *(text_load_start + i);
-  }
-  for (size_t i = 0; i < (size_t)rodata_size; i++) {
-    *(rodata_start + i) = *(rodata_load_start + i);
-  }
+  // for (size_t i = 0; i < (size_t)text_size; i++) {
+  //   *(text_start + i) = *(text_load_start + i);
+  // }
+  // for (size_t i = 0; i < (size_t)rodata_size; i++) {
+  //   *(rodata_start + i) = *(rodata_load_start + i);
+  // }
+  memcpy(data_start, data_load_start, (size_t) data_size);
+  memcpy(test_start, test_load_start, (size_t) test_size);
+  memset(_bss_start, 0, _bss_end - _bss_start);
   _trm_init();
 }
 
@@ -82,8 +88,6 @@ void halt(int code) {
 }
 
 void _trm_init() {
-  memcpy(data_start, data_load_start, (size_t) data_size);
-  memset(_bss_start, 0, _bss_end - _bss_start);
   uart_init();
   print_info();
   int ret = main(mainargs);
