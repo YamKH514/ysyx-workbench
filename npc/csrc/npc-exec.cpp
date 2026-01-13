@@ -111,6 +111,7 @@ static void exec_once(VysyxSoCFull *top, VerilatedContext *contextp, VerilatedVc
 #ifdef CONFIG_FTRACE
             if (rd == 1)
             {
+                if ((top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__wbu_to_pc_valid) & (top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__pc_to_wbu_ready))
                 ftrace_call(npc_state.halt_pc, dnpc);
             }
 #endif
@@ -123,10 +124,12 @@ static void exec_once(VysyxSoCFull *top, VerilatedContext *contextp, VerilatedVc
 #ifdef CONFIG_FTRACE
             if (inst_val == 0x00008067)
             {
+                if ((top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__wbu_to_pc_valid) & (top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__pc_to_wbu_ready))
                 ftrace_ret(npc_state.halt_pc);
             }
             else if ((rd == 1) || (imm == 0 && rd == 0))
             {
+                if ((top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__wbu_to_pc_valid) & (top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__pc_to_wbu_ready))
                 ftrace_call(npc_state.halt_pc, dnpc);
             }
 #endif
