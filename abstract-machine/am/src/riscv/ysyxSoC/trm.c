@@ -27,6 +27,18 @@ extern char _pmem_start;
 Area heap = RANGE(&_heap_start, _heap_end);
 static const char mainargs[MAINARGS_MAX_LEN] = MAINARGS_PLACEHOLDER; // defined in CFLAGS
 
+extern char text_start [];
+extern char text_size [];
+extern char text_load_start [];
+extern char rodata_start [];
+extern char rodata_size [];
+extern char rodata_load_start [];
+extern char data_start [];
+extern char data_size [];
+extern char data_load_start [];
+extern char _bss_start [];
+extern char _bss_end [];
+
 static void uart_init() {
   // Set Divisor Latch register
   *(volatile char *)(UART_BASE + UART_LCR) = (1 << 7);
@@ -43,15 +55,12 @@ void putch(char ch) {
   *(volatile char *)(UART_BASE + UART_TX) = ch;
 }
 
-extern char data_start [];
-extern char data_size [];
-extern char data_load_start [];
-extern char _bss_start [];
-extern char _bss_end [];
-
-static void bootloader() {
-  memcpy(data_start, data_load_start, (size_t) data_size);
-  memset(_bss_start, 0, _bss_end - _bss_start);
+void _trm_init();
+__attribute__((section("fsbl"))) __attribute__((used))
+void _bootloader() {
+  memcpy(text_start, text_load_start, (size_t) text_size);
+  memcpy(rodata_start, rodata_load_start, (size_t) rodata_size);
+  _trm_init();
 }
 
 static void print_info() {
@@ -69,8 +78,9 @@ void halt(int code) {
 }
 
 void _trm_init() {
+  memcpy(data_start, data_load_start, (size_t) data_size);
+  memset(_bss_start, 0, _bss_end - _bss_start);
   uart_init();
-  bootloader();
   print_info();
   int ret = main(mainargs);
   halt(ret);
