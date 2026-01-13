@@ -7,7 +7,7 @@ MEMORY {
 }
 REGION_ALIAS("REGION_BOOT", flash);
 REGION_ALIAS("REGION_TEXT", flash);
-REGION_ALIAS("REGION_RODATA", flash);
+REGION_ALIAS("REGION_RODATA", sram);
 REGION_ALIAS("REGION_DATA", sram);
 REGION_ALIAS("REGION_BSS", sram);
 REGION_ALIAS("REGION_TEST", sram);
@@ -34,7 +34,7 @@ SECTIONS {
     *(.rodata*)
     rodata_end = .;
     ASSERT(. <= ORIGIN(flash) + LENGTH(flash), ".rodata section too large for flash");
-  } > REGION_RODATA
+  } > REGION_RODATA AT > flash
   rodata_size = SIZEOF(.rodata);
   rodata_load_start = LOADADDR(.rodata);
   .data : {
