@@ -47,6 +47,7 @@ SECTIONS {
     data_start = .;
     *(.data*)
     *(.sdata*)
+    data_end = .;
   } > REGION_DATA AT > flash
   data_size = SIZEOF(.data);
   data_load_start = LOADADDR(.data);
