@@ -16,7 +16,7 @@
 #define UART_MSB 0x1
 
 extern char _heap_start;
-#define _heap_end 0x0f001fff
+#define _heap_end 0x80400000
 int main(const char *args);
 
 extern char _pmem_start;
