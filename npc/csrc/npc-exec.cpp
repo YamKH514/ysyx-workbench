@@ -18,6 +18,8 @@
 #define inst_jar 0x6f
 #define inst_jarl 0x67
 
+#define S_CPU(signal) top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__##signal
+
 uint64_t g_nr_guest_inst = 0;
 bool g_print_step = false;
 CPU_state cpu = {};
@@ -37,7 +39,7 @@ static void trace_and_difftest(VysyxSoCFull *top, char *logbuf)
 #endif
     }
 #ifdef CONFIG_DIFFTEST
-    if ((top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__wbu_to_pc_valid) & (top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__pc_to_wbu_ready))
+    if ((S_CPU(wbu_to_pc_valid)) & (S_CPU(pc_to_wbu_ready)))
         difftest_step(npc_state.halt_pc);
 #endif
 #ifdef CONFIG_WATCHPOINT
@@ -55,25 +57,27 @@ static void exec_once(VysyxSoCFull *top, VerilatedContext *contextp, VerilatedVc
 
     if (!npc_state.inited) cpu_reset(10, top, contextp, tfp);
 
-    if ((top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__wbu_to_pc_valid) & (top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__pc_to_wbu_ready))
-    {
-        npc_state.halt_pc = top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__pc;
-        npc_state.halt_ret = top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__u_GPR__DOT__u_RegisterFile__DOT__rf[10];
-    }
+    // if ((S_CPU(wbu_to_pc_valid)) & (S_CPU(pc_to_wbu_ready)))
+    // {
+    //     npc_state.halt_pc = S_CPU(pc);
+    //     npc_state.halt_ret = S_CPU(u_GPR__DOT__u_RegisterFile__DOT__rf)[10];
+    // }
 
     cpu_single_cycle(top, contextp, tfp);
 
-    if ((top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__wbu_to_pc_valid) & (top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__pc_to_wbu_ready))
+    if ((S_CPU(wbu_to_pc_valid)) & (S_CPU(pc_to_wbu_ready)))
     {
-        cpu.pc = top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__pc;
-        cpu.npc = top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__npc;
+        cpu.pc = S_CPU(pc);
+        cpu.npc = S_CPU(npc);
         svSetScope(svGetScopeFromName("TOP.ysyxSoCFull.asic.cpu.cpu.u_GPR.u_RegisterFile"));
         get_gpr(cpu.gpr);
         svSetScope(svGetScopeFromName("TOP.ysyxSoCFull.asic.cpu.cpu.u_CSR"));
         get_csr((int *)(&cpu.csr));
+        npc_state.halt_pc = S_CPU(pc);
+        npc_state.halt_ret = S_CPU(u_GPR__DOT__u_RegisterFile__DOT__rf)[10];
     }
 
-    if (npc_state.halt_pc >= 0x0f000000)
+    if (in_pmem(npc_state.halt_pc))
     {
         // 反汇编 itrace
         char *p = logbuf;
