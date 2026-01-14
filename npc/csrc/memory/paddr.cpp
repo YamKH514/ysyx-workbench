@@ -52,7 +52,8 @@ static void out_of_bound(uint32_t addr)
 
 void init_mem()
 {
-    Log("physical memory area [ 0x%08x, 0x%08x]", PMEM_LEFT, PMEM_RIGHT);
+    Log("flash area [ 0x%08x, 0x%08x]", PMEM_LEFT, PMEM_RIGHT);
+    Log("psram area [ 0x%08x, 0x%08x]", PSRAM_LEFT, PSRAM_RIGHT);
 }
 
 extern "C" void mem_tracer_read(int32_t addr, int32_t data)
