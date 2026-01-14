@@ -90,7 +90,10 @@ static void print_info() {
   uint32_t marchid;
   asm volatile("csrr %0, mvendorid" : "=r"(mvendorid):);
   asm volatile("csrr %0, marchid" : "=r"(marchid):);
-  printf("%s_%d\n", &mvendorid, marchid);
+  for(int i = 3; i >= 0; i--){
+      putch((char)((mvendorid >> i*8) & 0xFF));
+  }
+  printf("_%d\n", marchid);
 }
 
 void halt(int code) {
