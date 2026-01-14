@@ -37,7 +37,7 @@ word_t *csr(word_t imm)
       case MCAUSE: return &cpu.csr.mcause;
       case MVENDORID: return &cpu.csr.mvendorid;
       case MARCHID: return &cpu.csr.marchid;
-      default: panic("Unknow CSR");
+      default: printf("CSR 0x%08x\n", imm); panic("Unknow CSR");
     }
 }
 
