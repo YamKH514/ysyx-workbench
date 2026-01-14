@@ -73,7 +73,7 @@ static void exec_once(VysyxSoCFull *top, VerilatedContext *contextp, VerilatedVc
         get_csr((int *)(&cpu.csr));
     }
 
-    if ((npc_state.halt_pc >= 0x0f000000) & ((top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__wbu_to_pc_valid) & (top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__pc_to_wbu_ready)))
+    if (npc_state.halt_pc >= 0x0f000000)
     {
         // 反汇编 itrace
         char *p = logbuf;
@@ -141,9 +141,9 @@ static void execute(VysyxSoCFull *top, VerilatedContext *contextp, VerilatedVcdC
         exec_once(top, contextp, tfp);
         running_cycle ++;
         g_nr_guest_inst++;
+        if ((running_cycle % 1000000) == 0) printf("NPC has been runned %llu cycle\n", running_cycle);
         if ((contextp->gotFinish()) || (npc_state.state == NPC_ABORT) || (npc_state.state == NPC_STOP))
             break;
-        if ((running_cycle % 1000000) == 0) printf("NPC has been runned %llu cycle\n", running_cycle);
     }
 }
 
