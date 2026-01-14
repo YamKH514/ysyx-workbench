@@ -21,12 +21,12 @@ depends on YSYXSOC
 
 config PSRAMBASE
   depends on YSYXSOC
-  hex "ysyxSoC SRAM base address"
+  hex "ysyxSoC PSRAM base address"
   default 0x80000000
 
 config PSRAMSIZE
 depends on YSYXSOC
-  hex "ysyxSoC SRAM size"
+  hex "ysyxSoC PSRAM size"
   default 0x400000
 
 config PC_RESET_OFFSET
