@@ -158,9 +158,7 @@ extern "C" void paddr_write(uint32_t waddr, uint32_t wdata, uint8_t wmask)
 
 extern "C" void perip_difftest_skip(int32_t addr)
 {
-    if (!(((0x20000000 <= addr) & (addr < 0x2000ffff))|
-        ((0x30000000 <= addr) & (addr < 0x3fffffff))  |
-        ((0x80000000 <= addr) & (addr < 0x80400000)))){
+    if (!in_pmem(addr)){
 #ifdef CONFIG_DIFFTEST
         printf("0x%08x need skip difftest\n", addr);
         difftest_skip_ref();
