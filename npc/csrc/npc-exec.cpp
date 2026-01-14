@@ -144,7 +144,7 @@ static void execute(VysyxSoCFull *top, VerilatedContext *contextp, VerilatedVcdC
         exec_once(top, contextp, tfp);
         running_cycle ++;
         g_nr_guest_inst++;
-        if ((running_cycle % 1000000) == 0) printf("NPC has been runned %llu cycle\n", running_cycle);
+        // if ((running_cycle % 1000000) == 0) printf("NPC has been runned %llu cycle\n", running_cycle);
         if ((contextp->gotFinish()) || (npc_state.state == NPC_ABORT) || (npc_state.state == NPC_STOP))
         {
             npc_state.halt_pc = cpu.pc;
