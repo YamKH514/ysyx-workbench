@@ -35,7 +35,8 @@ static inline bool in_pmem(paddr_t addr) {
 #ifdef CONFIG_YSYXSOC
   bool in_mrom = (PMEM_LEFT <= addr) && (addr < PMEM_RIGHT);
   bool in_sram = (SRAM_LEFT <= addr) && (addr < SRAM_RIGHT);
-  return in_mrom | in_sram;
+  bool in_psram = (PSRAM_LEFT <= addr) && (addr < PSRAM_RIGHT);
+  return in_mrom | in_sram | in_psram;
 #else
   return addr - CONFIG_MBASE < CONFIG_MSIZE;
 #endif
