@@ -17,7 +17,7 @@ reg [31:0]  mepc_r;
 reg [31:0]  mcause_r;
 reg [31:0]  mtvec_r;
 reg [31:0]  mstatus_r;
-reg [31:0]  mvendorid_r = 32'h78797379;
+reg [31:0]  mvendorid_r = 32'h79737978;
 reg [31:0]  marchid_r = 32'h17F4E28;
 
 wire        mepc_we      = csr_we_in & (csr_rw_addr_in == 12'h341);
