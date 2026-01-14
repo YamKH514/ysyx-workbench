@@ -1,5 +1,3 @@
-ENTRY(_start)
-
 MEMORY {
   flash (r x) : ORIGIN = 0x30000000, LENGTH = 128M
   sram  (rwx) : ORIGIN = 0x0f000000, LENGTH = 8K
@@ -11,6 +9,9 @@ REGION_ALIAS("REGION_TEXT", psram);
 REGION_ALIAS("REGION_RODATA", psram);
 REGION_ALIAS("REGION_DATA", psram);
 REGION_ALIAS("REGION_BSS", psram);
+
+INCLUDE /home/renkh/ysyx-workbench/rt-thread-am/bsp/abstract-machine/ysyxSoCextra.ld
+ENTRY(_start)
 
 SECTIONS {
   . = ORIGIN(flash);
