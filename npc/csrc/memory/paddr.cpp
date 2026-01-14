@@ -160,10 +160,9 @@ extern "C" void perip_difftest_skip(int32_t addr)
 {
     if (!in_pmem(addr)){
 #ifdef CONFIG_DIFFTEST
-        printf("0x%08x need skip difftest\n", addr);
         difftest_skip_ref();
 #endif
-        }
+    }
     return;
 }
 
