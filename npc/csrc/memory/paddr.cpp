@@ -162,6 +162,7 @@ extern "C" void perip_difftest_skip(int32_t addr)
         ((0x30000000 <= addr) & (addr < 0x3fffffff))  |
         ((0x80000000 <= addr) & (addr < 0x80400000)))){
 #ifdef CONFIG_DIFFTEST
+        printf("0x%08x need skip difftest\n", addr);
         difftest_skip_ref();
 #endif
         }
