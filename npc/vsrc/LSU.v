@@ -64,6 +64,7 @@ module LSU(
 
 import "DPI-C" function void mem_tracer_read(input int addr,input int data);
 import "DPI-C" function void mem_tracer_write(input int addr,input int data);
+import "DPI-C" function void perip_difftest_skip(input int addr);
 
 reg [2:0]   lsu_r_func_r;
 reg         lsu_re_r;
@@ -129,6 +130,7 @@ always @(posedge clk) begin
             S_WAIT_ARB: begin
                 if (bg_in) begin
                     if (lsu_re_r) begin
+                        perip_difftest_skip(lsu_r_addr_in);
                         arid_out    <= 4'b0;
                         araddr_out  <= lsu_r_addr_in;
                         arlen_out   <= 4'b0;
@@ -137,6 +139,7 @@ always @(posedge clk) begin
                         arvalid_out <= 1'b1;
                     end else if (lsu_we_r) begin
                         mem_tracer_write(lsu_w_addr_in, lsu_w_data_in);
+                        perip_difftest_skip(lsu_w_addr_in);
                         awid_out    <= 4'b0;
                         awaddr_out  <= lsu_w_addr_in;
                         awlen_out   <= 4'b0;

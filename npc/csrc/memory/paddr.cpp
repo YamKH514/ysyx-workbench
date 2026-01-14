@@ -156,19 +156,14 @@ extern "C" void paddr_write(uint32_t waddr, uint32_t wdata, uint8_t wmask)
     out_of_bound(addr);
 }
 
-extern "C" void uart_difftest_skip()
+extern "C" void perip_difftest_skip(int32_t addr)
 {
-    fflush(stdout);
+    if (((0x20000000 <= addr) & (addr < 0x2000ffff)) |
+        ((0x30000000 <= addr) & (addr < 0x3fffffff)) |
+        ((0x80000000 <= addr) & (addr < 0x80400000))){
 #ifdef CONFIG_DIFFTEST
-    difftest_skip_ref();
+        difftest_skip_ref();
 #endif
-    return;
-}
-
-extern "C" void clint_difftest_skip()
-{
-#ifdef CONFIG_DIFFTEST
-    difftest_skip_ref();
-#endif
+        }
     return;
 }
