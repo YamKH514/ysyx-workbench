@@ -35,6 +35,8 @@ word_t *csr(word_t imm)
       case MTVEC: return &cpu.csr.mtvec;
       case MEPC: return &cpu.csr.mepc;
       case MCAUSE: return &cpu.csr.mcause;
+      case MVENDORID: return &cpu.csr.mvendorid;
+      case MARCHID: return &cpu.csr.marchid;
       default: panic("Unknow CSR");
     }
 }

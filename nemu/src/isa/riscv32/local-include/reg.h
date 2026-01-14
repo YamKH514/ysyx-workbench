@@ -22,6 +22,8 @@
 #define MCAUSE  0x342
 #define MTVEC   0x305
 #define MSTATUS 0x300
+#define MVENDORID 0xF11
+#define MARCHID 0xF12
 
 #define MSTATUS_MIE   0x8
 #define MSTATUS_MPIE  0x80
