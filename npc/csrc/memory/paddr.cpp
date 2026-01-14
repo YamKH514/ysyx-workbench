@@ -19,17 +19,17 @@
 //                                     };
 
 static uint8_t pmem[CONFIG_MSIZE] PG_ALIGN = {};
-static uint8_t psram[CONFIG_PSRAM_MSIZE] PG_ALIGN = {};
+static uint8_t psram[CONFIG_PSRAMSIZE] PG_ALIGN = {};
 
 uint8_t *guest_to_host(uint32_t paddr) {
     if ((CONFIG_MBASE <= paddr) && (paddr <= CONFIG_MBASE + CONFIG_MSIZE)) return pmem + paddr - CONFIG_MBASE;
-    else if ((CONFIG_PSRAM_MBASE <= paddr) && (paddr <= CONFIG_PSRAM_MBASE + CONFIG_PSRAM_MSIZE)) return psram + paddr - CONFIG_PSRAM_MBASE;
+    else if ((CONFIG_PSRAMBASE <= paddr) && (paddr <= CONFIG_PSRAMBASE + CONFIG_PSRAMSIZE)) return psram + paddr - CONFIG_PSRAMBASE;
     assert(0);
 }
 
 uint32_t host_to_guest(uint8_t *haddr) {
     if ((CONFIG_MBASE <= (uintptr_t)haddr) && ((uintptr_t)haddr <=  CONFIG_MBASE + CONFIG_MSIZE)) return haddr - pmem + CONFIG_MBASE;
-    else if ((CONFIG_PSRAM_MBASE <= (uintptr_t)haddr) && ((uintptr_t)haddr <= CONFIG_PSRAM_MBASE + CONFIG_PSRAM_MSIZE)) return haddr - psram + CONFIG_PSRAM_MBASE;
+    else if ((CONFIG_PSRAMBASE <= (uintptr_t)haddr) && ((uintptr_t)haddr <= CONFIG_PSRAMBASE + CONFIG_PSRAMSIZE)) return haddr - psram + CONFIG_PSRAMBASE;
     assert(0);
 }
 
@@ -92,13 +92,13 @@ extern "C" void flash_read(int32_t addr, int32_t *data)
 }
 
 extern "C" void psram_read(int32_t addr, int32_t *data) {
-    uint32_t raddr = CONFIG_PSRAM_MBASE + (uint32_t)addr;
+    uint32_t raddr = CONFIG_PSRAMBASE + (uint32_t)addr;
     *data = pmem_read(raddr, 4);
     return;
 }
 
 extern "C" void psram_write(int32_t addr, int32_t data, int32_t mask) {
-    uint32_t waddr = CONFIG_PSRAM_MBASE + (uint32_t)addr;
+    uint32_t waddr = CONFIG_PSRAMBASE + (uint32_t)addr;
     uint32_t wdata = data >> ((8-mask)*4);
     int len;
     switch (mask/2) {
