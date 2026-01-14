@@ -23,6 +23,8 @@
 uint64_t g_nr_guest_inst = 0;
 bool g_print_step = false;
 CPU_state cpu = {};
+static uint32_t pc = 0;
+static bool inst_end = false;
 
 static void trace_and_difftest(VysyxSoCFull *top, char *logbuf)
 {
@@ -38,10 +40,6 @@ static void trace_and_difftest(VysyxSoCFull *top, char *logbuf)
         puts(logbuf);
 #endif
     }
-#ifdef CONFIG_DIFFTEST
-    if ((!S_CPU(wbu_to_pc_valid)) & (!S_CPU(pc_to_wbu_ready)))
-        difftest_step(npc_state.halt_pc);
-#endif
 #ifdef CONFIG_WATCHPOINT
     bool changed = wp_scan();
     if (changed)
@@ -57,32 +55,35 @@ static void exec_once(VysyxSoCFull *top, VerilatedContext *contextp, VerilatedVc
 
     if (!npc_state.inited) cpu_reset(10, top, contextp, tfp);
 
-    if ((!S_CPU(wbu_to_pc_valid)) & (!S_CPU(pc_to_wbu_ready)))
-    {
-        npc_state.halt_pc = S_CPU(pc);
-        npc_state.halt_ret = S_CPU(u_GPR__DOT__u_RegisterFile__DOT__rf)[10];
-    }
-
     cpu_single_cycle(top, contextp, tfp);
 
-    if ((!S_CPU(wbu_to_pc_valid)) & (!S_CPU(pc_to_wbu_ready)))
+    if ((S_CPU(wbu_to_pc_valid)) & (S_CPU(pc_to_wbu_ready))) 
     {
+        pc = S_CPU(pc);
+        inst_end = true;
+    }
+    if ((!S_CPU(wbu_to_pc_valid)) & (!S_CPU(pc_to_wbu_ready)) & inst_end)
+    {
+        inst_end = false;
         cpu.pc = S_CPU(pc);
         cpu.npc = S_CPU(npc);
         svSetScope(svGetScopeFromName("TOP.ysyxSoCFull.asic.cpu.cpu.u_GPR.u_RegisterFile"));
         get_gpr(cpu.gpr);
         svSetScope(svGetScopeFromName("TOP.ysyxSoCFull.asic.cpu.cpu.u_CSR"));
         get_csr((int *)(&cpu.csr));
+#ifdef CONFIG_DIFFTEST
+        difftest_step(pc);
+#endif
     }
 
-    if (in_pmem(npc_state.halt_pc))
+    if (in_pmem(pc))
     {
         // 反汇编 itrace
         char *p = logbuf;
-        p += snprintf(p, sizeof(logbuf), "0x%08x:", npc_state.halt_pc);
+        p += snprintf(p, sizeof(logbuf), "0x%08x:", pc);
         int ilen = 4;
         int i;
-        uint32_t inst_val = paddr_read(npc_state.halt_pc);
+        uint32_t inst_val = paddr_read(pc);
         uint8_t *inst = (uint8_t *)&inst_val;
 #ifdef CONFIG_ITRACE
         for (i = ilen - 1; i >= 0; i--)
@@ -97,7 +98,7 @@ static void exec_once(VysyxSoCFull *top, VerilatedContext *contextp, VerilatedVc
         memset(p, ' ', space_len);
         p += space_len;
 
-        disassemble(p, logbuf + sizeof(logbuf) - p, npc_state.halt_pc, inst, ilen);
+        disassemble(p, logbuf + sizeof(logbuf) - p, pc, inst, ilen);
 #endif
         trace_and_difftest(top, logbuf);
 
@@ -109,11 +110,11 @@ static void exec_once(VysyxSoCFull *top, VerilatedContext *contextp, VerilatedVc
         if (opcode == inst_jar)
         {
             uint32_t imm = (SEXT((BITS(inst_val, 31, 31) << 20) | (BITS(inst_val, 19, 12) << 12) | (BITS(inst_val, 20, 20) << 11) | (BITS(inst_val, 30, 21) << 1), 21));
-            dnpc = npc_state.halt_pc + imm;
+            dnpc = pc + imm;
 #ifdef CONFIG_FTRACE
             if (rd == 1)
             {
-                ftrace_call(npc_state.halt_pc, dnpc);
+                ftrace_call(pc, dnpc);
             }
 #endif
         }
@@ -125,11 +126,11 @@ static void exec_once(VysyxSoCFull *top, VerilatedContext *contextp, VerilatedVc
 #ifdef CONFIG_FTRACE
             if (inst_val == 0x00008067)
             {
-                ftrace_ret(npc_state.halt_pc);
+                ftrace_ret(pc);
             }
             else if ((rd == 1) || (imm == 0 && rd == 0))
             {
-                ftrace_call(npc_state.halt_pc, dnpc);
+                ftrace_call(pc, dnpc);
             }
 #endif
         }
@@ -145,7 +146,11 @@ static void execute(VysyxSoCFull *top, VerilatedContext *contextp, VerilatedVcdC
         g_nr_guest_inst++;
         if ((running_cycle % 1000000) == 0) printf("NPC has been runned %llu cycle\n", running_cycle);
         if ((contextp->gotFinish()) || (npc_state.state == NPC_ABORT) || (npc_state.state == NPC_STOP))
+        {
+            npc_state.halt_pc = cpu.pc;
+            npc_state.halt_ret = cpu.gpr[10];
             break;
+        }
     }
 }
 
