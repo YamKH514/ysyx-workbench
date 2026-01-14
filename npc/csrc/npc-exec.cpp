@@ -57,11 +57,11 @@ static void exec_once(VysyxSoCFull *top, VerilatedContext *contextp, VerilatedVc
 
     if (!npc_state.inited) cpu_reset(10, top, contextp, tfp);
 
-    // if ((S_CPU(wbu_to_pc_valid)) & (S_CPU(pc_to_wbu_ready)))
-    // {
-    //     npc_state.halt_pc = S_CPU(pc);
-    //     npc_state.halt_ret = S_CPU(u_GPR__DOT__u_RegisterFile__DOT__rf)[10];
-    // }
+    if ((S_CPU(wbu_to_pc_valid)) & (S_CPU(pc_to_wbu_ready)))
+    {
+        npc_state.halt_pc = S_CPU(pc);
+        npc_state.halt_ret = S_CPU(u_GPR__DOT__u_RegisterFile__DOT__rf)[10];
+    }
 
     cpu_single_cycle(top, contextp, tfp);
 
@@ -73,8 +73,6 @@ static void exec_once(VysyxSoCFull *top, VerilatedContext *contextp, VerilatedVc
         get_gpr(cpu.gpr);
         svSetScope(svGetScopeFromName("TOP.ysyxSoCFull.asic.cpu.cpu.u_CSR"));
         get_csr((int *)(&cpu.csr));
-        npc_state.halt_pc = S_CPU(pc);
-        npc_state.halt_ret = S_CPU(u_GPR__DOT__u_RegisterFile__DOT__rf)[10];
     }
 
     if (in_pmem(npc_state.halt_pc))
