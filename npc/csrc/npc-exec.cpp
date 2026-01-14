@@ -57,15 +57,15 @@ static void exec_once(VysyxSoCFull *top, VerilatedContext *contextp, VerilatedVc
 
     if (!npc_state.inited) cpu_reset(10, top, contextp, tfp);
 
-    cpu_single_cycle(top, contextp, tfp);
-
     if ((!S_CPU(wbu_to_pc_valid)) & (!S_CPU(pc_to_wbu_ready)))
     {
         npc_state.halt_pc = S_CPU(pc);
         npc_state.halt_ret = S_CPU(u_GPR__DOT__u_RegisterFile__DOT__rf)[10];
     }
 
-    if ((S_CPU(wbu_to_pc_valid)) & (S_CPU(pc_to_wbu_ready)))
+    cpu_single_cycle(top, contextp, tfp);
+
+    if ((!S_CPU(wbu_to_pc_valid)) & (!S_CPU(pc_to_wbu_ready)))
     {
         cpu.pc = S_CPU(pc);
         cpu.npc = S_CPU(npc);
