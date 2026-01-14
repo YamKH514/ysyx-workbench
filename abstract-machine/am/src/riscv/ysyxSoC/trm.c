@@ -74,14 +74,14 @@ void _ssbl() {
   extern char data_end [];
   extern char data_size [];
   extern char data_load_start [];
-  extern char data_extra_start [];
-  extern char data_extra_end [];
-  extern char data_extra_size [];
-  extern char data_extra_load_start [];
+  // extern char data_extra_start [];
+  // extern char data_extra_end [];
+  // extern char data_extra_size [];
+  // extern char data_extra_load_start [];
   MEMCOPY(text_start, text_load_start, text_size);
   if (rodata_end - rodata_start) MEMCOPY(rodata_start, rodata_load_start, rodata_size);
   if (data_end - data_start) MEMCOPY(data_start, data_load_start, data_size);
-  if (data_extra_end - data_extra_start) MEMCOPY(data_extra_start, data_extra_load_start, data_extra_size);
+  // if (data_extra_end - data_extra_start) MEMCOPY(data_extra_start, data_extra_load_start, data_extra_size);
   _trm_init();
 }
 
