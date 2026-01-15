@@ -166,7 +166,7 @@ void npc_exec(VysyxSoCFull *top, VerilatedContext *contextp, VerilatedVcdC *tfp,
         Verilated::gotFinish(true);
         printf("Program execution has ended. To restart the program, exit NPC and run again.\n");
         return;
-    default: nemu_state.state = NEMU_RUNNING;
+    default: npc_state.state = NPC_RUNNING;
     }
 
     execute(top, contextp, tfp, n);
