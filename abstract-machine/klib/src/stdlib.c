@@ -52,7 +52,6 @@ void *malloc(size_t size) {
   memset(old, 0, size);
   return old;
   #endif
-  assert(0);
   return NULL;
 }
 
