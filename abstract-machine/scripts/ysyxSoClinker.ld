@@ -10,7 +10,6 @@ REGION_ALIAS("REGION_RODATA", psram);
 REGION_ALIAS("REGION_DATA", psram);
 REGION_ALIAS("REGION_BSS", psram);
 
-INCLUDE /home/renkh/ysyx-workbench/rt-thread-am/bsp/abstract-machine/ysyxSoCextra.ld
 ENTRY(_start)
 
 SECTIONS {
@@ -21,12 +20,14 @@ SECTIONS {
     *(fsbl)
     fsbl_end = .;
   } > REGION_FSBL AT > flash
+
   .ssbl : {
     ssbl_start = .;
     *(ssbl)
   } > REGION_SSBL AT > flash
   ssbl_size = SIZEOF(.ssbl);
   ssbl_load_start = LOADADDR(.ssbl);
+
   .text : {
     text_start = .;
     *(.text*)
@@ -36,6 +37,7 @@ SECTIONS {
   text_load_start = LOADADDR(.text);
   etext = .;
   _etext = .;
+
   .rodata : {
     rodata_start = .;
     *(.rodata*)
@@ -44,6 +46,7 @@ SECTIONS {
   } > REGION_RODATA AT > flash
   rodata_size = SIZEOF(.rodata);
   rodata_load_start = LOADADDR(.rodata);
+
   .data : {
     data_start = .;
     *(.data*)
@@ -52,8 +55,13 @@ SECTIONS {
   } > REGION_DATA AT > flash
   data_size = SIZEOF(.data);
   data_load_start = LOADADDR(.data);
+  data_extra_start = DEFINED(data_extra_start) ? data_extra_start : 0;
+  data_extra_end = DEFINED(data_extra_end) ? data_extra_end : 0;
+  data_extra_size = DEFINED(data_extra_size) ? data_extra_size : 0;
+  data_extra_load_start = DEFINED(data_extra_load_start) ? data_extra_load_start : 0;
   edata = .;
   _data = .;
+
   .bss : {
     _bss_start = .;
     *(.bss*)
@@ -61,9 +69,13 @@ SECTIONS {
     *(.scommon)
     _bss_end = .;
   } > REGION_BSS
+  _bss_extra_start = DEFINED(_bss_extra_start) ? _bss_extra_start : 0;
+  _bss_extra_end = DEFINED(_bss_extra_end) ? _bss_extra_end : 0;
   end = .;
   _end = .;
+
   _heap_start = ALIGN(0x1000);
+
   _stack_top = ORIGIN(sram);
   _stack_pointer = ORIGIN(sram) + LENGTH(sram);
 }
