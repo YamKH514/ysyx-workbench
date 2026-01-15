@@ -8,7 +8,6 @@
 #include "Vtop__Dpi.h"
 
 int is_exit_status_bad();
-extern "C" void flash_read(int32_t addr, int32_t *data) { assert(0); }
 
 int main(int argc, char *argv[])
 {
@@ -32,7 +31,7 @@ int main(int argc, char *argv[])
         sdb_mainloop();
     }
 
-    Log("npc running cycle = %d", running_cycle);
+    Log("npc running cycle = %llu", running_cycle);
     Log("npc: %s at pc = 0x%08x", (
         npc_state.state == NPC_ABORT ? ANSI_FMT("ABORT", ANSI_FG_RED) :
         npc_state.halt_ret == 0 ? ANSI_FMT("HIT GOOD TRAP", ANSI_FG_GREEN) : ANSI_FMT("HIT BAD TRAP", ANSI_FG_RED)), npc_state.halt_pc);

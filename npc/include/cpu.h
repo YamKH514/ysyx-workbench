@@ -3,7 +3,7 @@
 
 #include "common.h"
 
-extern int running_cycle;
+extern unsigned long long running_cycle;
 
 typedef struct
 {
@@ -11,6 +11,8 @@ typedef struct
   uint32_t mcause;
   uint32_t mtvec;
   uint32_t mstatus;
+  uint32_t mvendorid;
+  uint32_t marchid;
 } rv32_crs;
 
 

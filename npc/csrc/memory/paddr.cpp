@@ -10,10 +10,28 @@
 #define SERIAL_PORT (DEVICE_BASE + 0x00003f8)
 #define RTC_ADDR    (DEVICE_BASE + 0x0000048)
 
-static uint8_t pmem[CONFIG_MSIZE] PG_ALIGN = {};
+// static uint32_t flash_data[10] =   {0x100007b7, // lui	a5,0x10000
+//                                     0x04100713, // li	a4,65
+//                                     0x00e78023, // sb	a4,0(a5) # 10000000
+//                                     0x00a00713, // li	a4,10
+//                                     0x00e78023, // sb	a4,0(a5)
+//                                     0x00008067  // ret
+//                                     };
 
-uint8_t *guest_to_host(uint32_t paddr) { return pmem + paddr - CONFIG_MBASE; }
-uint32_t host_to_guest(uint8_t *haddr) { return haddr - pmem + CONFIG_MBASE; }
+static uint8_t pmem[CONFIG_MSIZE] PG_ALIGN = {};
+static uint8_t psram[CONFIG_PSRAMSIZE] PG_ALIGN = {};
+
+uint8_t *guest_to_host(uint32_t paddr) {
+    if ((CONFIG_MBASE <= paddr) && (paddr <= CONFIG_MBASE + CONFIG_MSIZE)) return pmem + paddr - CONFIG_MBASE;
+    else if ((CONFIG_PSRAMBASE <= paddr) && (paddr <= CONFIG_PSRAMBASE + CONFIG_PSRAMSIZE)) return psram + paddr - CONFIG_PSRAMBASE;
+    assert(0);
+}
+
+uint32_t host_to_guest(uint8_t *haddr) {
+    if ((CONFIG_MBASE <= (uintptr_t)haddr) && ((uintptr_t)haddr <=  CONFIG_MBASE + CONFIG_MSIZE)) return haddr - pmem + CONFIG_MBASE;
+    else if ((CONFIG_PSRAMBASE <= (uintptr_t)haddr) && ((uintptr_t)haddr <= CONFIG_PSRAMBASE + CONFIG_PSRAMSIZE)) return haddr - psram + CONFIG_PSRAMBASE;
+    assert(0);
+}
 
 static uint32_t pmem_read(uint32_t addr, int len)
 {
@@ -34,7 +52,9 @@ static void out_of_bound(uint32_t addr)
 
 void init_mem()
 {
-    Log("physical memory area [ 0x%08x, 0x%08x]", PMEM_LEFT, PMEM_RIGHT);
+    Log("flash area [ 0x%08x, 0x%08x]", PMEM_LEFT, PMEM_RIGHT);
+    Log("sram  area [ 0x%08x, 0x%08x]", SRAM_LEFT, SRAM_RIGHT);
+    Log("psram area [ 0x%08x, 0x%08x]", PSRAM_LEFT, PSRAM_RIGHT);
 }
 
 extern "C" void mem_tracer_read(int32_t addr, int32_t data)
@@ -51,36 +71,61 @@ extern "C" void mem_tracer_write(int32_t addr, int32_t data)
 #endif
 }
 
-void print_paddr_read(uint32_t addr, int len)
-{
-    printf("MEM_READ  data: 0x%08x, at 0x%08x , len = %d\n", pmem_read(addr, len), addr, len);
-}
-
-void print_paddr_write(uint32_t addr, int len, uint32_t data)
-{
-    printf("MEM_WRITE data: 0x%08x, at 0x%08x , len = %d\n", data, addr, len);
-}
-
-extern "C" uint32_t paddr_read(uint32_t raddr)
-{
-    uint32_t addr = raddr & ~0x3u;
-#ifdef CONFIG_MTRACE
-    // print_paddr_read(addr, 4);
-#endif
-    if(likely(in_pmem(addr)))
-    {
-        return pmem_read(addr, 4);
-    }
-    out_of_bound(addr);
-    return 0;
-}
-
 extern "C" void mrom_read(int32_t addr, int32_t *data)
 {
+    assert(0);
     uint32_t raddr = ((uint32_t)addr) & ~0x3u;
     uint32_t rdata = pmem_read(raddr, 4);
     *data = (int32_t)rdata;
     return;
+}
+
+extern "C" void flash_read(int32_t addr, int32_t *data)
+{
+    uint32_t raddr = CONFIG_MBASE + (((uint32_t)addr) & ~0x3u);
+    if(likely(in_pmem(raddr)))
+    {
+        uint32_t rdata = pmem_read(raddr, 4);
+        *data = (int32_t)rdata;
+        return;
+    }
+    out_of_bound(raddr);
+    return;
+}
+
+extern "C" void psram_read(int32_t addr, int32_t *data) {
+    uint32_t raddr = CONFIG_PSRAMBASE + (uint32_t)addr;
+    *data = pmem_read(raddr, 4);
+    return;
+}
+
+extern "C" void psram_write(int32_t addr, int32_t data, int32_t mask) {
+    uint32_t waddr = CONFIG_PSRAMBASE + (uint32_t)addr;
+    uint32_t wdata = data >> ((8-mask)*4);
+    int len;
+    switch (mask/2) {
+        case 0x1: case 0x10: case 0x100: case 0x1000:
+            len = 1;
+            break;
+        case 0x11: case 0x110: case 0x1100:
+            len = 2;
+            break;
+        case 0x1111:
+            len = 4;
+            break;
+    }
+    pmem_write(waddr, len, wdata);
+    return;
+}
+
+extern "C" uint32_t paddr_read(uint32_t raddr)
+{
+    uint32_t rdata = 0;
+    if ((0x20000000 <= raddr) & (raddr < 0x2000ffff)) mrom_read(raddr, (int32_t *)&rdata);
+    else if ((0x30000000 <= raddr) & (raddr < 0x3fffffff)) flash_read(raddr - 0x30000000, (int32_t *)&rdata);
+    else if ((0x80000000 <= raddr) & (raddr < 0x80400000)) flash_read(raddr - 0x80000000, (int32_t *)&rdata);
+    else assert(0);
+    return rdata;
 }
 
 extern "C" void paddr_write(uint32_t waddr, uint32_t wdata, uint8_t wmask)
@@ -106,23 +151,20 @@ extern "C" void paddr_write(uint32_t waddr, uint32_t wdata, uint8_t wmask)
             data = 0;
             break;
         }
-    
-#ifdef CONFIG_MTRACE
-        print_paddr_write(addr, 4, data);
-#endif
-            pmem_write(addr, 4, data);
-            return;
+        pmem_write(addr, 4, data);
+        return;
     }
 
     out_of_bound(addr);
 }
 
-extern "C" void uart_difftest_skip()
+extern "C" void perip_difftest_skip(int32_t addr)
 {
-    fflush(stdout);
+    if (!in_pmem(addr)){
 #ifdef CONFIG_DIFFTEST
-    difftest_skip_ref();
+        difftest_skip_ref();
 #endif
+    }
     return;
 }
 

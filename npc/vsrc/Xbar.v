@@ -1,5 +1,4 @@
-`define DEVICE_BASE 32'ha0000000
-`define SERIAL_PORT (`DEVICE_BASE + 32'h00003f8)
+`define DEVICE_BASE 32'h02000000
 `define RTC_ADDR    (`DEVICE_BASE + 32'h0000048)
 
 module Xbar(

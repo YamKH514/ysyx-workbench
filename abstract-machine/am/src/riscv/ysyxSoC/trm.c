@@ -16,13 +16,17 @@
 #define UART_MSB 0x1
 
 extern char _heap_start;
-#define _heap_end 0x0f001fff
+#define _heap_end 0x80400000
 int main(const char *args);
 
-extern char _pmem_start;
-#define PMEM_SIZE 0x1000
-#define PMEM_END  ((uintptr_t)&_pmem_start + PMEM_SIZE)
 #define npc_trap(code) asm volatile("mv a0, %0; ebreak" : :"r"(code))
+
+#define MEMCOPY(start, load_start, size) for (size_t i = 0; i < (size_t)(size); i++) { \
+                                            *((start) + i) = *((load_start) + i); \
+                                          }
+#define MEMSETZ(start, size) for (size_t i = 0; i < (size_t)(size); i++) { \
+                                *((start) + i) = 0;\
+                              }
 
 Area heap = RANGE(&_heap_start, _heap_end);
 static const char mainargs[MAINARGS_MAX_LEN] = MAINARGS_PLACEHOLDER; // defined in CFLAGS
@@ -43,13 +47,50 @@ void putch(char ch) {
   *(volatile char *)(UART_BASE + UART_TX) = ch;
 }
 
-extern char data_start [];
-extern char data_size [];
-extern char data_load_start [];
+void _ssbl();
+__attribute__((section("fsbl"))) __attribute__((used))
+void _fsbl() {
+  extern char ssbl_start [];
+  extern char ssbl_size [];
+  extern char ssbl_load_start [];
+  MEMCOPY(ssbl_start, ssbl_load_start, ssbl_size);
+  _ssbl();
+}
 
-static void bootloader()
-{
-  memcpy(data_start, data_load_start, (size_t) data_size);
+void _trm_init();
+__attribute__((section("ssbl"))) __attribute__((used))
+void _ssbl() {
+  extern char text_start [];
+  extern char text_size [];
+  extern char text_load_start [];
+  extern char rodata_start [];
+  extern char rodata_end [];
+  extern char rodata_size [];
+  extern char rodata_load_start [];
+  extern char data_start [];
+  extern char data_end [];
+  extern char data_size [];
+  extern char data_load_start [];
+  extern char data_extra_start [];
+  extern char data_extra_end [];
+  extern char data_extra_size [];
+  extern char data_extra_load_start [];
+  MEMCOPY(text_start, text_load_start, text_size);
+  if (rodata_end - rodata_start) MEMCOPY(rodata_start, rodata_load_start, rodata_size);
+  if (data_end - data_start) MEMCOPY(data_start, data_load_start, data_size);
+  if (data_extra_end - data_extra_start) MEMCOPY(data_extra_start, data_extra_load_start, data_extra_size);
+  _trm_init();
+}
+
+static void print_info() {
+  uint32_t mvendorid;
+  uint32_t marchid;
+  asm volatile("csrr %0, mvendorid" : "=r"(mvendorid):);
+  asm volatile("csrr %0, marchid" : "=r"(marchid):);
+  for(int i = 3; i >= 0; i--){
+      putch((char)((mvendorid >> i*8) & 0xFF));
+  }
+  printf("_%d\n", marchid);
 }
 
 void halt(int code) {
@@ -60,7 +101,7 @@ void halt(int code) {
 
 void _trm_init() {
   uart_init();
-  bootloader();
+  print_info();
   int ret = main(mainargs);
   halt(ret);
 }

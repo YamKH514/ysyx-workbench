@@ -22,6 +22,8 @@
 #define PMEM_RIGHT ((paddr_t)CONFIG_MBASE + CONFIG_MSIZE - 1)
 #define SRAM_LEFT  ((paddr_t)CONFIG_SRAMBASE)
 #define SRAM_RIGHT ((paddr_t)CONFIG_SRAMBASE + CONFIG_SRAMSIZE - 1)
+#define PSRAM_LEFT  ((paddr_t)CONFIG_PSRAMBASE)
+#define PSRAM_RIGHT ((paddr_t)CONFIG_PSRAMBASE + CONFIG_PSRAMSIZE - 1)
 #define RESET_VECTOR (PMEM_LEFT + CONFIG_PC_RESET_OFFSET)
 
 /* convert the guest physical address in the guest program to host virtual address in NEMU */
@@ -33,7 +35,8 @@ static inline bool in_pmem(paddr_t addr) {
 #ifdef CONFIG_YSYXSOC
   bool in_mrom = (PMEM_LEFT <= addr) && (addr < PMEM_RIGHT);
   bool in_sram = (SRAM_LEFT <= addr) && (addr < SRAM_RIGHT);
-  return in_mrom | in_sram;
+  bool in_psram = (PSRAM_LEFT <= addr) && (addr < PSRAM_RIGHT);
+  return in_mrom | in_sram | in_psram;
 #else
   return addr - CONFIG_MBASE < CONFIG_MSIZE;
 #endif

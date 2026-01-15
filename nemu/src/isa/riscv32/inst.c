@@ -29,12 +29,14 @@ enum {
 
 word_t *csr(word_t imm)
 {
-  switch(imm)
+  switch(imm & 0xFFF)
     {
       case MSTATUS: return &cpu.csr.mstatus;
       case MTVEC: return &cpu.csr.mtvec;
       case MEPC: return &cpu.csr.mepc;
       case MCAUSE: return &cpu.csr.mcause;
+      case MVENDORID: return &cpu.csr.mvendorid;
+      case MARCHID: return &cpu.csr.marchid;
       default: panic("Unknow CSR");
     }
 }

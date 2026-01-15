@@ -35,6 +35,8 @@ static void restart() {
 
   /* Initialize mstatus */
   cpu.csr.mstatus = 0x00001800;
+  cpu.csr.mvendorid = 0x79737978;
+  cpu.csr.marchid = 0x17F4E28;
 }
 
 void init_isa() {

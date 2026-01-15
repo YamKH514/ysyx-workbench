@@ -18,7 +18,7 @@
 
 #include <common.h>
 
-enum {mepc = 0, mcause, mtvec, mstatus};
+enum {mepc = 0, mcause, mtvec, mstatus, mvendorid, marchid};
 
 typedef struct
 {
@@ -26,6 +26,8 @@ typedef struct
   word_t mcause;
   word_t mtvec;
   word_t mstatus;
+  word_t mvendorid;
+  word_t marchid;
 } rv32_crs;
 
 

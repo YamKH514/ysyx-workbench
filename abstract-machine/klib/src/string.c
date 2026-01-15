@@ -5,6 +5,7 @@
 #if !defined(__ISA_NATIVE__) || defined(__NATIVE_USE_KLIB__)
 
 size_t strlen(const char *s) {
+  assert(s != NULL);
   size_t cnt = 0;
   while (*s != '\0')
   {
@@ -15,6 +16,8 @@ size_t strlen(const char *s) {
 }
 
 char *strcpy(char *dst, const char *src) {
+  assert(src != NULL);
+  assert(dst != NULL);
   char *ret = dst;
   while (*src != '\0')
   {
@@ -32,6 +35,8 @@ char *strncpy(char *dst, const char *src, size_t n) {
 }
 
 char *strcat(char *dst, const char *src) {
+  assert(src != NULL);
+  assert(dst != NULL);
   char *ret = dst;
   while (*dst != '\0')
   {
@@ -49,6 +54,8 @@ char *strcat(char *dst, const char *src) {
 }
 
 int strcmp(const char *s1, const char *s2) {
+  assert(s1 != NULL);
+  assert(s2 != NULL);
   while (*s1 != '\0' && *s2 != '\0')
   {
     if(*s1 != *s2)
@@ -64,6 +71,8 @@ int strcmp(const char *s1, const char *s2) {
 }
 
 int strncmp(const char *s1, const char *s2, size_t n) {
+  assert(s1 != NULL);
+  assert(s2 != NULL);
   while (*s1 != '\0' && *s2 != '\0')
   {
     for(int i = 0; i < n; i++)
@@ -82,6 +91,7 @@ int strncmp(const char *s1, const char *s2, size_t n) {
 }
 
 void *memset(void *s, int c, size_t n) {
+  assert(s != NULL);
   unsigned char *p = s;
   while (n > 0)
   {
@@ -94,6 +104,8 @@ void *memset(void *s, int c, size_t n) {
 }
 
 void *memmove(void *dst, const void *src, size_t n) {
+  assert(src != NULL);
+  assert(dst != NULL);
   char *d = dst;
   const char *s = src;
   if(n == 0)
@@ -126,12 +138,12 @@ void *memmove(void *dst, const void *src, size_t n) {
 }
 
 void *memcpy(void *out, const void *in, size_t n) {
-  const char *cin = in;
-  char *cout = out;
-  for(size_t i = 0; i < n; i++)
-  {
-    *(cout + i) = *(cin + i);
-  }
+  if (n) {
+    assert(out != NULL);
+    assert(in  != NULL);
+    for (int i = 0; i < n; i++)
+      *((char *)out + i) = *((char *)in + i);
+    }
   return out;
 }
 
