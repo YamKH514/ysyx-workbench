@@ -171,6 +171,8 @@ always @(posedge clk) begin
                     rid_r                <= rid_in;
                     rdata_r              <= rdata_in;
                     if (rresp_in != 2'b00) begin
+                        $display("LSU rresp: %d\n", rresp_in);
+                        if (rresp_in == 2'b11) $fatal;
                     end
                     rready_out           <= 1'b0;
                     lsu_to_wbu_valid_out <= 1'b1;
@@ -201,6 +203,8 @@ always @(posedge clk) begin
                 if (bvalid_in & bready_out) begin
                     bid_r                <= bid_in;
                     if (bresp_in != 2'b00) begin
+                        $display("LSU bresp: %d\n", rresp_in);
+                        if (bresp_in == 2'b11) $fatal;
                     end
                     bready_out           <= 1'b0;
                     lsu_to_wbu_valid_out <= 1'b1;

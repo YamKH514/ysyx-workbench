@@ -136,6 +136,8 @@ always @(posedge clk) begin
                     rid_r                <= rid_in;
                     ifu_inst_out         <= rdata_in;
                     if (rresp_in != 2'b00) begin
+                        $display("IFU rresp: %d\n", rresp_in);
+                        if (rresp_in == 2'b11) $fatal;
                     end
                     if (rlast_in) begin
                         rready_out           <= 1'b0;
