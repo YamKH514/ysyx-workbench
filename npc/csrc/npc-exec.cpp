@@ -145,7 +145,7 @@ static void execute(VysyxSoCFull *top, VerilatedContext *contextp, VerilatedVcdC
         running_cycle ++;
         g_nr_guest_inst++;
         // if ((running_cycle % 1000000) == 0) printf("NPC has been runned %llu cycle\n", running_cycle);
-        if ((contextp->gotFinish()) || (npc_state.state == NPC_ABORT))
+        if ((contextp->gotFinish()) || (npc_state.state == NPC_ABORT) || (npc_state.state == NPC_STOP))
         {
             npc_state.halt_pc = cpu.pc;
             npc_state.halt_ret = cpu.gpr[10];
@@ -168,7 +168,7 @@ void npc_exec(VysyxSoCFull *top, VerilatedContext *contextp, VerilatedVcdC *tfp,
         return;
     } else
     {
-        npc_state.state == NPC_RUNNING
+        npc_state.state == NPC_RUNNING;
     }
     execute(top, contextp, tfp, n);
 }
