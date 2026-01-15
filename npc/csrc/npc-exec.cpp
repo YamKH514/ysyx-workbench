@@ -40,13 +40,6 @@ static void trace_and_difftest(VysyxSoCFull *top, char *logbuf)
         puts(logbuf);
 #endif
     }
-#ifdef CONFIG_WATCHPOINT
-    bool changed = wp_scan();
-    if (changed)
-    {
-        npc_state.state = NPC_STOP;
-    }
-#endif
 }
 
 static void exec_once(VysyxSoCFull *top, VerilatedContext *contextp, VerilatedVcdC *tfp)
@@ -71,6 +64,13 @@ static void exec_once(VysyxSoCFull *top, VerilatedContext *contextp, VerilatedVc
         get_gpr(cpu.gpr);
         svSetScope(svGetScopeFromName("TOP.ysyxSoCFull.asic.cpu.cpu.u_CSR"));
         get_csr((int *)(&cpu.csr));
+#ifdef CONFIG_WATCHPOINT
+        bool changed = wp_scan();
+        if (changed)
+        {
+            npc_state.state = NPC_STOP;
+        }
+#endif
 #ifdef CONFIG_DIFFTEST
         difftest_step(pc);
 #endif
