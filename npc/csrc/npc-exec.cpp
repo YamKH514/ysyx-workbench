@@ -145,7 +145,7 @@ static void execute(VysyxSoCFull *top, VerilatedContext *contextp, VerilatedVcdC
         running_cycle ++;
         g_nr_guest_inst++;
         // if ((running_cycle % 1000000) == 0) printf("NPC has been runned %llu cycle\n", running_cycle);
-        if ((contextp->gotFinish()) || (npc_state.state == NPC_ABORT) || (npc_state.state == NPC_STOP))
+        if (npc_state.state != NPC_RUNNING)
         {
             npc_state.halt_pc = cpu.pc;
             npc_state.halt_ret = cpu.gpr[10];
@@ -161,14 +161,15 @@ void assert_fail_msg()
 void npc_exec(VysyxSoCFull *top, VerilatedContext *contextp, VerilatedVcdC *tfp, uint64_t n)
 {
     g_print_step = (n < MAX_INST_TO_PRINT);
-    if ((contextp->gotFinish()) || (npc_state.state == NPC_ABORT))
-    {
+    switch (nemu_state.state) {
+    case NPC_END: case NPC_ABORT: case NPC_QUIT:
         Verilated::gotFinish(true);
         printf("Program execution has ended. To restart the program, exit NPC and run again.\n");
         return;
-    } else
-    {
-        npc_state.state == NPC_RUNNING;
+    default: nemu_state.state = NEMU_RUNNING;
     }
+
     execute(top, contextp, tfp, n);
+
+    if (npc_state.state == NPC_RUNNING) npc_state.state = NPC_STOP;
 }
