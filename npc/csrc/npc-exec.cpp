@@ -161,7 +161,7 @@ void assert_fail_msg()
 void npc_exec(VysyxSoCFull *top, VerilatedContext *contextp, VerilatedVcdC *tfp, uint64_t n)
 {
     g_print_step = (n < MAX_INST_TO_PRINT);
-    switch (nemu_state.state) {
+    switch (npc_state.state) {
     case NPC_END: case NPC_ABORT: case NPC_QUIT:
         Verilated::gotFinish(true);
         printf("Program execution has ended. To restart the program, exit NPC and run again.\n");
