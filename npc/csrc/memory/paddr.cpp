@@ -58,6 +58,7 @@ void init_mem()
     Log("flash area [ 0x%08x, 0x%08x]", PMEM_LEFT, PMEM_RIGHT);
     Log("sram  area [ 0x%08x, 0x%08x]", SRAM_LEFT, SRAM_RIGHT);
     Log("psram area [ 0x%08x, 0x%08x]", PSRAM_LEFT, PSRAM_RIGHT);
+    Log("sdram area [ 0x%08x, 0x%08x]", SDRAM_LEFT, SDRAM_RIGHT);
 }
 
 extern "C" void mem_tracer_read(int32_t addr, int32_t data)
