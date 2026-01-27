@@ -20,16 +20,19 @@
 
 static uint8_t pmem[CONFIG_MSIZE] PG_ALIGN = {};
 static uint8_t psram[CONFIG_PSRAMSIZE] PG_ALIGN = {};
+static uint8_t sdram[CONFIG_SDRAMSIZE] PG_ALIGN = {};
 
 uint8_t *guest_to_host(uint32_t paddr) {
     if ((CONFIG_MBASE <= paddr) && (paddr <= CONFIG_MBASE + CONFIG_MSIZE)) return pmem + paddr - CONFIG_MBASE;
     else if ((CONFIG_PSRAMBASE <= paddr) && (paddr <= CONFIG_PSRAMBASE + CONFIG_PSRAMSIZE)) return psram + paddr - CONFIG_PSRAMBASE;
+    else if ((CONFIG_SDRAMBASE <= paddr) && (paddr <= CONFIG_SDRAMBASE + CONFIG_SDRAMSIZE)) return sdram + paddr - CONFIG_SDRAMBASE;
     assert(0);
 }
 
 uint32_t host_to_guest(uint8_t *haddr) {
     if ((CONFIG_MBASE <= (uintptr_t)haddr) && ((uintptr_t)haddr <=  CONFIG_MBASE + CONFIG_MSIZE)) return haddr - pmem + CONFIG_MBASE;
     else if ((CONFIG_PSRAMBASE <= (uintptr_t)haddr) && ((uintptr_t)haddr <= CONFIG_PSRAMBASE + CONFIG_PSRAMSIZE)) return haddr - psram + CONFIG_PSRAMBASE;
+    else if ((CONFIG_SDRAMBASE <= (uintptr_t)haddr) && ((uintptr_t)haddr <= CONFIG_SDRAMBASE + CONFIG_SDRAMSIZE)) return haddr - sdram + CONFIG_SDRAMBASE;
     assert(0);
 }
 
@@ -118,12 +121,41 @@ extern "C" void psram_write(int32_t addr, int32_t data, int32_t mask) {
     return;
 }
 
+extern "C" void sdram_read(int32_t addr, int32_t *data) {
+    uint32_t raddr = CONFIG_SDRAMBASE + (uint32_t)addr;
+    *data = pmem_read(raddr, 2);
+    return;
+}
+
+extern "C" void sdram_write(int32_t addr, int32_t data, int32_t mask) {
+    uint32_t waddr = CONFIG_SDRAMBASE + (uint32_t)addr;
+    uint32_t wdata;
+    int len;
+    switch (mask) {
+        case 0x1:
+            len = 1;
+            wdata = data & 0x000F;
+            break;
+        case 0x2:
+            len = 1;
+            waddr += 1;
+            wdata = (data & 0x00F0) >> 4;
+            break;
+        case 0x0:
+            len = 2;
+            wdata = data;
+            break;
+    }
+    pmem_write(waddr, len, wdata);
+    return;
+}
+
 extern "C" uint32_t paddr_read(uint32_t raddr)
 {
     uint32_t rdata = 0;
     if ((0x20000000 <= raddr) & (raddr < 0x2000ffff)) mrom_read(raddr, (int32_t *)&rdata);
     else if ((0x30000000 <= raddr) & (raddr < 0x3fffffff)) flash_read(raddr - 0x30000000, (int32_t *)&rdata);
-    else if ((0x80000000 <= raddr) & (raddr < 0x80400000)) flash_read(raddr - 0x80000000, (int32_t *)&rdata);
+    else if ((0x80000000 <= raddr) & (raddr < 0x80400000)) psram_read(raddr - 0x80000000, (int32_t *)&rdata);
     else assert(0);
     return rdata;
 }
