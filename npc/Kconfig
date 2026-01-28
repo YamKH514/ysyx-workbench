@@ -31,7 +31,7 @@ config VCD_TRACE
 
 config VCD_TRACE_PC
   depends on VCD_TRACE
-  hex "VCD wive tracer start recode when this $PC"
+  hex "The VCD wive tracer will begin recording at $PC"
   default 0x0
 
 config ITRACE
