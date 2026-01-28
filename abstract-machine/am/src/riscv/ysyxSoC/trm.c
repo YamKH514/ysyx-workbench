@@ -28,6 +28,10 @@ int main(const char *args);
                                 *((start) + i) = 0;\
                               }
 
+#define MEMCOPY_WORD(start, load_start, size) for (uint32_t i = 0; i < ((uint32_t)(size)>>2); i++) { \
+                                            *((start) + i) = *((load_start) + i); \
+                                          }
+
 Area heap = RANGE(&_heap_start, _heap_end);
 static const char mainargs[MAINARGS_MAX_LEN] = MAINARGS_PLACEHOLDER; // defined in CFLAGS
 
@@ -50,10 +54,10 @@ void putch(char ch) {
 void _ssbl();
 __attribute__((section("fsbl"))) __attribute__((used))
 void _fsbl() {
-  extern char ssbl_start [];
-  extern char ssbl_size [];
-  extern char ssbl_load_start [];
-  MEMCOPY(ssbl_start, ssbl_load_start, ssbl_size);
+  extern uint32_t ssbl_start [];
+  extern uint32_t ssbl_size [];
+  extern uint32_t ssbl_load_start [];
+  MEMCOPY_WORD(ssbl_start, ssbl_load_start, ssbl_size);
   _ssbl();
 }
 
