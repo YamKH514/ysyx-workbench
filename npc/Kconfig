@@ -29,11 +29,6 @@ config VCD_TRACE
   bool "Enable VCD wive tracer"
   default y
 
-config VCD_TRACE_PC
-  depends on VCD_TRACE
-  hex "The VCD wive tracer will begin recording at $PC"
-  default 0x0
-
 config ITRACE
   depends on TRACE
   bool "Enable instruction tracer"

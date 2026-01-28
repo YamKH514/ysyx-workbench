@@ -9,20 +9,18 @@ void cpu_single_cycle(VysyxSoCFull *top, VerilatedContext *contextp, VerilatedVc
     top->clock = 0;
     top->eval();
 #ifdef CONFIG_VCD_TRACE
-    if (npc_state.need_recode) tfp->dump(contextp->time());
+    tfp->dump(contextp->time());
 #endif
     contextp->timeInc(1);
     top->clock = 1;
     top->eval();
 #ifdef CONFIG_VCD_TRACE
-    if (npc_state.need_recode) tfp->dump(contextp->time());
+    tfp->dump(contextp->time());
 #endif
 }
 
 void cpu_reset(int n, VysyxSoCFull *top, VerilatedContext *contextp, VerilatedVcdC *tfp)
 {
-    static bool before_state = npc_state.need_recode;
-    npc_state.need_recode = true;
     top->reset = 1;
     while (n-- > 0)
     {
@@ -30,5 +28,4 @@ void cpu_reset(int n, VysyxSoCFull *top, VerilatedContext *contextp, VerilatedVc
     }
     top->reset = 0;
     npc_state.inited = true;
-    npc_state.need_recode = before_state;
 }

@@ -76,11 +76,6 @@ static void exec_once(VysyxSoCFull *top, VerilatedContext *contextp, VerilatedVc
 #endif
     }
 
-#ifdef CONFIG_VCD_TRACE
-    if ((CONFIG_VCD_TRACE_PC == cpu.npc) && (npc_state.need_recode == false))
-        npc_state.need_recode = true;
-#endif
-
     if (in_pmem(pc))
     {
         // 反汇编 itrace

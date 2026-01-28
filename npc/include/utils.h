@@ -10,7 +10,6 @@ typedef struct {
     uint32_t halt_pc;
     int32_t halt_ret;
     bool inited;
-    bool need_recode;
   } NPCState;
 
 extern NPCState npc_state;
