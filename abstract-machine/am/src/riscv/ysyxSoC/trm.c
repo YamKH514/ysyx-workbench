@@ -50,9 +50,9 @@ void putch(char ch) {
 void _ssbl();
 __attribute__((section("fsbl"))) __attribute__((used))
 void _fsbl() {
-  extern long ssbl_start [];
-  extern long ssbl_size [];
-  extern long ssbl_load_start [];
+  extern char ssbl_start [];
+  extern char ssbl_size [];
+  extern char ssbl_load_start [];
   MEMCOPY(ssbl_start, ssbl_load_start, ssbl_size);
   _ssbl();
 }
