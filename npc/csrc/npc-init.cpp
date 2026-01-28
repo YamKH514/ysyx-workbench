@@ -91,6 +91,11 @@ void init_npc(int argc, char *argv[], VysyxSoCFull *top, VerilatedContext *conte
 
     long img_size = load_img();
 
+#ifdef CONFIG_VCD_TRACE
+    if (CONFIG_VCD_TRACE_PC == 0x0) npc_state.need_recode = true;
+    else Log("The VCD wive tracer will begin recording at 0x%08x", CONFIG_VCD_TRACE_PC);
+#endif
+
     cpu_reset(10, top, contextp, tfp);
 
     init_difftest(diff_so_file, img_size, difftest_port);
@@ -98,10 +103,6 @@ void init_npc(int argc, char *argv[], VysyxSoCFull *top, VerilatedContext *conte
     init_sdb(top, contextp, tfp);
 
     init_disasm();
-
-#ifdef CONFIG_VCD_TRACE
-    if (CONFIG_VCD_TRACE_PC != 0x0) Log("The VCD wive tracer will begin recording at 0x%08x", CONFIG_VCD_TRACE_PC);
-#endif
 
     Log("init_npc has done.");
 }
