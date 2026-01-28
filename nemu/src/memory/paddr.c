@@ -22,12 +22,14 @@
 #ifdef CONFIG_YSYXSOC
 static uint8_t *sram = NULL;
 static uint8_t *psram = NULL;
+static uint8_t *sdram = NULL;
 #endif
 static uint8_t *pmem = NULL;
 #else // CONFIG_PMEM_GARRAY
 #ifdef CONFIG_YSYXSOC
 static uint8_t sram[CONFIG_SRAMSIZE] PG_ALIGN = {};
 static uint8_t psram[CONFIG_PSRAMSIZE] PG_ALIGN = {};
+static uint8_t sdram[CONFIG_SDRAMSIZE] PG_ALIGN = {};
 #endif
 static uint8_t pmem[CONFIG_MSIZE] PG_ALIGN = {};
 #endif
@@ -37,6 +39,7 @@ uint8_t* guest_to_host(paddr_t paddr) {
   if ((PMEM_LEFT <= paddr) && (paddr < PMEM_RIGHT)) return pmem + paddr - CONFIG_MBASE;
   if ((SRAM_LEFT <= paddr) && (paddr < SRAM_RIGHT)) return sram + paddr - CONFIG_SRAMBASE;
   if ((PSRAM_LEFT <= paddr) && (paddr < PSRAM_RIGHT)) return psram + paddr - CONFIG_PSRAMBASE;
+  if ((SDRAM_LEFT <= paddr) && (paddr < SDRAM_RIGHT)) return psram + paddr - CONFIG_SDRAMBASE;
   return NULL;
 #else
   return pmem + paddr - CONFIG_MBASE;
@@ -48,6 +51,7 @@ paddr_t host_to_guest(uint8_t *haddr) {
   if ((pmem <= haddr) && (haddr < pmem + CONFIG_MSIZE)) return haddr - pmem + CONFIG_MBASE;
   if ((sram <= haddr) && (haddr < sram + CONFIG_SRAMSIZE)) return haddr - sram + CONFIG_SRAMBASE;
   if ((psram <= haddr) && (haddr < psram + CONFIG_PSRAMSIZE)) return haddr - psram + CONFIG_PSRAMBASE;
+  if ((sdram <= haddr) && (haddr < sdram + CONFIG_SDRAMSIZE)) return haddr - psram + CONFIG_SDRAMBASE;
   return 0;
 #else
   return haddr - pmem + CONFIG_MBASE;
@@ -80,6 +84,8 @@ void init_mem() {
   assert(sram);
   psram = malloc(CONFIG_PSRAMSIZE);
   assert(psram);
+  sdram = malloc(CONFIG_SDRAMSIZE);
+  assert(sdram);
 #endif
 #endif
   IFDEF(CONFIG_MEM_RANDOM, memset(pmem, rand(), CONFIG_MSIZE));
@@ -87,6 +93,7 @@ void init_mem() {
 #ifdef CONFIG_YSYXSOC
   Log("SRAM area [" FMT_PADDR ", " FMT_PADDR "]", SRAM_LEFT, SRAM_RIGHT);
   Log("PSRAM area [" FMT_PADDR ", " FMT_PADDR "]", PSRAM_LEFT, PSRAM_RIGHT);
+  Log("SDRAM area [" FMT_PADDR ", " FMT_PADDR "]", SDRAM_LEFT, SDRAM_RIGHT);
 #endif
 }
 

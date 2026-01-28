@@ -15,7 +15,7 @@ config SRAMBASE
   default 0x0f000000
 
 config SRAMSIZE
-depends on YSYXSOC
+  depends on YSYXSOC
   hex "ysyxSoC SRAM size"
   default 0x2000
 
@@ -25,9 +25,19 @@ config PSRAMBASE
   default 0x80000000
 
 config PSRAMSIZE
-depends on YSYXSOC
+  depends on YSYXSOC
   hex "ysyxSoC PSRAM size"
   default 0x400000
+
+config SDRAMBASE
+  depends on YSYXSOC
+  hex "SDRAM base address"
+  default 0xa0000000
+
+config SDRAMSIZE
+  depends on YSYXSOC
+  hex "SDRAM size"
+  default 0x2000000
 
 config PC_RESET_OFFSET
   hex "Offset of reset vector from the base of memory"
