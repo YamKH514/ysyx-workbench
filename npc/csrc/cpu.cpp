@@ -9,13 +9,13 @@ void cpu_single_cycle(VysyxSoCFull *top, VerilatedContext *contextp, VerilatedVc
     top->clock = 0;
     top->eval();
 #ifdef CONFIG_VCD_TRACE
-    tfp->dump(contextp->time());
+    if (npc_state.need_recode) tfp->dump(contextp->time());
 #endif
     contextp->timeInc(1);
     top->clock = 1;
     top->eval();
 #ifdef CONFIG_VCD_TRACE
-    tfp->dump(contextp->time());
+    if (npc_state.need_recode) tfp->dump(contextp->time());
 #endif
 }
 

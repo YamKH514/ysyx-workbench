@@ -46,6 +46,11 @@ static void exec_once(VysyxSoCFull *top, VerilatedContext *contextp, VerilatedVc
 {
     char logbuf[128];
 
+#ifdef CONFIG_VCD_TRACE
+    if (CONFIG_VCD_TRACE_PC == 0x0) npc_state.need_recode = true;
+    else if (CONFIG_VCD_TRACE_PC == cpu.npc) npc_state.need_recode = true;
+#endif
+
     if (!npc_state.inited) cpu_reset(10, top, contextp, tfp);
 
     cpu_single_cycle(top, contextp, tfp);

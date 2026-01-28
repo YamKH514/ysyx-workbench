@@ -1,6 +1,6 @@
 #include "utils.h"
 
-NPCState npc_state = {.state = NPC_STOP, .halt_pc = 0, .halt_ret = -1, .inited = false};
+NPCState npc_state = {.state = NPC_STOP, .halt_pc = 0, .halt_ret = -1, .inited = false, .need_recode = false};
 
 int is_exit_status_bad() {
   int good = (npc_state.state == NPC_END && npc_state.halt_ret == 0) ||

@@ -125,10 +125,12 @@ extern "C" void psram_write(int32_t addr, int32_t data, int32_t mask) {
 extern "C" void sdram_read(int32_t addr, int32_t *data) {
     uint32_t raddr = CONFIG_SDRAMBASE + (uint32_t)addr;
     *data = pmem_read(raddr, 2);
+    printf("sdram_read: raddr: 0x%08x, data: 0x%08x\n", addr, *data);
     return;
 }
 
 extern "C" void sdram_write(int32_t addr, int32_t data, int32_t mask) {
+    printf("sdram_write: addr: 0x%08x, data: 0x%08x, mask: 0x%08x\n", addr, data, mask);
     uint32_t waddr = CONFIG_SDRAMBASE + (uint32_t)addr;
     uint32_t wdata;
     int len;
@@ -147,6 +149,7 @@ extern "C" void sdram_write(int32_t addr, int32_t data, int32_t mask) {
             wdata = data;
             break;
     }
+    printf("sdram_write: waddr: 0x%08x, len: %08x, wdata: 0x%08x\n", addr, len, data);
     pmem_write(waddr, len, wdata);
     return;
 }
@@ -154,9 +157,9 @@ extern "C" void sdram_write(int32_t addr, int32_t data, int32_t mask) {
 extern "C" uint32_t paddr_read(uint32_t raddr)
 {
     uint32_t rdata = 0;
-    if ((0x20000000 <= raddr) & (raddr < 0x2000ffff)) mrom_read(raddr, (int32_t *)&rdata);
-    else if ((0x30000000 <= raddr) & (raddr < 0x3fffffff)) flash_read(raddr - 0x30000000, (int32_t *)&rdata);
-    else if ((0x80000000 <= raddr) & (raddr < 0x80400000)) psram_read(raddr - 0x80000000, (int32_t *)&rdata);
+    if ((PMEM_LEFT <= raddr) & (raddr < PMEM_RIGHT)) flash_read(raddr - PMEM_LEFT, (int32_t *)&rdata);
+    else if ((PSRAM_LEFT <= raddr) & (raddr < PSRAM_RIGHT)) psram_read(raddr - PSRAM_LEFT, (int32_t *)&rdata);
+    else if ((SDRAM_LEFT <= raddr) & (raddr < SDRAM_RIGHT)) sdram_read(raddr - SDRAM_LEFT, (int32_t *)&rdata);
     else assert(0);
     return rdata;
 }
