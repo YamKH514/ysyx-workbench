@@ -64,25 +64,25 @@ void _fsbl() {
 void _trm_init();
 __attribute__((section("ssbl"))) __attribute__((used))
 void _ssbl() {
-  extern char text_start [];
-  extern char text_size [];
-  extern char text_load_start [];
-  extern char rodata_start [];
-  extern char rodata_end [];
-  extern char rodata_size [];
-  extern char rodata_load_start [];
-  extern char data_start [];
-  extern char data_end [];
-  extern char data_size [];
-  extern char data_load_start [];
-  extern char data_extra_start [];
-  extern char data_extra_end [];
-  extern char data_extra_size [];
-  extern char data_extra_load_start [];
-  MEMCOPY(text_start, text_load_start, text_size);
-  if (rodata_end - rodata_start) MEMCOPY(rodata_start, rodata_load_start, rodata_size);
-  if (data_end - data_start) MEMCOPY(data_start, data_load_start, data_size);
-  if (data_extra_end - data_extra_start) MEMCOPY(data_extra_start, data_extra_load_start, data_extra_size);
+  extern uint32_t text_start [];
+  extern uint32_t text_size [];
+  extern uint32_t text_load_start [];
+  extern uint32_t rodata_start [];
+  extern uint32_t rodata_end [];
+  extern uint32_t rodata_size [];
+  extern uint32_t rodata_load_start [];
+  extern uint32_t data_start [];
+  extern uint32_t data_end [];
+  extern uint32_t data_size [];
+  extern uint32_t data_load_start [];
+  extern uint32_t data_extra_start [];
+  extern uint32_t data_extra_end [];
+  extern uint32_t data_extra_size [];
+  extern uint32_t data_extra_load_start [];
+  MEMCOPY_WORD(text_start, text_load_start, text_size);
+  if (rodata_end - rodata_start) MEMCOPY_WORD(rodata_start, rodata_load_start, rodata_size);
+  if (data_end - data_start) MEMCOPY_WORD(data_start, data_load_start, data_size);
+  if (data_extra_end - data_extra_start) MEMCOPY_WORD(data_extra_start, data_extra_load_start, data_extra_size);
   _trm_init();
 }
 
