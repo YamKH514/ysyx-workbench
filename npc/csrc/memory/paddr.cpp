@@ -139,12 +139,12 @@ extern "C" void sdram_write(int32_t addr, int32_t data, int32_t mask) {
             return;
         case 0x2:   // 低8bit有效
             len = 1;
-            wdata = (data & 0x000F);
+            wdata = (data & 0x00FF);
             break;
         case 0x1:   // 高8bit有效
             len = 1;
             waddr += 1;
-            wdata = (data & 0x00F0) >> 8;
+            wdata = (data & 0xFF00) >> 8;
             break;
         case 0x0:   // 16bit均有效
             len = 2;
