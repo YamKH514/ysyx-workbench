@@ -149,7 +149,7 @@ extern "C" void sdram_write(int32_t addr, int32_t data, int32_t mask) {
             wdata = data;
             break;
     }
-    printf("sdram_write: waddr: 0x%08x, len: %08x, wdata: 0x%08x\n", addr, len, data);
+    printf("sdram_write: waddr: 0x%08x, len: %08x, wdata: 0x%08x\n", waddr, len, wdata);
     pmem_write(waddr, len, wdata);
     return;
 }
