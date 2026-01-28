@@ -125,12 +125,12 @@ extern "C" void psram_write(int32_t addr, int32_t data, int32_t mask) {
 extern "C" void sdram_read(int32_t addr, int32_t *data) {
     uint32_t raddr = CONFIG_SDRAMBASE + (uint32_t)addr;
     *data = pmem_read(raddr, 2);
-    // printf("sdram_read: raddr: 0x%08x, data: 0x%08x\n", raddr, *data);
+    printf("sdram_read: raddr: 0x%08x, data: 0x%08x\n", raddr, *data);
     return;
 }
 
 extern "C" void sdram_write(int32_t addr, int32_t data, int32_t mask) {
-    // printf("sdram_write: addr: 0x%08x, data: 0x%08x, mask: 0x%08x\n", addr, data, mask);
+    printf("sdram_write: addr: 0x%08x, data: 0x%08x, mask: 0x%08x\n", addr, data, mask);
     uint32_t waddr = CONFIG_SDRAMBASE + (uint32_t)addr;
     uint32_t wdata;
     int len;
@@ -151,7 +151,7 @@ extern "C" void sdram_write(int32_t addr, int32_t data, int32_t mask) {
             wdata = data;
             break;
     }
-    // printf("sdram_write: waddr: 0x%08x, len: %08x, wdata: 0x%08x\n", waddr, len, wdata);
+    printf("sdram_write: waddr: 0x%08x, len: %08x, wdata: 0x%08x\n", waddr, len, wdata);
     pmem_write(waddr, len, wdata);
     return;
 }
