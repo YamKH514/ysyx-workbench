@@ -21,13 +21,9 @@ int main(const char *args);
 
 #define npc_trap(code) asm volatile("mv a0, %0; ebreak" : :"r"(code))
 
-#define MEMCOPY(start, load_start, size) for (size_t i = 0; i < (size_t)(size); i++) { \
+#define MEMCOPY_BYTE(start, load_start, size) for (size_t i = 0; i < (size_t)(size); i++) { \
                                             *((start) + i) = *((load_start) + i); \
                                           }
-#define MEMSETZ(start, size) for (size_t i = 0; i < (size_t)(size); i++) { \
-                                *((start) + i) = 0;\
-                              }
-
 #define MEMCOPY_WORD(start, load_start, size) for (uint32_t i = 0; i < ((uint32_t)(size)>>2); i++) { \
                                             *((start) + i) = *((load_start) + i); \
                                           }
