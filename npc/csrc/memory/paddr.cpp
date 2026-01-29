@@ -122,39 +122,39 @@ extern "C" void psram_write(int32_t addr, int32_t data, int32_t mask) {
     return;
 }
 
-extern "C" void sdram_read(int32_t addr, int32_t *data) {
-    uint32_t raddr = CONFIG_SDRAMBASE + (uint32_t)addr;
-    *data = pmem_read(raddr, 2);
-    printf("sdram_read: raddr: 0x%08x, data: 0x%08x\n", raddr, *data);
-    return;
-}
+// extern "C" void sdram_read(int32_t addr, int32_t *data) {
+//     uint32_t raddr = CONFIG_SDRAMBASE + (uint32_t)addr;
+//     *data = pmem_read(raddr, 2);
+//     printf("sdram_read: raddr: 0x%08x, data: 0x%08x\n", raddr, *data);
+//     return;
+// }
 
-extern "C" void sdram_write(int32_t addr, int32_t data, int32_t mask) {
-    printf("sdram_write: addr: 0x%08x, data: 0x%08x, mask: 0x%08x\n", addr, data, mask);
-    uint32_t waddr = CONFIG_SDRAMBASE + (uint32_t)addr;
-    uint32_t wdata;
-    int len;
-    switch (mask) {
-        case 0x3:   // 16bit均无效
-            return;
-        case 0x2:   // 低8bit有效
-            len = 1;
-            wdata = (data & 0x00FF);
-            break;
-        case 0x1:   // 高8bit有效
-            len = 1;
-            waddr += 1;
-            wdata = (data & 0xFF00) >> 8;
-            break;
-        case 0x0:   // 16bit均有效
-            len = 2;
-            wdata = data;
-            break;
-    }
-    printf("sdram_write: waddr: 0x%08x, len: %08x, wdata: 0x%08x\n", waddr, len, wdata);
-    pmem_write(waddr, len, wdata);
-    return;
-}
+// extern "C" void sdram_write(int32_t addr, int32_t data, int32_t mask) {
+//     printf("sdram_write: addr: 0x%08x, data: 0x%08x, mask: 0x%08x\n", addr, data, mask);
+//     uint32_t waddr = CONFIG_SDRAMBASE + (uint32_t)addr;
+//     uint32_t wdata;
+//     int len;
+//     switch (mask) {
+//         case 0x3:   // 16bit均无效
+//             return;
+//         case 0x2:   // 低8bit有效
+//             len = 1;
+//             wdata = (data & 0x00FF);
+//             break;
+//         case 0x1:   // 高8bit有效
+//             len = 1;
+//             waddr += 1;
+//             wdata = (data & 0xFF00) >> 8;
+//             break;
+//         case 0x0:   // 16bit均有效
+//             len = 2;
+//             wdata = data;
+//             break;
+//     }
+//     printf("sdram_write: waddr: 0x%08x, len: %08x, wdata: 0x%08x\n", waddr, len, wdata);
+//     pmem_write(waddr, len, wdata);
+//     return;
+// }
 
 extern "C" uint32_t paddr_read(uint32_t raddr)
 {
