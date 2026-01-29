@@ -55,8 +55,28 @@ static void exec_once(VysyxSoCFull *top, VerilatedContext *contextp, VerilatedVc
         pc = S_CPU(pc);
         inst_end = true;
     }
+    if ((!S_CPU(wbu_to_pc_valid)) & (!S_CPU(pc_to_wbu_ready)) & inst_end)
+    {
+        inst_end = false;
+        cpu.pc = S_CPU(pc);
+        cpu.npc = S_CPU(npc);
+        svSetScope(svGetScopeFromName("TOP.ysyxSoCFull.asic.cpu.cpu.u_GPR.u_RegisterFile"));
+        get_gpr(cpu.gpr);
+        svSetScope(svGetScopeFromName("TOP.ysyxSoCFull.asic.cpu.cpu.u_CSR"));
+        get_csr((int *)(&cpu.csr));
+#ifdef CONFIG_WATCHPOINT
+        bool changed = wp_scan();
+        if (changed)
+        {
+            npc_state.state = NPC_STOP;
+        }
+#endif
+#ifdef CONFIG_DIFFTEST
+        difftest_step(pc);
+#endif
+    }
 
-    if (in_pmem(pc))
+    if (in_pmem(pc) & (!S_CPU(wbu_to_pc_valid)) & (!S_CPU(pc_to_wbu_ready)) & inst_end)
     {
         // 反汇编 itrace
         char *p = logbuf;
@@ -80,6 +100,7 @@ static void exec_once(VysyxSoCFull *top, VerilatedContext *contextp, VerilatedVc
 
         disassemble(p, logbuf + sizeof(logbuf) - p, pc, inst, ilen);
 #endif
+        trace_and_difftest(top, logbuf);
 
         // 函数调用 ftrace
         uint8_t opcode = BITS(inst_val, 6, 0);
@@ -113,28 +134,6 @@ static void exec_once(VysyxSoCFull *top, VerilatedContext *contextp, VerilatedVc
             }
 #endif
         }
-    }
-
-    if ((!S_CPU(wbu_to_pc_valid)) & (!S_CPU(pc_to_wbu_ready)) & inst_end)
-    {
-        inst_end = false;
-        cpu.pc = S_CPU(pc);
-        cpu.npc = S_CPU(npc);
-        svSetScope(svGetScopeFromName("TOP.ysyxSoCFull.asic.cpu.cpu.u_GPR.u_RegisterFile"));
-        get_gpr(cpu.gpr);
-        svSetScope(svGetScopeFromName("TOP.ysyxSoCFull.asic.cpu.cpu.u_CSR"));
-        get_csr((int *)(&cpu.csr));
-#ifdef CONFIG_WATCHPOINT
-        bool changed = wp_scan();
-        if (changed)
-        {
-            npc_state.state = NPC_STOP;
-        }
-#endif
-#ifdef CONFIG_DIFFTEST
-        difftest_step(pc);
-#endif
-        trace_and_difftest(top, logbuf);
     }
 }
 
