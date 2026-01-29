@@ -42,6 +42,7 @@ SECTIONS {
   .rodata : {
     rodata_start = .;
     *(.rodata*)
+    *(.srodata*)
     rodata_end = .;
     ASSERT(. <= ORIGIN(flash) + LENGTH(flash), ".rodata section too large for flash");
   } > REGION_RODATA AT > flash
