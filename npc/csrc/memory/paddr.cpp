@@ -161,7 +161,7 @@ extern "C" uint32_t paddr_read(uint32_t raddr)
     uint32_t rdata = 0;
     if ((PMEM_LEFT <= raddr) & (raddr < PMEM_RIGHT)) flash_read(raddr - PMEM_LEFT, (int32_t *)&rdata);
     else if ((PSRAM_LEFT <= raddr) & (raddr < PSRAM_RIGHT)) psram_read(raddr - PSRAM_LEFT, (int32_t *)&rdata);
-    else if ((SDRAM_LEFT <= raddr) & (raddr < SDRAM_RIGHT)) sdram_read(raddr - SDRAM_LEFT, (int32_t *)&rdata);
+    // else if ((SDRAM_LEFT <= raddr) & (raddr < SDRAM_RIGHT)) sdram_read(raddr - SDRAM_LEFT, (int32_t *)&rdata);
     else assert(0);
     return rdata;
 }
