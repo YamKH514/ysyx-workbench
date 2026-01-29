@@ -21,7 +21,7 @@ int main(const char *args);
 
 #define npc_trap(code) asm volatile("mv a0, %0; ebreak" : :"r"(code))
 
-#define MEMCOPY(start, load_start, size) for (size_t i = 0; i < (size_t)(size); i++) { \
+#define MEMCOPY_BYTE(start, load_start, size) for (size_t i = 0; i < (size_t)(size); i++) { \
                                             *((start) + i) = *((load_start) + i); \
                                           }
 #define MEMCOPY_WORD(start, load_start, size) for (uint32_t i = 0; i < ((uint32_t)(size)>>2); i++) { \
@@ -50,35 +50,35 @@ void putch(char ch) {
 void _ssbl();
 __attribute__((section("fsbl"))) __attribute__((used))
 void _fsbl() {
-  extern char ssbl_start [];
-  extern char ssbl_size [];
-  extern char ssbl_load_start [];
-  MEMCOPY(ssbl_start, ssbl_load_start, ssbl_size);
+  extern uint32_t ssbl_start [];
+  extern uint32_t ssbl_size [];
+  extern uint32_t ssbl_load_start [];
+  MEMCOPY_WORD(ssbl_start, ssbl_load_start, ssbl_size);
   _ssbl();
 }
 
 void _trm_init();
 __attribute__((section("ssbl"))) __attribute__((used))
 void _ssbl() {
-  extern char text_start [];
-  extern char text_size [];
-  extern char text_load_start [];
-  extern char rodata_start [];
-  extern char rodata_end [];
-  extern char rodata_size [];
-  extern char rodata_load_start [];
-  extern char data_start [];
-  extern char data_end [];
-  extern char data_size [];
-  extern char data_load_start [];
-  extern char data_extra_start [];
-  extern char data_extra_end [];
-  extern char data_extra_size [];
-  extern char data_extra_load_start [];
-  MEMCOPY(text_start, text_load_start, text_size);
-  if (rodata_end - rodata_start) MEMCOPY(rodata_start, rodata_load_start, rodata_size);
-  if (data_end - data_start) MEMCOPY(data_start, data_load_start, data_size);
-  if (data_extra_end - data_extra_start) MEMCOPY(data_extra_start, data_extra_load_start, data_extra_size);
+  extern uint32_t text_start [];
+  extern uint32_t text_size [];
+  extern uint32_t text_load_start [];
+  extern uint32_t rodata_start [];
+  extern uint32_t rodata_end [];
+  extern uint32_t rodata_size [];
+  extern uint32_t rodata_load_start [];
+  extern uint32_t data_start [];
+  extern uint32_t data_end [];
+  extern uint32_t data_size [];
+  extern uint32_t data_load_start [];
+  extern uint32_t data_extra_start [];
+  extern uint32_t data_extra_end [];
+  extern uint32_t data_extra_size [];
+  extern uint32_t data_extra_load_start [];
+  MEMCOPY_WORD(text_start, text_load_start, text_size);
+  if (rodata_end - rodata_start) MEMCOPY_WORD(rodata_start, rodata_load_start, rodata_size);
+  if (data_end - data_start) MEMCOPY_WORD(data_start, data_load_start, data_size);
+  if (data_extra_end - data_extra_start) MEMCOPY_WORD(data_extra_start, data_extra_load_start, data_extra_size);
   _trm_init();
 }
 
