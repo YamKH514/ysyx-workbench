@@ -50,35 +50,35 @@ void putch(char ch) {
 void _ssbl();
 __attribute__((section("fsbl"))) __attribute__((used))
 void _fsbl() {
-  extern uint32_t ssbl_start [];
-  extern uint32_t ssbl_size [];
-  extern uint32_t ssbl_load_start [];
-  MEMCOPY_WORD(ssbl_start, ssbl_load_start, ssbl_size);
+  extern uint8_t ssbl_start [];
+  extern uint8_t ssbl_size [];
+  extern uint8_t ssbl_load_start [];
+  MEMCOPY_BYTE(ssbl_start, ssbl_load_start, ssbl_size);
   _ssbl();
 }
 
 void _trm_init();
 __attribute__((section("ssbl"))) __attribute__((used))
 void _ssbl() {
-  extern uint32_t text_start [];
-  extern uint32_t text_size [];
-  extern uint32_t text_load_start [];
-  extern uint32_t rodata_start [];
-  extern uint32_t rodata_end [];
-  extern uint32_t rodata_size [];
-  extern uint32_t rodata_load_start [];
-  extern uint32_t data_start [];
-  extern uint32_t data_end [];
-  extern uint32_t data_size [];
-  extern uint32_t data_load_start [];
-  extern uint32_t data_extra_start [];
-  extern uint32_t data_extra_end [];
-  extern uint32_t data_extra_size [];
-  extern uint32_t data_extra_load_start [];
-  MEMCOPY_WORD(text_start, text_load_start, text_size);
-  if (rodata_end - rodata_start) MEMCOPY_WORD(rodata_start, rodata_load_start, rodata_size);
-  if (data_end - data_start) MEMCOPY_WORD(data_start, data_load_start, data_size);
-  if (data_extra_end - data_extra_start) MEMCOPY_WORD(data_extra_start, data_extra_load_start, data_extra_size);
+  extern uint8_t text_start [];
+  extern uint8_t text_size [];
+  extern uint8_t text_load_start [];
+  extern uint8_t rodata_start [];
+  extern uint8_t rodata_end [];
+  extern uint8_t rodata_size [];
+  extern uint8_t rodata_load_start [];
+  extern uint8_t data_start [];
+  extern uint8_t data_end [];
+  extern uint8_t data_size [];
+  extern uint8_t data_load_start [];
+  extern uint8_t data_extra_start [];
+  extern uint8_t data_extra_end [];
+  extern uint8_t data_extra_size [];
+  extern uint8_t data_extra_load_start [];
+  MEMCOPY_BYTE(text_start, text_load_start, text_size);
+  if (rodata_end - rodata_start) MEMCOPY_BYTE(rodata_start, rodata_load_start, rodata_size);
+  if (data_end - data_start) MEMCOPY_BYTE(data_start, data_load_start, data_size);
+  if (data_extra_end - data_extra_start) MEMCOPY_BYTE(data_extra_start, data_extra_load_start, data_extra_size);
   _trm_init();
 }
 
