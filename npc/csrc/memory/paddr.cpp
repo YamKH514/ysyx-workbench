@@ -10,13 +10,13 @@
 #define SERIAL_PORT (DEVICE_BASE + 0x00003f8)
 #define RTC_ADDR    (DEVICE_BASE + 0x0000048)
 
-static uint32_t sdram_data[10] =   {0x100007b7, // lui	a5,0x10000
-                                    0x04100713, // li	a4,65
-                                    0x00e78023, // sb	a4,0(a5) # 10000000
-                                    0x00a00713, // li	a4,10
-                                    0x00e78023, // sb	a4,0(a5)
-                                    0x00008067  // ret
-                                    };
+// static uint32_t flash_data[10] =   {0x100007b7, // lui	a5,0x10000
+//                                     0x04100713, // li	a4,65
+//                                     0x00e78023, // sb	a4,0(a5) # 10000000
+//                                     0x00a00713, // li	a4,10
+//                                     0x00e78023, // sb	a4,0(a5)
+//                                     0x00008067  // ret
+//                                     };
 
 static uint8_t pmem[CONFIG_MSIZE] PG_ALIGN = {};
 static uint8_t psram[CONFIG_PSRAMSIZE] PG_ALIGN = {};
@@ -125,12 +125,12 @@ extern "C" void psram_write(int32_t addr, int32_t data, int32_t mask) {
 extern "C" void sdram_read(int32_t addr, int32_t *data) {
     uint32_t raddr = CONFIG_SDRAMBASE + (uint32_t)addr;
     *data = pmem_read(raddr, 2);
-    // printf("sdram_read: raddr: 0x%08x, data: 0x%08x\n", raddr, *data);
+    printf("sdram_read: raddr: 0x%08x, data: 0x%08x\n", raddr, *data);
     return;
 }
 
 extern "C" void sdram_write(int32_t addr, int32_t data, int32_t mask) {
-    // printf("sdram_write: addr: 0x%08x, data: 0x%08x, mask: 0x%08x\n", addr, data, mask);
+    printf("sdram_write: addr: 0x%08x, data: 0x%08x, mask: 0x%08x\n", addr, data, mask);
     uint32_t waddr = CONFIG_SDRAMBASE + (uint32_t)addr;
     uint32_t wdata;
     int len;
@@ -151,7 +151,7 @@ extern "C" void sdram_write(int32_t addr, int32_t data, int32_t mask) {
             wdata = data;
             break;
     }
-    // printf("sdram_write: waddr: 0x%08x, len: %08x, wdata: 0x%08x\n", waddr, len, wdata);
+    printf("sdram_write: waddr: 0x%08x, len: %08x, wdata: 0x%08x\n", waddr, len, wdata);
     pmem_write(waddr, len, wdata);
     return;
 }
