@@ -76,7 +76,7 @@ static void exec_once(VysyxSoCFull *top, VerilatedContext *contextp, VerilatedVc
 #endif
     }
 
-    if (in_pmem(pc) & (!S_CPU(wbu_to_pc_valid)) & (!S_CPU(pc_to_wbu_ready)) & inst_end)
+    if (in_pmem(pc))
     {
         // 反汇编 itrace
         char *p = logbuf;
