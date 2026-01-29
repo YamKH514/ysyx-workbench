@@ -10,16 +10,10 @@ REGION_ALIAS("REGION_TEXT", psram);
 REGION_ALIAS("REGION_RODATA", psram);
 REGION_ALIAS("REGION_DATA", psram);
 REGION_ALIAS("REGION_BSS", psram);
-REGION_ALIAS("REGION_SDRAMTEST", sdram);
 
 ENTRY(_start)
 
 SECTIONS {
-  flash_size = LENGTH(flash);
-  sram_size  = LENGTH(sram);
-  psram_size = LENGTH(psram);
-  sdram_size = LENGTH(sdram);
-
   . = ORIGIN(flash);
   .fsbl : {
     fsbl_start = .;
@@ -68,14 +62,6 @@ SECTIONS {
   data_extra_load_start = DEFINED(data_extra_load_start) ? data_extra_load_start : 0;
   edata = .;
   _data = .;
-
-  .sdramtest : {
-    sdramtest_start = .;
-    *(.sdramtest*)
-    sdramtest_end = .;
-  } > REGION_SDRAMTEST AT > flash
-  sdramtest_size = SIZEOF(.sdramtest);
-  sdramtest_load_start = LOADADDR(.sdramtest);
 
   .bss : {
     _bss_start = .;

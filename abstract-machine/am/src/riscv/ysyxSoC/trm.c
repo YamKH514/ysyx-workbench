@@ -75,15 +75,10 @@ void _ssbl() {
   extern uint32_t data_extra_end [];
   extern uint32_t data_extra_size [];
   extern uint32_t data_extra_load_start [];
-  extern uint32_t sdramtest_start [];
-  extern uint32_t sdramtest_end [];
-  extern uint32_t sdramtest_size [];
-  extern uint32_t sdramtest_load_start [];
   MEMCOPY_WORD(text_start, text_load_start, text_size);
   if (rodata_end - rodata_start) MEMCOPY_WORD(rodata_start, rodata_load_start, rodata_size);
   if (data_end - data_start) MEMCOPY_WORD(data_start, data_load_start, data_size);
   if (data_extra_end - data_extra_start) MEMCOPY_WORD(data_extra_start, data_extra_load_start, data_extra_size);
-  if (sdramtest_end - sdramtest_start) MEMCOPY_WORD(sdramtest_start, sdramtest_load_start, sdramtest_size);
   _trm_init();
 }
 
