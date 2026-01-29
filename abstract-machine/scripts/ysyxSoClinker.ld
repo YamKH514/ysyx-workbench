@@ -77,6 +77,7 @@ SECTIONS {
   _end = .;
 
   _heap_start = ALIGN(0x1000);
+  _heap_end   = ORIGIN(sdram) + LENGTH(sdram);
 
   _stack_top = ORIGIN(sram);
   _stack_pointer = ORIGIN(sram) + LENGTH(sram);
