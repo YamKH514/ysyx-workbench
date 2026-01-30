@@ -9,6 +9,8 @@
 #define SRAM_RIGHT ((uint32_t)CONFIG_SRAMBASE + CONFIG_SRAMSIZE - 1)
 #define PSRAM_LEFT  ((uint32_t)CONFIG_PSRAMBASE)
 #define PSRAM_RIGHT ((uint32_t)CONFIG_PSRAMBASE + CONFIG_PSRAMSIZE - 1)
+#define SDRAM_LEFT  ((uint32_t)CONFIG_SDRAMBASE)
+#define SDRAM_RIGHT ((uint32_t)CONFIG_SDRAMBASE + CONFIG_SDRAMSIZE - 1)
 #define RESET_VECTOR PMEM_LEFT
 
 uint8_t *guest_to_host(uint32_t paddr);
@@ -19,7 +21,8 @@ static inline bool in_pmem(uint32_t addr)
     bool in_mrom = (PMEM_LEFT <= addr) && (addr < PMEM_RIGHT);
     bool in_sram = (SRAM_LEFT <= addr) && (addr < SRAM_RIGHT);
     bool in_psram = (PSRAM_LEFT <= addr) && (addr < PSRAM_RIGHT);
-    return in_mrom | in_sram | in_psram;
+    bool in_sdram = (SDRAM_LEFT <= addr) && (addr < SDRAM_RIGHT);
+    return in_mrom | in_sram | in_psram | in_sdram;
 }
 
 void init_mem();

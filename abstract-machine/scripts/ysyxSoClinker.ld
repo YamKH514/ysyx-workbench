@@ -1,14 +1,15 @@
 MEMORY {
-  flash (r x) : ORIGIN = 0x30000000, LENGTH = 128M
+  flash (r x) : ORIGIN = 0x30000000, LENGTH = 16M
   sram  (rwx) : ORIGIN = 0x0f000000, LENGTH = 8K
   psram (rwx) : ORIGIN = 0x80000000, LENGTH = 4M
+  sdram (rwx) : ORIGIN = 0xa0000000, LENGTH = 64M
 }
 REGION_ALIAS("REGION_FSBL", flash);
-REGION_ALIAS("REGION_SSBL", psram);
-REGION_ALIAS("REGION_TEXT", psram);
-REGION_ALIAS("REGION_RODATA", psram);
-REGION_ALIAS("REGION_DATA", psram);
-REGION_ALIAS("REGION_BSS", psram);
+REGION_ALIAS("REGION_SSBL", sdram);
+REGION_ALIAS("REGION_TEXT", sdram);
+REGION_ALIAS("REGION_RODATA", sdram);
+REGION_ALIAS("REGION_DATA", sdram);
+REGION_ALIAS("REGION_BSS", sdram);
 
 ENTRY(_start)
 
@@ -41,6 +42,7 @@ SECTIONS {
   .rodata : {
     rodata_start = .;
     *(.rodata*)
+    *(.srodata*)
     rodata_end = .;
     ASSERT(. <= ORIGIN(flash) + LENGTH(flash), ".rodata section too large for flash");
   } > REGION_RODATA AT > flash

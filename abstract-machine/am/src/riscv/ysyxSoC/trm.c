@@ -16,17 +16,17 @@
 #define UART_MSB 0x1
 
 extern char _heap_start;
-#define _heap_end 0x80400000
+#define _heap_end 0xa1000000
 int main(const char *args);
 
 #define npc_trap(code) asm volatile("mv a0, %0; ebreak" : :"r"(code))
 
-#define MEMCOPY(start, load_start, size) for (size_t i = 0; i < (size_t)(size); i++) { \
+#define MEMCOPY_BYTE(start, load_start, size) for (size_t i = 0; i < (size_t)(size); i++) { \
                                             *((start) + i) = *((load_start) + i); \
                                           }
-#define MEMSETZ(start, size) for (size_t i = 0; i < (size_t)(size); i++) { \
-                                *((start) + i) = 0;\
-                              }
+#define MEMCOPY_WORD(start, load_start, size) for (uint32_t i = 0; i < ((uint32_t)(size)>>2); i++) { \
+                                            *((start) + i) = *((load_start) + i); \
+                                          }
 
 Area heap = RANGE(&_heap_start, _heap_end);
 static const char mainargs[MAINARGS_MAX_LEN] = MAINARGS_PLACEHOLDER; // defined in CFLAGS
@@ -50,35 +50,35 @@ void putch(char ch) {
 void _ssbl();
 __attribute__((section("fsbl"))) __attribute__((used))
 void _fsbl() {
-  extern char ssbl_start [];
-  extern char ssbl_size [];
-  extern char ssbl_load_start [];
-  MEMCOPY(ssbl_start, ssbl_load_start, ssbl_size);
+  extern uint8_t ssbl_start [];
+  extern uint8_t ssbl_size [];
+  extern uint8_t ssbl_load_start [];
+  MEMCOPY_BYTE(ssbl_start, ssbl_load_start, ssbl_size);
   _ssbl();
 }
 
 void _trm_init();
 __attribute__((section("ssbl"))) __attribute__((used))
 void _ssbl() {
-  extern char text_start [];
-  extern char text_size [];
-  extern char text_load_start [];
-  extern char rodata_start [];
-  extern char rodata_end [];
-  extern char rodata_size [];
-  extern char rodata_load_start [];
-  extern char data_start [];
-  extern char data_end [];
-  extern char data_size [];
-  extern char data_load_start [];
-  extern char data_extra_start [];
-  extern char data_extra_end [];
-  extern char data_extra_size [];
-  extern char data_extra_load_start [];
-  MEMCOPY(text_start, text_load_start, text_size);
-  if (rodata_end - rodata_start) MEMCOPY(rodata_start, rodata_load_start, rodata_size);
-  if (data_end - data_start) MEMCOPY(data_start, data_load_start, data_size);
-  if (data_extra_end - data_extra_start) MEMCOPY(data_extra_start, data_extra_load_start, data_extra_size);
+  extern uint8_t text_start [];
+  extern uint8_t text_size [];
+  extern uint8_t text_load_start [];
+  extern uint8_t rodata_start [];
+  extern uint8_t rodata_end [];
+  extern uint8_t rodata_size [];
+  extern uint8_t rodata_load_start [];
+  extern uint8_t data_start [];
+  extern uint8_t data_end [];
+  extern uint8_t data_size [];
+  extern uint8_t data_load_start [];
+  extern uint8_t data_extra_start [];
+  extern uint8_t data_extra_end [];
+  extern uint8_t data_extra_size [];
+  extern uint8_t data_extra_load_start [];
+  MEMCOPY_BYTE(text_start, text_load_start, text_size);
+  if (rodata_end - rodata_start) MEMCOPY_BYTE(rodata_start, rodata_load_start, rodata_size);
+  if (data_end - data_start) MEMCOPY_BYTE(data_start, data_load_start, data_size);
+  if (data_extra_end - data_extra_start) MEMCOPY_BYTE(data_extra_start, data_extra_load_start, data_extra_size);
   _trm_init();
 }
 

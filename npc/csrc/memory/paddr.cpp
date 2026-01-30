@@ -20,16 +20,19 @@
 
 static uint8_t pmem[CONFIG_MSIZE] PG_ALIGN = {};
 static uint8_t psram[CONFIG_PSRAMSIZE] PG_ALIGN = {};
+static uint8_t sdram[CONFIG_SDRAMSIZE] PG_ALIGN = {};
 
 uint8_t *guest_to_host(uint32_t paddr) {
     if ((CONFIG_MBASE <= paddr) && (paddr <= CONFIG_MBASE + CONFIG_MSIZE)) return pmem + paddr - CONFIG_MBASE;
     else if ((CONFIG_PSRAMBASE <= paddr) && (paddr <= CONFIG_PSRAMBASE + CONFIG_PSRAMSIZE)) return psram + paddr - CONFIG_PSRAMBASE;
+    else if ((CONFIG_SDRAMBASE <= paddr) && (paddr <= CONFIG_SDRAMBASE + CONFIG_SDRAMSIZE)) return sdram + paddr - CONFIG_SDRAMBASE;
     assert(0);
 }
 
 uint32_t host_to_guest(uint8_t *haddr) {
     if ((CONFIG_MBASE <= (uintptr_t)haddr) && ((uintptr_t)haddr <=  CONFIG_MBASE + CONFIG_MSIZE)) return haddr - pmem + CONFIG_MBASE;
     else if ((CONFIG_PSRAMBASE <= (uintptr_t)haddr) && ((uintptr_t)haddr <= CONFIG_PSRAMBASE + CONFIG_PSRAMSIZE)) return haddr - psram + CONFIG_PSRAMBASE;
+    else if ((CONFIG_SDRAMBASE <= (uintptr_t)haddr) && ((uintptr_t)haddr <= CONFIG_SDRAMBASE + CONFIG_SDRAMSIZE)) return haddr - sdram + CONFIG_SDRAMBASE;
     assert(0);
 }
 
@@ -55,6 +58,7 @@ void init_mem()
     Log("flash area [ 0x%08x, 0x%08x]", PMEM_LEFT, PMEM_RIGHT);
     Log("sram  area [ 0x%08x, 0x%08x]", SRAM_LEFT, SRAM_RIGHT);
     Log("psram area [ 0x%08x, 0x%08x]", PSRAM_LEFT, PSRAM_RIGHT);
+    Log("sdram area [ 0x%08x, 0x%08x]", SDRAM_LEFT, SDRAM_RIGHT);
 }
 
 extern "C" void mem_tracer_read(int32_t addr, int32_t data)
@@ -118,12 +122,44 @@ extern "C" void psram_write(int32_t addr, int32_t data, int32_t mask) {
     return;
 }
 
+extern "C" int32_t sdram_read(int32_t addr) {
+    uint32_t raddr = CONFIG_SDRAMBASE + (uint32_t)addr;
+    uint32_t rdata = pmem_read(raddr, 2);
+    printf("sdram_read: raddr: 0x%08x, data: 0x%08x\n", raddr, rdata);
+    return (int32_t)rdata;
+}
+
+extern "C" void sdram_write(int32_t addr, int32_t data, int32_t dqm) {
+    uint32_t waddr = CONFIG_SDRAMBASE + (uint32_t)addr;
+    uint32_t wdata;
+    int len;
+    switch (dqm) {
+        case 0x3:   // 16bit均无效
+            return;
+        case 0x2:   // 低8bit有效
+            len = 1;
+            wdata = (data & 0x00FF);
+            break;
+        case 0x1:   // 高8bit有效
+            len = 1;
+            waddr += 1;
+            wdata = (data & 0xFF00) >> 8;
+            break;
+        case 0x0:   // 16bit均有效
+            len = 2;
+            wdata = data;
+            break;
+    }
+    pmem_write(waddr, len, wdata);
+    return;
+}
+
 extern "C" uint32_t paddr_read(uint32_t raddr)
 {
     uint32_t rdata = 0;
-    if ((0x20000000 <= raddr) & (raddr < 0x2000ffff)) mrom_read(raddr, (int32_t *)&rdata);
-    else if ((0x30000000 <= raddr) & (raddr < 0x3fffffff)) flash_read(raddr - 0x30000000, (int32_t *)&rdata);
-    else if ((0x80000000 <= raddr) & (raddr < 0x80400000)) flash_read(raddr - 0x80000000, (int32_t *)&rdata);
+    if ((PMEM_LEFT <= raddr) & (raddr < PMEM_RIGHT)) flash_read(raddr - PMEM_LEFT, (int32_t *)&rdata);
+    else if ((PSRAM_LEFT <= raddr) & (raddr < PSRAM_RIGHT)) psram_read(raddr - PSRAM_LEFT, (int32_t *)&rdata);
+    else if ((SDRAM_LEFT <= raddr) & (raddr < SDRAM_RIGHT)) rdata = (raddr - SDRAM_LEFT);
     else assert(0);
     return rdata;
 }
