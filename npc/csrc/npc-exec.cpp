@@ -9,6 +9,7 @@
 #include "Vtop__Dpi.h"
 #include "cpu.h"
 #include "watchpoint.h"
+#include <nvboard.h>
 
 #define BITMASK(bits) ((1ull << (bits)) - 1)
 #define BITS(x, hi, lo) (((x) >> (lo)) & BITMASK((hi) - (lo) + 1)) // similar to x[hi:lo] in verilog
@@ -141,6 +142,7 @@ static void execute(VysyxSoCFull *top, VerilatedContext *contextp, VerilatedVcdC
 {
     for (; n > 0; n--)
     {
+        nvboard_update();
         exec_once(top, contextp, tfp);
         running_cycle ++;
         g_nr_guest_inst++;

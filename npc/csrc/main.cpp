@@ -32,7 +32,6 @@ int main(int argc, char *argv[])
 
     while (!contextp->gotFinish())
     {
-        nvboard_update();
         sdb_mainloop();
     }
 
