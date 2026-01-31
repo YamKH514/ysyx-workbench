@@ -4,7 +4,7 @@
 #include "npc.h"
 #include "sdb.h"
 #include "cpu.h"
-// #include <nvboard.h>
+#include <nvboard.h>
 #include "Vtop__Dpi.h"
 
 int is_exit_status_bad();
