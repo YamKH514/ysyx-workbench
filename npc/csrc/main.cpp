@@ -43,7 +43,7 @@ int main(int argc, char *argv[])
     tfp->close();
     top->final();
 
-    nvboard_quit();
+    // nvboard_quit();
 
     return is_exit_status_bad();
 }
