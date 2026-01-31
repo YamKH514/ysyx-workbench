@@ -115,11 +115,11 @@ module gpio_top_apb(
 // Seg-7 Driver
   genvar i;
   generate
-      for (i = 0; i < 8; i = i + 1) begin: seg7_drivers
+      for (i = 0; i < 32; i = i + 4) begin: seg7_drivers
         bcd7seg u_bcd7seg(
-          .b  (seg_r[i+3:i] ),
-          .en (!reset       ),
-          .h  (gpio_seg_w[i])
+          .b  (seg_r[i+3:i]   ),
+          .en (!reset         ),
+          .h  (gpio_seg_w[i/4])
         );
       end
   endgenerate
