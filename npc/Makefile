@@ -1,6 +1,6 @@
 TOPNAME = ysyxSoCFull
 NXDC_FILES = constr/top.nxdc
-C_INC_PATH ?= $(NPC_HOME)/include
+INC_PATH ?= $(NPC_HOME)/include
 V_INC_PATH ?= $(NPC_HOME)/vsrc
 UART_INC_PATH ?= $(YSYXSOC_HOME)/perip/uart16550/rtl
 SPI_INC_PATH ?= $(YSYXSOC_HOME)/perip/spi/rtl
@@ -29,7 +29,8 @@ $(SRC_AUTO_BIND): $(NXDC_FILES)
 VSRCS += $(YSYXSOC_HOME)/build/ysyxSoCFull.v
 VSRCS += $(shell find $(abspath ./vsrc) -name "*.v" ! -name "top.v")
 VSRCS += $(shell find $(abspath $(YSYXSOC_HOME)/perip) -name "*.v")
-CSRCS = $(shell find $(abspath ./csrc) -name "*.c" -or -name "*.cc" -or -name "*.cpp")
+CSRCS += $(shell find $(abspath ./csrc) -name "*.c" -or -name "*.cc" -or -name "*.cpp")
+CSRCS += $(SRC_AUTO_BIND)
 
 # rules for NVBoard
 include $(NVBOARD_HOME)/scripts/nvboard.mk
@@ -55,7 +56,7 @@ FILELIST_MK = $(shell find -L ./csrc -name "filelist.mk")
 include $(FILELIST_MK)
 
 # rules for verilator
-INCFLAGS += $(addprefix -I, $(C_INC_PATH))
+INCFLAGS += $(addprefix -I, $(INC_PATH))
 CXXFLAGS += $(INCFLAGS) -DTOP_NAME="\"V$(TOPNAME)\""
 
 LDFLAGS += -lreadline -lncurses
@@ -79,22 +80,11 @@ $(BIN): $(VSRCS) $(CSRCS) $(SRC_AUTO_BIND) $(NVBOARD_ARCHIVE)
 all:
 	@echo "Write this Makefile by your self."
 
-nvb: $(BIN)
-	@echo "--RUN--"
-	@$^
-
-sim: $(VSRCS) $(CSRCS)
+sim: $(BIN)
 	$(call git_commit, "sim RTL") # DO NOT REMOVE THIS LINE!!!
-	@echo
-	@echo "-- BUILD ----------------"
-	@rm -rf $(OBJ_DIR)
-	$(VERILATOR) $(VERILATOR_FLAGS) --build \
-		--top-module $(TOPNAME) $^ \
-		$(addprefix -CFLAGS , $(CXXFLAGS)) $(addprefix -LDFLAGS , $(LDFLAGS)) \
-		--Mdir $(OBJ_DIR) --exe -o $(abspath $(BIN))
 
 	@echo
-	@echo "-- RUN ---------------------"
+	@echo "--Run--"
 	@rm -rf logs
 	@mkdir -p logs
 	$(BIN) $(ARGS) $(IMG) +trace
@@ -106,4 +96,4 @@ clean:
 
 include ../Makefile
 
-.PHONY: all clean sim nvb
+.PHONY: all clean sim

@@ -59,3 +59,7 @@ config DIFFTEST
 endmenu
 
 source "csrc/memory/Kconfig"
+
+config NVBOARD
+  bool "Enable NVBoard"
+  default n
