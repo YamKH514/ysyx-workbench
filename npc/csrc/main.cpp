@@ -40,10 +40,9 @@ int main(int argc, char *argv[])
         npc_state.state == NPC_ABORT ? ANSI_FMT("ABORT", ANSI_FG_RED) :
         npc_state.halt_ret == 0 ? ANSI_FMT("HIT GOOD TRAP", ANSI_FG_GREEN) : ANSI_FMT("HIT BAD TRAP", ANSI_FG_RED)), npc_state.halt_pc);
 
+    nvboard_quit();
     tfp->close();
     top->final();
-
-    // nvboard_quit();
 
     return is_exit_status_bad();
 }
