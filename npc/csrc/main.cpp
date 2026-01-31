@@ -9,6 +9,7 @@
 
 int is_exit_status_bad();
 
+
 int main(int argc, char *argv[])
 {
     Verilated::commandArgs(argc, argv);
@@ -31,6 +32,8 @@ int main(int argc, char *argv[])
         nvboard_update();
         sdb_mainloop();
     }
+
+    nvboard_quit();
 
     Log("npc running cycle = %llu", running_cycle);
     Log("npc: %s at pc = 0x%08x", (
