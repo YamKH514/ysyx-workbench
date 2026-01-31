@@ -84,15 +84,8 @@ nvb: $(BIN)
 	@echo "--RUN--"
 	@$^
 
-sim: $(VSRCS) $(CSRCS)
+sim: $(BIN)
 	$(call git_commit, "sim RTL") # DO NOT REMOVE THIS LINE!!!
-	@echo
-	@echo "-- BUILD ----------------"
-	@rm -rf $(OBJ_DIR)
-	$(VERILATOR) $(VERILATOR_FLAGS) --build \
-		--top-module $(TOPNAME) $^ \
-		$(addprefix -CFLAGS , $(CXXFLAGS)) $(addprefix -LDFLAGS , $(LDFLAGS)) \
-		--Mdir $(OBJ_DIR) --exe -o $(abspath $(BIN))
 
 	@echo
 	@echo "-- RUN ---------------------"
