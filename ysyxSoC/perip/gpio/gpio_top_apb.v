@@ -101,7 +101,7 @@ module gpio_top_apb(
     end
   end
 
-  wire [7:0] gpio_seg_w [0:7];
+  wire [7:0] gpio_seg_w [7:0];
 
   assign gpio_seg_0 = gpio_seg_w[0];
   assign gpio_seg_1 = gpio_seg_w[1];
