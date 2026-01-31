@@ -80,15 +80,11 @@ $(BIN): $(VSRCS) $(CSRCS) $(SRC_AUTO_BIND) $(NVBOARD_ARCHIVE)
 all:
 	@echo "Write this Makefile by your self."
 
-nvb: $(BIN)
-	@echo "--RUN--"
-	@$^
-
 sim: $(BIN)
 	$(call git_commit, "sim RTL") # DO NOT REMOVE THIS LINE!!!
 
 	@echo
-	@echo "-- RUN ---------------------"
+	@echo "--Run--"
 	@rm -rf logs
 	@mkdir -p logs
 	$(BIN) $(ARGS) $(IMG) +trace
@@ -100,4 +96,4 @@ clean:
 
 include ../Makefile
 
-.PHONY: all clean sim nvb
+.PHONY: all clean sim

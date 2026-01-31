@@ -36,7 +36,7 @@ int main(int argc, char *argv[])
         sdb_mainloop();
     }
 
-    nvboard_quit();
+    // nvboard_quit();
 
     Log("npc running cycle = %llu", running_cycle);
     Log("npc: %s at pc = 0x%08x", (
