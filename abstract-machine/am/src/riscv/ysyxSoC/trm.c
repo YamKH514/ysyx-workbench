@@ -32,10 +32,10 @@ Area heap = RANGE(&_heap_start, _heap_end);
 static const char mainargs[MAINARGS_MAX_LEN] = MAINARGS_PLACEHOLDER; // defined in CFLAGS
 
 static void uart_init() {
-  // Set Divisor Latch register
+  // Set Divisor Latch register 115200Baud
   *(volatile char *)(UART_BASE + UART_LCR) = (1 << 7);
   *(volatile char *)(UART_BASE + UART_MSB) = 0x00;
-  *(volatile char *)(UART_BASE + UART_LSB) = 0x01;
+  *(volatile char *)(UART_BASE + UART_LSB) = 0x1B;
 
   *(volatile char *)(UART_BASE + UART_LCR) = 0x03; // Set LCR 8N1
   *(volatile char *)(UART_BASE + UART_IER) = 0x00; // Disable all interrupts
