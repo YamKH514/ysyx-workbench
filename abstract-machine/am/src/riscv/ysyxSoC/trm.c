@@ -16,7 +16,7 @@
 #define UART_MSB 0x1
 
 extern char _heap_start;
-#define _heap_end 0xa1000000
+#define _heap_end 0xa8000000
 int main(const char *args);
 
 #define npc_trap(code) asm volatile("mv a0, %0; ebreak" : :"r"(code))
@@ -47,9 +47,9 @@ void putch(char ch) {
   *(volatile char *)(UART_BASE + UART_TX) = ch;
 }
 
-void getch(char *ch) {
-  if ((*(volatile char *)(UART_BASE + UART_LSR) & (1 << 0)) == 0) *ch = 0xFF;
-  else *ch = *(volatile char *)(UART_BASE + UART_TX);
+char getch() {
+  if ((*(volatile char *)(UART_BASE + UART_LSR) & (1 << 0)) == 0) return 0xFF;
+  else return *(volatile char *)(UART_BASE + UART_RX);
 }
 
 void _ssbl();

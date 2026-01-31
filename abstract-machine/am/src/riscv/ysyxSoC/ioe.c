@@ -36,8 +36,6 @@ void ioe_read (int reg, void *buf) { ((handler_t)lut[reg])(buf); }
 void ioe_write(int reg, void *buf) { ((handler_t)lut[reg])(buf); }
 
 void __am_uart_getch(AM_UART_RX_T *rx) {
-  extern void getch(char *ch);
-  extern void putch(char ch);
-  getch(&rx->data);
-  putch(rx->data);
+  extern char getch();
+  rx->data = getch();
 }
