@@ -6,15 +6,12 @@
 #include "difftest-def.h"
 #include "sdb.h"
 #include "cpu.h"
-#include <nvboard.h>
 
 static char *log_file = NULL;
 static char *diff_so_file = NULL;
 static char *img_file = NULL;
 static char *elf_file = NULL;
 static int difftest_port = 1234;
-
-void nvboard_bind_all_pins(VysyxSoCFull* top);
 
 static long load_img()
 {
@@ -93,9 +90,6 @@ void init_npc(int argc, char *argv[], VysyxSoCFull *top, VerilatedContext *conte
     init_mem();
 
     long img_size = load_img();
-
-    nvboard_bind_all_pins(top);
-    nvboard_init();
 
     cpu_reset(10, top, contextp, tfp);
 

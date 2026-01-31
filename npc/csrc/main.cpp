@@ -8,7 +8,7 @@
 #include "Vtop__Dpi.h"
 
 int is_exit_status_bad();
-
+void nvboard_bind_all_pins(VysyxSoCFull* top);
 
 int main(int argc, char *argv[])
 {
@@ -24,6 +24,9 @@ int main(int argc, char *argv[])
     VerilatedVcdC *tfp = new VerilatedVcdC;
     top->trace(tfp, 5);
     tfp->open("logs/sim_wave.vcd");
+
+    nvboard_bind_all_pins(top);
+    nvboard_init();
 
     init_npc(argc, argv, top, contextp, tfp); 
 
