@@ -47,5 +47,9 @@ int main(int argc, char *argv[])
     tfp->close();
     top->final();
 
+#ifdef CONFIG_NVBOARD
+    nvboard_quit();
+#endif
+
     return is_exit_status_bad();
 }
