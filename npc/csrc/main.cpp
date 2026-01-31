@@ -7,10 +7,8 @@
 #include <nvboard.h>
 #include "Vtop__Dpi.h"
 
-static TOP_NAME VysyxSoCFull;
-void nvboard_bind_all_pins(TOP_NAME* top);
-
 int is_exit_status_bad();
+void nvboard_bind_all_pins(VysyxSoCFull* top);
 
 int main(int argc, char *argv[])
 {
