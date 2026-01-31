@@ -47,6 +47,10 @@ void putch(char ch) {
   *(volatile char *)(UART_BASE + UART_TX) = ch;
 }
 
+void getch(char *ch) {
+  
+}
+
 void _ssbl();
 __attribute__((section("fsbl"))) __attribute__((used))
 void _fsbl() {
