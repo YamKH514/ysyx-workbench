@@ -54,6 +54,9 @@ include $(NPC_HOME)/scripts/config.mk
 FILELIST_MK = $(shell find -L ./csrc -name "filelist.mk")
 include $(FILELIST_MK)
 
+# rules for NVBoard
+include $(NVBOARD_HOME)/scripts/nvboard.mk
+
 # rules for verilator
 INCFLAGS += $(addprefix -I, $(C_INC_PATH))
 CXXFLAGS += $(INCFLAGS) -DTOP_NAME="\"V$(TOPNAME)\""
