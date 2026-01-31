@@ -48,7 +48,8 @@ void putch(char ch) {
 }
 
 void getch(char *ch) {
-  
+  if ((*(volatile char *)(UART_BASE + UART_LSR) & (1 << 0)) == 0) *ch = 0xFF;
+  else *ch = *(volatile char *)(UART_BASE + UART_TX);
 }
 
 void _ssbl();
