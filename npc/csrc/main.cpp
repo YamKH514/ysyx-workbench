@@ -7,6 +7,9 @@
 #include <nvboard.h>
 #include "Vtop__Dpi.h"
 
+static TOP_NAME top;
+void nvboard_bind_all_pins(TOP_NAME* top);
+
 int is_exit_status_bad();
 
 int main(int argc, char *argv[])
@@ -24,10 +27,14 @@ int main(int argc, char *argv[])
     top->trace(tfp, 5);
     tfp->open("logs/sim_wave.vcd");
 
+    nvboard_bind_all_pins(&top);
+    nvboard_init();
+
     init_npc(argc, argv, top, contextp, tfp); 
 
     while (!contextp->gotFinish())
     {
+        nvboard_update();
         sdb_mainloop();
     }
 
