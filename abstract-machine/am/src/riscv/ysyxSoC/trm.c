@@ -15,6 +15,8 @@
 #define UART_LSB 0x0
 #define UART_MSB 0x1
 
+#define PS2_BASE 0x10011000L
+
 extern char _heap_start;
 #define _heap_end 0xa8000000
 int main(const char *args);
@@ -50,6 +52,10 @@ void putch(char ch) {
 char getch() {
   if ((*(volatile char *)(UART_BASE + UART_LSR) & (1 << 0)) == 0) return 0xFF;
   else return *(volatile char *)(UART_BASE + UART_RX);
+}
+
+uint8_t getkey() {
+  return *(volatile uint8_t *)(PS2_BASE);
 }
 
 void _ssbl();
