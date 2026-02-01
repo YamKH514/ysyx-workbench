@@ -77,9 +77,8 @@ void __am_gpu_fbdraw(AM_GPU_FBDRAW_T *draw) {
 
   for (int i = 0; i < w * h; i++) {
     setpixel(x_start + x, y_start + y, pixels[i]);
-    if (x < w) {
-      x++;
-    } else {
+    x++;
+    if (x == w) {
       x = 0;
       y++;
     }
