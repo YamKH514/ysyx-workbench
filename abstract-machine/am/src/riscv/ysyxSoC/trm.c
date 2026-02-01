@@ -61,7 +61,7 @@ uint8_t getkey() {
 }
 
 void setpixel(uint32_t waddr, uint32_t haddr, uint32_t data) {
-  *(volatile uint32_t *)(VGA_BASE + waddr + haddr) = data;
+  *(volatile uint32_t *)(VGA_BASE + waddr * haddr) = data;
 }
 
 void _ssbl();
