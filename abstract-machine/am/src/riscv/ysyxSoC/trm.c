@@ -17,6 +17,8 @@
 
 #define PS2_BASE 0x10011000L
 
+#define VGA_BASE 0x21000000L
+
 extern char _heap_start;
 #define _heap_end 0xa8000000
 int main(const char *args);
@@ -56,6 +58,10 @@ char getch() {
 
 uint8_t getkey() {
   return *(volatile uint8_t *)(PS2_BASE);
+}
+
+void setpixel(uint32_t waddr, uint32_t haddr, uint32_t data) {
+  *(volatile uint32_t *)(VGA_BASE + ((((haddr&0x3FF)<<10)|(waddr&0x3FF))<<4)) = data;
 }
 
 void _ssbl();
