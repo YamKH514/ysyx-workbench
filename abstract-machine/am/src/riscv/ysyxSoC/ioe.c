@@ -43,6 +43,8 @@ void __am_uart_getch(AM_UART_RX_T *rx) {
 void __am_input_keybrd(AM_INPUT_KEYBRD_T *key) {
   extern uint8_t getkey();
   uint8_t key_val = getkey();
+  putch(key_val);
+  putch('\n');
   if (key_val != 0xF0) {
     // Key Down
     key->keydown = 1;
