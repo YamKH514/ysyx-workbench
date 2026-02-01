@@ -39,3 +39,17 @@ void __am_uart_getch(AM_UART_RX_T *rx) {
   extern char getch();
   rx->data = getch();
 }
+
+void __am_input_keybrd(AM_INPUT_KEYBRD_T *key) {
+  extern uint8_t getkey();
+  uint8_t key_val = getkey();
+  if (key_val != 0xF0) {
+    // Key Down
+    key->keydown = 1;
+    key->keycode = key_val;
+  } else {
+    // Key Up
+    key->keydown = 0;
+    key->keycode = getkey();
+  }
+}
