@@ -21,9 +21,9 @@ module vga_top_apb(
 );
 
 localparam H_W = 10;
-localparam V_W = 10;
+localparam V_W =  9;
 
-reg[31:0] vmem[2 ** (H_W + V_W)];
+reg[31:0] vmem[640*480-1:0];
 
 // APB
 reg [H_W+V_W-1:0]  paddr_r;
@@ -49,7 +49,7 @@ always @(posedge clock) begin
       S_IDLE: begin
         pready_r  <= 'b0;
         if (in_psel & in_pwrite) begin
-          paddr_r <= in_paddr[21:2];
+          paddr_r <= in_paddr[20:2];
           state   <= S_BUSY;
         end
       end
@@ -71,7 +71,7 @@ end
 
 wire  [ 9:0]  h_addr;
 wire  [ 9:0]  v_addr;
-wire  [23:0]  vga_data = vmem[{v_addr, h_addr}][23:0];
+wire  [23:0]  vga_data = vmem[v_addr * 640 + h_addr][23:0];
 
 vga_ctrl u_vga_ctrl(
   .pclk     	(clock    ),
