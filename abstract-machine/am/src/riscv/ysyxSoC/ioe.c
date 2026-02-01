@@ -1,5 +1,6 @@
 #include <am.h>
 #include <klib-macros.h>
+#include <kbd.h>
 
 void __am_timer_init();
 
@@ -42,16 +43,21 @@ void __am_uart_getch(AM_UART_RX_T *rx) {
 
 void __am_input_keybrd(AM_INPUT_KEYBRD_T *key) {
   extern uint8_t getkey();
-  uint8_t key_val = getkey();
-  putch(key_val);
-  putch('\n');
-  if (key_val != 0xF0) {
-    // Key Down
-    key->keydown = 1;
-    key->keycode = key_val;
-  } else {
-    // Key Up
-    key->keydown = 0;
-    key->keycode = getkey();
+  static int keydown = true;
+  static int extend = false;
+  const uint8_t key_val = getkey();
+
+  key->keydown = false;
+  key->keycode = AM_KEY_NONE;
+
+  if (key_val == 0xF0) {
+    keydown = false;
+  } else if (key_val == 0xE0) {
+    extend = 1;
+  } else if (key_val != 0x00) {
+    key->keydown = keydown;
+    key->keycode = extend ? SCANCODE_EXTEND[key_val] : SCANCODE_NORMAL[key_val];
+    keydown = true;
+    extend = false;
   }
 }
