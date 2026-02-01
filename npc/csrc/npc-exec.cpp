@@ -49,7 +49,7 @@ static void exec_once(VysyxSoCFull *top, VerilatedContext *contextp, VerilatedVc
 {
     char logbuf[128];
 
-    if (!npc_state.inited) cpu_reset(10, top, contextp, tfp);
+    if (!npc_state.inited) cpu_reset(20, top, contextp, tfp);
 
     cpu_single_cycle(top, contextp, tfp);
 
