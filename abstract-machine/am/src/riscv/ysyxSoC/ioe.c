@@ -2,18 +2,25 @@
 #include <klib-macros.h>
 #include <kbd.h>
 
+#define WIDTH  640
+#define HEIGHT 480
+
 void __am_timer_init();
 
 void __am_timer_rtc(AM_TIMER_RTC_T *);
 void __am_timer_uptime(AM_TIMER_UPTIME_T *);
 void __am_input_keybrd(AM_INPUT_KEYBRD_T *);
 void __am_uart_getch(AM_UART_RX_T *);
-void __am_gpu_fbdraw(AM_GPU_FBDRAW_T *);
+void __am_gpu_fbdraw(AM_GPU_FBDRAW_T *draw);
 
 static void __am_timer_config(AM_TIMER_CONFIG_T *cfg) { cfg->present = true; cfg->has_rtc = true; }
 static void __am_input_config(AM_INPUT_CONFIG_T *cfg) { cfg->present = true;  }
 static void __am_uart_config(AM_INPUT_CONFIG_T *cfg) { cfg->present = true;  }
-static void __am_gpu_config(AM_GPU_CONFIG_T *cfg) { cfg->width = 640; cfg->height = 480; }
+static void __am_gpu_config(AM_GPU_CONFIG_T *cfg) {
+    cfg->width  = WIDTH;
+    cfg->height = HEIGHT;
+    cfg->vmemsz = WIDTH * HEIGHT * sizeof(uint32_t);
+}
 
 typedef void (*handler_t)(void *buf);
 static void *lut[128] = {
@@ -67,20 +74,21 @@ void __am_input_keybrd(AM_INPUT_KEYBRD_T *key) {
 }
 
 void __am_gpu_fbdraw(AM_GPU_FBDRAW_T *draw) {
-  extern void setpixel(uint32_t waddr, uint32_t haddr, uint32_t data);
-  int x_start = draw->x;
-  int y_start = draw->y;
-  int w = draw->w;
-  int h = draw->h;
-  uint32_t *pixels = draw->pixels;
-  int x = 0, y = 0;
+    extern void setpixel(uint32_t waddr, uint32_t haddr, uint32_t data);
+    int x_start = draw->x;
+    int y_start = draw->y;
+    int w = draw->w;
+    int h = draw->h;
+    uint32_t *pixels = draw->pixels;
+    int x = 0, y = 0;
 
-  for (int i = 0; i < w * h; i++) {
-    setpixel(x_start + x, y_start + y, pixels[i]);
-    x++;
-    if (x == w) {
-      x = 0;
-      y++;
+    for (int i = 0; i < w * h; i++) {
+        setpixel(x_start + x, y_start + y, pixels[i]);
+        x++;
+        if (x == w) {
+            // 当前行扫描结束
+            x = 0;
+            y++;
+        }
     }
-  }
 }

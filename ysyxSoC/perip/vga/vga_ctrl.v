@@ -2,7 +2,8 @@ module vga_ctrl(
     input           pclk,
     input           reset,
     input   [23:0]  vga_data,
-    output  [19:0]  vga_addr,
+    output  [ 9:0]  h_addr,
+    output  [ 9:0]  v_addr,
     output          hsync,
     output          vsync,
     output          valid,
@@ -42,14 +43,15 @@ module vga_ctrl(
         end
     end
 
-    assign vga_addr = {y_cnt, x_cnt};
-
     assign hsync = (x_cnt > h_frontporch);
     assign vsync = (y_cnt > v_frontporch);
 
-    assign h_valid    = (h_active < x_cnt) & (x_cnt <= h_backporch);
-    assign v_valid    = (v_active < y_cnt) & (y_cnt <= v_backporch);
-    assign valid    = h_valid & v_valid;
+    assign h_valid = (h_active < x_cnt) & (x_cnt <= h_backporch);
+    assign v_valid = (v_active < y_cnt) & (y_cnt <= v_backporch);
+    assign valid   = h_valid & v_valid;
+
+    assign h_addr = h_valid ? (x_cnt - 10'd145) : 10'd0;
+    assign v_addr = v_valid ? (y_cnt - 10'd36) : 10'd0;
 
     assign {vga_r, vga_g, vga_b} = vga_data;
 

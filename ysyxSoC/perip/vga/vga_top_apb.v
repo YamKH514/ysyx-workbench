@@ -69,14 +69,16 @@ always @(posedge clock) begin
   end
 end
 
-wire  [19:0]  vga_addr;
-wire  [23:0]  vga_data = vmem[vga_addr][23:0];
+wire  [ 9:0]  h_addr;
+wire  [ 9:0]  v_addr;
+wire  [23:0]  vga_data = vmem[{v_addr, h_addr}][23:0];
 
 vga_ctrl u_vga_ctrl(
   .pclk     	(clock    ),
   .reset    	(reset    ),
   .vga_data 	(vga_data ),
-  .vga_addr   (vga_addr ),
+  .h_addr     (h_addr   ),
+  .v_addr     (v_addr   ),
   .hsync    	(vga_hsync),
   .vsync    	(vga_vsync),
   .valid    	(vga_valid),
