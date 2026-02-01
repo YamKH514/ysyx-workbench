@@ -19,8 +19,8 @@ module ps2_top_apb(
   reg [7:0] rdata_r;
   reg       read_flag;
 
-  assign in_prdata = {24'b0, rdata_r};
-  assign in_pready = read_flag & in_psel & in_penable & !in_pwrite;
+  assign in_prdata = read_flag ? {24'b0, rdata_r} : 0;
+  assign in_pready = in_psel & in_penable & !in_pwrite;
 
   always @(*) begin
     if (in_psel & in_pwrite) begin
