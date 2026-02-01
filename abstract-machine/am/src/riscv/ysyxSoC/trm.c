@@ -25,7 +25,8 @@
 #define GPIO_SEG7   0x8
 
 extern char _heap_start;
-#define _heap_end 0xa8000000
+extern char _heap_end;
+// #define _heap_end 0xa8000000
 int main(const char *args);
 
 #define npc_trap(code) asm volatile("mv a0, %0; ebreak" : :"r"(code))
@@ -37,7 +38,7 @@ int main(const char *args);
                                             *((start) + i) = *((load_start) + i); \
                                           }
 
-Area heap = RANGE(&_heap_start, _heap_end);
+Area heap = RANGE(&_heap_start, &_heap_end);
 static const char mainargs[MAINARGS_MAX_LEN] = MAINARGS_PLACEHOLDER; // defined in CFLAGS
 
 static void uart_init() {
