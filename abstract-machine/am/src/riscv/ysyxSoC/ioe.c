@@ -74,21 +74,21 @@ void __am_input_keybrd(AM_INPUT_KEYBRD_T *key) {
 }
 
 void __am_gpu_fbdraw(AM_GPU_FBDRAW_T *draw) {
-    extern void setpixel(uint32_t waddr, uint32_t haddr, uint32_t data);
-    int x_start = draw->x;
-    int y_start = draw->y;
-    int w = draw->w;
-    int h = draw->h;
-    uint32_t *pixels = draw->pixels;
-    int x = 0, y = 0;
+  extern void setpixel(uint32_t waddr, uint32_t haddr, uint32_t data);
+  int x_start = draw->x;
+  int y_start = draw->y;
+  int w = draw->w;
+  int h = draw->h;
+  uint32_t *pixels = draw->pixels;
+  int x = 0, y = 0;
 
-    for (int i = 0; i < w * h; i++) {
-        setpixel(x_start + x, y_start + y, pixels[i]);
-        x++;
-        if (x == w) {
-            // 当前行扫描结束
-            x = 0;
-            y++;
-        }
-    }
+  for (int i = 0; i < w * h; i++) {
+      setpixel(x_start + x, y_start + y, pixels[i]);
+      x++;
+      if (x == w) {
+          // 当前行扫描结束
+          x = 0;
+          y++;
+      }
+  }
 }
