@@ -16,52 +16,76 @@ module ps2_top_apb(
   input         ps2_data
 );
 
-  reg [7:0] rdata_r;
-  reg       read_flag;
+  reg   pready_r;
 
-  assign in_prdata = read_flag ? {24'b0, rdata_r} : 0;
-  assign in_pready = in_psel & in_penable & !in_pwrite;
+  assign in_prdata  = {24'b0, data};
+  assign in_pready  = pready_r;
+  assign in_pslverr = 'b0;
 
-  always @(*) begin
+  localparam S_W      = 2;
+  localparam S_IDLE   = 2'd0;
+  localparam S_BUSY   = 2'd1;
+  localparam S_UPDATE = 2'd2;
+
+  reg [S_W-1:0] state;
+
+// APB
+  always @(posedge clock) begin
+    if (reset) begin
+      state     <= S_IDLE;
+      pready_r  <= 'b0;
+    end else begin
+      case (state)
+        S_IDLE: begin
+          pready_r <= 'b0;
+          if (in_psel) begin
+            state <= S_BUSY;
+          end
+        end
+        S_BUSY: begin
+          if (in_penable & ps2_ready) begin
+            pready_r <= 'b1;
+            state <= S_UPDATE;
+          end else begin
+            pready_r <= 'b0;
+            state <= in_penable ? S_BUSY : S_IDLE;
+          end
+        end
+        S_UPDATE: begin
+          state <= in_psel ? S_BUSY : S_IDLE;
+        end
+        default: begin
+          state     <= S_IDLE;
+          pready_r  <= 'b0;
+        end
+      endcase
+    end
+  end
+
+  always @(posedge clock) begin
     if (in_psel & in_pwrite) begin
-      $display("PS2 Control cannot write\n");
+      $display("PS2 Keyboard Controler cannot input\n");
       $fatal;
     end
   end
 
-// PS2 Control
-  reg [9:0] buffer;
-  reg [3:0] count;
-  reg [2:0] ps2_clk_sync;
+  wire  [7:0] data;
+  wire        ps2_ready;
+  wire        ps2_nextdata;
+  wire        ps2_overflow;
 
-  always @(posedge clock) begin
-      ps2_clk_sync <=  {ps2_clk_sync[1:0],ps2_clk};
-  end
+  assign ps2_nextdata = ~(state == S_UPDATE);
 
-  wire sampling = ps2_clk_sync[2] & ~ps2_clk_sync[1];
-
-  always @(posedge clock) begin
-      if (reset) begin
-          count <= 0;
-      end
-      else begin
-          if (sampling) begin
-            if (count == 4'd10) begin
-              if ((buffer[0] == 0) &&
-                  (ps2_data)       &&
-                  (^buffer[9:1])) begin
-                  read_flag <= 1;
-                  rdata_r <= buffer[8:1];
-              end
-              count <= 0;
-              read_flag <= 0;
-            end else begin
-              buffer[count] <= ps2_data;
-              count <= count + 3'b1;
-              read_flag <= 0;
-            end
-          end
-      end
-  end
+  ps2_kbd u_ps2_kbd(
+    .clk        	(clock        ),
+    .clrn       	(~reset       ),
+    .ps2_clk    	(ps2_clk      ),
+    .ps2_data   	(ps2_data     ),
+    .nextdata_n 	(ps2_nextdata ),
+    .data       	(data         ),
+    .ready      	(ps2_ready    ),
+    .overflow   	(ps2_overflow )
+  );
+  
 
 endmodule
