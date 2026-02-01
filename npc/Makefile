@@ -11,6 +11,7 @@ VERILATOR_FLAGS += --autoflush --timescale "1ns/1ns" --no-timing --cc --trace -j
 VERILATOR_FLAGS += $(addprefix -I, $(V_INC_PATH))
 VERILATOR_FLAGS += $(addprefix -I, $(UART_INC_PATH))
 VERILATOR_FLAGS += $(addprefix -I, $(SPI_INC_PATH))
+VERILATOR_FLAGS += -Wno-WIDTHEXPAND
 
 BUILD_DIR = build
 OBJ_DIR = $(BUILD_DIR)/obj_dir
