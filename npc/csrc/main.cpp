@@ -41,6 +41,7 @@ int main(int argc, char *argv[])
     }
 
     Log("npc running cycle = %llu", running_cycle);
+    Log("npc number of instructions executed = %llu", inst_num);
     Log("npc IPC = %f", (double)inst_num/(double)running_cycle);
     Log("IFU called %llu, EXU called %llu, LSU called %llu",
         PERF_MODULE(IFU), PERF_MODULE(EXU), PERF_MODULE(LSU));
