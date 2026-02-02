@@ -79,7 +79,7 @@ void Perf_cnt::print_inst_info(void) {
     }
 
     Log("----------------------------------------------------------------");
-    Log("| %-9s | %10llu | %9.2f | %18s |",
+    Log("| %-9s | %10u | %9.2f | %18s |",
         "TOTAL",
         this->__total_inst.num,
         100.0,
