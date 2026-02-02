@@ -71,7 +71,7 @@ void Perf_cnt::print_inst_info(void) {
             (double)this->__inst[i].cyc /
             (double)this->__inst[i].num;
 
-        Log("| %-9s | %10llu | %9.2f | %18.2f |",
+        Log("| %-9s | %10u | %9.2f | %18.2f |",
             inst_type_lut[i],
             this->__inst[i].num,
             ratio,
