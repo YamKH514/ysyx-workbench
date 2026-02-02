@@ -84,8 +84,8 @@ void Perf_cnt::print_ifu_info(void) {
             (double)(this->__wait_rd) /
             (double)(this->__wait_pc + this->__wait_rd) * 100.0;
 
-    Log("IFU waitng PC_Cnt update about %0.2f%", pc);
-    Log("IFU waitng R_Data ready  about %0.2f%", rd);
+    Log("IFU waitng PC_Cnt update about %0.2f%%", pc);
+    Log("IFU waitng R_Data ready  about %0.2f%%", rd);
 }
 
 Perf_cnt perf_cnt;
