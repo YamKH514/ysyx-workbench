@@ -54,6 +54,8 @@ static void exec_once(VysyxSoCFull *top, VerilatedContext *contextp, VerilatedVc
 
     cpu_single_cycle(top, contextp, tfp);
 
+    if (S_CPU(ifu_to_idu_valid) & S_CPU(idu_to_ifu_ready)) inst_num ++;
+
     // Perf CNT
     perf_cnt_module_add(S_CPU(ifu_to_idu_valid) & S_CPU(idu_to_ifu_ready), IFU);
     perf_cnt_module_add(S_CPU(idu_to_exu_valid) & S_CPU(exu_to_idu_ready), EXU);
@@ -67,7 +69,6 @@ static void exec_once(VysyxSoCFull *top, VerilatedContext *contextp, VerilatedVc
     }
     if ((!S_CPU(wbu_to_pc_valid)) & (!S_CPU(pc_to_wbu_ready)) & inst_end)
     {
-        inst_num ++;
         inst_end = false;
         cpu.pc = S_CPU(pc);
         cpu.npc = S_CPU(npc);
