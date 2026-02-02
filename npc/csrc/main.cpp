@@ -43,8 +43,11 @@ int main(int argc, char *argv[])
     Log("npc running cycle = %llu", running_cycle);
     Log("npc number of instructions executed = %llu", inst_num);
     Log("npc IPC = %f", (double)inst_num/(double)running_cycle);
-    Log("IFU called %llu, EXU called %llu, LSU called %llu",
-        perf_cnt.module(IFU), perf_cnt.module(EXU), perf_cnt.module(LSU));
+    perf_cnt.print_module_called(IFU);
+    perf_cnt.print_module_called(EXU);
+    perf_cnt.print_module_called(LSU);
+    // Log("IFU called %llu, EXU called %llu, LSU called %llu",
+    //     perf_cnt.module(IFU), perf_cnt.module(EXU), perf_cnt.module(LSU));
     Log("type_i = %f, type_s = %f, type_b = %f, type_u = %f, type_j = %f, type_r = %f",
         perf_cnt.inst_proportion(i), perf_cnt.inst_proportion(s), perf_cnt.inst_proportion(b), perf_cnt.inst_proportion(u), perf_cnt.inst_proportion(j), perf_cnt.inst_proportion(r));
     Log("npc: %s at pc = 0x%08x", (
