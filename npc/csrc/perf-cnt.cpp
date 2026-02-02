@@ -45,9 +45,11 @@ void Perf_cnt::print_module_called(MODULE_ENUM module) {
 }
 
 void Perf_cnt::print_inst_info(INST_TYPE_ENUM inst_type) {
-    Log("%s inst was executed %d times, which is approximately %f of all instructions,\n    and on average, it required %llu cycles to execute.",
-        inst_type_lut[inst_type], (double)(this->__inst[inst_type].num)/(double)(this->__total_inst.num),
-        this->__inst[inst_type].cyc/this->__inst[inst_type].num);
+    Log("%s inst was executed %d times, which is approximately %f of all instructions,\n    and on average, it required %f cycles to execute.",
+        inst_type_lut[inst_type],
+        this->__inst[inst_type].num,
+        (double)(this->__inst[inst_type].num)/(double)(this->__total_inst.num),
+        (double)(this->__inst[inst_type].cyc)/(double)(this->__inst[inst_type].num));
 }
 
 Perf_cnt perf_cnt;
