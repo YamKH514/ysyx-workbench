@@ -91,7 +91,7 @@ void init_npc(int argc, char *argv[], VysyxSoCFull *top, VerilatedContext *conte
 
     long img_size = load_img();
 
-    cpu_reset(20, top, contextp, tfp);
+    cpu_reset(10, top, contextp, tfp);
 
     init_difftest(diff_so_file, img_size, difftest_port);
 

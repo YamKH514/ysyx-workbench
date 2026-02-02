@@ -2,6 +2,7 @@
 #include "cpu.h"
 
 unsigned long long running_cycle = 0;
+unsigned long long inst_num = 0;
 
 void cpu_single_cycle(VysyxSoCFull *top, VerilatedContext *contextp, VerilatedVcdC *tfp)
 {

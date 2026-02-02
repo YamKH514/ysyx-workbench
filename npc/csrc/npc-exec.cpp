@@ -49,7 +49,7 @@ static void exec_once(VysyxSoCFull *top, VerilatedContext *contextp, VerilatedVc
 {
     char logbuf[128];
 
-    if (!npc_state.inited) cpu_reset(20, top, contextp, tfp);
+    if (!npc_state.inited) cpu_reset(10, top, contextp, tfp);
 
     cpu_single_cycle(top, contextp, tfp);
 
@@ -60,6 +60,7 @@ static void exec_once(VysyxSoCFull *top, VerilatedContext *contextp, VerilatedVc
     }
     if ((!S_CPU(wbu_to_pc_valid)) & (!S_CPU(pc_to_wbu_ready)) & inst_end)
     {
+        inst_num ++;
         inst_end = false;
         cpu.pc = S_CPU(pc);
         cpu.npc = S_CPU(npc);

@@ -4,6 +4,7 @@
 #include "common.h"
 
 extern unsigned long long running_cycle;
+extern unsigned long long inst_num;
 
 typedef struct
 {
