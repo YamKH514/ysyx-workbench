@@ -23,6 +23,7 @@
 #define inst_jarl 0x67
 
 #define S_CPU(signal) top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__##signal
+#define S_IFU(signal) top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__u_IFU__DOT__##signal
 
 uint64_t g_nr_guest_inst = 0;
 bool g_print_step = false;
@@ -64,6 +65,9 @@ static void exec_once(VysyxSoCFull *top, VerilatedContext *contextp, VerilatedVc
         if (S_CPU(idu_to_exu_valid) & S_CPU(exu_to_idu_ready)) perf_cnt.module_add(EXU);
         if (S_CPU(exu_to_lsu_valid) & S_CPU(lsu_to_exu_ready)) perf_cnt.module_add(LSU);
         if (S_CPU(idu_to_exu_valid) & S_CPU(exu_to_idu_ready)) inst_type = (INST_TYPE_ENUM)S_CPU(inst_type);
+
+        if ((int)S_IFU(state) == 3) perf_cnt.wait_rd();
+        else if (!(S_CPU(pc_to_ifu_valid) | S_CPU(ifu_to_pc_ready))) perf_cnt.wait_pc();
     }
 
     if ((S_CPU(wbu_to_pc_valid)) & (S_CPU(pc_to_wbu_ready))) 
@@ -166,7 +170,6 @@ static void execute(VysyxSoCFull *top, VerilatedContext *contextp, VerilatedVcdC
         exec_once(top, contextp, tfp);
         running_cycle ++;
         g_nr_guest_inst++;
-        // if ((running_cycle % 1000000) == 0) printf("NPC has been runned %llu cycle\n", running_cycle);
         if (npc_state.state != NPC_RUNNING)
         {
             npc_state.halt_pc = cpu.pc;

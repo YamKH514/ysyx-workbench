@@ -28,14 +28,6 @@ void Perf_cnt::inst_add(INST_TYPE_ENUM inst_type, int num) {
     this->__total_inst.cyc += (unsigned long long)num;
 }
 
-double Perf_cnt::inst_proportion(INST_TYPE_ENUM inst_type) {
-    return (double)this->__inst[inst_type].num/(double)this->__total_inst.num;
-}
-
-double Perf_cnt::inst_average(INST_TYPE_ENUM inst_type) {
-    return (double)this->__inst[inst_type].cyc/(double)this->__inst[inst_type].num;
-}
-
 unsigned long long Perf_cnt::module(MODULE_ENUM module) {
     return this->__module[module];
 }
@@ -43,16 +35,6 @@ unsigned long long Perf_cnt::module(MODULE_ENUM module) {
 void Perf_cnt::print_module_called(MODULE_ENUM module) {
     Log("%s called %llu", module_lut[module], this->__module[module]);
 }
-
-// void Perf_cnt::print_inst_info(void) {
-//     for(int i = 0; i < __INST_TYPE_NUM; i ++) {
-//         Log("%s inst was executed %d times, which is approximately %f of all instructions, and on average, it required %f cycles to execute.",
-//             inst_type_lut[i],
-//             this->__inst[i].num,
-//             (double)(this->__inst[i].num)/(double)(this->__total_inst.num),
-//             (double)(this->__inst[i].cyc)/(double)(this->__inst[i].num));
-//     }
-// }
 
 void Perf_cnt::print_inst_info(void) {
     Log("----------------------------------------------------------------");
@@ -85,6 +67,25 @@ void Perf_cnt::print_inst_info(void) {
         100.0,
         "-");
     Log("----------------------------------------------------------------");
+}
+
+void Perf_cnt::wait_pc(void) {
+    this->__wait_pc ++;
+}
+void Perf_cnt::wait_rd(void) {
+    this->__wait_rd ++;
+}
+
+void Perf_cnt::print_ifu_info(void) {
+    double pc =
+            (double)(this->__wait_pc) /
+            (double)(this->__wait_pc + this->__wait_rd) * 100.0;
+    double rd =
+            (double)(this->__wait_rd) /
+            (double)(this->__wait_pc + this->__wait_rd) * 100.0;
+
+    Log("IFU waitng PC_Cnt update about %0.2f%", pc);
+    Log("IFU waitng R_Data ready  about %0.2f%", rd);
 }
 
 Perf_cnt perf_cnt;

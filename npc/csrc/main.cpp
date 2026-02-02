@@ -47,8 +47,7 @@ int main(int argc, char *argv[])
     perf_cnt.print_module_called(EXU);
     perf_cnt.print_module_called(LSU);
     perf_cnt.print_inst_info();
-    // Log("type_i = %f, type_s = %f, type_b = %f, type_u = %f, type_j = %f, type_r = %f",
-    //     perf_cnt.inst_proportion(i), perf_cnt.inst_proportion(s), perf_cnt.inst_proportion(b), perf_cnt.inst_proportion(u), perf_cnt.inst_proportion(j), perf_cnt.inst_proportion(r));
+    perf_cnt.print_ifu_info();
     Log("npc: %s at pc = 0x%08x", (
         npc_state.state == NPC_ABORT ? ANSI_FMT("ABORT", ANSI_FG_RED) :
         npc_state.halt_ret == 0 ? ANSI_FMT("HIT GOOD TRAP", ANSI_FG_GREEN) : ANSI_FMT("HIT BAD TRAP", ANSI_FG_RED)), npc_state.halt_pc);
