@@ -44,14 +44,47 @@ void Perf_cnt::print_module_called(MODULE_ENUM module) {
     Log("%s called %llu", module_lut[module], this->__module[module]);
 }
 
+// void Perf_cnt::print_inst_info(void) {
+//     for(int i = 0; i < __INST_TYPE_NUM; i ++) {
+//         Log("%s inst was executed %d times, which is approximately %f of all instructions, and on average, it required %f cycles to execute.",
+//             inst_type_lut[i],
+//             this->__inst[i].num,
+//             (double)(this->__inst[i].num)/(double)(this->__total_inst.num),
+//             (double)(this->__inst[i].cyc)/(double)(this->__inst[i].num));
+//     }
+// }
+
 void Perf_cnt::print_inst_info(void) {
-    for(int i = 0; i < __INST_TYPE_NUM; i ++) {
-        Log("%s inst was executed %d times, which is approximately %f of all instructions, and on average, it required %f cycles to execute.",
+    Log("----------------------------------------------------------------");
+    Log("| %-9s | %10s | %9s | %18s |",
+        "Inst Type", "Count", "Ratio(%)", "Avg Cycles (CPI)");
+    Log("----------------------------------------------------------------");
+
+    for (int i = 0; i < __INST_TYPE_NUM; i++) {
+        if (this->__inst[i].num == 0) continue;
+
+        double ratio =
+            (double)this->__inst[i].num /
+            (double)this->__total_inst.num * 100.0;
+
+        double avg_cyc =
+            (double)this->__inst[i].cyc /
+            (double)this->__inst[i].num;
+
+        Log("| %-9s | %10llu | %9.2f | %18.2f |",
             inst_type_lut[i],
             this->__inst[i].num,
-            (double)(this->__inst[i].num)/(double)(this->__total_inst.num),
-            (double)(this->__inst[i].cyc)/(double)(this->__inst[i].num));
+            ratio,
+            avg_cyc);
     }
+
+    Log("----------------------------------------------------------------");
+    Log("| %-9s | %10llu | %9.2f | %18s |",
+        "TOTAL",
+        this->__total_inst.num,
+        100.0,
+        "-");
+    Log("----------------------------------------------------------------");
 }
 
 Perf_cnt perf_cnt;
