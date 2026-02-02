@@ -9,7 +9,7 @@
 #include "Vtop__Dpi.h"
 #include "cpu.h"
 #include "watchpoint.h"
-#include "perf-cnt.h"
+#include "perf-cnt.hpp"
 #ifdef CONFIG_NVBOARD
 #include <nvboard.h>
 #endif
@@ -56,14 +56,15 @@ static void exec_once(VysyxSoCFull *top, VerilatedContext *contextp, VerilatedVc
 
     cpu_single_cycle(top, contextp, tfp);
 
-    if (S_CPU(ifu_to_idu_valid) & S_CPU(idu_to_ifu_ready)) inst_num ++;
-
     // Perf CNT
     if (!top->rootp->ysyxSoCFull__DOT__asic__DOT____Vcellinp__cpu__reset) {
         current_inst_cyc ++;
-        perf_cnt_module_add(S_CPU( pc_to_ifu_valid) & S_CPU( ifu_to_pc_ready), IFU);
-        perf_cnt_module_add(S_CPU(idu_to_exu_valid) & S_CPU(exu_to_idu_ready), EXU);
-        perf_cnt_module_add(S_CPU(exu_to_lsu_valid) & S_CPU(lsu_to_exu_ready), LSU);
+        if (S_CPU(ifu_to_idu_valid) & S_CPU(idu_to_ifu_ready)) inst_num ++;
+        if (S_CPU( pc_to_ifu_valid) & S_CPU( ifu_to_pc_ready)) perf_cnt.module_add(IFU);
+        if (S_CPU(idu_to_exu_valid) & S_CPU(exu_to_idu_ready)) perf_cnt.module_add(EXU);
+        if (S_CPU(exu_to_lsu_valid) & S_CPU(lsu_to_exu_ready)) perf_cnt.module_add(LSU);
+        // perf_cnt_module_add(S_CPU(idu_to_exu_valid) & S_CPU(exu_to_idu_ready), EXU);
+        // perf_cnt_module_add(S_CPU(exu_to_lsu_valid) & S_CPU(lsu_to_exu_ready), LSU);
         if (S_CPU(idu_to_exu_valid) & S_CPU(exu_to_idu_ready)) inst_type = (INST_TYPE_ENUM)S_CPU(inst_type);
     }
 
@@ -74,7 +75,8 @@ static void exec_once(VysyxSoCFull *top, VerilatedContext *contextp, VerilatedVc
     }
     if ((!S_CPU(wbu_to_pc_valid)) & (!S_CPU(pc_to_wbu_ready)) & inst_end)
     {
-        perf_cnt_inst_add(inst_type, current_inst_cyc);
+        perf_cnt.inst_add(inst_type, current_inst_cyc);
+        // perf_cnt_inst_add(inst_type, current_inst_cyc);
         current_inst_cyc = 0;
 
         inst_end = false;
