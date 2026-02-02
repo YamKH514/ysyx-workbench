@@ -49,13 +49,13 @@ static void trace_and_difftest(VysyxSoCFull *top, char *logbuf)
 static void exec_once(VysyxSoCFull *top, VerilatedContext *contextp, VerilatedVcdC *tfp)
 {
     char logbuf[128];
-if (!npc_state.inited) printf("-1\n");
+
     if (!npc_state.inited) cpu_reset(10, top, contextp, tfp);
 
     cpu_single_cycle(top, contextp, tfp);
 
     // Perf CNT
-    perf_cnt_module_add(S_CPU( pc_to_ifu_valid) & S_CPU( ifu_to_pc_ready), IFU);
+    perf_cnt_module_add(S_CPU(ifu_to_idu_valid) & S_CPU(idu_to_ifu_ready), IFU);
     perf_cnt_module_add(S_CPU(idu_to_exu_valid) & S_CPU(exu_to_idu_ready), EXU);
     perf_cnt_module_add(S_CPU(exu_to_lsu_valid) & S_CPU(lsu_to_exu_ready), LSU);
     perf_cnt_inst_add(S_CPU(idu_to_exu_valid) & S_CPU(exu_to_idu_ready), (INST_TYPE_ENUM)S_CPU(inst_type));
