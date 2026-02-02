@@ -2,7 +2,7 @@ MEMORY {
   flash (r x) : ORIGIN = 0x30000000, LENGTH = 16M
   sram  (rwx) : ORIGIN = 0x0f000000, LENGTH = 8K
   psram (rwx) : ORIGIN = 0x80000000, LENGTH = 4M
-  sdram (rwx) : ORIGIN = 0xa0000000, LENGTH = 64M
+  sdram (rwx) : ORIGIN = 0xa0000000, LENGTH = 128M
 }
 REGION_ALIAS("REGION_FSBL", flash);
 REGION_ALIAS("REGION_SSBL", sdram);
@@ -77,6 +77,7 @@ SECTIONS {
   _end = .;
 
   _heap_start = ALIGN(0x1000);
+  _heap_end = ORIGIN(sdram) + LENGTH(sdram);
 
   _stack_top = ORIGIN(sram);
   _stack_pointer = ORIGIN(sram) + LENGTH(sram);

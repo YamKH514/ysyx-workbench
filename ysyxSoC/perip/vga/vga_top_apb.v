@@ -20,4 +20,71 @@ module vga_top_apb(
   output        vga_valid
 );
 
+localparam H_W = 10;
+localparam V_W =  9;
+
+reg[31:0] vmem[640*480-1:0];
+
+// APB
+reg [H_W+V_W-1:0]  paddr_r;
+reg                pready_r;
+
+assign in_pready  = pready_r;
+assign in_pslverr = 'b0;
+
+localparam S_W    = 2;
+localparam S_IDLE = 2'd0;
+localparam S_BUSY = 2'd1;
+
+reg [S_W-1:0] state;
+
+// APB
+always @(posedge clock) begin
+  if (reset) begin
+    state     <= S_IDLE;
+    paddr_r   <= 'b0;
+    pready_r  <= 'b0;
+  end else begin
+    case (state)
+      S_IDLE: begin
+        pready_r  <= 'b0;
+        if (in_psel & in_pwrite) begin
+          paddr_r <= in_paddr[20:2];
+          state   <= S_BUSY;
+        end
+      end
+      S_BUSY: begin
+        if (in_penable) begin
+          vmem[paddr_r] <= in_pwdata;
+          pready_r      <= 'b1;
+          state         <= S_IDLE;
+        end
+      end
+      default: begin
+        state     <= S_IDLE;
+        paddr_r   <= 'b0;
+        pready_r  <= 'b0;
+      end
+    endcase
+  end
+end
+
+wire  [ 9:0]  h_addr;
+wire  [ 9:0]  v_addr;
+wire  [23:0]  vga_data = vmem[v_addr * 640 + h_addr][23:0];
+
+vga_ctrl u_vga_ctrl(
+  .pclk     	(clock    ),
+  .reset    	(reset    ),
+  .vga_data 	(vga_data ),
+  .h_addr     (h_addr   ),
+  .v_addr     (v_addr   ),
+  .hsync    	(vga_hsync),
+  .vsync    	(vga_vsync),
+  .valid    	(vga_valid),
+  .vga_r    	(vga_r    ),
+  .vga_g    	(vga_g    ),
+  .vga_b    	(vga_b    )
+);
+
 endmodule

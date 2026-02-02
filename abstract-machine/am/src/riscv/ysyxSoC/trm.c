@@ -17,8 +17,16 @@
 
 #define PS2_BASE 0x10011000L
 
+#define VGA_BASE 0x21000000L
+
+#define GPIO_CTRL   0x10002000
+#define GPIO_LED    0x0
+#define GPIO_SWITCH 0x4
+#define GPIO_SEG7   0x8
+
 extern char _heap_start;
-#define _heap_end 0xa8000000
+extern char _heap_end;
+// #define _heap_end 0xa8000000
 int main(const char *args);
 
 #define npc_trap(code) asm volatile("mv a0, %0; ebreak" : :"r"(code))
@@ -30,7 +38,7 @@ int main(const char *args);
                                             *((start) + i) = *((load_start) + i); \
                                           }
 
-Area heap = RANGE(&_heap_start, _heap_end);
+Area heap = RANGE(&_heap_start, &_heap_end);
 static const char mainargs[MAINARGS_MAX_LEN] = MAINARGS_PLACEHOLDER; // defined in CFLAGS
 
 static void uart_init() {
@@ -56,6 +64,10 @@ char getch() {
 
 uint8_t getkey() {
   return *(volatile uint8_t *)(PS2_BASE);
+}
+
+void setpixel(uint32_t waddr, uint32_t haddr, uint32_t data) {
+  *(volatile uint32_t *)(VGA_BASE + 4 * (waddr + haddr * 640)) = data;
 }
 
 void _ssbl();
@@ -96,12 +108,24 @@ void _ssbl() {
 static void print_info() {
   uint32_t mvendorid;
   uint32_t marchid;
+  uint32_t seg7_val = 0;
   asm volatile("csrr %0, mvendorid" : "=r"(mvendorid):);
   asm volatile("csrr %0, marchid" : "=r"(marchid):);
   for(int i = 3; i >= 0; i--){
       putch((char)((mvendorid >> i*8) & 0xFF));
   }
   printf("_%d\n", marchid);
+
+    asm volatile("csrr %0, marchid" : "=r"(marchid):);
+    seg7_val |= ((marchid / 10000000) % 10) << 28;
+    seg7_val |= ((marchid / 1000000)  % 10) << 24;
+    seg7_val |= ((marchid / 100000)   % 10) << 20;
+    seg7_val |= ((marchid / 10000)    % 10) << 16;
+    seg7_val |= ((marchid / 1000)     % 10) << 12;
+    seg7_val |= ((marchid / 100)      % 10) << 8;
+    seg7_val |= ((marchid / 10)       % 10) << 4;
+    seg7_val |= (marchid % 10);
+    *(volatile uint32_t *)(GPIO_CTRL + GPIO_SEG7) = seg7_val;
 }
 
 void halt(int code) {
