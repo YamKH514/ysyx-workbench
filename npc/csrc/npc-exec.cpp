@@ -57,7 +57,7 @@ static void exec_once(VysyxSoCFull *top, VerilatedContext *contextp, VerilatedVc
     if (S_CPU(ifu_to_idu_valid) & S_CPU(idu_to_ifu_ready)) inst_num ++;
 
     // Perf CNT
-    if (!top->reset) {
+    if (!top->rootp->ysyxSoCFull__DOT__asic__DOT____Vcellinp__cpu__reset) {
         perf_cnt_module_add(S_CPU( pc_to_ifu_valid) & S_CPU( ifu_to_pc_ready), IFU);
         perf_cnt_module_add(S_CPU(idu_to_exu_valid) & S_CPU(exu_to_idu_ready), EXU);
         perf_cnt_module_add(S_CPU(exu_to_lsu_valid) & S_CPU(lsu_to_exu_ready), LSU);
