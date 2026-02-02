@@ -49,7 +49,7 @@ static void trace_and_difftest(VysyxSoCFull *top, char *logbuf)
 static void exec_once(VysyxSoCFull *top, VerilatedContext *contextp, VerilatedVcdC *tfp)
 {
     char logbuf[128];
-
+if (!npc_state.inited) printf("-1\n");
     if (!npc_state.inited) cpu_reset(10, top, contextp, tfp);
 
     cpu_single_cycle(top, contextp, tfp);
