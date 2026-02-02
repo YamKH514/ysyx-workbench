@@ -110,10 +110,10 @@ void Perf_cnt::lsu_wait_cyc(char ch) {
 }
 
 void Perf_cnt::print_lsu_info(void) {
-    Log("--------------------------------------------");
+    Log("--------------------------------------");
     Log("| %-10s | %9s | %16s |",
         "LSU Access", "Count", "Avg Latency(cyc)");
-    Log("--------------------------------------------");
+    Log("--------------------------------------");
 
     if (this->__lsu.read_num > 0) {
         double read_avg =
@@ -137,7 +137,7 @@ void Perf_cnt::print_lsu_info(void) {
             write_avg);
     }
 
-    Log("--------------------------------------------");
+    Log("--------------------------------------");
 }
 
 Perf_cnt perf_cnt;
