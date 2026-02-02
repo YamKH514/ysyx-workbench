@@ -44,12 +44,14 @@ void Perf_cnt::print_module_called(MODULE_ENUM module) {
     Log("%s called %llu", module_lut[module], this->__module[module]);
 }
 
-void Perf_cnt::print_inst_info(INST_TYPE_ENUM inst_type) {
-    Log("%s inst was executed %d times, which is approximately %f of all instructions,\n    and on average, it required %f cycles to execute.",
-        inst_type_lut[inst_type],
-        this->__inst[inst_type].num,
-        (double)(this->__inst[inst_type].num)/(double)(this->__total_inst.num),
-        (double)(this->__inst[inst_type].cyc)/(double)(this->__inst[inst_type].num));
+void Perf_cnt::print_inst_info(void) {
+    for(int i = 0; i < __INST_TYPE_NUM; i ++) {
+        Log("%s inst was executed %d times, which is approximately %f of all instructions, and on average, it required %f cycles to execute.",
+            inst_type_lut[i],
+            this->__inst[i].num,
+            (double)(this->__inst[i].num)/(double)(this->__total_inst.num),
+            (double)(this->__inst[i].cyc)/(double)(this->__inst[i].num));
+    }
 }
 
 Perf_cnt perf_cnt;
