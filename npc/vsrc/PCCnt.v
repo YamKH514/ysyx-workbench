@@ -15,6 +15,8 @@ module PCCnt(
     input               ifu_to_pc_ready_in
 );
 
+parameter RESET_PC = 32'h30000000;
+
 localparam S_IDLE = 1'd0;
 localparam S_BUSY = 1'd1;
 
@@ -28,7 +30,7 @@ always @(posedge clk) begin
     if (rst) begin
         pc_to_wbu_ready_out <= 1'b0;
         pc_to_ifu_valid_out <= 1'b1;
-        pc_cnt_pc_out       <= 32'h30000000;
+        pc_cnt_pc_out       <= RESET_PC;
     end else begin
         case (state)
             S_IDLE: begin

@@ -15,6 +15,14 @@ void nvboard_bind_all_pins(VysyxSoCFull* top);
 
 int main(int argc, char *argv[])
 {
+
+#ifdef PLATFORM_YSYXSOC
+    printf("ysyxSoC\n");
+#endif
+#ifdef PLATFORM_NPC
+    printf("NPC\n");
+#endif
+
     Verilated::commandArgs(argc, argv);
 
     Verilated::mkdir("logs");

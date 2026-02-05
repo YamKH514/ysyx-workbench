@@ -1,42 +1,65 @@
-module TestSRAM(
+module pmem(
     /* verilator lint_off UNUSEDSIGNAL */
     input               clk,
-    input               rstn,
+    input               rst,
 
     // AR
+    input       [3:0]   arid_in,
     input       [31:0]  araddr_in,
+    input       [3:0]   arlen_in,
+    input       [2:0]   arsize_in,
+    input       [1:0]   arburst_in,
     input               arvalid_in,
     output  reg         arready_out,
 
     // R
+    output  reg [3:0]   rid_out,
     output  reg [31:0]  rdata_out,
     output  reg [1:0]   rresp_out,
+    output  reg         rlast_out,
     output  reg         rvalid_out,
     input               rready_in,
 
     // AW
+    input       [3:0]   awid_in,
     input       [31:0]  awaddr_in,
+    input       [3:0]   awlen_in,
+    input       [2:0]   awsize_in,
+    input       [1:0]   awburst_in,
     input               awvalid_in,
     output  reg         awready_out,
 
     // W
     input       [31:0]  wdata_in,
     input       [3:0]   wstrb_in,
+    input               wlast_in,
     input               wvalid_in,
     output  reg         wready_out,
 
     // B
+    output  reg [3:0]   bid_out,
     output  reg [1:0]   bresp_out,
     output  reg         bvalid_out,
     input               bready_in
 );
 
-reg [7:0] ReadAddr1;
-reg [31:0] ReadData1;
-reg [7:0] WriteAddr;
-reg [31:0] WriteData;
-reg [3:0] WriteMask;
-reg RegWrite;
+import "DPI-C" function int paddr_read(input int raddr);
+import "DPI-C" function void paddr_write(
+    input int waddr, input int wdata, input byte wmask);
+
+reg [3:0]   arid_r;
+reg [31:0]  araddr_r;
+reg [3:0]   arlen_r;
+reg [2:0]   arsize_r;
+reg [1:0]   arburst_r;
+reg [3:0]   awid_r;
+reg [31:0]  awaddr_r;
+reg [3:0]   awlen_r;
+reg [2:0]   awsize_r;
+reg [1:0]   awburst_r;
+reg [31:0]  wdata_r;
+reg [3:0]   wstrb_r;
+reg [3:0]   bid_r;
 
 parameter S_IDLE   = 3'd0;
 parameter S_GET_AR = 3'd1;
@@ -49,7 +72,7 @@ reg [2:0]   r_state, r_next_state;
 reg [2:0]   w_state, w_next_state;
 
 always @(posedge clk) begin
-    if (!rstn) begin
+    if (rst) begin
         r_state <= S_IDLE;
         w_state <= S_IDLE;
     end else begin
@@ -58,26 +81,39 @@ always @(posedge clk) begin
     end
 
     // READ
-    if (!rstn) begin
+    if (rst) begin
+        arid_r      <= 4'b0;
+        arlen_r     <= 4'b0;
+        arsize_r    <= 3'b0;
+        arburst_r   <= 2'b0;
         arready_out <= 1'b1;
-        rvalid_out  <= 1'b0;
+        rid_out     <= 4'b0;
+        rlast_out   <= 1'b0;
         rresp_out   <= 2'b00;
+        rvalid_out  <= 1'b0;
     end else begin
         case (r_state)
             S_IDLE: begin
                 if (arvalid_in & arready_out) begin
-                    ReadAddr1 <= araddr_in[7:0];
+                    arid_r      <= arid_in;
+                    arlen_r     <= arlen_in;
+                    arsize_r    <= arsize_in;
+                    arburst_r   <= arburst_in;
                     arready_out <= 1'b0;
                 end
             end
             S_GET_AR: begin
-                rdata_out <= ReadData1;
-                rvalid_out <= 1'b1;
+                rid_out    <= arid_r;
+                rlast_out  <= 1'b1;
                 rresp_out  <= 2'b00;
+                rvalid_out <= 1'b1;
             end
             S_SEND_R: begin
                 if (rvalid_out & rready_in) begin
                     arready_out <= 1'b1;
+                    rid_out     <= 4'b0;
+                    rlast_out   <= 1'b0;
+                    rresp_out   <= 2'b00;
                     rvalid_out  <= 1'b0;
                 end
             end
@@ -89,29 +125,37 @@ always @(posedge clk) begin
     end
 
     // WRITE
-    if (!rstn) begin
+    if (rst) begin
+        awid_r      <= 4'b0;
+        awlen_r     <= 4'b0;
+        awsize_r    <= 3'b0;
+        awburst_r   <= 2'b0;
         awready_out <= 1'b1;
         wready_out  <= 1'b1;
+        bid_r       <= 4'b0;
         bresp_out   <= 2'b00;
         bvalid_out  <= 1'b0;
     end else begin
         case (w_state)
             S_IDLE: begin
                 if (awvalid_in & awready_out) begin
-                    WriteAddr   <= awaddr_in[7:0];
+                    awid_r      <= awid_in;
+                    awaddr_r    <= awaddr_in;
+                    awlen_r     <= awlen_in;
+                    awsize_r    <= awsize_in;
+                    awburst_r   <= awburst_in;
                     awready_out <= 1'b0;
                 end
             end
             S_GET_WR: begin
                 if (wvalid_in & wready_out) begin
-                    WriteData  <= wdata_in;
-                    WriteMask  <= wstrb_in;
-                    RegWrite   <= 1'b1;
+                    wdata_r    <= wdata_in;
+                    wstrb_r    <= wstrb_in;
                     wready_out <= 1'b0;
                 end
             end
             S_GET_WD: begin
-                RegWrite   <= 1'b0;
+                bid_out    <= 4'b0;
                 bresp_out  <= 2'b00;
                 bvalid_out <= 1'b1;
             end
@@ -139,10 +183,12 @@ always @(*) begin
     case (r_state)
         S_IDLE: begin
             if (arvalid_in & arready_out) begin
+                araddr_r     = araddr_in;
                 r_next_state = S_GET_AR;
             end
         end
         S_GET_AR: begin
+            rdata_out = paddr_read(araddr_r);
             r_next_state = S_SEND_R;
         end
         S_SEND_R: begin
@@ -168,6 +214,7 @@ always @(*) begin
             end
         end
         S_GET_WD: begin
+            paddr_write(awaddr_r, wdata_r, {4'b0, wstrb_r});
             w_next_state = S_SEND_B;
         end
         S_SEND_B: begin
@@ -180,20 +227,5 @@ always @(*) begin
         end
     endcase
 end
-
-wire [31:0] ReadData2, ReadData_a5;
-
-RegisterFile #(8, 32) u_RegisterFile(
-    .clk         	(clk          ),
-    .ReadAddr1   	(ReadAddr1    ),
-    .ReadAddr2   	(8'b0         ),
-    .WriteAddr   	(WriteAddr    ),
-    .WriteData   	(WriteData    ),
-    .RegWrite    	(RegWrite     ),
-    .ReadData1   	(ReadData1    ),
-    .ReadData2   	(ReadData2    ),
-    .ReadData_a5 	(ReadData_a5  )
-);
-
 
 endmodule

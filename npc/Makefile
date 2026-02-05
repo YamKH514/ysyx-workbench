@@ -1,16 +1,25 @@
+ifeq ($(PLATFORM), ysyxSoC)
 TOPNAME = ysyxSoCFull
+else ifeq ($(PLATFORM), npc)
+TOPNAME = top
+endif
+
 NXDC_FILES = constr/top.nxdc
 INC_PATH ?= $(NPC_HOME)/include
 V_INC_PATH ?= $(NPC_HOME)/vsrc
+ifeq ($(PLATFORM), ysyxSoC) # ysyxSoC
 UART_INC_PATH ?= $(YSYXSOC_HOME)/perip/uart16550/rtl
 SPI_INC_PATH ?= $(YSYXSOC_HOME)/perip/spi/rtl
+endif
 
 VERILATOR = verilator
 VERILATOR_COVERAGE = verilator_coverage
 VERILATOR_FLAGS += --autoflush --timescale "1ns/1ns" --no-timing --cc --trace -j 0 --top-module $(TOPNAME)
 VERILATOR_FLAGS += $(addprefix -I, $(V_INC_PATH))
+ifeq ($(PLATFORM), ysyxSoC) # ysyxSoC
 VERILATOR_FLAGS += $(addprefix -I, $(UART_INC_PATH))
 VERILATOR_FLAGS += $(addprefix -I, $(SPI_INC_PATH))
+endif
 
 BUILD_DIR = build
 OBJ_DIR = $(BUILD_DIR)/obj_dir
@@ -26,9 +35,13 @@ $(SRC_AUTO_BIND): $(NXDC_FILES)
 	python3 $(NVBOARD_HOME)/scripts/auto_pin_bind.py $^ $@
 
 # project source
+ifeq ($(PLATFORM), ysyxSoC) # ysyxSoC
 VSRCS += $(YSYXSOC_HOME)/build/ysyxSoCFull.v
 VSRCS += $(shell find $(abspath ./vsrc) -name "*.v" ! -name "top.v")
 VSRCS += $(shell find $(abspath $(YSYXSOC_HOME)/perip) -name "*.v")
+else ifeq ($(PLATFORM), npc)
+VSRCS += $(shell find $(abspath ./vsrc) -name "*.v" ! -name "ysyx_25120296.v")
+endif
 CSRCS += $(shell find $(abspath ./csrc) -name "*.c" -or -name "*.cc" -or -name "*.cpp")
 CSRCS += $(SRC_AUTO_BIND)
 
