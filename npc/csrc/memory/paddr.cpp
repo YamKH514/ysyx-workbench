@@ -187,40 +187,48 @@ uint32_t paddr_read(uint32_t raddr)
 
 extern int npcmem_read(int raddr)
 {
-    return (int)paddr_read((uint32_t)raddr);
+    uint32_t addr = (uint32_t)raddr & ~0x3u;
+    
+    if(likely(in_pmem(addr)))
+    {
+        return pmem_read(addr, 4);
+    }
+    out_of_bound(addr);
+    return 0;
 }
 
 extern void npcmem_write(int waddr, int wdata, char wmask)
 {
-    uint32_t addr = (uint32_t)waddr & ~0x3u;
+    uint32_t addr = waddr & ~0x3u;
     uint32_t data = 0;
-    uint32_t offset = (uint32_t)waddr & 0x3;
+    uint32_t offset = waddr & 0x3;
+    if(addr == SERIAL_PORT)
+    {
+        putchar(wdata);
+        return;
+    }
+    switch (wmask)
+    {
+    case 0x1:
+        data = ((wdata & 0xFF) << (offset * 8)) | (pmem_read(addr, 4) & ~(0xFFu << (offset * 8)));
+        break;
+    case 0x3:
+        data = ((wdata & 0xFFFF) << (offset * 8)) | (pmem_read(addr, 4) & ~(0xFFFFu << (offset * 8)));
+        break;
+    case 0xF:
+        data = wdata;
+        break;
+    default:
+        data = 0;
+        break;
+    }
 
     if(likely(in_pmem(addr)))
     {
-        switch ((uint32_t)wmask)
-        {
-        case 0x1:
-            data = ((wdata & 0xFF) << (offset * 8)) | (pmem_read(addr, 4) & ~(0xFFu << (offset * 8)));
-            break;
-        case 0x3:
-            data = ((wdata & 0xFFFF) << (offset * 8)) | (pmem_read(addr, 4) & ~(0xFFFFu << (offset * 8)));
-            break;
-        case 0xF:
-            data = wdata;
-            break;
-        default:
-            data = 0;
-            break;
-        }
         pmem_write(addr, 4, data);
         return;
     }
-
-    if (addr == SERIAL_PORT) printf("%c", wdata);
-    printf("npc_write waddr: 0x%08x\n", addr);
-    return;
-
+    printf("paddr_write out_of_bound addr = 0x%x\n", addr);
     out_of_bound(addr);
 }
 
