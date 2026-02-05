@@ -15,11 +15,8 @@
 #include "log.h"
 #include "debug.h"
 
-#ifdef PLATFORM_NPC
-#include "Vtop.h"
-#elifdef PLATFORM_YSYXSOC
-#include "VysyxSoCFull.h"
-#endif
+// #include "Vtop.h"
+#include "platform.h"
 #include "verilated_vcd_c.h"
 
 #endif

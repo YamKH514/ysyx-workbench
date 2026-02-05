@@ -4,7 +4,7 @@
 unsigned long long running_cycle = 0;
 unsigned long long inst_num = 0;
 
-void cpu_single_cycle(VysyxSoCFull *top, VerilatedContext *contextp, VerilatedVcdC *tfp)
+void cpu_single_cycle(VTOP *top, VerilatedContext *contextp, VerilatedVcdC *tfp)
 {
     contextp->timeInc(1);
     top->clock = 0;
@@ -20,7 +20,7 @@ void cpu_single_cycle(VysyxSoCFull *top, VerilatedContext *contextp, VerilatedVc
 #endif
 }
 
-void cpu_reset(int n, VysyxSoCFull *top, VerilatedContext *contextp, VerilatedVcdC *tfp)
+void cpu_reset(int n, VTOP *top, VerilatedContext *contextp, VerilatedVcdC *tfp)
 {
     top->reset = 1;
     while (n-- > 0)

@@ -224,7 +224,7 @@ void sdb_mainloop()
     }
 }
 
-void init_sdb(VysyxSoCFull *top_in, VerilatedContext *contextp_in, VerilatedVcdC *tfp_in)
+void init_sdb(VTOP *top_in, VerilatedContext *contextp_in, VerilatedVcdC *tfp_in)
 {
     top = top_in;
     contextp = contextp_in;

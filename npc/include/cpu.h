@@ -26,7 +26,7 @@ typedef struct {
 
 extern CPU_state cpu;
 
-void cpu_single_cycle(VysyxSoCFull *top, VerilatedContext *contextp, VerilatedVcdC *tfp);
-void cpu_reset(int n, VysyxSoCFull *top,VerilatedContext *contextp, VerilatedVcdC *tfp);
+void cpu_single_cycle(VTOP *top, VerilatedContext *contextp, VerilatedVcdC *tfp);
+void cpu_reset(int n, VTOP *top,VerilatedContext *contextp, VerilatedVcdC *tfp);
 
 #endif

@@ -3,6 +3,6 @@
 
 #include "common.h"
 
-void init_npc(int argc, char *argv[], VysyxSoCFull *top, VerilatedContext *contextp, VerilatedVcdC *tfp);
+void init_npc(int argc, char *argv[], VTOP *top, VerilatedContext *contextp, VerilatedVcdC *tfp);
 
 #endif

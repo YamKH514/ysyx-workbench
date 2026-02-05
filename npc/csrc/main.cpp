@@ -8,10 +8,11 @@
 #ifdef CONFIG_NVBOARD
 #include <nvboard.h>
 #endif
-#include "Vtop__Dpi.h"
 
 int is_exit_status_bad();
-void nvboard_bind_all_pins(VysyxSoCFull* top);
+#ifdef CONFIG_NVBOARD
+void nvboard_bind_all_pins(VTOP *top);
+#endif
 
 int main(int argc, char *argv[])
 {
@@ -23,7 +24,7 @@ int main(int argc, char *argv[])
     contextp->traceEverOn(true);
     contextp->commandArgs(argc, argv);
 
-    VysyxSoCFull *top = new VysyxSoCFull{contextp, "TOP"};
+    VTOP *top = new VTOP{contextp, "TOP"};
     VerilatedVcdC *tfp = new VerilatedVcdC;
     top->trace(tfp, 5);
     tfp->open("logs/sim_wave.vcd");

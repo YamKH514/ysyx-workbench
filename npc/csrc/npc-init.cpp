@@ -77,7 +77,7 @@ static int parse_args(int argc, char *argv[])
     return 0;
 }
 
-void init_npc(int argc, char *argv[], VysyxSoCFull *top, VerilatedContext *contextp, VerilatedVcdC *tfp)
+void init_npc(int argc, char *argv[], VTOP *top, VerilatedContext *contextp, VerilatedVcdC *tfp)
 {
     parse_args(argc, argv);
 
@@ -98,12 +98,6 @@ void init_npc(int argc, char *argv[], VysyxSoCFull *top, VerilatedContext *conte
     init_sdb(top, contextp, tfp);
 
     init_disasm();
-
-#ifdef PLATFORM_NPC
-    Log("use %s", "npc");
-#elifdef PLATFORM_YSYXSOC
-    Log("use %s", "ysyxSoC");
-#endif
 
     Log("init_npc has done.");
 }
