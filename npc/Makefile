@@ -33,6 +33,7 @@ $(shell mkdir -p $(BUILD_DIR))
 # constraint file
 SRC_AUTO_BIND = $(abspath $(BUILD_DIR)/auto_bind.cpp)
 $(SRC_AUTO_BIND): $(NXDC_FILES)
+	@rm $(SRC_AUTO_BIND)
 	python3 $(NVBOARD_HOME)/scripts/auto_pin_bind.py $^ $@
 
 # project source
