@@ -65,7 +65,6 @@ static int parse_args(int argc, char *argv[])
             break;
         case 'p':
             platform = (PLATFORM_ENUM)atoi(optarg);
-            Log("use %s", platform == npc ? "NPC" : "ysyxSoC");
             break;
         case 1:
             img_file = optarg;
@@ -105,6 +104,8 @@ void init_npc(int argc, char *argv[], VysyxSoCFull *top, VerilatedContext *conte
     init_sdb(top, contextp, tfp);
 
     init_disasm();
+
+    Log("use %s", platform == npc ? "NPC" : "ysyxSoC");
 
     Log("init_npc has done.");
 }
