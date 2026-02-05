@@ -12,7 +12,6 @@ static char *diff_so_file = NULL;
 static char *img_file = NULL;
 static char *elf_file = NULL;
 static int difftest_port = 1234;
-PLATFORM_ENUM platform = npc;
 
 static long load_img()
 {
@@ -41,11 +40,10 @@ static int parse_args(int argc, char *argv[])
         {"log",     required_argument, NULL, 'l'},
         {"diff",    required_argument, NULL, 'd'},
         {"elf",     required_argument, NULL, 'e'},
-        {"platform",required_argument, NULL, 'p'},
         {0, 0, NULL, 0},
     };
     int o;
-    while ((o = getopt_long(argc, argv, "-bl:d:e:p:", table, NULL)) != -1)
+    while ((o = getopt_long(argc, argv, "-bl:d:e:", table, NULL)) != -1)
     {
         switch (o)
         {
@@ -63,9 +61,6 @@ static int parse_args(int argc, char *argv[])
         case 'e':
             elf_file = optarg;
             break;
-        case 'p':
-            platform = (PLATFORM_ENUM)atoi(optarg);
-            break;
         case 1:
             img_file = optarg;
             return 0;
@@ -75,7 +70,6 @@ static int parse_args(int argc, char *argv[])
             printf("\t-l,--log=FILE           output log to FILE\n");
             printf("\t-d,--diff=REF_SO        run DiffTest with reference REF_SO\n");
             printf("\t-e,--elf=FILE           get ELF file\n");
-            printf("\t-p,--platform=PLATFORM  set platform used\n");
             printf("\n");
             exit(0);
         }
@@ -105,7 +99,11 @@ void init_npc(int argc, char *argv[], VysyxSoCFull *top, VerilatedContext *conte
 
     init_disasm();
 
-    Log("use %s", platform == npc ? "NPC" : "ysyxSoC");
+#ifdef PLATFORM_NPC
+    Log("use %s", "npc");
+#elifdef PLATFORM_YSYXSOC
+    Log("use %s", "ysyxSoC");
+#endif
 
     Log("init_npc has done.");
 }

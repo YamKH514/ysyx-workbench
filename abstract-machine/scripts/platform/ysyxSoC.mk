@@ -18,7 +18,6 @@ LDFLAGS   += --gc-sections -e _start
 NPCFLAGS  += -b
 NPCFLAGS  += -l $(shell dirname $(IMAGE).elf)/npc-log.txt
 NPCFLAGS  += -e $(IMAGE).elf
-NPCFLAGS  += -p 1
 
 MAINARGS_MAX_LEN = 64
 MAINARGS_PLACEHOLDER = The insert-arg rule in Makefile will insert mainargs here.

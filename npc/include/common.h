@@ -15,11 +15,11 @@
 #include "log.h"
 #include "debug.h"
 
-// #include "Vtop.h"
+#ifdef PLATFORM_NPC
+#include "Vtop.h"
+#elifdef PLATFORM_YSYXSOC
 #include "VysyxSoCFull.h"
+#endif
 #include "verilated_vcd_c.h"
-
-typedef enum {npc = 0, ysyxSoC} PLATFORM_ENUM;
-extern PLATFORM_ENUM platform;
 
 #endif
