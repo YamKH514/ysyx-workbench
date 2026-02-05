@@ -64,7 +64,7 @@ static int parse_args(int argc, char *argv[])
             elf_file = optarg;
             break;
         case 'p':
-            printf("PLATFORM: %d\n", (int)optarg[0]);
+            printf("PLATFORM: %d\n", atoi(optarg));
             platform = (PLATFORM_ENUM)(int)optarg[0];
             break;
         case 1:
