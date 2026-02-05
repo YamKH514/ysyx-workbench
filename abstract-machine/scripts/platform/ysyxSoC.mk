@@ -1,3 +1,6 @@
+PLATFORM := ysyxSoC
+export PLATFORM
+
 AM_SRCS := riscv/ysyxSoC/start.S \
            riscv/ysyxSoC/trm.c \
            riscv/ysyxSoC/ioe.c \

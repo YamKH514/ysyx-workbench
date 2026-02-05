@@ -1,3 +1,6 @@
+PLATFORM := npc
+export PLATFORM
+
 AM_SRCS := riscv/npc/start.S \
            riscv/npc/trm.c \
            riscv/npc/ioe.c \

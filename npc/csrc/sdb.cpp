@@ -5,13 +5,12 @@
 #include <readline/readline.h>
 #include <readline/history.h>
 #include "verilated_vcd_c.h"
-#include "Vtop__Dpi.h"
 #include "watchpoint.h"
 #include "expr.h"
 
 #define ARRLEN(arr) (int)(sizeof(arr) / sizeof(arr[0]))
 
-VysyxSoCFull *top;
+VTOP *top;
 VerilatedContext *contextp;
 VerilatedVcdC *tfp;
 char str[1024] = "\0";
@@ -224,7 +223,7 @@ void sdb_mainloop()
     }
 }
 
-void init_sdb(VysyxSoCFull *top_in, VerilatedContext *contextp_in, VerilatedVcdC *tfp_in)
+void init_sdb(VTOP *top_in, VerilatedContext *contextp_in, VerilatedVcdC *tfp_in)
 {
     top = top_in;
     contextp = contextp_in;

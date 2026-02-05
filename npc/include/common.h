@@ -16,7 +16,7 @@
 #include "debug.h"
 
 // #include "Vtop.h"
-#include "VysyxSoCFull.h"
+#include "platform.h"
 #include "verilated_vcd_c.h"
 
 #endif

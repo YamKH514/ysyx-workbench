@@ -5,8 +5,6 @@
 #include "difftest-def.h"
 #include "disasm.h"
 #include "ftrace.h"
-#include "VysyxSoCFull__Syms.h"
-#include "Vtop__Dpi.h"
 #include "cpu.h"
 #include "watchpoint.h"
 #include "perf-cnt.hpp"
@@ -22,10 +20,6 @@
 #define inst_jar 0x6f
 #define inst_jarl 0x67
 
-#define S_CPU(signal) top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__##signal
-#define S_IFU(signal) top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__u_IFU__DOT__##signal
-#define S_LSU(signal) top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__u_LSU__DOT__##signal
-
 uint64_t g_nr_guest_inst = 0;
 bool g_print_step = false;
 CPU_state cpu = {};
@@ -34,7 +28,7 @@ static bool inst_end = false;
 static INST_TYPE_ENUM inst_type;
 static int current_inst_cyc = 0;
 
-static void trace_and_difftest(VysyxSoCFull *top, char *logbuf)
+static void trace_and_difftest(VTOP *top, char *logbuf)
 {
 #ifdef CONFIG_ITRACE_COND
     if (ITRACE_COND)
@@ -50,7 +44,7 @@ static void trace_and_difftest(VysyxSoCFull *top, char *logbuf)
     }
 }
 
-static void exec_once(VysyxSoCFull *top, VerilatedContext *contextp, VerilatedVcdC *tfp)
+static void exec_once(VTOP *top, VerilatedContext *contextp, VerilatedVcdC *tfp)
 {
     char logbuf[128];
 
@@ -59,7 +53,7 @@ static void exec_once(VysyxSoCFull *top, VerilatedContext *contextp, VerilatedVc
     cpu_single_cycle(top, contextp, tfp);
 
     // Perf CNT
-    if (!top->rootp->ysyxSoCFull__DOT__asic__DOT____Vcellinp__cpu__reset) {
+    if (!CPU_RESET) {
         current_inst_cyc ++;
         if (S_CPU(ifu_to_idu_valid) & S_CPU(idu_to_ifu_ready)) inst_num ++;
         if (S_CPU( pc_to_ifu_valid) & S_CPU( ifu_to_pc_ready)) perf_cnt.module_add(IFU);
@@ -90,9 +84,17 @@ static void exec_once(VysyxSoCFull *top, VerilatedContext *contextp, VerilatedVc
         inst_end = false;
         cpu.pc = S_CPU(pc);
         cpu.npc = S_CPU(npc);
+#ifdef PLATFORM_YSYXSOC
         svSetScope(svGetScopeFromName("TOP.ysyxSoCFull.asic.cpu.cpu.u_GPR.u_RegisterFile"));
+#else
+        svSetScope(svGetScopeFromName("TOP.top.u_GPR.u_RegisterFile"));
+#endif
         get_gpr(cpu.gpr);
+#ifdef PLATFORM_YSYXSOC
         svSetScope(svGetScopeFromName("TOP.ysyxSoCFull.asic.cpu.cpu.u_CSR"));
+#else
+        svSetScope(svGetScopeFromName("TOP.top.u_CSR"));
+#endif
         get_csr((int *)(&cpu.csr));
 #ifdef CONFIG_WATCHPOINT
         bool changed = wp_scan();
@@ -167,7 +169,7 @@ static void exec_once(VysyxSoCFull *top, VerilatedContext *contextp, VerilatedVc
     }
 }
 
-static void execute(VysyxSoCFull *top, VerilatedContext *contextp, VerilatedVcdC *tfp, uint64_t n)
+static void execute(VTOP *top, VerilatedContext *contextp, VerilatedVcdC *tfp, uint64_t n)
 {
     for (; n > 0; n--)
     {
@@ -190,7 +192,7 @@ void assert_fail_msg()
 {
 }
 
-void npc_exec(VysyxSoCFull *top, VerilatedContext *contextp, VerilatedVcdC *tfp, uint64_t n)
+void npc_exec(VTOP *top, VerilatedContext *contextp, VerilatedVcdC *tfp, uint64_t n)
 {
     g_print_step = (n < MAX_INST_TO_PRINT);
     switch (npc_state.state) {

@@ -8,7 +8,6 @@
 
 #define DEVICE_BASE 0xa0000000
 #define SERIAL_PORT (DEVICE_BASE + 0x00003f8)
-#define RTC_ADDR    (DEVICE_BASE + 0x0000048)
 
 // static uint32_t flash_data[10] =   {0x100007b7, // lui	a5,0x10000
 //                                     0x04100713, // li	a4,65
@@ -17,22 +16,35 @@
 //                                     0x00e78023, // sb	a4,0(a5)
 //                                     0x00008067  // ret
 //                                     };
-
+#ifdef PLATFORM_YSYXSOC
 static uint8_t pmem[CONFIG_MSIZE] PG_ALIGN = {};
 static uint8_t psram[CONFIG_PSRAMSIZE] PG_ALIGN = {};
 static uint8_t sdram[CONFIG_SDRAMSIZE] PG_ALIGN = {};
+#else
+static uint8_t pmem[CONFIG_NPC_PMEMSIZE] PG_ALIGN = {};
+#endif
 
 uint8_t *guest_to_host(uint32_t paddr) {
+#ifdef PLATFORM_YSYXSOC
     if ((CONFIG_MBASE <= paddr) && (paddr <= CONFIG_MBASE + CONFIG_MSIZE)) return pmem + paddr - CONFIG_MBASE;
     else if ((CONFIG_PSRAMBASE <= paddr) && (paddr <= CONFIG_PSRAMBASE + CONFIG_PSRAMSIZE)) return psram + paddr - CONFIG_PSRAMBASE;
     else if ((CONFIG_SDRAMBASE <= paddr) && (paddr <= CONFIG_SDRAMBASE + CONFIG_SDRAMSIZE)) return sdram + paddr - CONFIG_SDRAMBASE;
+#else
+    if ((CONFIG_NPC_PMEMBASE <= paddr) && (paddr <= CONFIG_NPC_PMEMBASE + CONFIG_NPC_PMEMSIZE))
+        return pmem + paddr - CONFIG_NPC_PMEMBASE;
+#endif
     assert(0);
 }
 
 uint32_t host_to_guest(uint8_t *haddr) {
+#ifdef PLATFORM_YSYXSOC
     if ((CONFIG_MBASE <= (uintptr_t)haddr) && ((uintptr_t)haddr <=  CONFIG_MBASE + CONFIG_MSIZE)) return haddr - pmem + CONFIG_MBASE;
     else if ((CONFIG_PSRAMBASE <= (uintptr_t)haddr) && ((uintptr_t)haddr <= CONFIG_PSRAMBASE + CONFIG_PSRAMSIZE)) return haddr - psram + CONFIG_PSRAMBASE;
     else if ((CONFIG_SDRAMBASE <= (uintptr_t)haddr) && ((uintptr_t)haddr <= CONFIG_SDRAMBASE + CONFIG_SDRAMSIZE)) return haddr - sdram + CONFIG_SDRAMBASE;
+#else
+    if ((CONFIG_NPC_PMEMBASE <= (uintptr_t)haddr) && ((uintptr_t)haddr <=  CONFIG_NPC_PMEMBASE + CONFIG_NPC_PMEMSIZE))
+        return haddr - pmem + CONFIG_NPC_PMEMBASE;
+#endif
     assert(0);
 }
 
@@ -55,10 +67,14 @@ static void out_of_bound(uint32_t addr)
 
 void init_mem()
 {
+#ifdef PLATFORM_YSYXSOC
     Log("flash area [ 0x%08x, 0x%08x]", PMEM_LEFT, PMEM_RIGHT);
     Log("sram  area [ 0x%08x, 0x%08x]", SRAM_LEFT, SRAM_RIGHT);
     Log("psram area [ 0x%08x, 0x%08x]", PSRAM_LEFT, PSRAM_RIGHT);
     Log("sdram area [ 0x%08x, 0x%08x]", SDRAM_LEFT, SDRAM_RIGHT);
+#else
+    Log("pmem area [ 0x%08x, 0x%08x]", PMEM_LEFT, PMEM_RIGHT);
+#endif
 }
 
 extern "C" void mem_tracer_read(int32_t addr, int32_t data)
@@ -154,40 +170,54 @@ extern "C" void sdram_write(int32_t addr, int32_t data, int32_t dqm) {
     return;
 }
 
-extern "C" uint32_t paddr_read(uint32_t raddr)
+uint32_t paddr_read(uint32_t raddr)
 {
+#ifdef PLATFORM_YSYXSOC
     uint32_t rdata = 0;
     if ((PMEM_LEFT <= raddr) & (raddr < PMEM_RIGHT)) flash_read(raddr - PMEM_LEFT, (int32_t *)&rdata);
     else if ((PSRAM_LEFT <= raddr) & (raddr < PSRAM_RIGHT)) psram_read(raddr - PSRAM_LEFT, (int32_t *)&rdata);
     else if ((SDRAM_LEFT <= raddr) & (raddr < SDRAM_RIGHT)) rdata = (raddr - SDRAM_LEFT);
     else assert(0);
     return rdata;
+#else
+    if ((PMEM_LEFT <= raddr) & (raddr < PMEM_RIGHT)) return pmem_read(raddr, 4);
+#endif
+    assert(0);
 }
 
-extern "C" void paddr_write(uint32_t waddr, uint32_t wdata, uint8_t wmask)
+extern int npcmem_read(int raddr)
 {
-    uint32_t addr = waddr & ~0x3u;
-    uint32_t data = 0;
-    uint32_t offset = waddr & 0x3;
-
+    uint32_t addr = (uint32_t)raddr & ~0x3u;
+    
     if(likely(in_pmem(addr)))
     {
-        switch (wmask)
+        return pmem_read(addr, 4);
+    }
+    out_of_bound(addr);
+    return 0;
+}
+
+extern void npcmem_write(int waddr, int wdata, char wmask)
+{
+    uint32_t addr = (uint32_t)waddr & ~0x3u, data = (uint32_t)wdata;
+    uint8_t  mask = (uint8_t) wmask;
+    if(addr == SERIAL_PORT)
+    {
+        putchar(data & 0xFF);
+        return;
+    }
+
+    int cnt = 0;
+    if(likely(in_pmem(addr)))
+    {
+        for (int i = 0; i < 4; i++)
         {
-        case 0x1:
-            data = ((wdata & 0xFF) << (offset * 8)) | (pmem_read(addr, 4) & ~(0xFFu << (offset * 8)));
-            break;
-        case 0x3:
-            data = ((wdata & 0xFFFF) << (offset * 8)) | (pmem_read(addr, 4) & ~(0xFFFFu << (offset * 8)));
-            break;
-        case 0xF:
-            data = wdata;
-            break;
-        default:
-            data = 0;
-            break;
+            if (mask & (1 << i))
+            {
+                uint8_t byte = (data >> (i * 8)) & 0xFF;
+                pmem_write(addr + i, 1, byte);
+            }
         }
-        pmem_write(addr, 4, data);
         return;
     }
 

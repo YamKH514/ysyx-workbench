@@ -1,6 +1,5 @@
+#include "common.h"
 #include "reg.h"
-#include "VysyxSoCFull.h"
-#include "Vtop__Dpi.h"
 #include "cpu.h"
 
 #define IS_THIS_REG(reg_name) (strcmp(s, reg_name) == 0)
@@ -14,7 +13,11 @@ int reg_length = sizeof(regs) / sizeof(regs[0]);
 void reg_display()
 {
     int gpr[16] = {0};
+#ifdef PLATFORM_YSYXSOC
     svSetScope(svGetScopeFromName("TOP.ysyxSoCFull.asic.cpu.cpu.u_GPR.u_RegisterFile"));
+#else
+    svSetScope(svGetScopeFromName("TOP.top.u_GPR.u_RegisterFile"));
+#endif
     get_gpr(gpr);
     for (int i = 0; i < reg_length; i++)
     {

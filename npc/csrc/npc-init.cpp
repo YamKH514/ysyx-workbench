@@ -77,7 +77,7 @@ static int parse_args(int argc, char *argv[])
     return 0;
 }
 
-void init_npc(int argc, char *argv[], VysyxSoCFull *top, VerilatedContext *contextp, VerilatedVcdC *tfp)
+void init_npc(int argc, char *argv[], VTOP *top, VerilatedContext *contextp, VerilatedVcdC *tfp)
 {
     parse_args(argc, argv);
 

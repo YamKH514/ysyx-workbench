@@ -4,6 +4,6 @@
 #include "common.h"
 #include "utils.h"
 
-void npc_exec(VysyxSoCFull *top, VerilatedContext *contextp, VerilatedVcdC *tfp, uint64_t n);
+void npc_exec(VTOP *top, VerilatedContext *contextp, VerilatedVcdC *tfp, uint64_t n);
 
 #endif
