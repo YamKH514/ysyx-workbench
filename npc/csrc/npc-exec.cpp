@@ -53,41 +53,41 @@ static void exec_once(VTOP *top, VerilatedContext *contextp, VerilatedVcdC *tfp)
     cpu_single_cycle(top, contextp, tfp);
 
     // Perf CNT
-    // if (!CPU_RESET) {
-    //     current_inst_cyc ++;
-    //     if (S_CPU(ifu_to_idu_valid) & S_CPU(idu_to_ifu_ready)) inst_num ++;
-    //     if (S_CPU( pc_to_ifu_valid) & S_CPU( ifu_to_pc_ready)) perf_cnt.module_add(IFU);
-    //     if (S_CPU(idu_to_exu_valid) & S_CPU(exu_to_idu_ready)) perf_cnt.module_add(EXU);
-    //     if (S_CPU(exu_to_lsu_valid) & S_CPU(lsu_to_exu_ready)) perf_cnt.module_add(LSU);
-    //     if (S_CPU(idu_to_exu_valid) & S_CPU(exu_to_idu_ready)) inst_type = (INST_TYPE_ENUM)S_CPU(inst_type);
-    //     // Recoding IFU wait Inst
-    //     if ((int)S_IFU(state) == 3) perf_cnt.ifu_wait_rd();
-    //     else if (!(S_CPU(pc_to_ifu_valid) | S_CPU(ifu_to_pc_ready))) perf_cnt.ifu_wait_pc();
-    //     // Recoding LSU wait memory read
-    //     if (S_CPU(lsu_arvalid) & S_CPU(xbar_arvalid)) perf_cnt.lsu_wait_num('r');
-    //     if ((int)S_LSU(state) == 2 | (int)S_LSU(state) == 3) perf_cnt.lsu_wait_cyc('r');
-    //     // Recoding LSU wait memory write
-    //     if (S_CPU(lsu_awvalid) & S_CPU(xbar_awready)) perf_cnt.lsu_wait_num('w');
-    //     if ((int)S_LSU(state) == 4 | (int)S_LSU(state) == 6) perf_cnt.lsu_wait_cyc('w');
-    // }
+    if (!CPU_RESET) {
+        current_inst_cyc ++;
+        if (S_CPU(ifu_to_idu_valid) & S_CPU(idu_to_ifu_ready)) inst_num ++;
+        if (S_CPU( pc_to_ifu_valid) & S_CPU( ifu_to_pc_ready)) perf_cnt.module_add(IFU);
+        if (S_CPU(idu_to_exu_valid) & S_CPU(exu_to_idu_ready)) perf_cnt.module_add(EXU);
+        if (S_CPU(exu_to_lsu_valid) & S_CPU(lsu_to_exu_ready)) perf_cnt.module_add(LSU);
+        if (S_CPU(idu_to_exu_valid) & S_CPU(exu_to_idu_ready)) inst_type = (INST_TYPE_ENUM)S_CPU(inst_type);
+        // Recoding IFU wait Inst
+        if ((int)S_IFU(state) == 3) perf_cnt.ifu_wait_rd();
+        else if (!(S_CPU(pc_to_ifu_valid) | S_CPU(ifu_to_pc_ready))) perf_cnt.ifu_wait_pc();
+        // Recoding LSU wait memory read
+        if (S_CPU(lsu_arvalid) & S_CPU(xbar_arvalid)) perf_cnt.lsu_wait_num('r');
+        if ((int)S_LSU(state) == 2 | (int)S_LSU(state) == 3) perf_cnt.lsu_wait_cyc('r');
+        // Recoding LSU wait memory write
+        if (S_CPU(lsu_awvalid) & S_CPU(xbar_awready)) perf_cnt.lsu_wait_num('w');
+        if ((int)S_LSU(state) == 4 | (int)S_LSU(state) == 6) perf_cnt.lsu_wait_cyc('w');
+    }
 
-    // if ((S_CPU(wbu_to_pc_valid)) & (S_CPU(pc_to_wbu_ready))) 
-    // {
-    //     pc = S_CPU(pc);
-    //     inst_end = true;
-    // }
-    // if ((!S_CPU(wbu_to_pc_valid)) & (!S_CPU(pc_to_wbu_ready)) & inst_end)
-    // {
-    //     perf_cnt.inst_add(inst_type, current_inst_cyc);
-    //     current_inst_cyc = 0;
+    if ((S_CPU(wbu_to_pc_valid)) & (S_CPU(pc_to_wbu_ready))) 
+    {
+        pc = S_CPU(pc);
+        inst_end = true;
+    }
+    if ((!S_CPU(wbu_to_pc_valid)) & (!S_CPU(pc_to_wbu_ready)) & inst_end)
+    {
+        perf_cnt.inst_add(inst_type, current_inst_cyc);
+        current_inst_cyc = 0;
 
-    //     inst_end = false;
-    //     cpu.pc = S_CPU(pc);
-    //     cpu.npc = S_CPU(npc);
-    //     svSetScope(svGetScopeFromName("TOP.ysyxSoCFull.asic.cpu.cpu.u_GPR.u_RegisterFile"));
-    //     get_gpr(cpu.gpr);
-    //     svSetScope(svGetScopeFromName("TOP.ysyxSoCFull.asic.cpu.cpu.u_CSR"));
-    //     get_csr((int *)(&cpu.csr));
+        inst_end = false;
+        cpu.pc = S_CPU(pc);
+        cpu.npc = S_CPU(npc);
+        svSetScope(svGetScopeFromName("TOP.ysyxSoCFull.asic.cpu.cpu.u_GPR.u_RegisterFile"));
+        get_gpr(cpu.gpr);
+        svSetScope(svGetScopeFromName("TOP.ysyxSoCFull.asic.cpu.cpu.u_CSR"));
+        get_csr((int *)(&cpu.csr));
 #ifdef CONFIG_WATCHPOINT
         bool changed = wp_scan();
         if (changed)
@@ -98,7 +98,7 @@ static void exec_once(VTOP *top, VerilatedContext *contextp, VerilatedVcdC *tfp)
 #ifdef CONFIG_DIFFTEST
         difftest_step(pc);
 #endif
-    // }
+    }
 
     if (in_pmem(pc))
     {
