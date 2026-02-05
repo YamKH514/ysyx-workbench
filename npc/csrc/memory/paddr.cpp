@@ -194,6 +194,7 @@ extern int npcmem_read(int raddr)
         return pmem_read(addr, 4);
     }
     out_of_bound(addr);
+    return 0;
 }
 
 extern void npcmem_write(int waddr, int wdata, char wmask)
