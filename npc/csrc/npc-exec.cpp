@@ -84,9 +84,17 @@ static void exec_once(VTOP *top, VerilatedContext *contextp, VerilatedVcdC *tfp)
         inst_end = false;
         cpu.pc = S_CPU(pc);
         cpu.npc = S_CPU(npc);
+#ifdef PLATFORM_YSYXSOC
         svSetScope(svGetScopeFromName("TOP.ysyxSoCFull.asic.cpu.cpu.u_GPR.u_RegisterFile"));
+#else
+        svSetScope(svGetScopeFromName("TOP.top.u_GPR.u_RegisterFile"));
+#endif
         get_gpr(cpu.gpr);
+#ifdef PLATFORM_YSYXSOC
         svSetScope(svGetScopeFromName("TOP.ysyxSoCFull.asic.cpu.cpu.u_CSR"));
+#else
+        svSetScope(svGetScopeFromName("TOP.top.u_CSR"));
+#endif
         get_csr((int *)(&cpu.csr));
 #ifdef CONFIG_WATCHPOINT
         bool changed = wp_scan();
