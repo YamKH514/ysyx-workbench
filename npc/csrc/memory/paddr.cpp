@@ -33,6 +33,7 @@ uint8_t *guest_to_host(uint32_t paddr) {
     if ((CONFIG_NPC_PMEMBASE <= paddr) && (paddr <= CONFIG_NPC_PMEMBASE + CONFIG_NPC_PMEMSIZE))
         return pmem + paddr - CONFIG_NPC_PMEMBASE;
 #endif
+    printf("guest_to_host paddr: 0x%08x\n", paddr);
     assert(0);
 }
 
