@@ -106,5 +106,8 @@ void init_npc(int argc, char *argv[], VysyxSoCFull *top, VerilatedContext *conte
 
     init_disasm();
 
+    if (platform == npc) printf("NPC\n");
+    else if (platform == ysyxSoC) printf("ysyxSoC\n");
+
     Log("init_npc has done.");
 }

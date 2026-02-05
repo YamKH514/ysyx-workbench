@@ -15,9 +15,6 @@ void nvboard_bind_all_pins(VysyxSoCFull* top);
 
 int main(int argc, char *argv[])
 {
-    if (platform == npc) printf("NPC\n");
-    else if (platform == ysyxSoC) printf("ysyxSoC\n");
-
     Verilated::commandArgs(argc, argv);
 
     Verilated::mkdir("logs");
