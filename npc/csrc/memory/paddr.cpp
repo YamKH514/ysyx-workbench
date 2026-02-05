@@ -154,7 +154,7 @@ extern "C" void sdram_write(int32_t addr, int32_t data, int32_t dqm) {
     return;
 }
 
-extern "C" uint32_t paddr_read(uint32_t raddr)
+uint32_t paddr_read(uint32_t raddr)
 {
     uint32_t rdata = 0;
     if ((PMEM_LEFT <= raddr) & (raddr < PMEM_RIGHT)) flash_read(raddr - PMEM_LEFT, (int32_t *)&rdata);

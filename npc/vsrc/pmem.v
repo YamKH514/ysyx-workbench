@@ -43,8 +43,8 @@ module pmem(
     input               bready_in
 );
 
-import "DPI-C" function int paddr_read(input int raddr);
-import "DPI-C" function void paddr_write(
+import "DPI-C" function int pmem_read(input int raddr);
+import "DPI-C" function void pmem_write(
     input int waddr, input int wdata, input byte wmask);
 
 reg [3:0]   arid_r;
