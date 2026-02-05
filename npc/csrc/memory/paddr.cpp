@@ -188,6 +188,7 @@ uint32_t paddr_read(uint32_t raddr)
 
 extern int npcmem_read(int raddr)
 {
+    printf("npcmem_read raddr: 0x%08x\n", raddr);
     return (int)paddr_read((uint32_t)raddr);
 }
 
