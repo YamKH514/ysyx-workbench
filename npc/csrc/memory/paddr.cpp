@@ -188,14 +188,13 @@ uint32_t paddr_read(uint32_t raddr)
 extern int npcmem_read(int raddr)
 {
     printf("npcmem_read raddr: 0x%08x\n", raddr);
-    uint32_t addr = (uint32_t)raddr;
+    uint32_t addr = (uint32_t)raddr & ~0x3u;
     
     if(likely(in_pmem(addr)))
     {
         return pmem_read(addr, 4);
     }
     out_of_bound(addr);
-    return 0;
 }
 
 extern void npcmem_write(int waddr, int wdata, char wmask)
