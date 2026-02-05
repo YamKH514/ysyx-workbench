@@ -26,7 +26,11 @@ void init_difftest(char *ref_so_file, long img_size, int port)
   assert(ref_so_file != NULL);
 
   CPU_state cpu_init = cpu;
+#ifdef PLATFORM_YSYXSOC
   cpu_init.pc = CONFIG_MBASE;
+#else
+  cpu_init.pc = CONFIG_NPC_PMEMBASE;
+#endif
   cpu_init.csr.mstatus = 0x00001800;
 
   void *handle;
