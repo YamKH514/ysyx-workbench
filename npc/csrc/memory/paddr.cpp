@@ -209,13 +209,16 @@ extern void npcmem_write(int waddr, int wdata, char wmask)
     }
 
     if(likely(in_pmem(addr)))
-    for (int i = 0; i < 4; i++)
     {
-        if (mask & (1 << i))
+        for (int i = 0; i < 4; i++)
         {
-            uint8_t byte = (data >> (i * 8)) & 0xFF;
-            pmem_write(addr + i, 1, byte);
+            if (mask & (1 << i))
+            {
+                uint8_t byte = (data >> (i * 8)) & 0xFF;
+                pmem_write(addr + i, 1, byte);
+            }
         }
+        return;
     }
 
     out_of_bound(addr);
