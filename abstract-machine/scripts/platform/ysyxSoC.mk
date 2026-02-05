@@ -11,7 +11,6 @@ AM_SRCS := riscv/ysyxSoC/start.S \
            platform/dummy/vme.c \
            platform/dummy/mpe.c
 
-CFLAGS    += -DPLATFORM_YSYXSOC
 CFLAGS    += -fdata-sections -ffunction-sections
 LDSCRIPTS += $(AM_HOME)/scripts/ysyxSoClinker.ld
 LDFLAGS   += --defsym=_entry_offset=0x0
@@ -19,6 +18,7 @@ LDFLAGS   += --gc-sections -e _start
 NPCFLAGS  += -b
 NPCFLAGS  += -l $(shell dirname $(IMAGE).elf)/npc-log.txt
 NPCFLAGS  += -e $(IMAGE).elf
+NPCFLAGS  += -p ysyxSoC
 
 MAINARGS_MAX_LEN = 64
 MAINARGS_PLACEHOLDER = The insert-arg rule in Makefile will insert mainargs here.
