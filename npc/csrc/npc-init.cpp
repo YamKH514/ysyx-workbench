@@ -64,8 +64,7 @@ static int parse_args(int argc, char *argv[])
             elf_file = optarg;
             break;
         case 'p':
-            printf("PLATFORM: %d\n", atoi(optarg));
-            platform = (PLATFORM_ENUM)(int)optarg[0];
+            platform = (PLATFORM_ENUM)atoi(optarg);
             break;
         case 1:
             img_file = optarg;
