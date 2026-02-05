@@ -5,8 +5,6 @@
 #include "difftest-def.h"
 #include "disasm.h"
 #include "ftrace.h"
-#include "VysyxSoCFull__Syms.h"
-#include "Vtop__Dpi.h"
 #include "cpu.h"
 #include "watchpoint.h"
 #include "perf-cnt.hpp"

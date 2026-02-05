@@ -5,7 +5,6 @@
 #include <readline/readline.h>
 #include <readline/history.h>
 #include "verilated_vcd_c.h"
-#include "Vtop__Dpi.h"
 #include "watchpoint.h"
 #include "expr.h"
 

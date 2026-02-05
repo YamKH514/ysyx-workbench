@@ -1,6 +1,5 @@
+#include "common.h"
 #include "reg.h"
-#include "VysyxSoCFull.h"
-#include "Vtop__Dpi.h"
 #include "cpu.h"
 
 #define IS_THIS_REG(reg_name) (strcmp(s, reg_name) == 0)

@@ -2,7 +2,8 @@
 #include <assert.h>
 #include <stdbool.h>
 #include <regex.h>
-#include "Vtop__Dpi.h"
+#include "common.h"
+#include "memory/paddr.h"
 #include "reg.h"
 
 #define ARRLEN(arr) (int)(sizeof(arr) / sizeof(arr[0]))
