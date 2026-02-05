@@ -76,6 +76,12 @@ include $(NPC_HOME)/tools/difftest.mk
 override ARGS ?= --log=$(BUILD_DIR)/npc-log.txt
 override ARGS += $(ARGS_DIFF)
 
+ifeq ($(PLATFORM), ysyxSoC) # ysyxSoC
+CXXFLAGS += -DPLATFORM_YSYXSOC
+else ifeq ($(PLATFORM), npc)
+CXXFLAGS += -DPLATFORM_NPC
+endif
+
 # am img
 IMG ?=
 

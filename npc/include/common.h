@@ -19,4 +19,7 @@
 #include "VysyxSoCFull.h"
 #include "verilated_vcd_c.h"
 
+typedef enum {npc = 0, ysyxSoC} PLATFORM_ENUM;
+extern PLATFORM_ENUM platform;
+
 #endif

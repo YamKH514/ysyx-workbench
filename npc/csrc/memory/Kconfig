@@ -32,4 +32,12 @@ config SDRAMSIZE
   hex "SDRAM size"
   default 0x2000000
 
+config NPC_PMEMBASE
+  hex "PMEM base address when use npc"
+  default 0x80000000
+
+config NPC_PMEMSIZE
+  hex "PMEM size when use npc"
+  default 0x8000000
+
 endmenu

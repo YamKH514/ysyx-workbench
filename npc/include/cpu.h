@@ -3,10 +3,6 @@
 
 #include "common.h"
 
-typedef enum {npc = 0, ysyxSoC} PLATFORM_ENUM;
-
-extern PLATFORM_ENUM platform;
-
 extern unsigned long long running_cycle;
 extern unsigned long long inst_num;
 
