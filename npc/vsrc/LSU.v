@@ -311,7 +311,7 @@ assign arsize = (lsu_r_func_r == `MEM_READ_FUNC_LBU) ? 3'b000 :
 assign awsize = (lsu_w_mask_r == 4'b0001) ? 3'b000 :
                 (lsu_w_mask_r == 4'b0011) ? 3'b001 :
                 3'b010;
-                assign waddr_aligned = {lsu_w_addr_in[31:2], 2'b00};
+assign waddr_aligned = {lsu_w_addr_in[31:2], 2'b00};
 assign w_byte_off = lsu_w_addr_in[1:0];
 assign wdata_aligned =  {32{w_byte_off == 2'b00}} & lsu_w_data_in      |
                         {32{w_byte_off == 2'b01}} & lsu_w_data_in << 8 |
