@@ -64,7 +64,8 @@ static int parse_args(int argc, char *argv[])
             elf_file = optarg;
             break;
         case 'p':
-            platform = (PLATFORM_ENUM)*optarg;
+            platform = (PLATFORM_ENUM)optarg[0];
+            break;
         case 1:
             img_file = optarg;
             return 0;
