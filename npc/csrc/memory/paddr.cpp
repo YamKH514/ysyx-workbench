@@ -218,6 +218,8 @@ extern void npcmem_write(int waddr, int wdata, char wmask)
     }
 
     if (addr == SERIAL_PORT) printf("%c", wdata);
+    printf("npc_write waddr: 0x%08x\n", addr);
+    return;
 
     out_of_bound(addr);
 }
