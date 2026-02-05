@@ -1,4 +1,4 @@
-PLATFORM := NPC
+PLATFORM := npc
 export PLATFORM
 
 AM_SRCS := riscv/npc/start.S \
@@ -11,8 +11,7 @@ AM_SRCS := riscv/npc/start.S \
            platform/dummy/vme.c \
            platform/dummy/mpe.c
 
-CFLAGS += -DPLATFORM_$(shell echo $(PLATFORM) | tr a-z A-Z)
-CFLAGS += -DPLATFORM_NAME=\"$(PLATFORM)\"
+CFLAGS += -DPLATFORM_NPC
 CFLAGS    += -fdata-sections -ffunction-sections
 LDSCRIPTS += $(AM_HOME)/scripts/linker.ld
 LDFLAGS   += --defsym=_pmem_start=0x80000000 --defsym=_entry_offset=0x0
