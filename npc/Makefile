@@ -88,6 +88,12 @@ sim: $(BIN)
 
 run: sim
 
+perf:
+	@echo "[PERF] running microbench/train ..."
+	$(MAKE) -C ../am-kernels/benchmarks/microbench \
+		ARCH=riscv32e-ysyxSoC \
+		run mainargs=train
+
 clean:
 	rm -rf $(BUILD_DIR) logs obj_dir
 

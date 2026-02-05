@@ -9,6 +9,7 @@
 #include "Vtop__Dpi.h"
 #include "cpu.h"
 #include "watchpoint.h"
+#include "perf-cnt.hpp"
 #ifdef CONFIG_NVBOARD
 #include <nvboard.h>
 #endif
@@ -22,12 +23,16 @@
 #define inst_jarl 0x67
 
 #define S_CPU(signal) top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__##signal
+#define S_IFU(signal) top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__u_IFU__DOT__##signal
+#define S_LSU(signal) top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__u_LSU__DOT__##signal
 
 uint64_t g_nr_guest_inst = 0;
 bool g_print_step = false;
 CPU_state cpu = {};
 static uint32_t pc = 0;
 static bool inst_end = false;
+static INST_TYPE_ENUM inst_type;
+static int current_inst_cyc = 0;
 
 static void trace_and_difftest(VysyxSoCFull *top, char *logbuf)
 {
@@ -53,6 +58,25 @@ static void exec_once(VysyxSoCFull *top, VerilatedContext *contextp, VerilatedVc
 
     cpu_single_cycle(top, contextp, tfp);
 
+    // Perf CNT
+    if (!top->rootp->ysyxSoCFull__DOT__asic__DOT____Vcellinp__cpu__reset) {
+        current_inst_cyc ++;
+        if (S_CPU(ifu_to_idu_valid) & S_CPU(idu_to_ifu_ready)) inst_num ++;
+        if (S_CPU( pc_to_ifu_valid) & S_CPU( ifu_to_pc_ready)) perf_cnt.module_add(IFU);
+        if (S_CPU(idu_to_exu_valid) & S_CPU(exu_to_idu_ready)) perf_cnt.module_add(EXU);
+        if (S_CPU(exu_to_lsu_valid) & S_CPU(lsu_to_exu_ready)) perf_cnt.module_add(LSU);
+        if (S_CPU(idu_to_exu_valid) & S_CPU(exu_to_idu_ready)) inst_type = (INST_TYPE_ENUM)S_CPU(inst_type);
+        // Recoding IFU wait Inst
+        if ((int)S_IFU(state) == 3) perf_cnt.ifu_wait_rd();
+        else if (!(S_CPU(pc_to_ifu_valid) | S_CPU(ifu_to_pc_ready))) perf_cnt.ifu_wait_pc();
+        // Recoding LSU wait memory read
+        if (S_CPU(lsu_arvalid) & S_CPU(xbar_arvalid)) perf_cnt.lsu_wait_num('r');
+        if ((int)S_LSU(state) == 2 | (int)S_LSU(state) == 3) perf_cnt.lsu_wait_cyc('r');
+        // Recoding LSU wait memory write
+        if (S_CPU(lsu_awvalid) & S_CPU(xbar_awready)) perf_cnt.lsu_wait_num('w');
+        if ((int)S_LSU(state) == 4 | (int)S_LSU(state) == 6) perf_cnt.lsu_wait_cyc('w');
+    }
+
     if ((S_CPU(wbu_to_pc_valid)) & (S_CPU(pc_to_wbu_ready))) 
     {
         pc = S_CPU(pc);
@@ -60,6 +84,9 @@ static void exec_once(VysyxSoCFull *top, VerilatedContext *contextp, VerilatedVc
     }
     if ((!S_CPU(wbu_to_pc_valid)) & (!S_CPU(pc_to_wbu_ready)) & inst_end)
     {
+        perf_cnt.inst_add(inst_type, current_inst_cyc);
+        current_inst_cyc = 0;
+
         inst_end = false;
         cpu.pc = S_CPU(pc);
         cpu.npc = S_CPU(npc);
@@ -150,7 +177,6 @@ static void execute(VysyxSoCFull *top, VerilatedContext *contextp, VerilatedVcdC
         exec_once(top, contextp, tfp);
         running_cycle ++;
         g_nr_guest_inst++;
-        // if ((running_cycle % 1000000) == 0) printf("NPC has been runned %llu cycle\n", running_cycle);
         if (npc_state.state != NPC_RUNNING)
         {
             npc_state.halt_pc = cpu.pc;

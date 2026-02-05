@@ -4,6 +4,7 @@
 #include "npc.h"
 #include "sdb.h"
 #include "cpu.h"
+#include "perf-cnt.hpp"
 #ifdef CONFIG_NVBOARD
 #include <nvboard.h>
 #endif
@@ -40,6 +41,14 @@ int main(int argc, char *argv[])
     }
 
     Log("npc running cycle = %llu", running_cycle);
+    Log("npc number of instructions executed = %llu", inst_num);
+    Log("npc IPC = %f", (double)inst_num/(double)running_cycle);
+    perf_cnt.print_module_called(IFU);
+    perf_cnt.print_module_called(EXU);
+    perf_cnt.print_module_called(LSU);
+    perf_cnt.print_inst_info();
+    perf_cnt.print_ifu_info();
+    perf_cnt.print_lsu_info();
     Log("npc: %s at pc = 0x%08x", (
         npc_state.state == NPC_ABORT ? ANSI_FMT("ABORT", ANSI_FG_RED) :
         npc_state.halt_ret == 0 ? ANSI_FMT("HIT GOOD TRAP", ANSI_FG_GREEN) : ANSI_FMT("HIT BAD TRAP", ANSI_FG_RED)), npc_state.halt_pc);
