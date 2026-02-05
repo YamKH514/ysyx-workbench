@@ -1,4 +1,4 @@
-PLATFORM := npc
+PLATFORM := NPC
 export PLATFORM
 
 AM_SRCS := riscv/npc/start.S \

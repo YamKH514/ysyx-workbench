@@ -1,4 +1,4 @@
-PLATFORM := ysyxSoC
+PLATFORM := YSYXSOC
 export PLATFORM
 
 AM_SRCS := riscv/ysyxSoC/start.S \
