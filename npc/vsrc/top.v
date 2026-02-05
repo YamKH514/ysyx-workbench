@@ -217,7 +217,7 @@ wire            clint_bready;
 
 assign trap_npc = is_ecall ? csr_r_mtvec : csr_r_mepc;
 
-PCCnt #(.RESET_PC 	(80000000  )) u_PCCnt(
+PCCnt #(.RESET_PC 	(32'h80000000)) u_PCCnt(
     .clk                 	(clock              ),
     .rst                  	(reset              ),
     .pc_cnt_cmp_res_in     	(exu_res[0]         ),
