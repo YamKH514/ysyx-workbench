@@ -181,7 +181,7 @@ uint32_t paddr_read(uint32_t raddr)
     else assert(0);
     return rdata;
 #else
-    if ((PMEM_LEFT <= raddr) & (raddr < PMEM_RIGHT)) return pmem_read(raddr - PMEM_LEFT, 4);
+    if ((PMEM_LEFT <= raddr) & (raddr < PMEM_RIGHT)) return pmem_read(raddr, 4);
     printf("npc raddr: 0x%08x\n", raddr);
 #endif
     assert(0);
