@@ -32,7 +32,7 @@ config VCD_TRACE
 config ITRACE
   depends on TRACE
   bool "Enable instruction tracer"
-  default y
+  default n
 
 config ITRACE_COND
   depends on ITRACE

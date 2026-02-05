@@ -10,7 +10,7 @@
 
 #define ARRLEN(arr) (int)(sizeof(arr) / sizeof(arr[0]))
 
-VysyxSoCFull *top;
+VTOP *top;
 VerilatedContext *contextp;
 VerilatedVcdC *tfp;
 char str[1024] = "\0";

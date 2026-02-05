@@ -155,6 +155,36 @@ wire    [1:0]   xbar_bresp;
 wire            xbar_bvalid;
 wire            xbar_bready;
 
+wire    [3:0]   pmem_arid;
+wire    [31:0]  pmem_araddr;
+wire    [3:0]   pmem_arlen;
+wire    [2:0]   pmem_arsize;
+wire    [1:0]   pmem_arburst;
+wire            pmem_arvalid;
+wire            pmem_arready;
+wire    [3:0]   pmem_rid;
+wire    [31:0]  pmem_rdata;
+wire    [1:0]   pmem_rresp;
+wire            pmem_rlast;
+wire            pmem_rvalid;
+wire            pmem_rready;
+wire    [3:0]   pmem_awid;
+wire    [31:0]  pmem_awaddr;
+wire    [3:0]   pmem_awlen;
+wire    [2:0]   pmem_awsize;
+wire    [1:0]   pmem_awburst;
+wire            pmem_awvalid;
+wire            pmem_awready;
+wire    [31:0]  pmem_wdata;
+wire    [3:0]   pmem_wstrb;
+wire            pmem_wlast;
+wire            pmem_wvalid;
+wire            pmem_wready;
+wire    [3:0]   pmem_bid;
+wire    [1:0]   pmem_bresp;
+wire            pmem_bvalid;
+wire            pmem_bready;
+
 wire    [3:0]   clint_arid;
 wire    [31:0]  clint_araddr;
 wire    [3:0]   clint_arlen;
@@ -466,35 +496,35 @@ Xbar u_Xbar(
     .m_bresp             	(xbar_bresp         ),
     .m_bvalid            	(xbar_bvalid        ),
     .m_bready           	(xbar_bready        ),
-    .s0_arid                (io_master_arid     ),
-    .s0_araddr           	(io_master_araddr   ),
-    .s0_arlen               (io_master_arlen[3:0]),
-    .s0_arsize              (io_master_arsize   ),
-    .s0_arburst             (io_master_arburst  ),
-    .s0_arvalid          	(io_master_arvalid  ),
-    .s0_arready           	(io_master_arready  ),
-    .s0_rid                 (io_master_rid      ),
-    .s0_rdata             	(io_master_rdata    ),
-    .s0_rresp             	(io_master_rresp    ),
-    .s0_rlast               (io_master_rlast    ),
-    .s0_rvalid            	(io_master_rvalid   ),
-    .s0_rready           	(io_master_rready   ),
-    .s0_awid                (io_master_awid     ),
-    .s0_awaddr           	(io_master_awaddr   ),
-    .s0_awlen               (io_master_awlen[3:0]),
-    .s0_awsize              (io_master_awsize   ),
-    .s0_awburst             (io_master_awburst  ),
-    .s0_awvalid          	(io_master_awvalid  ),
-    .s0_awready           	(io_master_awready  ),
-    .s0_wdata            	(io_master_wdata    ),
-    .s0_wstrb            	(io_master_wstrb    ),
-    .s0_wlast               (io_master_wlast    ),
-    .s0_wvalid           	(io_master_wvalid   ),
-    .s0_wready            	(io_master_wready   ),
-    .s0_bid                 (io_master_bid      ),
-    .s0_bresp             	(io_master_bresp    ),
-    .s0_bvalid            	(io_master_bvalid   ),
-    .s0_bready           	(io_master_bready   ),
+    .s0_arid                (pmem_arid          ),
+    .s0_araddr           	(pmem_araddr        ),
+    .s0_arlen               (pmem_arlen         ),
+    .s0_arsize              (pmem_arsize        ),
+    .s0_arburst             (pmem_arburst       ),
+    .s0_arvalid          	(pmem_arvalid       ),
+    .s0_arready           	(pmem_arready       ),
+    .s0_rid                 (pmem_rid           ),
+    .s0_rdata             	(pmem_rdata         ),
+    .s0_rresp             	(pmem_rresp         ),
+    .s0_rlast               (pmem_rlast         ),
+    .s0_rvalid            	(pmem_rvalid        ),
+    .s0_rready           	(pmem_rready        ),
+    .s0_awid                (pmem_awid          ),
+    .s0_awaddr           	(pmem_awaddr        ),
+    .s0_awlen               (pmem_awlen         ),
+    .s0_awsize              (pmem_awsize        ),
+    .s0_awburst             (pmem_awburst       ),
+    .s0_awvalid          	(pmem_awvalid       ),
+    .s0_awready           	(pmem_awready       ),
+    .s0_wdata            	(pmem_wdata         ),
+    .s0_wstrb            	(pmem_wstrb         ),
+    .s0_wlast               (pmem_wlast         ),
+    .s0_wvalid           	(pmem_wvalid        ),
+    .s0_wready            	(pmem_wready        ),
+    .s0_bid                 (pmem_bid           ),
+    .s0_bresp             	(pmem_bresp         ),
+    .s0_bvalid            	(pmem_bvalid        ),
+    .s0_bready           	(pmem_bready        ),
     .s1_arid                (clint_arid         ),
     .s1_araddr           	(clint_araddr       ),
     .s1_arlen               (clint_arlen        ),
@@ -524,6 +554,40 @@ Xbar u_Xbar(
     .s1_bresp             	(clint_bresp        ),
     .s1_bvalid            	(clint_bvalid       ),
     .s1_bready           	(clint_bready       )
+);
+
+pmem u_pmem(
+    .clk         	        (clock              ),
+    .rst         	        (reset              ),
+    .arid_in     	        (pmem_arid          ),
+    .araddr_in   	        (pmem_araddr        ),
+    .arlen_in    	        (pmem_arlen         ),
+    .arsize_in   	        (pmem_arsize        ),
+    .arburst_in  	        (pmem_arburst       ),
+    .arvalid_in  	        (pmem_arvalid       ),
+    .arready_out 	        (pmem_arready       ),
+    .rid_out     	        (pmem_rid           ),
+    .rdata_out   	        (pmem_rdata         ),
+    .rresp_out   	        (pmem_rresp         ),
+    .rlast_out   	        (pmem_rlast         ),
+    .rvalid_out  	        (pmem_rvalid        ),
+    .rready_in   	        (pmem_rready        ),
+    .awid_in     	        (pmem_awid          ),
+    .awaddr_in   	        (pmem_awaddr        ),
+    .awlen_in    	        (pmem_awlen         ),
+    .awsize_in   	        (pmem_awsize        ),
+    .awburst_in  	        (pmem_awburst       ),
+    .awvalid_in  	        (pmem_awvalid       ),
+    .awready_out 	        (pmem_awready       ),
+    .wdata_in    	        (pmem_wdata         ),
+    .wstrb_in    	        (pmem_wstrb         ),
+    .wlast_in    	        (pmem_wlast         ),
+    .wvalid_in   	        (pmem_wvalid        ),
+    .wready_out  	        (pmem_wready        ),
+    .bid_out     	        (pmem_bid           ),
+    .bresp_out   	        (pmem_bresp         ),
+    .bvalid_out  	        (pmem_bvalid        ),
+    .bready_in   	        (pmem_bready        )
 );
 
 CLINT u_CLINT(

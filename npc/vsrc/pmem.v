@@ -43,8 +43,8 @@ module pmem(
     input               bready_in
 );
 
-import "DPI-C" function int pmem_read(input int raddr);
-import "DPI-C" function void pmem_write(
+import "DPI-C" function int npcmem_read(input int raddr);
+import "DPI-C" function void npcmem_write(
     input int waddr, input int wdata, input byte wmask);
 
 reg [3:0]   arid_r;
@@ -188,7 +188,7 @@ always @(*) begin
             end
         end
         S_GET_AR: begin
-            rdata_out = paddr_read(araddr_r);
+            rdata_out = npcmem_read(araddr_r);
             r_next_state = S_SEND_R;
         end
         S_SEND_R: begin
@@ -214,7 +214,7 @@ always @(*) begin
             end
         end
         S_GET_WD: begin
-            paddr_write(awaddr_r, wdata_r, {4'b0, wstrb_r});
+            npcmem_write(awaddr_r, wdata_r, {4'b0, wstrb_r});
             w_next_state = S_SEND_B;
         end
         S_SEND_B: begin

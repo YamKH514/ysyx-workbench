@@ -1,10 +1,11 @@
 ifeq ($(PLATFORM), ysyxSoC)
 TOPNAME = ysyxSoCFull
+NXDC_FILES = constr/ysyxSoCFull.nxdc
 else ifeq ($(PLATFORM), npc)
 TOPNAME = top
+NXDC_FILES = constr/top.nxdc
 endif
 
-NXDC_FILES = constr/top.nxdc
 INC_PATH ?= $(NPC_HOME)/include
 V_INC_PATH ?= $(NPC_HOME)/vsrc
 ifeq ($(PLATFORM), ysyxSoC) # ysyxSoC
