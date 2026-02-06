@@ -76,6 +76,19 @@ void Perf_cnt::ifu_wait_rd(void) {
     this->__ifu.wait_rd ++;
 }
 
+void Perf_cnt::ifu_cache_call(int is_hit) {
+    this->__ifu.cache_call ++;
+    if(is_hit) this->__ifu.cache_hit ++;
+}
+
+void Perf_cnt::ifu_access_time(unsigned int time) {
+    this->__ifu.access_time += time;
+}
+
+void Perf_cnt::ifu_miss_penalty(unsigned int time) {
+    this->__ifu.miss_penalty += time;
+}
+
 void Perf_cnt::print_ifu_info(void) {
     double pc =
             (double)(this->__ifu.wait_pc) /
@@ -83,9 +96,16 @@ void Perf_cnt::print_ifu_info(void) {
     double rd =
             (double)(this->__ifu.wait_rd) /
             (double)(this->__ifu.wait_pc + this->__ifu.wait_rd) * 100.0;
+    double p =
+            (double)(this->__ifu.cache_hit) /
+            (double)(this->__ifu.cache_call);
+    double amat =
+            (double)(this->__ifu.access_time) +
+            (double)(1 - p) * (double)this->__ifu.miss_penalty;
 
     Log("IFU waitng PC_Cnt update about %0.2f%%", pc);
     Log("IFU waitng R_Data ready  about %0.2f%%", rd);
+    Log("ICache hit rating: %0.2f%%, AMAT: %0.2f", p * 100.0, amat);
 }
 
 void Perf_cnt::lsu_wait_num(char ch) {

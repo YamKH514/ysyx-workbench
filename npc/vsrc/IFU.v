@@ -267,4 +267,37 @@ u_ICache(
     .wdata_in   	(ic_wdata   )
 );
 
+// Perf_CNT
+reg [31:0]  access_time, miss_penalty;
+reg         access_ready, miss_ready;
+reg [31:0]  pref_cnt;
+always @(posedge clk) begin
+    if (rst) begin
+        pref_cnt <= 'd0;
+    end else begin
+        if (state == S_IDLE | state == S_WAIT_IDU) begin
+            pref_cnt <= 'd0;
+        end else begin
+            pref_cnt <= pref_cnt + 1;
+        end
+    end
+end
+
+always @(posedge clk) begin
+    if (state == S_WAIT_IC && ic_rvalid) begin
+        // ICache Hit
+        access_time <= access_time + pref_cnt + 1;
+        access_ready <= 1;
+    end else if (state == S_WAIT_INST && rvalid_in && rready_out && need_cache_r) begin
+        // Icache Miss
+        miss_penalty <= miss_penalty + pref_cnt + 1;
+        miss_ready <= 1;
+    end else begin
+        access_time <= 0;
+        access_ready <= 0;
+        miss_penalty <= 0;
+        miss_ready <= 0;
+    end
+end
+
 endmodule

@@ -63,6 +63,9 @@ static void exec_once(VTOP *top, VerilatedContext *contextp, VerilatedVcdC *tfp)
         // Recoding IFU wait Inst
         if ((int)S_IFU(state) == 3) perf_cnt.ifu_wait_rd();
         else if (!(S_CPU(pc_to_ifu_valid) | S_CPU(ifu_to_pc_ready))) perf_cnt.ifu_wait_pc();
+        if ((int)S_IFU(state) == 5 && S_IFU(ic_arvalid) && S_IFU(ic_rready)) perf_cnt.ifu_cache_call((int)S_IFU(ic_rvalid));
+        if (S_IFU(access_ready)) perf_cnt.ifu_access_time((uint32_t)S_IFU(access_ready));
+        if (S_IFU(miss_ready)) perf_cnt.ifu_miss_penalty((uint32_t)S_IFU(miss_penalty));
         // Recoding LSU wait memory read
         if (S_CPU(lsu_arvalid) & S_CPU(xbar_arvalid)) perf_cnt.lsu_wait_num('r');
         if ((int)S_LSU(state) == 2 | (int)S_LSU(state) == 3) perf_cnt.lsu_wait_cyc('r');
