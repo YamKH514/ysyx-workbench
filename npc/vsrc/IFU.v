@@ -117,6 +117,7 @@ always @(posedge clk) begin
                 if (ic_arvalid & ic_rready) begin
                     ic_arvalid <= 1'b0;
                     if (ic_rvalid) begin
+                        $display("ICache Hit");
                         ifu_inst_out <= ic_rdata;
                         ifu_to_idu_valid_out <= 1'b1;
                     end else begin
