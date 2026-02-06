@@ -83,6 +83,11 @@ reg [S_W-1:0]   state, next_state;
 reg [31:0]  ifu_current_pc_r;
 reg [3:0]   rid_r;
 
+localparam SRAM_BASE = 32'h0f000000;
+localparam SRAM_SIZE = 32'h2000;
+wire need_cache = (SRAM_BASE <= ifu_current_pc_in) && (ifu_current_pc_in < SRAM_BASE + SRAM_SIZE);
+reg  need_cache_r;
+
 always @(posedge clk) begin
     if (rst) state <= S_IDLE;
     else state <= next_state;
@@ -104,19 +109,23 @@ always @(posedge clk) begin
         ic_arvalid           <= 1'b0;
         ic_awvalid           <= 1'b0;
         ic_wdata             <= 32'b0;
+        need_cache_r         <= 1'b0;
     end else begin
         case (state)
             S_IDLE: begin
                 if (pc_to_ifu_valid_in & ifu_to_pc_ready_out) begin
                     ifu_to_pc_ready_out <= 1'b0;
                     ifu_current_pc_r    <= ifu_current_pc_in;
-                    ic_arvalid          <= 1'b1;
+                    ic_arvalid          <= need_cache;
+                    need_cache_r        <= need_cache;
+                    br_out              <= !need_cache;
                 end
             end
             S_WAIT_IC: begin
                 if (ic_arvalid & ic_rready) begin
                     ic_arvalid <= 1'b0;
                     if (ic_rvalid) begin
+                        $display("ICache Hit");
                         ifu_inst_out <= ic_rdata;
                         ifu_to_idu_valid_out <= 1'b1;
                     end else begin
@@ -151,7 +160,7 @@ always @(posedge clk) begin
                     mem_tracer_read(ifu_current_pc_r, rdata_in);
                     rid_r                <= rid_in;
                     ifu_inst_out         <= rdata_in;
-                    ic_awvalid           <= 1'b1;
+                    ic_awvalid           <= need_cache_r;
                     ic_wdata             <= rdata_in;
                     if (rresp_in != 2'b00) begin
                         $display("IFU rresp: %d\n", rresp_in);
@@ -171,6 +180,7 @@ always @(posedge clk) begin
                 if (idu_to_ifu_ready_in) begin
                     ifu_to_pc_ready_out  <= 1'b1;
                     ifu_to_idu_valid_out <= 1'b0;
+                    need_cache_r         <= 1'b0;
                 end
             end
             default: begin
@@ -181,6 +191,10 @@ always @(posedge clk) begin
                 ifu_to_idu_valid_out <= 1'b0;
                 br_out               <= 1'b0;
                 bs_out               <= 1'b0;
+                ic_arvalid           <= 1'b0;
+                ic_awvalid           <= 1'b0;
+                ic_wdata             <= 32'b0;
+                need_cache_r         <= 1'b0;
             end
         endcase
     end
@@ -191,7 +205,7 @@ always @(*) begin
     case (state)
         S_IDLE: begin
             if (pc_to_ifu_valid_in & ifu_to_pc_ready_out) begin
-                next_state = S_WAIT_IC;
+                next_state = need_cache ? S_WAIT_IC : S_WAIT_ARB;
             end
         end
         S_WAIT_IC: begin
