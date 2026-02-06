@@ -6,6 +6,7 @@ module ICache(
     input               arvalid_in,
     output  reg [31:0]  rdata_out,
     output  reg         rvalid_out,
+    output  reg         rready_out,
 
     input [31-CACHE_M:0]awaddr_in,
     input               awvalid_in,
@@ -26,23 +27,22 @@ wire [31-CACHE_M-CACHE_N:0] w_tag;
 wire [CACHE_N-1:0]          w_index;
 
 reg [31-CACHE_M:0] raddr_r;
-reg                read_flag;
 
 assign {r_tag, r_index} = raddr_r;
 assign rdata_out = cache_data[r_index];
-assign rvalid_out = (cache_tag[r_index] == r_tag) && cache_valid[r_index] && read_flag;
+assign rvalid_out = (cache_tag[r_index] == r_tag) && cache_valid[r_index];
 assign {w_tag, w_index} = awaddr_in;
 
 always @(posedge clk) begin
     if (rst) begin
-        raddr_r   <= 'd0;
-        read_flag <= 'd0;
+        raddr_r    <= 'd0;
+        rready_out <= 'd0;
     end else begin
         if (arvalid_in) begin
-            raddr_r   <= araddr_in;
-            read_flag <= 'd1;
+            raddr_r    <= araddr_in;
+            rready_out <= 'd1;
         end else begin
-            read_flag <= 'd0;
+            rready_out <= 'd0;
         end
     end
 end

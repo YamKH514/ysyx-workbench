@@ -114,13 +114,15 @@ always @(posedge clk) begin
                 end
             end
             S_WAIT_IC: begin
-                ic_arvalid <= 1'b0;
-                if (ic_rvalid) begin
-                    $display("ICache Hit");
-                    ifu_inst_out <= ic_rdata;
-                    ifu_to_idu_valid_out <= 1'b1;
-                end else begin
-                    br_out <= 1'b1;
+                if (ic_arvalid & ic_rready) begin
+                    ic_arvalid <= 1'b0;
+                    if (ic_rvalid) begin
+                        $display("ICache Hit");
+                        ifu_inst_out <= ic_rdata;
+                        ifu_to_idu_valid_out <= 1'b1;
+                    end else begin
+                        br_out <= 1'b1;
+                    end
                 end
             end
             S_WAIT_ARB: begin
@@ -230,6 +232,7 @@ wire [29:0] ic_araddr = ifu_current_pc_r[31:2];
 reg         ic_arvalid;
 wire [31:0] ic_rdata;
 wire        ic_rvalid;
+wire        ic_rready;
 wire [29:0] ic_awaddr = ifu_current_pc_r[31:2];
 reg         ic_awvalid;
 reg  [31:0] ic_wdata;
@@ -238,15 +241,16 @@ ICache #(
     .CACHE_M 	(2  ),
     .CACHE_N 	(4  ))
 u_ICache(
-    .clk        	(clk            ),
-    .rst        	(rst            ),
-    .araddr_in  	(ic_araddr      ),
-    .arvalid_in 	(ic_arvalid     ),
-    .rdata_out  	(ic_rdata       ),
-    .rvalid_out 	(ic_rvalid      ),
-    .awaddr_in  	(ic_awaddr      ),
-    .awvalid_in 	(ic_awvalid     ),
-    .wdata_in   	(ic_wdata       )
+    .clk        	(clk        ),
+    .rst        	(rst        ),
+    .araddr_in  	(ic_araddr  ),
+    .arvalid_in 	(ic_arvalid ),
+    .rdata_out  	(ic_rdata   ),
+    .rvalid_out 	(ic_rvalid  ),
+    .rready_out     (ic_rready  ),
+    .awaddr_in  	(ic_awaddr  ),
+    .awvalid_in 	(ic_awvalid ),
+    .wdata_in   	(ic_wdata   )
 );
 
 endmodule
