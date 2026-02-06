@@ -196,10 +196,12 @@ always @(*) begin
             end
         end
         S_WAIT_IC: begin
-            if (ic_rvalid) begin
-                next_state = S_WAIT_IDU;
-            end else begin
-                next_state = S_WAIT_ARB;
+            if (ic_arvalid & ic_rready) begin
+                if (ic_rvalid) begin
+                    next_state = S_WAIT_IDU;
+                end else begin
+                    next_state = S_WAIT_ARB;
+                end
             end
         end
         S_WAIT_ARB: begin
