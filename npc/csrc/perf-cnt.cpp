@@ -100,8 +100,8 @@ void Perf_cnt::print_ifu_info(void) {
             (double)(this->__ifu.cache_hit) /
             (double)(this->__ifu.cache_call);
     double amat =
-            (double)(this->__ifu.access_time) +
-            (double)(1 - p) * (double)this->__ifu.miss_penalty;
+            (double)(this->__ifu.access_time) / (double)(this->__ifu.cache_call) +
+            (double)(1 - p) * (double)(this->__ifu.miss_penalty) / (double)(this->__ifu.cache_call);
 
     Log("IFU waitng PC_Cnt update about %0.2f%%", pc);
     Log("IFU waitng R_Data ready  about %0.2f%%", rd);
