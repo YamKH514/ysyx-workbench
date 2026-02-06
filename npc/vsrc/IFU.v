@@ -70,13 +70,15 @@ assign wlast_out   = 1'b0;
 assign wvalid_out  = 1'b0;
 assign bready_out  = 1'b0;
 
+localparam S_W         = 3;
 localparam S_IDLE      = 3'd0;
 localparam S_WAIT_ARB  = 3'd1;
 localparam S_SEND_AR   = 3'd2;
 localparam S_WAIT_INST = 3'd3;
 localparam S_WAIT_IDU  = 3'd4;
+localparam S_WAIT_IC   = 3'd5;
 
-reg [2:0]   state, next_state;
+reg [S_W-1:0]   state, next_state;
 
 reg [31:0]  ifu_current_pc_r;
 reg [3:0]   rid_r;
@@ -99,13 +101,26 @@ always @(posedge clk) begin
         ifu_to_idu_valid_out <= 1'b0;
         br_out               <= 1'b0;
         bs_out               <= 1'b0;
+        ic_arvalid           <= 1'b0;
+        ic_awvalid           <= 1'b0;
+        ic_wdata             <= 32'b0;
     end else begin
         case (state)
             S_IDLE: begin
                 if (pc_to_ifu_valid_in & ifu_to_pc_ready_out) begin
                     ifu_to_pc_ready_out <= 1'b0;
                     ifu_current_pc_r    <= ifu_current_pc_in;
-                    br_out              <= 1'b1;
+                    ic_arvalid          <= 1'b1;
+                end
+            end
+            S_WAIT_IC: begin
+                ic_arvalid <= 1'b0;
+                if (ic_rvalid) begin
+                    $display("ICache Hit");
+                    ifu_inst_out <= ic_rdata;
+                    ifu_to_idu_valid_out <= 1'b1;
+                end else begin
+                    br_out <= 1'b1;
                 end
             end
             S_WAIT_ARB: begin
@@ -135,6 +150,8 @@ always @(posedge clk) begin
                     mem_tracer_read(ifu_current_pc_r, rdata_in);
                     rid_r                <= rid_in;
                     ifu_inst_out         <= rdata_in;
+                    ic_awvalid           <= 1'b1;
+                    ic_wdata             <= rdata_in;
                     if (rresp_in != 2'b00) begin
                         $display("IFU rresp: %d\n", rresp_in);
                         if (rresp_in == 2'b11) $fatal;
@@ -149,6 +166,7 @@ always @(posedge clk) begin
                 end
             end
             S_WAIT_IDU: begin
+                ic_awvalid <= 1'b0;
                 if (idu_to_ifu_ready_in) begin
                     ifu_to_pc_ready_out  <= 1'b1;
                     ifu_to_idu_valid_out <= 1'b0;
@@ -172,6 +190,13 @@ always @(*) begin
     case (state)
         S_IDLE: begin
             if (pc_to_ifu_valid_in & ifu_to_pc_ready_out) begin
+                next_state = S_WAIT_IC;
+            end
+        end
+        S_WAIT_IC: begin
+            if (ic_rvalid) begin
+                next_state = S_WAIT_IDU;
+            end else begin
                 next_state = S_WAIT_ARB;
             end
         end
@@ -200,5 +225,28 @@ always @(*) begin
         end
     endcase
 end
+
+wire [29:0] ic_araddr = ifu_current_pc_r[31:2];
+reg         ic_arvalid;
+wire [31:0] ic_rdata;
+wire        ic_rvalid;
+wire [29:0] ic_awaddr = ifu_current_pc_r[31:2];
+reg         ic_awvalid;
+reg  [31:0] ic_wdata;
+
+ICache #(
+    .CACHE_M 	(2  ),
+    .CACHE_N 	(4  ))
+u_ICache(
+    .clk        	(clk            ),
+    .rst        	(rst            ),
+    .araddr_in  	(ic_araddr      ),
+    .arvalid_in 	(ic_arvalid     ),
+    .rdata_out  	(ic_rdata       ),
+    .rvalid_out 	(ic_rvalid      ),
+    .awaddr_in  	(ic_awaddr      ),
+    .awvalid_in 	(ic_awvalid     ),
+    .wdata_in   	(ic_wdata       )
+);
 
 endmodule
