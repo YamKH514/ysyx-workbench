@@ -279,14 +279,11 @@ end
 
 always @(posedge clk) begin
     case (state)
-        S_IDLE: begin
-            access_time <= need_cache ? access_time + 1 : 0;
-        end
         S_WAIT_IC: begin
             access_time <= need_cache_r ? access_time + 1 : 0;
         end
         default: begin
-            access_time <= 0;
+            access_time <= 1;
         end
     endcase
 end
