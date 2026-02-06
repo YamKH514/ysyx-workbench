@@ -85,7 +85,7 @@ reg [3:0]   rid_r;
 
 localparam SRAM_BASE = 32'h0f000000;
 localparam SRAM_SIZE = 32'h2000;
-wire need_cache = (SRAM_BASE <= ifu_current_pc_in) && (ifu_current_pc_in < SRAM_BASE + SRAM_SIZE);
+wire need_cache = ~((SRAM_BASE <= ifu_current_pc_in) && (ifu_current_pc_in < SRAM_BASE + SRAM_SIZE));
 reg  need_cache_r;
 
 always @(posedge clk) begin
