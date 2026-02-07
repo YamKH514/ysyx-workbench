@@ -17,7 +17,7 @@ NEMUFLAGS += -l $(shell dirname $(IMAGE).elf)/nemu-log.txt
 NEMUFLAGS += -e $(IMAGE).elf
 
 MAINARGS_MAX_LEN = 64
-MAINARGS_PLACEHOLDER = The insert-arg rule in Makefile will insert mainargs here.
+MAINARGS_PLACEHOLDER = The insert-arg rule in Makefile will insert mainargs here111.
 CFLAGS += -DMAINARGS_MAX_LEN=$(MAINARGS_MAX_LEN) -DMAINARGS_PLACEHOLDER=\""$(MAINARGS_PLACEHOLDER)"\"
 
 insert-arg: image
