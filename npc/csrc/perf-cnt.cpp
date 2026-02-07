@@ -105,7 +105,7 @@ void Perf_cnt::print_ifu_info(void) {
 
     Log("IFU waitng PC_Cnt update about %0.2f%%", pc);
     Log("IFU waitng R_Data ready  about %0.2f%%", rd);
-    Log("ICache hit rating: %0.2f%%, AMAT: %0.2f, AVE TMT: %0.2f",
+    Log("ICache hit rating: %0.2f%%, AMAT: %0.2f, AVE Miss Time: %0.2f",
         p * 100.0, amat, (double)__ifu.tmt/(double)(__ifu.cache_call - __ifu.cache_hit));
 }
 
