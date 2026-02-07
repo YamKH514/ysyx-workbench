@@ -51,7 +51,6 @@ static inline bool in_pmem(paddr_t addr) {
   bool in_sdram = (SDRAM_LEFT <= addr) && (addr < SDRAM_RIGHT);
   bool in_uart  = (UART_LEFT <= addr) && (addr < UART_RIGHT);
   bool in_clint = (CLINT_LEFT <= addr) && (addr < CLINT_RIGHT);
-  if (in_sram) printf("in sram\n");
   return in_flash | in_sram | in_psram | in_sdram | in_uart | in_clint;
 #else
   return addr - CONFIG_MBASE < CONFIG_MSIZE;
