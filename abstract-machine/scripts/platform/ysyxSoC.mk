@@ -34,6 +34,4 @@ image: image-dep
 run: insert-arg
 	$(MAKE) -C $(NPC_HOME) ISA=$(ISA) run ARGS="$(NPCFLAGS)" IMG=$(IMAGE).bin
 
-bin-with-args: image insert-arg
-
 .PHONY: insert-arg
