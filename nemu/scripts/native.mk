@@ -42,7 +42,7 @@ run: run-env
 	$(call git_commit, "run NEMU")
 	$(NEMU_EXEC)
 
-run-soc: insert-arg run
+bin-change: insert-arg
 
 gdb: run-env
 	$(call git_commit, "gdb NEMU")
