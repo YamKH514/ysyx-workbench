@@ -242,6 +242,12 @@ config RT_CHECK
 
 endmenu
 
+if !TARGET_SHARE
+config SOC_BIN
+  bool "ysyxSoC BIN support"
+  default n
+endif
+
 if TARGET_SHARE
 config YSYXSOC
   bool "ysyxSoC difftest support"

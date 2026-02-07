@@ -21,6 +21,9 @@ word_t vaddr_ifetch(vaddr_t addr, int len) {
 }
 
 word_t vaddr_read(vaddr_t addr, int len) {
+  if (addr == 0x10000005) {
+    return 32;
+  }
   return paddr_read(addr, len);
 }
 
