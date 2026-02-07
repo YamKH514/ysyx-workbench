@@ -26,6 +26,8 @@ $(BINARY):: compile_git
 
 override ARGS ?= --log=$(BUILD_DIR)/nemu-log.txt
 override ARGS += $(ARGS_DIFF)
+MAINARGS_PLACEHOLDER = test
+override ARGS += -DMAINARGS_PLACEHOLDER=\""$(MAINARGS_PLACEHOLDER)"\"
 
 # Command to execute NEMU
 IMG ?=
