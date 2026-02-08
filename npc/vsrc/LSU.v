@@ -13,12 +13,12 @@ module LSU(
     input       [31:0]  lsu_w_data_in,
 
     // AR
-    output  reg [3:0]   arid_out,
-    output  reg [31:0]  araddr_out,
-    output  reg [3:0]   arlen_out,
-    output  reg [2:0]   arsize_out,
-    output  reg [1:0]   arburst_out,
-    output  reg         arvalid_out,
+    output      [3:0]   arid_out,
+    output      [31:0]  araddr_out,
+    output      [3:0]   arlen_out,
+    output      [2:0]   arsize_out,
+    output      [1:0]   arburst_out,
+    output              arvalid_out,
     input               arready_in,
 
     // R
@@ -27,29 +27,29 @@ module LSU(
     input       [1:0]   rresp_in,
     input               rlast_in,
     input               rvalid_in,
-    output  reg         rready_out,
+    output              rready_out,
 
     // AW
-    output  reg [3:0]   awid_out,
-    output  reg [31:0]  awaddr_out,
-    output  reg [3:0]   awlen_out,
-    output  reg [2:0]   awsize_out,
-    output  reg [1:0]   awburst_out,
-    output  reg         awvalid_out,
+    output      [3:0]   awid_out,
+    output      [31:0]  awaddr_out,
+    output      [3:0]   awlen_out,
+    output      [2:0]   awsize_out,
+    output      [1:0]   awburst_out,
+    output              awvalid_out,
     input               awready_in,
 
     // W
-    output  reg [31:0]  wdata_out,
-    output  reg [3:0]   wstrb_out,
-    output  reg         wlast_out,
-    output  reg         wvalid_out,
+    output      [31:0]  wdata_out,
+    output      [3:0]   wstrb_out,
+    output              wlast_out,
+    output              wvalid_out,
     input               wready_in,
 
     // B
     input       [3:0]   bid_in,
     input       [1:0]   bresp_in,
     input               bvalid_in,
-    output  reg         bready_out,
+    output              bready_out,
 
     input               exu_to_lsu_valid_in,
     output  reg         lsu_to_exu_ready_out,
@@ -122,28 +122,28 @@ assign awburst_out = (state == S_W_SEND) ? 2'b01 : 2'd0;
 assign awvalid_out = (state == S_W_SEND) & !aw_handshake_r;
 assign wdata_out   = (state == S_W_SEND) ? wdata_aligned : 32'd0;
 assign wstrb_out   = (state == S_W_SEND) ? wstrb_aligned : 4'd0;
-assign wlast_out   =  state == S_W_SEND;
+assign wlast_out   = (state == S_W_SEND);
 assign wvalid_out  = (state == S_W_SEND) & !w_handshake_r;
 assign bready_out  = (state == S_GET_B) & bvalid_in;
+
+assign arid_out    = 4'b0;
+assign araddr_out  = (state == S_SEND_AR) ? lsu_r_addr_in : 32'b0;
+assign arlen_out   = 4'b0;
+assign arsize_out  = (state == S_SEND_AR) ? arsize : 3'b0;
+assign arburst_out = (state == S_SEND_AR) ? 2'b01 : 2'b0;
+assign arvalid_out = (state == S_SEND_AR);
+assign rready_out  = (state == S_GET_R);
 
 always @(posedge clk) begin
     if (rst) begin
         lsu_to_exu_ready_out <= 1'b0;
         lsu_to_wbu_valid_out <= 1'b0;
-        arid_out             <= 4'b0;
-        araddr_out           <= 32'b0;
-        arlen_out            <= 4'b0;
-        arsize_out           <= 3'b0;
-        arburst_out          <= 2'b0;
-        arvalid_out          <= 1'b0;
-        rready_out           <= 1'b1;
     end else begin
         case (state)    
             S_IDLE: begin
                 if (exu_to_lsu_valid_in) begin
                     lsu_to_exu_ready_out <= 1'b1;
-                    if (lsu_re_r | lsu_we_r) begin
-                    end else begin
+                    if (!(lsu_re_r | lsu_we_r)) begin
                         lsu_to_wbu_valid_out <= 1'b1;
                     end
                 end
@@ -152,26 +152,10 @@ always @(posedge clk) begin
                 if (bg_in) begin
                     if (lsu_re_r) begin
                         perip_difftest_skip(lsu_r_addr_in);
-                        arid_out    <= 4'b0;
-                        araddr_out  <= lsu_r_addr_in;
-                        arlen_out   <= 4'b0;
-                        arsize_out  <= arsize;
-                        arburst_out <= 2'b01;
-                        arvalid_out <= 1'b1;
                     end else if (lsu_we_r) begin
                         mem_tracer_write(lsu_w_addr_in, lsu_w_data_in);
                         perip_difftest_skip(lsu_w_addr_in);
                     end
-                end
-            end
-            S_SEND_AR: begin
-                if (arvalid_out & arready_in) begin
-                    araddr_out  <= 32'b0;
-                    arlen_out   <= 4'b0;
-                    arsize_out  <= 3'b0;
-                    arburst_out <= 2'b0;
-                    arvalid_out <= 1'b0;
-                    rready_out  <= 1'b1;
                 end
             end
             S_GET_R: begin
@@ -183,7 +167,6 @@ always @(posedge clk) begin
                         $display("LSU rresp: %d\n", rresp_in);
                         if (rresp_in == 2'b11) $fatal;
                     end
-                    rready_out           <= 1'b0;
                     lsu_to_wbu_valid_out <= 1'b1;
                 end
             end
@@ -205,8 +188,6 @@ always @(posedge clk) begin
             default: begin
                 lsu_to_exu_ready_out <= 1'b0;
                 lsu_to_wbu_valid_out <= 1'b0;
-                arvalid_out          <= 1'b0;
-                rready_out           <= 1'b0;
             end
         endcase
     end
