@@ -76,17 +76,20 @@ void Perf_cnt::ifu_wait_rd(void) {
     this->__ifu.wait_rd ++;
 }
 
-void Perf_cnt::ifu_cache_call(int is_hit) {
-    this->__ifu.cache_call ++;
-    if(is_hit) this->__ifu.cache_hit ++;
+void Perf_cnt::ifu_cache_call(unsigned long long call) {
+    this->__ifu.cache_call = call;
+}
+
+void Perf_cnt::ifu_cache_hit(unsigned long long hit) {
+    this->__ifu.cache_hit = hit;
 }
 
 void Perf_cnt::ifu_access_time(unsigned int time) {
-    this->__ifu.tat += time;
+    this->__ifu.tat = time;
 }
 
 void Perf_cnt::ifu_miss_penalty(unsigned int time) {
-    this->__ifu.tmt += time;
+    this->__ifu.tmt = time;
 }
 
 void Perf_cnt::print_ifu_info(void) {

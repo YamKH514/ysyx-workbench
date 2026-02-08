@@ -41,6 +41,12 @@ int main(int argc, char *argv[])
         sdb_mainloop();
     }
 
+    svSetScope(svGetScopeFromName("TOP.ysyxSoCFull.asic.cpu.cpu.u_IFU.u_ICache_top"));
+    perf_cnt.ifu_cache_call(cache_call());
+    perf_cnt.ifu_cache_hit(cache_hit());
+    perf_cnt.ifu_access_time(cache_at());
+    perf_cnt.ifu_miss_penalty(cache_mt());
+
     Log("npc running cycle = %llu", running_cycle);
     Log("npc number of instructions executed = %llu", inst_num);
     Log("npc IPC = %f", (double)inst_num/(double)running_cycle);
