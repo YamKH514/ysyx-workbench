@@ -161,4 +161,9 @@ u_ICache(
     .wvalid_in      	(cache_wvalid   )
 );
 
+export "DPI-C" function cache_hit;
+function int cache_hit();
+    return {31'd0, cache_datav};
+endfunction
+
 endmodule
