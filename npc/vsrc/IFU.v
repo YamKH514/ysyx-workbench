@@ -109,30 +109,40 @@ reg [3:0]   rid_r;
 
 localparam SDRAM_BASE = 32'ha0000000;
 localparam SDRAM_SIZE = 32'h8000000;
-wire need_cache = (SDRAM_BASE <= ifu_current_pc_r) && (ifu_current_pc_r < SDRAM_BASE + SDRAM_SIZE);
+wire need_cache = (SDRAM_BASE <= ifu_current_pc_in) && (ifu_current_pc_in < SDRAM_BASE + SDRAM_SIZE);
+reg  need_cache_r;
+
+always @(posedge clk) begin
+    if (rst) begin
+        need_cache_r <= 0;
+    end else if (state == S_IDLE) begin
+        if (pc_to_ifu_valid_in & ifu_to_pc_ready_out) need_cache_r <= need_cache;
+        else need_cache_r <= 0;
+    end
+end
 
 assign ifu_to_pc_ready_out = (state == S_IDLE) && pc_to_ifu_valid_in;
 assign ifu_to_idu_valid_out= (state == S_WAIT_IDU);
 
-assign br_out = (need_cache) ? ic_br : state == S_WAIT_ARB ;
-assign bs_out = (need_cache) ? ic_bs:
+assign br_out = (need_cache_r) ? ic_br : state == S_WAIT_ARB ;
+assign bs_out = (need_cache_r) ? ic_bs:
                 state == S_SEND_AR  |
                 state == S_WAIT_INST;
 assign ic_bg = bg_in;
 
-assign arid_out    = bs_out ? need_cache ? ic_arid : 4'b0 : 0;
-assign araddr_out  = bs_out ? need_cache ? ic_araddr : ifu_current_pc_r : 0;
-assign arlen_out   = bs_out ? need_cache ? ic_arlen : 4'b0 : 0;
-assign arsize_out  = bs_out ? need_cache ? ic_arsize :
+assign arid_out    = bs_out ? need_cache_r ? ic_arid : 4'b0 : 0;
+assign araddr_out  = bs_out ? need_cache_r ? ic_araddr : ifu_current_pc_r : 0;
+assign arlen_out   = bs_out ? need_cache_r ? ic_arlen : 4'b0 : 0;
+assign arsize_out  = bs_out ? need_cache_r ? ic_arsize :
                         (state == S_SEND_AR) ? 3'b010 : 3'b0 : 0;
-assign arburst_out = bs_out ? need_cache ? ic_arburst :
+assign arburst_out = bs_out ? need_cache_r ? ic_arburst :
                         (state == S_SEND_AR) ? 2'b01 : 2'b0 : 0;
-assign arvalid_out = bs_out ? need_cache ? ic_arvalid :
+assign arvalid_out = bs_out ? need_cache_r ? ic_arvalid :
                         (state == S_SEND_AR) : 0;
-assign rready_out  = bs_out ? need_cache ? ic_rready :
+assign rready_out  = bs_out ? need_cache_r ? ic_rready :
                         (state == S_WAIT_INST) : 0;
 
-assign ifu_inst_out= (need_cache) ? ic_data_r : inst_r;
+assign ifu_inst_out= (need_cache_r) ? ic_data_r : inst_r;
 
 always @(posedge clk) begin
     if (rst) begin
@@ -243,7 +253,7 @@ end
 always @(posedge clk) begin
     case (state)
         S_WAIT_IC: begin
-            access_time <= need_cache ? access_time + 1 : 0;
+            access_time <= need_cache_r ? access_time + 1 : 0;
         end
         default: begin
             access_time <= 1;
@@ -260,7 +270,7 @@ always @(posedge clk) begin
             miss_penalty <= 0;
         end
         default: begin
-            miss_penalty <= need_cache ? miss_penalty + 1 : 0;
+            miss_penalty <= need_cache_r ? miss_penalty + 1 : 0;
         end
     endcase
 end
