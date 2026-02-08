@@ -44,7 +44,7 @@ generate
         assign data_out = cache_data[r_index][32*r_word_off +: 32];
         assign data_valid_out = (cache_tag[r_index] == r_tag) && cache_valid[r_index];
         assign {w_tag, w_index, w_word_off} = waddr_in;
-        assign word_off = {{(8-WORD_OFF_W){0}}, w_word_off};
+        assign word_off = {{(8-WORD_OFF_W){1'b0}}, w_word_off};
     end
 endgenerate
 
