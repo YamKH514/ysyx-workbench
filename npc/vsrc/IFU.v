@@ -4,18 +4,18 @@ module IFU(
     input               rst,
 
     input       [31:0]  ifu_current_pc_in,
-    output  reg [31:0]  ifu_inst_out,
+    output      [31:0]  ifu_inst_out,
 
     input               pc_to_ifu_valid_in,
-    output  reg         ifu_to_pc_ready_out,
+    output              ifu_to_pc_ready_out,
 
     // AR
-    output  reg [3:0]   arid_out,
-    output  reg [31:0]  araddr_out,
-    output  reg [3:0]   arlen_out,
-    output  reg [2:0]   arsize_out,
-    output  reg [1:0]   arburst_out,
-    output  reg         arvalid_out,
+    output      [3:0]   arid_out,
+    output      [31:0]  araddr_out,
+    output      [3:0]   arlen_out,
+    output      [2:0]   arsize_out,
+    output      [1:0]   arburst_out,
+    output              arvalid_out,
     input               arready_in,
 
     // R
@@ -24,7 +24,7 @@ module IFU(
     input       [1:0]   rresp_in,
     input               rlast_in,
     input               rvalid_in,
-    output  reg         rready_out,
+    output              rready_out,
 
     // AW
     output  reg [3:0]   awid_out,
@@ -48,7 +48,7 @@ module IFU(
     input               bvalid_in,
     output  reg         bready_out,
 
-    output  reg         ifu_to_idu_valid_out,
+    output              ifu_to_idu_valid_out,
     input               idu_to_ifu_ready_in,
 
     output  reg         bs_out,
@@ -57,6 +57,28 @@ module IFU(
 );
 
 import "DPI-C" function void mem_tracer_read(input int addr,input int data);
+
+wire [3:0]   ic_arid;
+wire [31:0]  ic_araddr;
+wire [3:0]   ic_arlen;
+wire [2:0]   ic_arsize;
+wire [1:0]   ic_arburst;
+wire         ic_arvalid;
+wire         ic_arready = arready_in;
+wire [3:0]   ic_rid = rid_in;
+wire [31:0]  ic_rdata = rdata_in;
+wire [1:0]   ic_rresp = rresp_in;
+wire         ic_rlast = rlast_in;
+wire         ic_rvalid = rvalid_in;
+wire         ic_rready;
+wire         ic_br;
+wire         ic_bs;
+wire         ic_bg;
+
+wire [29:0] ic_paddr = ifu_current_pc_r[31:2];
+wire [31:0] ic_pdata;
+wire        ic_pvalid = state == S_WAIT_IC;
+wire        ic_pready;
 
 assign awid_out    = 4'b0;
 assign awaddr_out  = 32'b0;
@@ -78,193 +100,134 @@ localparam S_WAIT_INST = 3'd3;
 localparam S_WAIT_IDU  = 3'd4;
 localparam S_WAIT_IC   = 3'd5;
 
-reg [S_W-1:0]   state, next_state;
+reg [S_W-1:0]   state;
 
 reg [31:0]  ifu_current_pc_r;
+reg [31:0]  ic_data_r;
+reg [31:0]  inst_r;
 reg [3:0]   rid_r;
 
 localparam SDRAM_BASE = 32'ha0000000;
 localparam SDRAM_SIZE = 32'h8000000;
-wire need_cache = (SDRAM_BASE <= ifu_current_pc_in) && (ifu_current_pc_in < SDRAM_BASE + SDRAM_SIZE);
-reg  need_cache_r;
+wire need_cache = (SDRAM_BASE <= ifu_current_pc_r) && (ifu_current_pc_r < SDRAM_BASE + SDRAM_SIZE);
+
+assign ifu_to_pc_ready_out = (state == S_IDLE) && pc_to_ifu_valid_in;
+assign ifu_to_idu_valid_out= (state == S_WAIT_IDU);
+
+assign br_out = (need_cache) ? ic_br : state == S_WAIT_ARB ;
+assign bs_out = (need_cache) ? ic_bs:
+                state == S_SEND_AR  |
+                state == S_WAIT_INST;
+assign ic_bg = bg_in;
+
+assign arid_out    = bg_in ? need_cache ? ic_arid : 4'b0 : 0;
+assign araddr_out  = bg_in ? need_cache ? ic_araddr : ifu_current_pc_r : 0;
+assign arlen_out   = bg_in ? need_cache ? ic_arlen : 4'b0 : 0;
+assign arsize_out  = bg_in ? need_cache ? ic_arsize :
+                        (state == S_SEND_AR) ? 3'b010 : 3'b0 : 0;
+assign arburst_out = bg_in ? need_cache ? ic_arburst :
+                        (state == S_SEND_AR) ? 2'b01 : 2'b0 : 0;
+assign arvalid_out = bg_in ? need_cache ? ic_arvalid :
+                        (state == S_SEND_AR) : 0;
+assign rready_out  = bg_in ? need_cache ? ic_rready :
+                        (state == S_WAIT_INST) : 0;
+
+assign ifu_inst_out= (need_cache) ? ic_data_r : inst_r;
+
+always @(posedge clk) begin
+    if (rst) begin
+        ic_data_r <= 0;
+    end else if (ic_pvalid & ic_pready) begin
+        ic_data_r <= ic_pdata;
+    end
+end
+
+always @(posedge clk) begin
+    if (rst) begin
+        ifu_current_pc_r     <= 32'b0;
+    end else if (state == S_IDLE) begin
+        if (pc_to_ifu_valid_in & ifu_to_pc_ready_out) begin
+            ifu_current_pc_r    <= ifu_current_pc_in;
+        end
+    end
+end
+
+always @(posedge clk) begin
+    if (rvalid_in & rready_out & (state == S_WAIT_INST)) begin
+        mem_tracer_read(ifu_current_pc_r, rdata_in);
+        rid_r                <= rid_in;
+        inst_r               <= rdata_in;
+        if (rresp_in != 2'b00) begin
+            $display("IFU rresp: %d\n", rresp_in);
+            if (rresp_in == 2'b11) $fatal;
+        end
+    end
+end
 
 always @(posedge clk) begin
     if (rst) state <= S_IDLE;
-    else state <= next_state;
-
-    if (rst) begin
-        ifu_current_pc_r     <= 32'b0;
-        arid_out             <= 4'b0;
-        araddr_out           <= 32'b0;
-        arlen_out            <= 4'b0;
-        arsize_out           <= 3'b0;
-        arburst_out          <= 2'b0;
-        ifu_inst_out         <= 32'b0;
-        arvalid_out          <= 1'b0;
-        rready_out           <= 1'b0;
-        ifu_to_pc_ready_out  <= 1'b1;
-        ifu_to_idu_valid_out <= 1'b0;
-        br_out               <= 1'b0;
-        bs_out               <= 1'b0;
-        ic_arvalid           <= 1'b0;
-        ic_awvalid           <= 1'b0;
-        ic_wdata             <= 32'b0;
-        need_cache_r         <= 1'b0;
-    end else begin
+    else begin
         case (state)
             S_IDLE: begin
                 if (pc_to_ifu_valid_in & ifu_to_pc_ready_out) begin
-                    ifu_to_pc_ready_out <= 1'b0;
-                    ifu_current_pc_r    <= ifu_current_pc_in;
-                    ic_arvalid          <= need_cache;
-                    need_cache_r        <= need_cache;
-                    br_out              <= !need_cache;
+                    state <= need_cache ? S_WAIT_IC : S_WAIT_ARB;
                 end
             end
             S_WAIT_IC: begin
-                if (ic_arvalid & ic_rready) begin
-                    ic_arvalid <= 1'b0;
-                    if (ic_rvalid) begin
-                        ifu_inst_out <= ic_rdata;
-                        ifu_to_idu_valid_out <= 1'b1;
-                    end else begin
-                        br_out <= 1'b1;
-                    end
+                if (ic_pvalid & ic_pready) begin
+                    state <= S_WAIT_IDU;
                 end
             end
             S_WAIT_ARB: begin
                 if (bg_in) begin
-                    arid_out    <= 4'b0;
-                    araddr_out  <= ifu_current_pc_r;
-                    arlen_out   <= 4'b0;
-                    arsize_out  <= 3'b010;
-                    arburst_out <= 2'b01;
-                    arvalid_out <= 1'b1;
-                    br_out      <= 1'b0;
-                    bs_out      <= 1'b1;
+                    state <= S_SEND_AR;
                 end
             end
             S_SEND_AR: begin
                 if (arvalid_out & arready_in) begin
-                    araddr_out  <= 32'b0;
-                    arlen_out   <= 4'b0;
-                    arsize_out  <= 3'b0;
-                    arburst_out <= 2'b0;
-                    arvalid_out <= 1'b0;
-                    rready_out  <= 1'b1;
+                    state <= S_WAIT_INST;
                 end
             end
             S_WAIT_INST: begin
-                if (rvalid_in & rready_out) begin
-                    mem_tracer_read(ifu_current_pc_r, rdata_in);
-                    rid_r                <= rid_in;
-                    ifu_inst_out         <= rdata_in;
-                    ic_awvalid           <= need_cache_r;
-                    ic_wdata             <= rdata_in;
-                    if (rresp_in != 2'b00) begin
-                        $display("IFU rresp: %d\n", rresp_in);
-                        if (rresp_in == 2'b11) $fatal;
-                    end
-                    if (rlast_in) begin
-                        rready_out           <= 1'b0;
-                        ifu_to_idu_valid_out <= 1'b1;
-                        bs_out               <= 1'b0;
-                    end else begin
-                        rready_out           <= 1'b1;
-                    end
+                if (rvalid_in & rready_out & rlast_in) begin
+                    state <= S_WAIT_IDU;
                 end
             end
             S_WAIT_IDU: begin
-                ic_awvalid <= 1'b0;
-                if (idu_to_ifu_ready_in) begin
-                    ifu_to_pc_ready_out  <= 1'b1;
-                    ifu_to_idu_valid_out <= 1'b0;
-                    need_cache_r         <= 1'b0;
+                if (ifu_to_idu_valid_out && idu_to_ifu_ready_in) begin
+                    state <= S_IDLE;
                 end
             end
             default: begin
-                araddr_out           <= 32'b0;
-                ifu_inst_out         <= 32'b0;
-                arvalid_out          <= 1'b0;
-                rready_out           <= 1'b0;
-                ifu_to_idu_valid_out <= 1'b0;
-                br_out               <= 1'b0;
-                bs_out               <= 1'b0;
-                ic_arvalid           <= 1'b0;
-                ic_awvalid           <= 1'b0;
-                ic_wdata             <= 32'b0;
-                need_cache_r         <= 1'b0;
+                state <= S_IDLE;
             end
         endcase
     end
 end
 
-always @(*) begin
-    next_state = state;
-    case (state)
-        S_IDLE: begin
-            if (pc_to_ifu_valid_in & ifu_to_pc_ready_out) begin
-                next_state = need_cache ? S_WAIT_IC : S_WAIT_ARB;
-            end
-        end
-        S_WAIT_IC: begin
-            if (ic_arvalid & ic_rready) begin
-                if (ic_rvalid) begin
-                    next_state = S_WAIT_IDU;
-                end else begin
-                    next_state = S_WAIT_ARB;
-                end
-            end
-        end
-        S_WAIT_ARB: begin
-            if (bg_in) begin
-                next_state = S_SEND_AR;
-            end
-        end
-        S_SEND_AR: begin
-            if (arvalid_out & arready_in) begin
-                next_state = S_WAIT_INST;
-            end
-        end
-        S_WAIT_INST: begin
-            if (rvalid_in & rready_out & rlast_in) begin
-                next_state = S_WAIT_IDU;
-            end
-        end
-        S_WAIT_IDU: begin
-            if (idu_to_ifu_ready_in) begin
-                next_state = S_IDLE;
-            end
-        end
-        default: begin
-            next_state = S_IDLE;
-        end
-    endcase
-end
-
-wire [29:0] ic_araddr = ifu_current_pc_r[31:2];
-reg         ic_arvalid;
-wire [31:0] ic_rdata;
-wire        ic_rvalid;
-wire        ic_rready;
-wire [29:0] ic_awaddr = ifu_current_pc_r[31:2];
-reg         ic_awvalid;
-reg  [31:0] ic_wdata;
-
-ICache #(
-    .CACHE_M 	(2  ),
-    .CACHE_N 	(4  ))
-u_ICache(
-    .clk        	(clk        ),
-    .rst        	(rst        ),
-    .araddr_in  	(ic_araddr  ),
-    .arvalid_in 	(ic_arvalid ),
-    .rdata_out  	(ic_rdata   ),
-    .rvalid_out 	(ic_rvalid  ),
-    .rready_out     (ic_rready  ),
-    .awaddr_in  	(ic_awaddr  ),
-    .awvalid_in 	(ic_awvalid ),
-    .wdata_in   	(ic_wdata   )
+ICache_top u_ICache_top(
+    .clk     	(clk        ),
+    .rst     	(rst        ),
+    .paddr   	(ic_paddr   ),
+    .pdata   	(ic_pdata   ),
+    .pvalid  	(ic_pvalid  ),
+    .pready  	(ic_pready  ),
+    .arid    	(ic_arid    ),
+    .araddr  	(ic_araddr  ),
+    .arlen   	(ic_arlen   ),
+    .arsize  	(ic_arsize  ),
+    .arburst 	(ic_arburst ),
+    .arvalid 	(ic_arvalid ),
+    .arready 	(ic_arready ),
+    .rid     	(ic_rid     ),
+    .rdata   	(ic_rdata   ),
+    .rresp   	(ic_rresp   ),
+    .rlast   	(ic_rlast   ),
+    .rvalid  	(ic_rvalid  ),
+    .rready  	(ic_rready  ),
+    .bs      	(ic_bs      ),
+    .br      	(ic_br      ),
+    .bg      	(ic_bg      )
 );
 
 // Perf_CNT
@@ -280,7 +243,7 @@ end
 always @(posedge clk) begin
     case (state)
         S_WAIT_IC: begin
-            access_time <= need_cache_r ? access_time + 1 : 0;
+            access_time <= need_cache ? access_time + 1 : 0;
         end
         default: begin
             access_time <= 1;
@@ -297,7 +260,7 @@ always @(posedge clk) begin
             miss_penalty <= 0;
         end
         default: begin
-            miss_penalty <= need_cache_r ? miss_penalty + 1 : 0;
+            miss_penalty <= need_cache ? miss_penalty + 1 : 0;
         end
     endcase
 end

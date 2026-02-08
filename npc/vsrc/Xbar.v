@@ -123,7 +123,7 @@ always @(posedge clk) begin
                 end
             end
             S_BUSY: begin
-                if (m_rvalid && m_rready) begin
+                if (m_rvalid && m_rready && m_rlast) begin
                     state_r <= S_IDLE;
                     cur_slave_r <= 0;
                 end else begin
