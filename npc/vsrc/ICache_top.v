@@ -67,12 +67,12 @@ always @(posedge clk) begin
 end
 
 assign arid = 0;
-assign araddr = bg ? {addr_r, 2'b00} : 0;
-assign arlen = bg ? ARLEN : 0;
-assign arsize = bg ? 3'b010 : 0;
-assign arburst = bg ? 2'b01 : 0;
-assign arvalid = bg ? (state == S_GET_DATA) & !ar_handshake_r : 0;
-assign rready = bg ? (state == S_GET_DATA) & ar_handshake_r : 0;
+assign araddr = bs ? {addr_r, 2'b00} : 0;
+assign arlen = bs ? ARLEN : 0;
+assign arsize = bs ? 3'b010 : 0;
+assign arburst = bs ? 2'b01 : 0;
+assign arvalid = bs ? (state == S_GET_DATA) & !ar_handshake_r : 0;
+assign rready = bs ? (state == S_GET_DATA) & ar_handshake_r : 0;
 
 always @(posedge clk) begin
     if (rst) begin

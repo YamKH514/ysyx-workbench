@@ -120,16 +120,16 @@ assign bs_out = (need_cache) ? ic_bs:
                 state == S_WAIT_INST;
 assign ic_bg = bg_in;
 
-assign arid_out    = bg_in ? need_cache ? ic_arid : 4'b0 : 0;
-assign araddr_out  = bg_in ? need_cache ? ic_araddr : ifu_current_pc_r : 0;
-assign arlen_out   = bg_in ? need_cache ? ic_arlen : 4'b0 : 0;
-assign arsize_out  = bg_in ? need_cache ? ic_arsize :
+assign arid_out    = bs_out ? need_cache ? ic_arid : 4'b0 : 0;
+assign araddr_out  = bs_out ? need_cache ? ic_araddr : ifu_current_pc_r : 0;
+assign arlen_out   = bs_out ? need_cache ? ic_arlen : 4'b0 : 0;
+assign arsize_out  = bs_out ? need_cache ? ic_arsize :
                         (state == S_SEND_AR) ? 3'b010 : 3'b0 : 0;
-assign arburst_out = bg_in ? need_cache ? ic_arburst :
+assign arburst_out = bs_out ? need_cache ? ic_arburst :
                         (state == S_SEND_AR) ? 2'b01 : 2'b0 : 0;
-assign arvalid_out = bg_in ? need_cache ? ic_arvalid :
+assign arvalid_out = bs_out ? need_cache ? ic_arvalid :
                         (state == S_SEND_AR) : 0;
-assign rready_out  = bg_in ? need_cache ? ic_rready :
+assign rready_out  = bs_out ? need_cache ? ic_rready :
                         (state == S_WAIT_INST) : 0;
 
 assign ifu_inst_out= (need_cache) ? ic_data_r : inst_r;
