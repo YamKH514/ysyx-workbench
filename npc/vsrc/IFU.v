@@ -117,7 +117,6 @@ always @(posedge clk) begin
         need_cache_r <= 0;
     end else if (state == S_IDLE) begin
         if (pc_to_ifu_valid_in & ifu_to_pc_ready_out) need_cache_r <= need_cache;
-        else need_cache_r <= 0;
     end
 end
 
