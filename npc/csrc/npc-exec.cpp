@@ -67,11 +67,12 @@ static void exec_once(VTOP *top, VerilatedContext *contextp, VerilatedVcdC *tfp)
         if (S_IFU(access_ready)) perf_cnt.ifu_access_time((uint32_t)S_IFU(access_time));
         if (S_IFU(miss_ready)) perf_cnt.ifu_miss_penalty((uint32_t)S_IFU(miss_penalty));
         // Recoding LSU wait memory read
-        // if (S_CPU(lsu_arvalid) & S_CPU(xbar_arvalid)) perf_cnt.lsu_wait_num('r');
-        // if ((int)S_LSU(state) == 2 | (int)S_LSU(state) == 3) perf_cnt.lsu_wait_cyc('r');
+        svSetScope(svGetScopeFromName("TOP.ysyxSoCFull.asic.cpu.cpu.u_LSU"));
+        if (lsu_r_call()) perf_cnt.lsu_wait_num('r');
+        if ((int)S_LSU(state) == 2 | (int)S_LSU(state) == 3) perf_cnt.lsu_wait_cyc('r');
         // Recoding LSU wait memory write
-        // if (S_CPU(lsu_awvalid) & S_CPU(xbar_awready)) perf_cnt.lsu_wait_num('w');
-        // if ((int)S_LSU(state) == 4 | (int)S_LSU(state) == 6) perf_cnt.lsu_wait_cyc('w');
+        if (lsu_w_call()) perf_cnt.lsu_wait_num('w');
+        if ((int)S_LSU(state) == 4 | (int)S_LSU(state) == 6) perf_cnt.lsu_wait_cyc('w');
     }
 
     if ((S_CPU(wbu_to_pc_valid)) & (S_CPU(pc_to_wbu_ready))) 

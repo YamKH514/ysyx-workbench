@@ -279,4 +279,16 @@ assign wdata_aligned =  {32{w_byte_off == 2'b00}} & lsu_w_data_in      |
                         {32{w_byte_off == 2'b11}} & lsu_w_data_in << 24;
 assign wstrb_aligned = lsu_w_mask_r << w_byte_off;
 
+export "DPI-C" function lsu_w_call;
+function int lsu_w_call();
+    if (state == S_IDLE && exu_to_lsu_valid_in && lsu_we_r) return 1;
+    else return 0;
+endfunction
+
+export "DPI-C" function lsu_r_call;
+function int lsu_r_call();
+    if (state == S_IDLE && exu_to_lsu_valid_in && lsu_re_r) return 1;
+    else return 0;
+endfunction
+
 endmodule
