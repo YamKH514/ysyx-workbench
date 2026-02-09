@@ -88,12 +88,14 @@ extern "C" void mem_tracer_read(int32_t addr, int32_t data)
 
 extern "C" void mem_tracer_write(int32_t addr, int32_t data, int32_t strb)
 {
+#ifdef PLATFORM_YSYXSOC
     if ((CONFIG_SDRAMBASE <= addr) && (addr <= CONFIG_SDRAMBASE + CONFIG_SDRAMSIZE)) {
         if (strb & 1 << 0) pmem_write(addr+0, 1, (data >> 0) & 0xFF);
         if (strb & 1 << 1) pmem_write(addr+1, 1, (data >> 8) & 0xFF);
         if (strb & 1 << 2) pmem_write(addr+2, 1, (data >>16) & 0xFF);
         if (strb & 1 << 3) pmem_write(addr+3, 1, (data >>24) & 0xFF);
     }
+#endif
 #ifdef CONFIG_MTRACE
     printf("MEM_WRITE, waddr=0x%08x, wdata=0x%08x, wstrb=0x%08x\n", addr, data, strb);
 #endif
