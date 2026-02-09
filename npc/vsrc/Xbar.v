@@ -1,6 +1,3 @@
-`define DEVICE_BASE 32'h02000000
-`define RTC_ADDR    (`DEVICE_BASE + 32'h0000048)
-
 module Xbar(
     input               clk,
     input               rst,
@@ -96,6 +93,9 @@ module Xbar(
     output              s1_bready
 );
 
+localparam CLINT_LEFT = 32'h02000000;
+localparam CLINT_RIGHT= 32'h0200ffff;
+
 reg cur_slave_r;
 reg cur_slave_w;
 
@@ -116,7 +116,7 @@ always @(posedge clk) begin
             S_IDLE: begin
                 if (m_arvalid) begin
                     state_r <= S_BUSY;
-                    cur_slave_r <= m_araddr == `RTC_ADDR;
+                    cur_slave_r <= (CLINT_LEFT <= m_araddr) && (m_araddr < CLINT_RIGHT);
                 end else begin
                     state_r <= state_r;
                     cur_slave_r <= cur_slave_r;
@@ -149,7 +149,7 @@ always @(posedge clk) begin
             S_IDLE: begin
                 if (m_awvalid) begin
                     state_w <= S_BUSY;
-                    cur_slave_w <= m_awaddr == `RTC_ADDR;
+                    cur_slave_w <= (CLINT_LEFT <= m_awaddr) && (m_awaddr < CLINT_RIGHT);
                 end else begin
                     state_w <= state_w;
                     cur_slave_w <= cur_slave_w;
