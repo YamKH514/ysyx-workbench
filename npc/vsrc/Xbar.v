@@ -93,8 +93,8 @@ module Xbar(
     output              s1_bready
 );
 
-localparam CLINT_LEFT = 32'h02000000;
-localparam CLINT_RIGHT= 32'h0200ffff;
+parameter  CLINT_LEFT = 32'h02000000;
+localparam CLINT_RIGHT= CLINT_LEFT + 32'hffff;
 
 reg cur_slave_r;
 reg cur_slave_w;
