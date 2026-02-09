@@ -50,12 +50,14 @@ uint32_t host_to_guest(uint8_t *haddr) {
 
 static uint32_t pmem_read(uint32_t addr, int len)
 {
+    printf("pmem_read\n");
     uint32_t ret = host_read(guest_to_host(addr), len);
     return ret;
 }
 
 static void pmem_write(uint32_t addr, int len, uint32_t data)
 {
+    printf("pmem_write\n");
     host_write(guest_to_host(addr), len, data);
 }
 
