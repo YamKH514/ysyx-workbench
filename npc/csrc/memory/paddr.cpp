@@ -84,10 +84,10 @@ extern "C" void mem_tracer_read(int32_t addr, int32_t data)
 #endif
 }
 
-extern "C" void mem_tracer_write(int32_t addr, int32_t data)
+extern "C" void mem_tracer_write(int32_t addr, int32_t data, int32_t strb)
 {
 #ifdef CONFIG_MTRACE
-    printf("MEM_WRITE, waddr=0x%08x, wdata=0x%08x\n", addr, data);
+    printf("MEM_WRITE, waddr=0x%08x, wdata=0x%08x, wstrb=0x%08x\n", addr, data, strb);
 #endif
 }
 
