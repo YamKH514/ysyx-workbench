@@ -41,7 +41,11 @@ int main(int argc, char *argv[])
         sdb_mainloop();
     }
 
+#ifdef PLATFORM_YSYXSOC
     svSetScope(svGetScopeFromName("TOP.ysyxSoCFull.asic.cpu.cpu.u_IFU.u_ICache_top"));
+#else
+    svSetScope(svGetScopeFromName("TOP.top.u_IFU.u_ICache_top"));
+#endif
     perf_cnt.ifu_cache_call(cache_call());
     perf_cnt.ifu_cache_hit(cache_hit());
     perf_cnt.ifu_access_time(cache_at());

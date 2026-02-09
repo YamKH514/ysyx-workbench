@@ -64,7 +64,11 @@ static void exec_once(VTOP *top, VerilatedContext *contextp, VerilatedVcdC *tfp)
         if ((int)S_IFU(state) == 3) perf_cnt.ifu_wait_rd();
         else if (!(S_CPU(pc_to_ifu_valid) | S_CPU(ifu_to_pc_ready))) perf_cnt.ifu_wait_pc();
         // Recoding LSU wait memory read
+#ifdef PLATFORM_YSYXSOC
         svSetScope(svGetScopeFromName("TOP.ysyxSoCFull.asic.cpu.cpu.u_LSU"));
+#else
+        svSetScope(svGetScopeFromName("TOP.top.u_LSU"));
+#endif
         if (lsu_r_call()) perf_cnt.lsu_wait_num('r');
         if ((int)S_LSU(state) == 2 | (int)S_LSU(state) == 3) perf_cnt.lsu_wait_cyc('r');
         // Recoding LSU wait memory write
