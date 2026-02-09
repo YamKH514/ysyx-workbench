@@ -464,7 +464,7 @@ assign inst_bvalid = xbar_bvalid;
 assign lsu_bvalid = xbar_bvalid;
 assign xbar_bready = inst_bready | lsu_bready;
 
-Xbar#(.CLINT_LEFT   (32'ha0000000)) u_Xbar(
+Xbar u_Xbar(
     .clk        	        (clock              ),
     .rst       	            (reset              ),
     .m_arid                 (xbar_arid          ),
