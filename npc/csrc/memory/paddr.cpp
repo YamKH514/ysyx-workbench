@@ -146,7 +146,7 @@ extern "C" void psram_write(int32_t addr, int32_t data, int32_t mask) {
 
 extern "C" int32_t sdram_read(int32_t addr) {
     uint32_t raddr = CONFIG_SDRAMBASE + (uint32_t)addr;
-    uint32_t rdata = pmem_read(raddr, 2);
+    uint32_t rdata = pmem_read(raddr, 4);
     printf("sdram_read: raddr: 0x%08x, data: 0x%08x\n", raddr, rdata);
     return (int32_t)rdata;
 }
