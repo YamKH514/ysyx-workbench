@@ -179,6 +179,7 @@ extern int npcmem_read(int raddr)
 
 extern void npcmem_write(int waddr, int wdata, char wmask)
 {
+    printf("npcmem_write waddr=0x%08x, wdata=0x%08x, wmask=0x%02x\n", waddr, wdata, wmask);
     uint32_t addr = (uint32_t)waddr & ~0x3u, data = (uint32_t)wdata;
     uint8_t  mask = (uint8_t) wmask;
     if(addr == SERIAL_PORT)
