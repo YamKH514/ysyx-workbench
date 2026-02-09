@@ -67,7 +67,7 @@ always @(posedge clk) begin
 end
 
 assign arid = 0;
-assign araddr = bs ? {addr_r, 2'b00} : 0;
+assign araddr = bs ? {addr_r[29:1], 3'b000} : 0;
 assign arlen = bs ? ARLEN : 0;
 assign arsize = bs ? 3'b010 : 0;
 assign arburst = bs ? 2'b01 : 0;
@@ -91,7 +91,7 @@ end
 
 assign cache_paddr = addr_r;
 assign cache_valid = state == S_READ_CACHE;
-assign cache_waddr = addr_r + (r_cnt - 1);
+assign cache_waddr = {addr_r[29:1], 1'b0} + (r_cnt - 1);
 assign cache_wdata = rdata_r;
 assign cache_wvalid = state == S_WRITE_CACHE;
 
