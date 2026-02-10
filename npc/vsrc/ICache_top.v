@@ -29,7 +29,7 @@ module ICache_top(
     input           bg
 );
 
-localparam ARLEN = 4'b0001;
+localparam ARLEN = 4'b0000;
 
 wire [29:0] cache_paddr;
 wire [31:0] cache_pdata;
@@ -146,7 +146,7 @@ always @(posedge clk) begin
 end
 
 ICache #(
-    .CACHE_M 	(3  ),
+    .CACHE_M 	(2  ),
     .CACHE_N 	(4  ))
 u_ICache(
     .clk            	(clk            ),
