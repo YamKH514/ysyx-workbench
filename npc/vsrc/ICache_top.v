@@ -30,7 +30,7 @@ module ICache_top(
 );
 
 //* IF use burst, ARLEN need config
-localparam ARLEN = 4'b0000;
+localparam ARLEN = 4'b0001;
 
 wire [29:0] cache_paddr;
 wire [31:0] cache_pdata;
@@ -148,7 +148,7 @@ end
 
 //* IF use burst, need CACHE_M config
 ICache #(
-    .CACHE_M 	(2  ),
+    .CACHE_M 	(3  ),
     .CACHE_N 	(4  ))
 u_ICache(
     .clk            	(clk            ),
