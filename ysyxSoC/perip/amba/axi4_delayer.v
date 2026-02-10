@@ -71,7 +71,7 @@ module axi4_delayer(
   assign out_arsize = in_arsize;
   assign out_arburst = in_arburst;
   assign out_rready = (r_state == S_DELAY) & (r_delay_cnt == 1);
-  assign in_rvalid = out_rvalid;
+  assign in_rvalid = (r_state == S_DELAY) & (r_delay_cnt == 1);
   assign in_rid = out_rid;
   assign in_rdata = out_rdata;
   assign in_rresp = out_rresp;
@@ -122,7 +122,7 @@ module axi4_delayer(
           end
         end
         S_WAIT_PERIP: begin
-          if (in_rready) begin
+          if (out_rvalid & in_rready) begin
             r_state <= S_DELAY;
             r_target_state <= out_rlast ? S_IDLE : S_WAIT_PERIP;
             r_delay_cnt <= r_delay_cnt >> 6;
