@@ -70,12 +70,12 @@ module axi4_delayer(
   assign out_arlen = in_arlen;
   assign out_arsize = in_arsize;
   assign out_arburst = in_arburst;
-  assign out_rready = rready_r;
+  assign out_rready = (r_state == S_DELAY) & (r_delay_cnt == 1);
   assign in_rvalid = out_rvalid;
-  assign in_rid = rid_r;
-  assign in_rdata = rdata_r;
-  assign in_rresp = rresp_r;
-  assign in_rlast = rlast_r;
+  assign in_rid = out_rid;
+  assign in_rdata = out_rdata;
+  assign in_rresp = out_rresp;
+  assign in_rlast = out_rlast;
   assign in_awready = out_awready;
   assign out_awvalid = in_awvalid;
   assign out_awid = in_awid;
@@ -90,8 +90,8 @@ module axi4_delayer(
   assign out_wlast = in_wlast;
   assign out_bready = bready_r;
   assign in_bvalid = out_bvalid;
-  assign in_bid = bid_r;
-  assign in_bresp = bresp_r;
+  assign in_bid = out_bid;
+  assign in_bresp = out_bresp;
 
 // NPC Max Freq = 430MHz, Devices Frep = 100MHz
 // Freq ratio R = 4.3, Amplification factor S = 64
@@ -102,11 +102,7 @@ module axi4_delayer(
   localparam S_DELAY      = 3'd2;
 
 // R Channel
-  reg [ 3:0]    rid_r;
-  reg [31:0]    rdata_r;
-  reg [ 1:0]    rresp_r;
-  reg           rlast_r;
-  reg           rready_r;
+  // reg           rready_r;
 
   reg [S_W-1:0] r_state;
   reg [S_W-1:0] r_target_state;
@@ -151,27 +147,15 @@ module axi4_delayer(
     end
   end
 
-always @(posedge clock) begin
-  if (reset) begin
-    rid_r <= 0;
-    rready_r <= 0;
-    rdata_r <= 0;
-    rresp_r <= 0;
-    rlast_r <= 0;
-  end else begin
-    rready_r <= (r_state == S_DELAY) & (r_delay_cnt == 1);
-    if (out_rvalid) begin
-      rid_r <= out_rid;
-      rdata_r <= out_rdata;
-      rresp_r <= out_rresp;
-      rlast_r <= out_rlast;
-    end
-  end
-end
+// always @(posedge clock) begin
+//   if (reset) begin
+//     rready_r <= 0;
+//   end else begin
+//     rready_r <= (r_state == S_DELAY) & (r_delay_cnt == 1);
+//   end
+// end
 
 // W Channel
-  reg [ 3:0]    bid_r;
-  reg [ 1:0]    bresp_r;
   reg           bready_r;
 
   reg [S_W-1:0] w_state;
@@ -215,14 +199,9 @@ end
 
   always @(posedge clock) begin
     if (reset) begin
-      bid_r <= 0;
-      bresp_r <= 0;
+      bready_r <= 0;
     end else begin
       bready_r <= (w_state == S_DELAY) & (w_delay_cnt == 1);
-      if (out_bvalid) begin
-        bid_r <= out_bid;
-        bresp_r <= out_bresp;
-      end
     end
   end
 
