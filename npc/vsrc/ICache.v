@@ -21,7 +21,7 @@ localparam WORD_OFF_W = (CACHE_M > 2) ? (CACHE_M - 2) : 0;
 
 reg  [31-CACHE_M-CACHE_N:0] cache_tag  [CACHELINE_N];
 reg  [CACHELINE_W-1:0]      cache_data [CACHELINE_N];
-reg                         cache_valid[CACHELINE_N];
+reg  [WORD_OFF_W:0]         cache_valid[CACHELINE_N];
 wire [31-CACHE_M-CACHE_N:0] r_tag;
 wire [CACHE_N-1:0]          r_index;
 wire [31-CACHE_M-CACHE_N:0] w_tag;
@@ -42,7 +42,7 @@ generate
         wire [WORD_OFF_W-1:0]       w_word_off;
         assign {r_tag, r_index, r_word_off} = raddr_r;
         assign data_out = cache_data[r_index][32*r_word_off +: 32];
-        assign data_valid_out = (cache_tag[r_index] == r_tag) && cache_valid[r_index];
+        assign data_valid_out = (cache_tag[r_index] == r_tag) && cache_valid[r_index][r_word_off];
         assign {w_tag, w_index, w_word_off} = waddr_in;
         assign word_off = {{(8-WORD_OFF_W){1'b0}}, w_word_off};
     end
@@ -66,7 +66,7 @@ always @(posedge clk) begin
     if (!rst && wvalid_in) begin
         cache_tag[w_index]   <= w_tag;
         cache_data[w_index][32*word_off +: 32]  <= wdata_in;
-        cache_valid[w_index] <= 'd1;
+        cache_valid[w_index][word_off[WORD_OFF_W:0]] <= 'd1;
     end
 end
 

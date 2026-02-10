@@ -29,6 +29,7 @@ module ICache_top(
     input           bg
 );
 
+//* IF use burst, ARLEN need config
 localparam ARLEN = 4'b0000;
 
 wire [29:0] cache_paddr;
@@ -91,7 +92,8 @@ end
 
 assign cache_paddr = addr_r;
 assign cache_valid = state == S_READ_CACHE;
-assign cache_waddr = {addr_r[29:1], 1'b0} + (r_cnt - 1);
+//* IF use burst, need config
+assign cache_waddr = addr_r + r_cnt - 1;
 assign cache_wdata = rdata_r;
 assign cache_wvalid = state == S_WRITE_CACHE;
 
@@ -145,6 +147,7 @@ always @(posedge clk) begin
     end
 end
 
+//* IF use burst, need CACHE_M config
 ICache #(
     .CACHE_M 	(2  ),
     .CACHE_N 	(4  ))
