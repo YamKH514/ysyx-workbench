@@ -32,19 +32,8 @@ reg [29:0] raddr_r;
 
 generate
     if (WORD_OFF_W == 0) begin : GEN_NO_WORD_OFF
-        assign {r_tag, r_index} = raddr_r;
-        assign data_out = cache_data[r_index];
-        assign data_valid_out = (cache_tag[r_index] == r_tag) && cache_valid[r_index];
-        assign {w_tag, w_index} = waddr_in;
-        assign word_off = 0;
+        
     end else begin : GEN_HAS_WORD_OFF
-        wire [WORD_OFF_W-1:0]       r_word_off;
-        wire [WORD_OFF_W-1:0]       w_word_off;
-        assign {r_tag, r_index, r_word_off} = raddr_r;
-        assign data_out = cache_data[r_index][32*r_word_off +: 32];
-        assign data_valid_out = (cache_tag[r_index] == r_tag) && cache_valid[r_index][r_word_off];
-        assign {w_tag, w_index, w_word_off} = waddr_in;
-        assign word_off = {{(8-WORD_OFF_W){1'b0}}, w_word_off};
     end
 endgenerate
 
@@ -62,12 +51,38 @@ always @(posedge clk) begin
     end
 end
 
-always @(posedge clk) begin
-    if (!rst && wvalid_in) begin
-        cache_tag[w_index]   <= w_tag;
-        cache_data[w_index][32*word_off +: 32]  <= wdata_in;
-        cache_valid[w_index][word_off[WORD_OFF_W:0]] <= 'd1;
+generate
+    if (WORD_OFF_W == 0) begin : GEN_NO_WORD_OFF
+        assign {r_tag, r_index} = raddr_r;
+        assign data_out = cache_data[r_index];
+        assign data_valid_out = (cache_tag[r_index] == r_tag) && cache_valid[r_index];
+        assign {w_tag, w_index} = waddr_in;
+        assign word_off = 0;
+
+        always @(posedge clk) begin
+            if (!rst && wvalid_in) begin
+                cache_tag[w_index]   <= w_tag;
+                cache_data[w_index][32*word_off +: 32]  <= wdata_in;
+                cache_valid[w_index][0] <= 1'b1;
+            end
+        end
+    end else begin : GEN_HAS_WORD_OFF
+        wire [WORD_OFF_W-1:0]       r_word_off;
+        wire [WORD_OFF_W-1:0]       w_word_off;
+        assign {r_tag, r_index, r_word_off} = raddr_r;
+        assign data_out = cache_data[r_index][32*r_word_off +: 32];
+        assign data_valid_out = (cache_tag[r_index] == r_tag) && cache_valid[r_index][r_word_off];
+        assign {w_tag, w_index, w_word_off} = waddr_in;
+        assign word_off = {{(8-WORD_OFF_W){1'b0}}, w_word_off};
+
+        always @(posedge clk) begin
+            if (!rst && wvalid_in) begin
+                cache_tag[w_index]   <= w_tag;
+                cache_data[w_index][32*word_off +: 32]  <= wdata_in;
+                cache_valid[w_index][w_word_off] <= 1'b1;
+            end
+        end
     end
-end
+endgenerate
 
 endmodule
