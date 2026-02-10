@@ -162,7 +162,7 @@ module axi4_delayer(
           end
         end
         S_WAIT_PERIP: begin
-          if (out_bvalid & in_bready) begin
+          if (out_bvalid) begin
             w_state <= S_DELAY;
             w_delay_cnt <= w_delay_cnt >> 6;
           end else begin
