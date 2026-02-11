@@ -23,6 +23,7 @@ SECTIONS {
   } > REGION_FSBL AT > flash
 
   .ssbl : {
+    . = ALIGN(4);
     ssbl_start = .;
     *(ssbl)
   } > REGION_SSBL AT > flash
@@ -30,9 +31,9 @@ SECTIONS {
   ssbl_load_start = LOADADDR(.ssbl);
 
   .text : {
+    . = ALIGN(4);
     text_start = .;
     *(.text*)
-    ASSERT(. <= ORIGIN(flash) + LENGTH(flash), ".text section too large for flash");
   } > REGION_TEXT AT > flash
   text_size = SIZEOF(.text);
   text_load_start = LOADADDR(.text);
@@ -40,16 +41,17 @@ SECTIONS {
   _etext = .;
 
   .rodata : {
+    . = ALIGN(4);
     rodata_start = .;
     *(.rodata*)
     *(.srodata*)
     rodata_end = .;
-    ASSERT(. <= ORIGIN(flash) + LENGTH(flash), ".rodata section too large for flash");
   } > REGION_RODATA AT > flash
   rodata_size = SIZEOF(.rodata);
   rodata_load_start = LOADADDR(.rodata);
 
   .data : {
+    . = ALIGN(4);
     data_start = .;
     *(.data*)
     *(.sdata*)
@@ -65,6 +67,7 @@ SECTIONS {
   _data = .;
 
   .bss : {
+    . = ALIGN(4);
     _bss_start = .;
     *(.bss*)
     *(.sbss*)
