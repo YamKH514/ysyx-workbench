@@ -72,6 +72,7 @@ always @(posedge clk) begin
                 idu_to_ifu_ready_out <= 1'b0;
                 if (exu_to_idu_ready_in) begin
                     idu_to_exu_valid_out <= 1'b0;
+                    inst_r <= 0;
                 end
             end
             default: begin
