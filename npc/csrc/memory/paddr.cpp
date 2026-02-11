@@ -6,9 +6,6 @@
 #include "difftest-def.h"
 #include "cpu.h"
 
-#define DEVICE_BASE 0xa0000000
-#define SERIAL_PORT (DEVICE_BASE + 0x00003f8)
-
 // static uint32_t flash_data[10] =   {0x100007b7, // lui	a5,0x10000
 //                                     0x04100713, // li	a4,65
 //                                     0x00e78023, // sb	a4,0(a5) # 10000000
@@ -169,6 +166,9 @@ uint32_t paddr_read(uint32_t raddr)
 
 extern int npcmem_read(int raddr)
 {
+    if (raddr == 0x10000005) {
+        return 0;
+    }
     uint32_t addr = (uint32_t)raddr & ~0x3u;
     
     if(likely(in_pmem(addr)))
@@ -183,7 +183,7 @@ extern void npcmem_write(int waddr, int wdata, char wmask)
 {
     uint32_t addr = (uint32_t)waddr & ~0x3u, data = (uint32_t)wdata;
     uint8_t  mask = (uint8_t) wmask;
-    if(addr == SERIAL_PORT)
+    if(addr == 0x10000000)
     {
         putchar(data & 0xFF);
         return;
