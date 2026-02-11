@@ -43,6 +43,7 @@ wire        cache_ready;
 wire [29:0] cache_waddr;
 wire [31:0] cache_wdata;
 wire        cache_wvalid;
+wire        cache_flush;
 
 reg  [29:0] addr_r;
 reg  ar_handshake_r;
@@ -102,6 +103,7 @@ assign cache_valid = state == S_READ_CACHE;
 assign cache_waddr = {addr_r[29:1], 1'b0} + r_cnt - 1;
 assign cache_wdata = rdata_r;
 assign cache_wvalid = state == S_WRITE_CACHE;
+assign cache_flush = state == S_FLUSHING;
 
 assign br = state == S_WAIT_ARB;
 assign bs = state == S_GET_DATA|
@@ -114,6 +116,7 @@ localparam S_GET_CACHE   = 3'd2;
 localparam S_WAIT_ARB    = 3'd3;
 localparam S_GET_DATA    = 3'd4;
 localparam S_WRITE_CACHE = 3'd5;
+localparam S_FLUSHING    = 3'd6;
 
 reg [S_W-1:0] state;
 reg [S_W-1:0] target_state;
@@ -125,7 +128,8 @@ always @(posedge clk) begin
     end else begin
         case (state)
             S_IDLE: begin
-                if (pvalid && !fence_i) state <= S_READ_CACHE;
+                if (fence_i && !flush_done) state <= S_FLUSHING;
+                else if (pvalid) state <= S_READ_CACHE;
             end
             S_READ_CACHE: begin
                 if (cache_valid && cache_ready) state <= (cache_datav) ? S_GET_CACHE : S_WAIT_ARB;
@@ -145,11 +149,24 @@ always @(posedge clk) begin
             S_WRITE_CACHE: begin
                 state <= target_state;
             end
+            S_FLUSHING: begin
+                state <= S_IDLE;
+            end
             default: begin
                 state <= S_IDLE;
                 target_state <= S_IDLE;
             end
         endcase
+    end
+end
+
+reg  flush_done;
+always @(posedge clk) begin
+    if (rst) begin
+        flush_done <= 0;
+    end else begin
+        if (state == S_FLUSHING) flush_done <= 1;
+        if (!fence_i & state == S_IDLE) flush_done <= 0;
     end
 end
 
@@ -168,7 +185,7 @@ u_ICache(
     .waddr_in       	(cache_waddr    ),
     .wdata_in       	(cache_wdata    ),
     .wvalid_in      	(cache_wvalid   ),
-    .fence_i            (fence_i        )
+    .flush              (cache_flush    )
 );
 
 // Perf CNT
