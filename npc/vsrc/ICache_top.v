@@ -93,7 +93,8 @@ end
 
 assign cache_paddr = addr_r;
 assign cache_valid = state == S_READ_CACHE;
-assign cache_waddr = addr_r + r_cnt - 1;
+//* IF use burst, addr_r[29:n] need config
+assign cache_waddr = {addr_r[29:1], 1'b0} + r_cnt - 1;
 assign cache_wdata = rdata_r;
 assign cache_wvalid = state == S_WRITE_CACHE;
 
