@@ -30,8 +30,8 @@ module ICache_top(
 );
 
 //* IF use burst, ARLEN need config
-localparam ARLEN = 4'b0000;
-// localparam ARLEN = 4'b0001;
+// localparam ARLEN = 4'b0000;
+localparam ARLEN = 4'b0001;
 
 wire [29:0] cache_paddr;
 wire [31:0] cache_pdata;
@@ -70,8 +70,8 @@ end
 
 assign arid = 0;
 //* IF use burst, addr_r[29:n] need config
-assign araddr = bs ? {addr_r, 2'b0} : 0;
-// assign araddr = bs ? {addr_r[29:1], 3'b0} : 0;
+// assign araddr = bs ? {addr_r, 2'b0} : 0;
+assign araddr = bs ? {addr_r[29:1], 3'b0} : 0;
 assign arlen = bs ? ARLEN : 0;
 assign arsize = bs ? 3'b010 : 0;
 assign arburst = bs ? 2'b01 : 0;
@@ -96,8 +96,8 @@ end
 assign cache_paddr = addr_r;
 assign cache_valid = state == S_READ_CACHE;
 //* IF use burst, addr_r[29:n] need config
-assign cache_waddr = addr_r + r_cnt - 1;
-// assign cache_waddr = {addr_r[29:1], 1'b0} + r_cnt - 1;
+// assign cache_waddr = addr_r + r_cnt - 1;
+assign cache_waddr = {addr_r[29:1], 1'b0} + r_cnt - 1;
 assign cache_wdata = rdata_r;
 assign cache_wvalid = state == S_WRITE_CACHE;
 
@@ -153,7 +153,7 @@ end
 
 //* IF use burst, need CACHE_M config
 ICache #(
-    .CACHE_M 	(2  ),
+    .CACHE_M 	(3  ),
     .CACHE_N 	(4  ))
 u_ICache(
     .clk            	(clk            ),
