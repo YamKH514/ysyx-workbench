@@ -166,9 +166,6 @@ uint32_t paddr_read(uint32_t raddr)
 
 extern int npcmem_read(int raddr)
 {
-    if (raddr == 0x10000005) {
-        return 0;
-    }
     uint32_t addr = (uint32_t)raddr & ~0x3u;
     
     if(likely(in_pmem(addr)))
