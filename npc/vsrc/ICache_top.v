@@ -68,7 +68,8 @@ always @(posedge clk) begin
 end
 
 assign arid = 0;
-assign araddr = bs ? {addr_r, 2'b00} : 0;
+//* IF use burst, addr_r[29:n] need config
+assign araddr = bs ? {addr_r[29:1], 3'b0} : 0;
 assign arlen = bs ? ARLEN : 0;
 assign arsize = bs ? 3'b010 : 0;
 assign arburst = bs ? 2'b01 : 0;
