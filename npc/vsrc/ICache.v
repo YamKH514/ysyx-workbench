@@ -13,7 +13,7 @@ module ICache(
     input               wvalid_in
 );
 
-parameter  CACHE_M = 2;  /* 2^m Byte, default every cache line has 4Byte size */
+parameter  CACHE_M = 3;  /* 2^m Byte, default every cache line has 4Byte size */
 parameter  CACHE_N = 4;  /* CACHELINE_N = 2^n, default ICache has 16 cache line */
 localparam CACHELINE_W = 8 * (2 ** CACHE_M);
 localparam CACHELINE_N = 2 ** CACHE_N;
