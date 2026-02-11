@@ -7,6 +7,8 @@ module ICache_top(
     input           pvalid,
     output          pready,
 
+    input           fence_i,
+
     // AR
     output  [3:0]   arid,
     output  [31:0]  araddr,
@@ -123,7 +125,7 @@ always @(posedge clk) begin
     end else begin
         case (state)
             S_IDLE: begin
-                if (pvalid) state <= S_READ_CACHE;
+                if (pvalid && !fence_i) state <= S_READ_CACHE;
             end
             S_READ_CACHE: begin
                 if (cache_valid && cache_ready) state <= (cache_datav) ? S_GET_CACHE : S_WAIT_ARB;
@@ -165,7 +167,8 @@ u_ICache(
     .ready_out      	(cache_ready    ),
     .waddr_in       	(cache_waddr    ),
     .wdata_in       	(cache_wdata    ),
-    .wvalid_in      	(cache_wvalid   )
+    .wvalid_in      	(cache_wvalid   ),
+    .fence_i            (fence_i        )
 );
 
 // Perf CNT

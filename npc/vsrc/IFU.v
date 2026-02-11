@@ -9,6 +9,8 @@ module IFU(
     input               pc_to_ifu_valid_in,
     output              ifu_to_pc_ready_out,
 
+    input               fence_i_in,
+
     // AR
     output      [3:0]   arid_out,
     output      [31:0]  araddr_out,
@@ -221,6 +223,7 @@ ICache_top u_ICache_top(
     .pdata   	(ic_pdata   ),
     .pvalid  	(ic_pvalid  ),
     .pready  	(ic_pready  ),
+    .fence_i    (fence_i_in ),
     .arid    	(ic_arid    ),
     .araddr  	(ic_araddr  ),
     .arlen   	(ic_arlen   ),

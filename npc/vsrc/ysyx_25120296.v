@@ -108,6 +108,8 @@ wire    [31:0]  csr_r_mepc;
 wire            is_ecall;
 wire            is_mret;
 
+wire            fence_i;
+
 wire    [31:0]  lsu_r_data;
 
 wire    [8:0]   idu_to_lsu_data;
@@ -283,6 +285,7 @@ IFU u_IFU(
     .ifu_inst_out       	(ifu_inst           ),
     .pc_to_ifu_valid_in     (pc_to_ifu_valid    ),
     .ifu_to_pc_ready_out    (ifu_to_pc_ready    ),
+    .fence_i_in             (fence_i            ),
     .arid_out               (inst_arid          ),
     .araddr_out           	(inst_araddr        ),
     .arlen_out              (inst_arlen         ),
@@ -325,6 +328,7 @@ IDU u_IDU(
     .idu_inst_in           	(ifu_inst           ),
     .idu_inst_type_out     	(inst_type          ),
     .csr_we_out        	    (csr_we             ),
+    .funce_i_out            (fence_i            ),
     .exu_alu_fun_out       	(exu_alu_func       ),
     .exu_alu_src1_sel_out  	(exu_alu_src_sel1   ),
     .exu_alu_src2_sel_out  	(exu_alu_src_sel2   ),

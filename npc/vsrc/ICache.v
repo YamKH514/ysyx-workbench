@@ -10,7 +10,9 @@ module ICache(
 
     input       [29:0]  waddr_in,
     input       [31:0]  wdata_in,
-    input               wvalid_in
+    input               wvalid_in,
+
+    input               fence_i
 );
 
 parameter  CACHE_M = 2;  /* 2^m Byte, default every cache line has 4Byte size */
@@ -21,7 +23,7 @@ localparam WORD_OFF_W = (CACHE_M > 2) ? (CACHE_M - 2) : 0;
 
 reg  [31-CACHE_M-CACHE_N:0] cache_tag  [CACHELINE_N];
 reg  [CACHELINE_W-1:0]      cache_data [CACHELINE_N];
-reg                         cache_valid[CACHELINE_N];
+reg  [CACHELINE_N-1:0]      cache_valid;
 wire [31-CACHE_M-CACHE_N:0] r_tag;
 wire [CACHE_N-1:0]          r_index;
 wire [31-CACHE_M-CACHE_N:0] w_tag;
@@ -53,7 +55,7 @@ always @(posedge clk) begin
         raddr_r    <= 'd0;
         ready_out <= 'd0;
     end else begin
-        if (valid_in) begin
+        if (valid_in && !fence_i) begin
             raddr_r    <= addr_in;
             ready_out <= 'd1;
         end else begin
@@ -63,7 +65,9 @@ always @(posedge clk) begin
 end
 
 always @(posedge clk) begin
-    if (!rst && wvalid_in) begin
+    if (fence_i) begin
+        cache_valid <= 0;
+    end else if (!rst && wvalid_in) begin
         cache_tag[w_index]   <= w_tag;
         cache_data[w_index][32*word_off +: 32]  <= wdata_in;
         cache_valid[w_index] <= 'd1;
