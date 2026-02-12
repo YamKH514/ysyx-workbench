@@ -43,7 +43,7 @@ module CLINT(
     input               bready_in
 );
 
-import "DPI-C" function void clint_difftest_skip();
+// import "DPI-C" function void clint_difftest_skip();
 
 reg [3:0]   arid_r;
 reg [31:0]  araddr_r;
@@ -187,7 +187,7 @@ always @(*) begin
             end
         end
         S_GET_AR: begin
-            clint_difftest_skip();
+            // clint_difftest_skip();
             r_next_state = S_SEND_R;
         end
         S_SEND_R: begin

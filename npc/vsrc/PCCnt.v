@@ -17,14 +17,36 @@ module PCCnt(
 
 parameter RESET_PC = 32'h30000000;
 
+wire        is_trap;
+wire        is_jump;
+wire [31:0] base;
+wire [31:0] offset;
+wire [31:0] addr_res;
+
+assign is_trap = ~pc_cnt_npc_src_sel_in[3] & pc_cnt_npc_src_sel_in[2];
+assign is_jump = pc_cnt_npc_src_sel_in[3];
+
+assign base = 
+            is_trap ? 32'b0 :
+            (!is_jump & pc_cnt_npc_src_sel_in[1]) ? pc_cnt_rd1_in : pc_cnt_pc_out;
+assign offset = 
+            is_trap ? 32'b0 :
+            is_jump ?
+            (pc_cnt_npc_src_sel_in[2] == pc_cnt_cmp_res_in) ? pc_cnt_imm_in : 4 :
+            pc_cnt_npc_src_sel_in[0] ? pc_cnt_imm_in : 32'd4;
+
+assign addr_res = base + offset;
+
+assign pc_cnt_npc_out = is_trap ? pc_cnt_trap_npc_in : addr_res;
+
 localparam S_IDLE = 1'd0;
 localparam S_BUSY = 1'd1;
 
 reg state, next_state;
 
-assign pc_cnt_npc_out = (pc_cnt_npc_src_sel_in[3] == 1'b0) ?
-                        (pc_cnt_npc_src_sel_in[2] == 1'b1 ? pc_cnt_trap_npc_in : (((pc_cnt_npc_src_sel_in[1] == 1'b0) ? pc_cnt_pc_out : pc_cnt_rd1_in) + ((pc_cnt_npc_src_sel_in[0] == 1'b0) ? 32'd4 : pc_cnt_imm_in))) :
-                        (pc_cnt_pc_out + ((pc_cnt_npc_src_sel_in[2] == pc_cnt_cmp_res_in) ? pc_cnt_imm_in : 4));
+// assign pc_cnt_npc_out = (pc_cnt_npc_src_sel_in[3] == 1'b0) ?
+//                         (pc_cnt_npc_src_sel_in[2] == 1'b1 ? pc_cnt_trap_npc_in : (((pc_cnt_npc_src_sel_in[1] == 1'b0) ? pc_cnt_pc_out : pc_cnt_rd1_in) + ((pc_cnt_npc_src_sel_in[0] == 1'b0) ? 32'd4 : pc_cnt_imm_in))) :
+//                         (pc_cnt_pc_out + ((pc_cnt_npc_src_sel_in[2] == pc_cnt_cmp_res_in) ? pc_cnt_imm_in : 4));
 
 always @(posedge clk) begin
     if (rst) begin

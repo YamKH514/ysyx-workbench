@@ -33,7 +33,7 @@ module ICache_top(
 
 //* IF use burst, ARLEN need config
 // localparam ARLEN = 4'b0000;
-localparam ARLEN = 4'b0011;
+localparam ARLEN = 4'b0001;
 
 wire [29:0] cache_paddr;
 wire [31:0] cache_pdata;
@@ -74,7 +74,7 @@ end
 assign arid = 0;
 //* IF use burst, addr_r[29:n] need config
 // assign araddr = bs ? {addr_r, 2'b0} : 0;
-assign araddr = bs ? {addr_r[29:2], 4'b0} : 0;
+assign araddr = bs ? {addr_r[29:1], 3'b0} : 0;
 assign arlen = bs ? ARLEN : 0;
 assign arsize = bs ? 3'b010 : 0;
 assign arburst = bs ? 2'b01 : 0;
@@ -100,7 +100,7 @@ assign cache_paddr = addr_r;
 assign cache_valid = state == S_READ_CACHE;
 //* IF use burst, addr_r[29:n] need config
 // assign cache_waddr = addr_r + r_cnt - 1;
-assign cache_waddr = {addr_r[29:2], 2'b0} + r_cnt - 1;
+assign cache_waddr = {addr_r[29:1], 1'b0} + r_cnt - 1;
 assign cache_wdata = rdata_r;
 assign cache_wvalid = state == S_WRITE_CACHE;
 assign cache_flush = state == S_FLUSHING;
@@ -172,8 +172,8 @@ end
 
 //* IF use burst, need CACHE_M config
 ICache #(
-    .CACHE_M 	(4  ),
-    .CACHE_N 	(8  ))
+    .CACHE_M 	(3  ),
+    .CACHE_N 	(4  ))
 u_ICache(
     .clk            	(clk            ),
     .rst            	(rst            ),
@@ -189,95 +189,95 @@ u_ICache(
 );
 
 // Perf CNT
-reg [63:0] hit_cnt;
-reg hit_need_recode;
-always @(posedge clk) begin
-    case (state)
-        S_IDLE: begin
-            if (pvalid) hit_need_recode <= 1;
-        end
-        S_READ_CACHE: begin
-            if (cache_valid && cache_ready) begin
-                if (hit_need_recode && cache_datav) hit_cnt <= hit_cnt + 1;
-                hit_need_recode <= 0;
-            end
-        end
-        default: begin
-            hit_need_recode <= 0;
-        end
-    endcase
-end
+// reg [63:0] hit_cnt;
+// reg hit_need_recode;
+// always @(posedge clk) begin
+//     case (state)
+//         S_IDLE: begin
+//             if (pvalid) hit_need_recode <= 1;
+//         end
+//         S_READ_CACHE: begin
+//             if (cache_valid && cache_ready) begin
+//                 if (hit_need_recode && cache_datav) hit_cnt <= hit_cnt + 1;
+//                 hit_need_recode <= 0;
+//             end
+//         end
+//         default: begin
+//             hit_need_recode <= 0;
+//         end
+//     endcase
+// end
 
-export "DPI-C" function cache_hit;
-function longint cache_hit();
-    return hit_cnt;
-endfunction
+// export "DPI-C" function cache_hit;
+// function longint cache_hit();
+//     return hit_cnt;
+// endfunction
 
-reg [63:0] call_cnt;
-always @(posedge clk) begin
-    if (state == S_IDLE && pvalid) begin
-        call_cnt <= call_cnt + 1;
-    end
-end
+// reg [63:0] call_cnt;
+// always @(posedge clk) begin
+//     if (state == S_IDLE && pvalid) begin
+//         call_cnt <= call_cnt + 1;
+//     end
+// end
 
-export "DPI-C" function cache_call;
-function longint cache_call();
-    return call_cnt;
-endfunction
+// export "DPI-C" function cache_call;
+// function longint cache_call();
+//     return call_cnt;
+// endfunction
 
-reg [63:0] at_cnt;
-reg at_need_recode;
-always @(posedge clk) begin
-    if (rst) begin
-        at_cnt <= 0;
-    end else begin
-        case (state)
-            S_IDLE: begin
-                if (pvalid) begin
-                    at_cnt <= at_cnt + 1;
-                    at_need_recode <= 1;
-                end
-            end
-            S_READ_CACHE: begin
-                if (at_need_recode) at_cnt <= at_cnt + 1;
-                if (cache_valid && cache_ready) at_need_recode <= 0;
-            end
-            default: begin
-                at_need_recode <= 0;
-            end
-        endcase
-    end
-end
+// reg [63:0] at_cnt;
+// reg at_need_recode;
+// always @(posedge clk) begin
+//     if (rst) begin
+//         at_cnt <= 0;
+//     end else begin
+//         case (state)
+//             S_IDLE: begin
+//                 if (pvalid) begin
+//                     at_cnt <= at_cnt + 1;
+//                     at_need_recode <= 1;
+//                 end
+//             end
+//             S_READ_CACHE: begin
+//                 if (at_need_recode) at_cnt <= at_cnt + 1;
+//                 if (cache_valid && cache_ready) at_need_recode <= 0;
+//             end
+//             default: begin
+//                 at_need_recode <= 0;
+//             end
+//         endcase
+//     end
+// end
 
-export "DPI-C" function cache_at;
-function longint cache_at();
-    return at_cnt;
-endfunction
+// export "DPI-C" function cache_at;
+// function longint cache_at();
+//     return at_cnt;
+// endfunction
 
-reg [63:0] mt_cnt;
-always @(posedge clk) begin
-    if (rst) begin
-        mt_cnt <= 0;
-    end else begin
-        case (state)
-            S_WAIT_ARB: begin
-                mt_cnt <= mt_cnt + 1;
-            end
-            S_GET_DATA: begin
-                mt_cnt <= mt_cnt + 1;
-            end
-            S_WRITE_CACHE: begin
-                mt_cnt <= mt_cnt + 1;
-            end
-            default: begin
-            end
-        endcase
-    end
-end
+// reg [63:0] mt_cnt;
+// always @(posedge clk) begin
+//     if (rst) begin
+//         mt_cnt <= 0;
+//     end else begin
+//         case (state)
+//             S_WAIT_ARB: begin
+//                 mt_cnt <= mt_cnt + 1;
+//             end
+//             S_GET_DATA: begin
+//                 mt_cnt <= mt_cnt + 1;
+//             end
+//             S_WRITE_CACHE: begin
+//                 mt_cnt <= mt_cnt + 1;
+//             end
+//             default: begin
+//             end
+//         endcase
+//     end
+// end
 
-export "DPI-C" function cache_mt;
-function longint cache_mt();
-    return mt_cnt;
-endfunction
+// export "DPI-C" function cache_mt;
+// function longint cache_mt();
+//     return mt_cnt;
+// endfunction
 
 endmodule
