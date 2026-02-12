@@ -109,9 +109,10 @@ reg [31:0]  ic_data_r;
 reg [31:0]  inst_r;
 reg [3:0]   rid_r;
 
-localparam SDRAM_BASE = 32'ha0000000;
-localparam SDRAM_SIZE = 32'h8000000;
-wire need_cache = (SDRAM_BASE <= ifu_current_pc_in) && (ifu_current_pc_in < SDRAM_BASE + SDRAM_SIZE);
+// localparam SDRAM_BASE = 32'ha0000000;
+// localparam SDRAM_SIZE = 32'h8000000;
+// wire need_cache = (SDRAM_BASE <= ifu_current_pc_in) && (ifu_current_pc_in < SDRAM_BASE + SDRAM_SIZE);
+wire need_cache = ifu_current_pc_in[31-:4] == 4'ha && ifu_current_pc_in[27-:4] < 4'h9;
 reg  need_cache_r;
 
 always @(posedge clk) begin
@@ -131,17 +132,14 @@ assign bs_out = (need_cache_r) ? ic_bs:
                 state == S_WAIT_INST;
 assign ic_bg = bg_in;
 
-assign arid_out    = bs_out ? need_cache_r ? ic_arid : 4'b0 : 0;
-assign araddr_out  = bs_out ? need_cache_r ? ic_araddr : ifu_current_pc_r : 0;
-assign arlen_out   = bs_out ? need_cache_r ? ic_arlen : 4'b0 : 0;
-assign arsize_out  = bs_out ? need_cache_r ? ic_arsize :
-                        (state == S_SEND_AR) ? 3'b010 : 3'b0 : 0;
-assign arburst_out = bs_out ? need_cache_r ? ic_arburst :
-                        (state == S_SEND_AR) ? 2'b01 : 2'b0 : 0;
-assign arvalid_out = bs_out ? need_cache_r ? ic_arvalid :
-                        (state == S_SEND_AR) : 0;
-assign rready_out  = bs_out ? need_cache_r ? ic_rready :
-                        (state == S_WAIT_INST) : 0;
+// assign arid_out    = bs_out ? need_cache_r ? ic_arid : 4'b0 : 0;
+assign arid_out    = {4{bs_out && need_cache_r}} & ic_arid;
+assign araddr_out  = {32{bs_out}} & (need_cache_r ? ic_araddr : ifu_current_pc_r);
+assign arlen_out   = {4{bs_out && need_cache_r}} & ic_arlen;
+assign arsize_out  = {3{bs_out}} & (need_cache_r ? ic_arsize : {3{state == S_SEND_AR}} & 3'b010);
+assign arburst_out = {2{bs_out}} & (need_cache_r ? ic_arburst : {1'b0, state == S_SEND_AR});
+assign arvalid_out = bs_out & (need_cache_r ? ic_arvalid : (state == S_SEND_AR));
+assign rready_out  = bs_out & (need_cache_r ? ic_rready : (state == S_WAIT_INST));
 
 assign ifu_inst_out= (need_cache_r) ? ic_data_r : inst_r;
 
