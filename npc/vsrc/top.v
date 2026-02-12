@@ -6,6 +6,7 @@ module top(
 wire    [31:0]  pc;
 wire    [31:0]  npc;
 
+// To keep wire npc
 reg [31:0] npc_r;
 always @(posedge clock) begin
     npc_r <= npc;
