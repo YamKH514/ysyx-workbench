@@ -79,6 +79,12 @@ assign io_slave_bvalid = 0;
 wire    [31:0]  pc;
 wire    [31:0]  npc;
 
+// To keep wire npc
+reg [31:0] npc_r;
+always @(posedge clock) begin
+    npc_r <= npc;
+end
+
 wire    [2:0]   inst_type;
 wire    [31:0]  trap_npc;
 wire    [31:0]  imm_ext;
