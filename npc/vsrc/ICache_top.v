@@ -189,95 +189,95 @@ u_ICache(
 );
 
 // Perf CNT
-// reg [63:0] hit_cnt;
-// reg hit_need_recode;
-// always @(posedge clk) begin
-//     case (state)
-//         S_IDLE: begin
-//             if (pvalid) hit_need_recode <= 1;
-//         end
-//         S_READ_CACHE: begin
-//             if (cache_valid && cache_ready) begin
-//                 if (hit_need_recode && cache_datav) hit_cnt <= hit_cnt + 1;
-//                 hit_need_recode <= 0;
-//             end
-//         end
-//         default: begin
-//             hit_need_recode <= 0;
-//         end
-//     endcase
-// end
+reg [63:0] hit_cnt;
+reg hit_need_recode;
+always @(posedge clk) begin
+    case (state)
+        S_IDLE: begin
+            if (pvalid) hit_need_recode <= 1;
+        end
+        S_READ_CACHE: begin
+            if (cache_valid && cache_ready) begin
+                if (hit_need_recode && cache_datav) hit_cnt <= hit_cnt + 1;
+                hit_need_recode <= 0;
+            end
+        end
+        default: begin
+            hit_need_recode <= 0;
+        end
+    endcase
+end
 
-// export "DPI-C" function cache_hit;
-// function longint cache_hit();
-//     return hit_cnt;
-// endfunction
+export "DPI-C" function cache_hit;
+function longint cache_hit();
+    return hit_cnt;
+endfunction
 
-// reg [63:0] call_cnt;
-// always @(posedge clk) begin
-//     if (state == S_IDLE && pvalid) begin
-//         call_cnt <= call_cnt + 1;
-//     end
-// end
+reg [63:0] call_cnt;
+always @(posedge clk) begin
+    if (state == S_IDLE && pvalid) begin
+        call_cnt <= call_cnt + 1;
+    end
+end
 
-// export "DPI-C" function cache_call;
-// function longint cache_call();
-//     return call_cnt;
-// endfunction
+export "DPI-C" function cache_call;
+function longint cache_call();
+    return call_cnt;
+endfunction
 
-// reg [63:0] at_cnt;
-// reg at_need_recode;
-// always @(posedge clk) begin
-//     if (rst) begin
-//         at_cnt <= 0;
-//     end else begin
-//         case (state)
-//             S_IDLE: begin
-//                 if (pvalid) begin
-//                     at_cnt <= at_cnt + 1;
-//                     at_need_recode <= 1;
-//                 end
-//             end
-//             S_READ_CACHE: begin
-//                 if (at_need_recode) at_cnt <= at_cnt + 1;
-//                 if (cache_valid && cache_ready) at_need_recode <= 0;
-//             end
-//             default: begin
-//                 at_need_recode <= 0;
-//             end
-//         endcase
-//     end
-// end
+reg [63:0] at_cnt;
+reg at_need_recode;
+always @(posedge clk) begin
+    if (rst) begin
+        at_cnt <= 0;
+    end else begin
+        case (state)
+            S_IDLE: begin
+                if (pvalid) begin
+                    at_cnt <= at_cnt + 1;
+                    at_need_recode <= 1;
+                end
+            end
+            S_READ_CACHE: begin
+                if (at_need_recode) at_cnt <= at_cnt + 1;
+                if (cache_valid && cache_ready) at_need_recode <= 0;
+            end
+            default: begin
+                at_need_recode <= 0;
+            end
+        endcase
+    end
+end
 
-// export "DPI-C" function cache_at;
-// function longint cache_at();
-//     return at_cnt;
-// endfunction
+export "DPI-C" function cache_at;
+function longint cache_at();
+    return at_cnt;
+endfunction
 
-// reg [63:0] mt_cnt;
-// always @(posedge clk) begin
-//     if (rst) begin
-//         mt_cnt <= 0;
-//     end else begin
-//         case (state)
-//             S_WAIT_ARB: begin
-//                 mt_cnt <= mt_cnt + 1;
-//             end
-//             S_GET_DATA: begin
-//                 mt_cnt <= mt_cnt + 1;
-//             end
-//             S_WRITE_CACHE: begin
-//                 mt_cnt <= mt_cnt + 1;
-//             end
-//             default: begin
-//             end
-//         endcase
-//     end
-// end
+reg [63:0] mt_cnt;
+always @(posedge clk) begin
+    if (rst) begin
+        mt_cnt <= 0;
+    end else begin
+        case (state)
+            S_WAIT_ARB: begin
+                mt_cnt <= mt_cnt + 1;
+            end
+            S_GET_DATA: begin
+                mt_cnt <= mt_cnt + 1;
+            end
+            S_WRITE_CACHE: begin
+                mt_cnt <= mt_cnt + 1;
+            end
+            default: begin
+            end
+        endcase
+    end
+end
 
-// export "DPI-C" function cache_mt;
-// function longint cache_mt();
-//     return mt_cnt;
-// endfunction
+export "DPI-C" function cache_mt;
+function longint cache_mt();
+    return mt_cnt;
+endfunction
 
 endmodule
