@@ -124,7 +124,7 @@ assign wdata_out   = (state == S_W_SEND) ? wdata_aligned : 32'd0;
 assign wstrb_out   = (state == S_W_SEND) ? wstrb_aligned : 4'd0;
 assign wlast_out   = (state == S_W_SEND);
 assign wvalid_out  = (state == S_W_SEND) & !w_handshake_r;
-assign bready_out  = (state == S_GET_B) & bvalid_in;
+assign bready_out  = (state == S_GET_B);
 
 assign arid_out    = 4'b0;
 assign araddr_out  = (state == S_SEND_AR) ? lsu_r_addr_in : 32'b0;
