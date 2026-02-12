@@ -132,7 +132,6 @@ assign bs_out = (need_cache_r) ? ic_bs:
                 state == S_WAIT_INST;
 assign ic_bg = bg_in;
 
-// assign arid_out    = bs_out ? need_cache_r ? ic_arid : 4'b0 : 0;
 assign arid_out    = {4{bs_out && need_cache_r}} & ic_arid;
 assign araddr_out  = {32{bs_out}} & (need_cache_r ? ic_araddr : ifu_current_pc_r);
 assign arlen_out   = {4{bs_out && need_cache_r}} & ic_arlen;
