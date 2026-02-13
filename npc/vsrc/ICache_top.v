@@ -131,7 +131,7 @@ always @(posedge clk) begin
         case (state)
             S_IDLE: begin
                 if (fence_i && !flush_done) state <= S_FLUSHING;
-                else if (pvalid) state <= S_READ_CACHE;
+                else if (pvalid) state <= need_cache ? S_READ_CACHE : S_WAIT_ARB;
             end
             S_READ_CACHE: begin
                 if (cache_valid && cache_ready) state <= (cache_datav) ? S_GET_CACHE : S_WAIT_ARB;
