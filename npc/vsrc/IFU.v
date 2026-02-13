@@ -137,15 +137,15 @@ assign ifu_to_idu_valid_out= (state == S_WAIT_IDU);
 // assign arvalid_out = bs_out & (need_cache_r ? ic_arvalid : (state == S_SEND_AR));
 // assign rready_out  = bs_out & (need_cache_r ? ic_rready : (state == S_WAIT_INST));
 
-// assign ifu_inst_out= (need_cache_r) ? ic_data_r : inst_r;
+assign ifu_inst_out= ic_data_r;
 
-// always @(posedge clk) begin
-//     if (rst) begin
-//         ic_data_r <= 0;
-//     end else if (ic_pvalid & ic_pready) begin
-//         ic_data_r <= ic_pdata;
-//     end
-// end
+always @(posedge clk) begin
+    if (rst) begin
+        ic_data_r <= 0;
+    end else if (ic_pvalid & ic_pready) begin
+        ic_data_r <= ic_pdata;
+    end
+end
 
 always @(posedge clk) begin
     if (rst) begin
