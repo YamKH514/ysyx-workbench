@@ -9,16 +9,33 @@ module GPR(
     output  reg [31:0]  gpr_r_data2_out
 );
 
-RegisterFile #(5, 32) u_RegisterFile
-(
-    .clk         	(clk            ),
-    .ReadAddr1   	(gpr_r_addr1_in ),
-    .ReadAddr2   	(gpr_r_addr2_in ),
-    .WriteAddr   	(gpr_w_addr_in  ),
-    .WriteData   	(gpr_w_data_in  ),
-    .RegWrite    	(gpr_we_in      ),
-    .ReadData1   	(gpr_r_data1_out),
-    .ReadData2   	(gpr_r_data2_out)
-);
+// RegisterFile #(5, 32) u_RegisterFile
+// (
+//     .clk         	(clk            ),
+//     .ReadAddr1   	(gpr_r_addr1_in ),
+//     .ReadAddr2   	(gpr_r_addr2_in ),
+//     .WriteAddr   	(gpr_w_addr_in  ),
+//     .WriteData   	(gpr_w_data_in  ),
+//     .RegWrite    	(gpr_we_in      ),
+//     .ReadData1   	(gpr_r_data1_out),
+//     .ReadData2   	(gpr_r_data2_out)
+// );
+
+reg [31:0] rf [16];
+
+always @(posedge clk) begin
+    if (gpr_we_in & gpr_w_addr_in != 5'b0) rf[gpr_w_addr_in[3:0]] <= gpr_w_data_in;
+end
+
+assign gpr_r_data1_out = rf[gpr_r_addr1_in[3:0]];
+assign gpr_r_data2_out = rf[gpr_r_addr2_in[3:0]];
+
+export "DPI-C" function get_gpr;
+function void get_gpr(output int out_gpr[16]);
+    out_gpr[0] = 0;
+    for (int i = 1; i < 16; i++) begin
+        out_gpr[i] = rf[i];
+    end
+endfunction
 
 endmodule

@@ -90,9 +90,9 @@ static void exec_once(VTOP *top, VerilatedContext *contextp, VerilatedVcdC *tfp)
         cpu.pc = S_CPU(pc);
         cpu.npc = S_CPU(npc);
 #ifdef PLATFORM_YSYXSOC
-        svSetScope(svGetScopeFromName("TOP.ysyxSoCFull.asic.cpu.cpu.u_GPR.u_RegisterFile"));
+        svSetScope(svGetScopeFromName("TOP.ysyxSoCFull.asic.cpu.cpu.u_GPR"));
 #else
-        svSetScope(svGetScopeFromName("TOP.top.u_GPR.u_RegisterFile"));
+        svSetScope(svGetScopeFromName("TOP.top.u_GPR"));
 #endif
         get_gpr(cpu.gpr);
 #ifdef PLATFORM_YSYXSOC

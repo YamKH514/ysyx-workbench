@@ -19,8 +19,8 @@ always @(posedge clk) begin
         rf[WriteAddr] <= WriteData;
 end
 
-assign ReadData1 = (ReadAddr1 == 0) ? 0 : rf[ReadAddr1];
-assign ReadData2 = (ReadAddr2 == 0) ? 0 : rf[ReadAddr2];
+assign ReadData1 = {DATA_WIDTH{ReadAddr1}} & rf[ReadAddr1];
+assign ReadData2 = {DATA_WIDTH{ReadAddr2}} & rf[ReadAddr2];
 
 export "DPI-C" function get_gpr;
 function void get_gpr(output int out_gpr[16]);
