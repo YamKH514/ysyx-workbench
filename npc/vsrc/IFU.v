@@ -109,9 +109,6 @@ reg [31:0]  ic_data_r;
 reg [31:0]  inst_r;
 reg [3:0]   rid_r;
 
-// localparam SDRAM_BASE = 32'ha0000000;
-// localparam SDRAM_SIZE = 32'h8000000;
-// wire need_cache = (SDRAM_BASE <= ifu_current_pc_in) && (ifu_current_pc_in < SDRAM_BASE + SDRAM_SIZE);
 wire need_cache = ifu_current_pc_in[31-:4] == 4'ha && ifu_current_pc_in[27-:4] < 4'h9;
 reg  need_cache_r;
 
