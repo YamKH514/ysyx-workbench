@@ -9,18 +9,6 @@ module GPR(
     output  reg [31:0]  gpr_r_data2_out
 );
 
-// RegisterFile #(5, 32) u_RegisterFile
-// (
-//     .clk         	(clk            ),
-//     .ReadAddr1   	(gpr_r_addr1_in ),
-//     .ReadAddr2   	(gpr_r_addr2_in ),
-//     .WriteAddr   	(gpr_w_addr_in  ),
-//     .WriteData   	(gpr_w_data_in  ),
-//     .RegWrite    	(gpr_we_in      ),
-//     .ReadData1   	(gpr_r_data1_out),
-//     .ReadData2   	(gpr_r_data2_out)
-// );
-
 reg [31:0] rf [16];
 
 always @(posedge clk) begin

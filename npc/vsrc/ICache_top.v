@@ -7,6 +7,7 @@ module ICache_top(
     input           pvalid,
     output          pready,
 
+    input           need_cache,
     input           fence_i,
 
     // AR
@@ -32,8 +33,8 @@ module ICache_top(
 );
 
 //* IF use burst, ARLEN need config
-localparam ARLEN = 4'b0000;
-// localparam ARLEN = 4'b0001;
+// localparam ARLEN = 4'b0000;
+localparam ARLEN = 4'b0001;
 
 wire [29:0] cache_paddr;
 wire [31:0] cache_pdata;
@@ -50,8 +51,8 @@ reg  ar_handshake_r;
 reg  [31:0] rdata_r;
 reg  [29:0] r_cnt;
 
-assign pdata = cache_pdata;
-assign pready = state == S_GET_CACHE;
+assign pdata = need_cache ? cache_pdata : rdata_r;
+assign pready = state == S_GET_CACHE | state == S_SEND_DATA;
 
 always @(posedge clk) begin
     if (rst) begin
@@ -73,9 +74,9 @@ end
 
 assign arid = 0;
 //* IF use burst, addr_r[29:n] need config
-assign araddr = bs ? {addr_r, 2'b0} : 0;
-// assign araddr = bs ? {addr_r[29:1], 3'b0} : 0;
-assign arlen = bs ? ARLEN : 0;
+// assign araddr = bs ? {addr_r, 2'b0} : 0;
+assign araddr = bs ? {addr_r[29:1], !need_cache & addr_r[0], 2'b0} : 0;
+assign arlen = ARLEN & {4{need_cache & bs}};
 assign arsize = bs ? 3'b010 : 0;
 assign arburst = bs ? 2'b01 : 0;
 assign arvalid = bs ? (state == S_GET_DATA) & !ar_handshake_r : 0;
@@ -99,10 +100,10 @@ end
 assign cache_paddr = addr_r;
 assign cache_valid = state == S_READ_CACHE;
 //* IF use burst, addr_r[29:n] need config
-assign cache_waddr = addr_r + r_cnt - 1;
-// assign cache_waddr = {addr_r[29:1], 1'b0} + r_cnt - 1;
+// assign cache_waddr = addr_r + r_cnt - 1;
+assign cache_waddr = {addr_r[29:1], 1'b0} + r_cnt - 1;
 assign cache_wdata = rdata_r;
-assign cache_wvalid = state == S_WRITE_CACHE;
+assign cache_wvalid = state == S_WRITE_CACHE & need_cache;
 assign cache_flush = state == S_FLUSHING;
 
 assign br = state == S_WAIT_ARB;
@@ -117,6 +118,7 @@ localparam S_WAIT_ARB    = 3'd3;
 localparam S_GET_DATA    = 3'd4;
 localparam S_WRITE_CACHE = 3'd5;
 localparam S_FLUSHING    = 3'd6;
+localparam S_SEND_DATA   = 3'd7;
 
 reg [S_W-1:0] state;
 reg [S_W-1:0] target_state;
@@ -142,7 +144,7 @@ always @(posedge clk) begin
             end
             S_GET_DATA: begin
                 if (ar_handshake_r && rvalid && rready) begin
-                    state <= S_WRITE_CACHE;
+                    state <= need_cache ? S_WRITE_CACHE : S_SEND_DATA;
                     target_state <= rlast ? S_READ_CACHE : S_GET_DATA;
                 end
             end
@@ -151,6 +153,9 @@ always @(posedge clk) begin
             end
             S_FLUSHING: begin
                 state <= S_IDLE;
+            end
+            S_SEND_DATA: begin
+                if (pvalid && pready) state <= S_IDLE;
             end
             default: begin
                 state <= S_IDLE;
@@ -172,7 +177,7 @@ end
 
 //* IF use burst, need CACHE_M config
 ICache #(
-    .CACHE_M 	(2  ),
+    .CACHE_M 	(3  ),
     .CACHE_N 	(4  ))
 u_ICache(
     .clk            	(clk            ),
@@ -194,7 +199,7 @@ reg hit_need_recode;
 always @(posedge clk) begin
     case (state)
         S_IDLE: begin
-            if (pvalid) hit_need_recode <= 1;
+            if (pvalid & need_cache) hit_need_recode <= 1;
         end
         S_READ_CACHE: begin
             if (cache_valid && cache_ready) begin
@@ -215,7 +220,7 @@ endfunction
 
 reg [63:0] call_cnt;
 always @(posedge clk) begin
-    if (state == S_IDLE && pvalid) begin
+    if (state == S_IDLE && pvalid && need_cache) begin
         call_cnt <= call_cnt + 1;
     end
 end
@@ -258,7 +263,7 @@ reg [63:0] mt_cnt;
 always @(posedge clk) begin
     if (rst) begin
         mt_cnt <= 0;
-    end else begin
+    end else if (need_cache) begin
         case (state)
             S_WAIT_ARB: begin
                 mt_cnt <= mt_cnt + 1;
