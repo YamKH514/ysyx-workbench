@@ -61,13 +61,18 @@ static void exec_once(VTOP *top, VerilatedContext *contextp, VerilatedVcdC *tfp)
         if (S_CPU(exu_to_lsu_valid) & S_CPU(lsu_to_exu_ready)) perf_cnt.module_add(LSU);
         if (S_CPU(idu_to_exu_valid) & S_CPU(exu_to_idu_ready)) inst_type = (INST_TYPE_ENUM)S_CPU(inst_type);
         // Recoding IFU wait Inst
-        if ((int)S_IFU(state) == 3) perf_cnt.ifu_wait_rd();
-        else if (!(S_CPU(pc_to_ifu_valid) | S_CPU(ifu_to_pc_ready))) perf_cnt.ifu_wait_pc();
+        if ((int)S_IFU(state) == 1) perf_cnt.ifu_wait_rd();
+        else if ((int)S_IFU(state) == 0) perf_cnt.ifu_wait_pc();
         // Recoding LSU wait memory read
-        if (S_CPU(lsu_arvalid) & S_CPU(xbar_arvalid)) perf_cnt.lsu_wait_num('r');
+#ifdef PLATFORM_YSYXSOC
+        svSetScope(svGetScopeFromName("TOP.ysyxSoCFull.asic.cpu.cpu.u_LSU"));
+#else
+        svSetScope(svGetScopeFromName("TOP.top.u_LSU"));
+#endif
+        if (lsu_r_call()) perf_cnt.lsu_wait_num('r');
         if ((int)S_LSU(state) == 2 | (int)S_LSU(state) == 3) perf_cnt.lsu_wait_cyc('r');
         // Recoding LSU wait memory write
-        if (S_CPU(lsu_awvalid) & S_CPU(xbar_awready)) perf_cnt.lsu_wait_num('w');
+        if (lsu_w_call()) perf_cnt.lsu_wait_num('w');
         if ((int)S_LSU(state) == 4 | (int)S_LSU(state) == 6) perf_cnt.lsu_wait_cyc('w');
     }
 
@@ -85,9 +90,9 @@ static void exec_once(VTOP *top, VerilatedContext *contextp, VerilatedVcdC *tfp)
         cpu.pc = S_CPU(pc);
         cpu.npc = S_CPU(npc);
 #ifdef PLATFORM_YSYXSOC
-        svSetScope(svGetScopeFromName("TOP.ysyxSoCFull.asic.cpu.cpu.u_GPR.u_RegisterFile"));
+        svSetScope(svGetScopeFromName("TOP.ysyxSoCFull.asic.cpu.cpu.u_GPR"));
 #else
-        svSetScope(svGetScopeFromName("TOP.top.u_GPR.u_RegisterFile"));
+        svSetScope(svGetScopeFromName("TOP.top.u_GPR"));
 #endif
         get_gpr(cpu.gpr);
 #ifdef PLATFORM_YSYXSOC

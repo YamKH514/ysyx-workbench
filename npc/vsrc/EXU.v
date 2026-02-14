@@ -18,58 +18,34 @@ module EXU(
     input               lsu_to_exu_ready_in
 );
 
+assign exu_to_idu_ready_out = (state == S_IDLE) && idu_to_exu_valid_in;
+assign exu_to_lsu_valid_out = (state == S_WAIT_LSU);
+
 parameter S_IDLE = 2'd0;
 parameter S_WAIT_LSU = 2'd1;
 
-reg [1:0] state, next_state;
+reg [1:0] state;
 
 always @(posedge clk) begin
-    if (rst) state <= S_IDLE;
-    else state <= next_state;
-
     if (rst) begin
-        exu_to_idu_ready_out <= 1'b0;
-        exu_to_lsu_valid_out <= 1'b0;
+        state <= S_IDLE;
     end else begin
         case (state)
             S_IDLE: begin
-                exu_to_idu_ready_out <= 1'b0;
-                exu_to_lsu_valid_out <= 1'b0;
-                if (idu_to_exu_valid_in) begin
-                    exu_to_idu_ready_out <= 1'b1;
-                    exu_to_lsu_valid_out <= 1'b1;
+                if (idu_to_exu_valid_in & exu_to_idu_ready_out) begin
+                    state <= S_WAIT_LSU;
                 end
             end
             S_WAIT_LSU: begin
-                exu_to_idu_ready_out <= 1'b0;
-                if (lsu_to_exu_ready_in) begin
-                    exu_to_lsu_valid_out <= 1'b0;
+                if (exu_to_lsu_valid_out & lsu_to_exu_ready_in) begin
+                    state <= S_IDLE;
                 end
             end
             default: begin
-                exu_to_idu_ready_out <= 1'b0;
-                exu_to_lsu_valid_out <= 1'b0;
+                state <= S_IDLE;
             end
         endcase
     end
-end
-
-always @(*) begin
-    case (state)
-        S_IDLE: begin
-            if (idu_to_exu_valid_in) begin
-                next_state = S_WAIT_LSU;
-            end
-        end
-        S_WAIT_LSU: begin
-            if (lsu_to_exu_ready_in) begin
-                next_state = S_IDLE;
-            end
-        end
-        default: begin
-            next_state = S_IDLE;
-        end
-    endcase
 end
 
 reg [31:0]  pc_r;

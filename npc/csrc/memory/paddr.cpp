@@ -6,9 +6,6 @@
 #include "difftest-def.h"
 #include "cpu.h"
 
-#define DEVICE_BASE 0xa0000000
-#define SERIAL_PORT (DEVICE_BASE + 0x00003f8)
-
 // static uint32_t flash_data[10] =   {0x100007b7, // lui	a5,0x10000
 //                                     0x04100713, // li	a4,65
 //                                     0x00e78023, // sb	a4,0(a5) # 10000000
@@ -84,10 +81,18 @@ extern "C" void mem_tracer_read(int32_t addr, int32_t data)
 #endif
 }
 
-extern "C" void mem_tracer_write(int32_t addr, int32_t data)
+extern "C" void mem_tracer_write(int32_t addr, int32_t data, int32_t strb)
 {
+#ifdef PLATFORM_YSYXSOC
+    if ((CONFIG_SDRAMBASE <= addr) && (addr <= CONFIG_SDRAMBASE + CONFIG_SDRAMSIZE)) {
+        if (strb & 1 << 0) pmem_write(addr+0, 1, (data >> 0) & 0xFF);
+        if (strb & 1 << 1) pmem_write(addr+1, 1, (data >> 8) & 0xFF);
+        if (strb & 1 << 2) pmem_write(addr+2, 1, (data >>16) & 0xFF);
+        if (strb & 1 << 3) pmem_write(addr+3, 1, (data >>24) & 0xFF);
+    }
+#endif
 #ifdef CONFIG_MTRACE
-    printf("MEM_WRITE, waddr=0x%08x, wdata=0x%08x\n", addr, data);
+    printf("MEM_WRITE, waddr=0x%08x, wdata=0x%08x, wstrb=0x%08x\n", addr, data, strb);
 #endif
 }
 
@@ -138,36 +143,10 @@ extern "C" void psram_write(int32_t addr, int32_t data, int32_t mask) {
     return;
 }
 
-extern "C" int32_t sdram_read(int32_t addr) {
+int32_t sdram_read(int32_t addr) {
     uint32_t raddr = CONFIG_SDRAMBASE + (uint32_t)addr;
-    uint32_t rdata = pmem_read(raddr, 2);
-    printf("sdram_read: raddr: 0x%08x, data: 0x%08x\n", raddr, rdata);
+    uint32_t rdata = pmem_read(raddr, 4);
     return (int32_t)rdata;
-}
-
-extern "C" void sdram_write(int32_t addr, int32_t data, int32_t dqm) {
-    uint32_t waddr = CONFIG_SDRAMBASE + (uint32_t)addr;
-    uint32_t wdata;
-    int len;
-    switch (dqm) {
-        case 0x3:   // 16bit均无效
-            return;
-        case 0x2:   // 低8bit有效
-            len = 1;
-            wdata = (data & 0x00FF);
-            break;
-        case 0x1:   // 高8bit有效
-            len = 1;
-            waddr += 1;
-            wdata = (data & 0xFF00) >> 8;
-            break;
-        case 0x0:   // 16bit均有效
-            len = 2;
-            wdata = data;
-            break;
-    }
-    pmem_write(waddr, len, wdata);
-    return;
 }
 
 uint32_t paddr_read(uint32_t raddr)
@@ -176,7 +155,7 @@ uint32_t paddr_read(uint32_t raddr)
     uint32_t rdata = 0;
     if ((PMEM_LEFT <= raddr) & (raddr < PMEM_RIGHT)) flash_read(raddr - PMEM_LEFT, (int32_t *)&rdata);
     else if ((PSRAM_LEFT <= raddr) & (raddr < PSRAM_RIGHT)) psram_read(raddr - PSRAM_LEFT, (int32_t *)&rdata);
-    else if ((SDRAM_LEFT <= raddr) & (raddr < SDRAM_RIGHT)) rdata = (raddr - SDRAM_LEFT);
+    else if ((SDRAM_LEFT <= raddr) & (raddr < SDRAM_RIGHT)) rdata = sdram_read(raddr - SDRAM_LEFT);
     else assert(0);
     return rdata;
 #else
@@ -201,7 +180,7 @@ extern void npcmem_write(int waddr, int wdata, char wmask)
 {
     uint32_t addr = (uint32_t)waddr & ~0x3u, data = (uint32_t)wdata;
     uint8_t  mask = (uint8_t) wmask;
-    if(addr == SERIAL_PORT)
+    if(addr == 0x10000000)
     {
         putchar(data & 0xFF);
         return;

@@ -26,6 +26,10 @@
 #define PSRAM_RIGHT ((paddr_t)CONFIG_PSRAMBASE + CONFIG_PSRAMSIZE - 1)
 #define SDRAM_LEFT  ((paddr_t)CONFIG_SDRAMBASE)
 #define SDRAM_RIGHT ((paddr_t)CONFIG_SDRAMBASE + CONFIG_SDRAMSIZE - 1)
+#define UART_LEFT   ((paddr_t)0x10000000)
+#define UART_RIGHT  ((paddr_t)0x10002fff)
+#define CLINT_LEFT  ((paddr_t)0x02000048)
+#define CLINT_RIGHT ((paddr_t)0x0200004f)
 #define RESET_VECTOR (PMEM_LEFT + CONFIG_PC_RESET_OFFSET)
 
 /* convert the guest physical address in the guest program to host virtual address in NEMU */
@@ -35,11 +39,19 @@ paddr_t host_to_guest(uint8_t *haddr);
 
 static inline bool in_pmem(paddr_t addr) {
 #ifdef CONFIG_YSYXSOC
-  bool in_mrom = (PMEM_LEFT <= addr) && (addr < PMEM_RIGHT);
+  bool in_flash = (PMEM_LEFT <= addr) && (addr < PMEM_RIGHT);
   bool in_sram = (SRAM_LEFT <= addr) && (addr < SRAM_RIGHT);
   bool in_psram = (PSRAM_LEFT <= addr) && (addr < PSRAM_RIGHT);
   bool in_sdram = (SDRAM_LEFT <= addr) && (addr < SDRAM_RIGHT);
-  return in_mrom | in_sram | in_psram | in_sdram;
+  return in_flash | in_sram | in_psram | in_sdram;
+#elifdef CONFIG_SOC_BIN
+  bool in_flash = (PMEM_LEFT <= addr) && (addr < PMEM_RIGHT);
+  bool in_sram = (SRAM_LEFT <= addr) && (addr < SRAM_RIGHT);
+  bool in_psram = (PSRAM_LEFT <= addr) && (addr < PSRAM_RIGHT);
+  bool in_sdram = (SDRAM_LEFT <= addr) && (addr < SDRAM_RIGHT);
+  bool in_uart  = (UART_LEFT <= addr) && (addr < UART_RIGHT);
+  bool in_clint = (CLINT_LEFT <= addr) && (addr < CLINT_RIGHT);
+  return in_flash | in_sram | in_psram | in_sdram | in_uart | in_clint;
 #else
   return addr - CONFIG_MBASE < CONFIG_MSIZE;
 #endif

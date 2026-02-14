@@ -70,8 +70,8 @@ module axi4_delayer(
   assign out_arlen = in_arlen;
   assign out_arsize = in_arsize;
   assign out_arburst = in_arburst;
-  assign out_rready = in_rready;
-  assign in_rvalid = out_rvalid;
+  assign out_rready = (r_state == S_DELAY) & (r_delay_cnt == 1);
+  assign in_rvalid = (r_state == S_DELAY) & (r_delay_cnt == 1);
   assign in_rid = out_rid;
   assign in_rdata = out_rdata;
   assign in_rresp = out_rresp;
@@ -88,9 +88,101 @@ module axi4_delayer(
   assign out_wdata = in_wdata;
   assign out_wstrb = in_wstrb;
   assign out_wlast = in_wlast;
-  assign out_bready = in_bready;
-  assign in_bvalid = out_bvalid;
+  assign out_bready = (w_state == S_DELAY) & (w_delay_cnt == 1);
+  assign in_bvalid = (w_state == S_DELAY) & (w_delay_cnt == 1);
   assign in_bid = out_bid;
   assign in_bresp = out_bresp;
+
+//* NPC Max Freq = 430MHz, Devices Frep = 100MHz
+//* Freq ratio R = 4.3, Amplification factor S = 64
+
+  localparam S_W          = 3;
+  localparam S_IDLE       = 3'd0;
+  localparam S_WAIT_PERIP = 3'd1;
+  localparam S_DELAY      = 3'd2;
+
+// R Channel
+  reg [S_W-1:0] r_state;
+  reg [S_W-1:0] r_target_state;
+  reg [31:0]    r_delay_cnt;
+
+  always @(posedge clock) begin
+    if (reset) begin
+      r_state <= S_IDLE;
+      r_target_state <= S_IDLE;
+      r_delay_cnt <= 32'd0;
+    end else begin
+      case (r_state)
+        S_IDLE: begin
+          if (in_arvalid) begin
+            r_state <= S_WAIT_PERIP;
+            r_delay_cnt <= r_delay_cnt + 32'd211;
+          end
+        end
+        S_WAIT_PERIP: begin
+          if (out_rvalid & in_rready) begin
+            r_state <= S_DELAY;
+            r_target_state <= out_rlast ? S_IDLE : S_WAIT_PERIP;
+            r_delay_cnt <= r_delay_cnt >> 6;
+          end else begin
+            r_delay_cnt <= r_delay_cnt + 32'd211;
+          end
+        end
+        S_DELAY: begin
+          if (r_delay_cnt == 1) begin
+            r_state <= r_target_state;
+            r_delay_cnt <= 32'd0;
+          end else begin
+            r_delay_cnt <= r_delay_cnt - 1;
+          end
+        end
+        default: begin
+          r_state <= S_IDLE;
+          r_target_state <= S_IDLE;
+          r_delay_cnt <= 32'd0;
+        end
+      endcase
+    end
+  end
+
+// W Channel
+  reg [S_W-1:0] w_state;
+  reg [31:0]    w_delay_cnt;
+
+  always @(posedge clock) begin
+    if (reset) begin
+      w_state <= S_IDLE;
+      w_delay_cnt <= 32'd0;
+    end else begin
+      case (w_state)
+        S_IDLE: begin
+          if (in_awvalid) begin
+            w_state <= S_WAIT_PERIP;
+            w_delay_cnt <= w_delay_cnt + 32'd211;
+          end
+        end
+        S_WAIT_PERIP: begin
+          if (out_bvalid & in_bready) begin
+            w_state <= S_DELAY;
+            w_delay_cnt <= w_delay_cnt >> 6;
+          end else begin
+            w_delay_cnt <= w_delay_cnt + 32'd211;
+          end
+        end
+        S_DELAY: begin
+          if (w_delay_cnt == 1) begin
+            w_state <= S_IDLE;
+            w_delay_cnt <= 32'd0;
+          end else begin
+            w_delay_cnt <= w_delay_cnt - 1;
+          end
+        end
+        default: begin
+          w_state <= S_IDLE;
+          w_delay_cnt <= 32'd0;
+        end
+      endcase
+    end
+  end
 
 endmodule

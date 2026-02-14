@@ -10,6 +10,8 @@ module IDU(
 
     output  reg         csr_we_out,
 
+    output              funce_i_out,
+
     output  reg [5:0]   exu_alu_fun_out,
     output  reg [1:0]   exu_alu_src1_sel_out,
     output  reg [1:0]   exu_alu_src2_sel_out,
@@ -147,6 +149,7 @@ wire inst_or;       // R
 wire inst_and;      // R
 wire inst_ecall;
 wire inst_ebreak;
+wire inst_fence_i;  // I
 wire inst_csrrw;    // I
 wire inst_csrrs;    // I
 wire inst_mret;
@@ -190,6 +193,7 @@ assign inst_or      = (inst_opcode == 7'b0110011) & (inst_func3 == 3'b110) & (in
 assign inst_and     = (inst_opcode == 7'b0110011) & (inst_func3 == 3'b111) & (inst_func7 == 7'b0000000);
 assign inst_ecall   = (inst_r == 32'b00000000000000000000000001110011);
 assign inst_ebreak  = (inst_r == 32'b00000000000100000000000001110011);
+assign inst_fence_i = (inst_opcode == 7'b0001111) & (inst_func3 == 3'b001);
 assign inst_csrrw   = (inst_opcode == 7'b1110011) & (inst_func3 == 3'b001);
 assign inst_csrrs   = (inst_opcode == 7'b1110011) & (inst_func3 == 3'b010);
 assign inst_mret    = (inst_r == 32'b00110000001000000000000001110011);
@@ -205,7 +209,7 @@ end
 assign ecall_r = inst_ecall;
 assign mret_r  = inst_mret;
 
-assign idu_inst_type_out =  `INST_TYPE_I & {3{inst_jalr | inst_lb | inst_lh | inst_lw | inst_lbu | inst_lhu |  inst_addi | inst_slti | inst_sltiu | inst_xori | inst_ori | inst_andi | inst_slli | inst_srli | inst_srai | inst_csrrw | inst_csrrs}} |
+assign idu_inst_type_out =  `INST_TYPE_I & {3{inst_jalr | inst_lb | inst_lh | inst_lw | inst_lbu | inst_lhu |  inst_addi | inst_slti | inst_sltiu | inst_xori | inst_ori | inst_andi | inst_slli | inst_srli | inst_srai | inst_fence_i | inst_csrrw | inst_csrrs}} |
                             `INST_TYPE_S & {3{inst_sb | inst_sh | inst_sw}} |
                             `INST_TYPE_B & {3{inst_beq | inst_bne | inst_blt | inst_bge | inst_bltu | inst_bgeu}} |
                             `INST_TYPE_U & {3{inst_lui | inst_auipc}} |
@@ -215,6 +219,8 @@ assign idu_inst_type_out =  `INST_TYPE_I & {3{inst_jalr | inst_lb | inst_lh | in
 assign wbu_we_r = inst_lui | inst_auipc | inst_jal | inst_jalr | inst_lb | inst_lh | inst_lw | inst_lbu | inst_lhu | inst_addi | inst_slti | inst_sltiu | inst_xori | inst_ori | inst_andi | inst_slli | inst_srli | inst_srai | inst_add | inst_sub | inst_sll | inst_slt | inst_sltu | inst_xor | inst_srl | inst_sra | inst_or | inst_and | inst_csrrw | inst_csrrs;
 
 assign csr_we_out = inst_csrrw | inst_csrrs;
+
+assign funce_i_out = inst_fence_i;
 
 assign exu_alu_fun_out =    `ALU_SUB                & {6{inst_sub}} |
                             `ALU_EQU                & {6{inst_beq | inst_bne}} |

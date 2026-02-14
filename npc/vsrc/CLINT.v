@@ -10,14 +10,14 @@ module CLINT(
     input       [2:0]   arsize_in,
     input       [1:0]   arburst_in,
     input               arvalid_in,
-    output  reg         arready_out,
+    output              arready_out,
 
     // R
-    output  reg [3:0]   rid_out,
-    output  reg [31:0]  rdata_out,
-    output  reg [1:0]   rresp_out,
-    output  reg         rlast_out,
-    output  reg         rvalid_out,
+    output      [3:0]   rid_out,
+    output      [31:0]  rdata_out,
+    output      [1:0]   rresp_out,
+    output              rlast_out,
+    output              rvalid_out,
     input               rready_in,
 
     // AW
@@ -27,19 +27,19 @@ module CLINT(
     input       [2:0]   awsize_in,
     input       [1:0]   awburst_in,
     input               awvalid_in,
-    output  reg         awready_out,
+    output              awready_out,
 
     // W
     input       [31:0]  wdata_in,
     input       [3:0]   wstrb_in,
     input               wlast_in,
     input               wvalid_in,
-    output  reg         wready_out,
+    output              wready_out,
 
     // B
-    output  reg [3:0]   bid_out,
-    output  reg [1:0]   bresp_out,
-    output  reg         bvalid_out,
+    output      [3:0]   bid_out,
+    output      [1:0]   bresp_out,
+    output              bvalid_out,
     input               bready_in
 );
 
@@ -50,45 +50,29 @@ reg [31:0]  araddr_r;
 reg [3:0]   arlen_r;
 reg [2:0]   arsize_r;
 reg [1:0]   arburst_r;
-reg [3:0]   awid_r;
-reg [31:0]  awaddr_r;
-reg [3:0]   awlen_r;
-reg [2:0]   awsize_r;
-reg [1:0]   awburst_r;
-reg [31:0]  wdata_r;
-reg [3:0]   wstrb_r;
-reg [3:0]   bid_r;
 
-parameter S_IDLE   = 3'd0;
-parameter S_GET_AR = 3'd1;
-parameter S_SEND_R = 3'd2;
-parameter S_GET_WR = 3'd3;
-parameter S_GET_WD = 3'd4;
-parameter S_SEND_B = 3'd5;
+assign arready_out = r_state == S_IDLE;
+assign rid_out = arid_r;
+assign rdata_out = (araddr_r[7:0] == 8'h48 ? mtime[31:0] : mtime[63:32]);
+assign rlast_out = r_state == S_SEND_R;
+assign rresp_out = 2'b0;
+assign rvalid_out = r_state == S_SEND_R;
 
-reg [2:0]   r_state, r_next_state;
-reg [2:0]   w_state, w_next_state;
+localparam S_W      = 2;
+localparam S_IDLE   = 2'd0;
+localparam S_SEND_R = 2'd1;
+localparam S_GET_WD = 2'd2;
+localparam S_SEND_B = 2'd3;
+
+reg [S_W-1:0]   r_state;
+reg [S_W-1:0]   w_state;
 
 always @(posedge clk) begin
-    if (rst) begin
-        r_state <= S_IDLE;
-        w_state <= S_IDLE;
-    end else begin
-        r_state <= r_next_state;
-        w_state <= w_next_state;
-    end
-
-    // READ
     if (rst) begin
         arid_r      <= 4'b0;
         arlen_r     <= 4'b0;
         arsize_r    <= 3'b0;
         arburst_r   <= 2'b0;
-        arready_out <= 1'b1;
-        rid_out     <= 4'b0;
-        rlast_out   <= 1'b0;
-        rresp_out   <= 2'b00;
-        rvalid_out  <= 1'b0;
     end else begin
         case (r_state)
             S_IDLE: begin
@@ -98,43 +82,63 @@ always @(posedge clk) begin
                     arlen_r     <= arlen_in;
                     arsize_r    <= arsize_in;
                     arburst_r   <= arburst_in;
-                    arready_out <= 1'b0;
-                end
-            end
-            S_GET_AR: begin
-                rid_out    <= arid_r;
-                rdata_out  <= (araddr_r[7:0] == 8'h48) ? mtime[31:0] : mtime[63:32];
-                rlast_out  <= 1'b1;
-                rresp_out  <= 2'b00;
-                rvalid_out <= 1'b1;
-            end
-            S_SEND_R: begin
-                if (rvalid_out & rready_in) begin
-                    arready_out <= 1'b1;
-                    rid_out     <= 4'b0;
-                    rlast_out   <= 1'b0;
-                    rresp_out   <= 2'b00;
-                    rvalid_out  <= 1'b0;
                 end
             end
             default: begin
-                arready_out <= 1'b1;
-                rvalid_out  <= 1'b0;
+                arid_r      <= 4'b0;
+                arlen_r     <= 4'b0;
+                arsize_r    <= 3'b0;
+                arburst_r   <= 2'b0;
             end
         endcase
     end
+end
 
-    // WRITE
+always @(posedge clk) begin
+    if (rst) begin
+        r_state <= S_IDLE;
+    end else begin
+        case (r_state)
+            S_IDLE: begin
+                if (arvalid_in & arready_out) begin
+                    r_state <= S_SEND_R;
+                end
+            end
+            S_SEND_R: begin
+                if (rvalid_out & rready_in) begin
+                    clint_difftest_skip();
+                    r_state <= S_IDLE;
+                end
+            end
+            default: begin
+                r_state <= S_IDLE;
+            end
+        endcase
+    end
+end
+
+reg [3:0]   awid_r;
+reg [31:0]  awaddr_r;
+reg [3:0]   awlen_r;
+reg [2:0]   awsize_r;
+reg [1:0]   awburst_r;
+reg [31:0]  wdata_r;
+reg [3:0]   wstrb_r;
+
+assign awready_out = w_state == S_IDLE;
+assign wready_out = w_state == S_GET_WD;
+assign bid_out = 4'b0;
+assign bresp_out = 2'b00;
+assign bvalid_out = w_state == S_SEND_B;
+
+always @(posedge clk) begin
     if (rst) begin
         awid_r      <= 4'b0;
         awlen_r     <= 4'b0;
         awsize_r    <= 3'b0;
         awburst_r   <= 2'b0;
-        awready_out <= 1'b1;
-        wready_out  <= 1'b1;
-        bid_r       <= 4'b0;
-        bresp_out   <= 2'b00;
-        bvalid_out  <= 1'b0;
+        wdata_r     <= 32'b0;
+        wstrb_r     <= 4'b0;
     end else begin
         case (w_state)
             S_IDLE: begin
@@ -144,86 +148,51 @@ always @(posedge clk) begin
                     awlen_r     <= awlen_in;
                     awsize_r    <= awsize_in;
                     awburst_r   <= awburst_in;
-                    awready_out <= 1'b0;
-                end
-            end
-            S_GET_WR: begin
-                if (wvalid_in & wready_out) begin
-                    wdata_r    <= wdata_in;
-                    wstrb_r    <= wstrb_in;
-                    wready_out <= 1'b0;
                 end
             end
             S_GET_WD: begin
-                bid_out    <= 4'b0;
-                bresp_out  <= 2'b00;
-                bvalid_out <= 1'b1;
-            end
-            S_SEND_B: begin
-                if (bvalid_out & bready_in) begin
-                    awready_out <= 1'b1;
-                    wready_out  <=1'b1;
-                    bvalid_out  <= 1'b0;
+                if (wvalid_in & wready_out) begin
+                    wdata_r    <= wdata_in;
+                    wstrb_r    <= wstrb_in;
                 end
             end
             default: begin
-                awready_out <= 1'b1;
-                wready_out  <= 1'b1;
-                bvalid_out  <= 1'b0;
+                awid_r      <= 4'b0;
+                awlen_r     <= 4'b0;
+                awsize_r    <= 3'b0;
+                awburst_r   <= 2'b0;
+                wdata_r     <= 32'b0;
+                wstrb_r     <= 4'b0;
             end
         endcase
     end
 end
 
-always @(*) begin
-    r_next_state = r_state;
-    w_next_state = w_state;
-
-    // READ
-    case (r_state)
-        S_IDLE: begin
-            if (arvalid_in & arready_out) begin
-                r_next_state = S_GET_AR;
+always @(posedge clk) begin
+    if (rst) begin
+        w_state <= S_IDLE;
+    end else begin
+        case (w_state)
+            S_IDLE: begin
+                if (awvalid_in & awready_out) begin
+                    w_state <= S_GET_WD;
+                end
             end
-        end
-        S_GET_AR: begin
-            clint_difftest_skip();
-            r_next_state = S_SEND_R;
-        end
-        S_SEND_R: begin
-            if (rvalid_out & rready_in) begin
-                r_next_state = S_IDLE;
+            S_GET_WD: begin
+                if (wvalid_in & wready_out) begin
+                    w_state <= S_SEND_B;
+                end
             end
-        end
-        default: begin
-            r_next_state = S_IDLE;
-        end
-    endcase
-
-    // WRITE
-    case (w_state)
-        S_IDLE: begin
-            if (awvalid_in & awready_out) begin
-                w_next_state = S_GET_WR;
+            S_SEND_B: begin
+                if (bvalid_out & bready_in) begin
+                    w_state <= S_IDLE;
+                end
             end
-        end
-        S_GET_WR: begin
-            if (wvalid_in & wready_out) begin
-                w_next_state = S_GET_WD;
+            default: begin
+                w_state <= S_IDLE;
             end
-        end
-        S_GET_WD: begin
-            w_next_state = S_SEND_B;
-        end
-        S_SEND_B: begin
-            if (bvalid_out & bready_in) begin
-                w_next_state = S_IDLE;
-            end
-        end
-        default: begin
-            w_next_state = S_IDLE;
-        end
-    endcase
+        endcase
+    end
 end
 
 reg [63:0]  mtime;

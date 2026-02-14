@@ -14,9 +14,9 @@ void reg_display()
 {
     int gpr[16] = {0};
 #ifdef PLATFORM_YSYXSOC
-    svSetScope(svGetScopeFromName("TOP.ysyxSoCFull.asic.cpu.cpu.u_GPR.u_RegisterFile"));
+    svSetScope(svGetScopeFromName("TOP.ysyxSoCFull.asic.cpu.cpu.u_GPR"));
 #else
-    svSetScope(svGetScopeFromName("TOP.top.u_GPR.u_RegisterFile"));
+    svSetScope(svGetScopeFromName("TOP.top.u_GPR"));
 #endif
     get_gpr(gpr);
     for (int i = 0; i < reg_length; i++)

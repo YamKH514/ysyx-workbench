@@ -131,7 +131,7 @@ always @(posedge clk) begin
         awsize_r    <= 3'b0;
         awburst_r   <= 2'b0;
         awready_out <= 1'b1;
-        wready_out  <= 1'b1;
+        wready_out  <= 1'b0;
         bid_r       <= 4'b0;
         bresp_out   <= 2'b00;
         bvalid_out  <= 1'b0;
@@ -145,6 +145,7 @@ always @(posedge clk) begin
                     awsize_r    <= awsize_in;
                     awburst_r   <= awburst_in;
                     awready_out <= 1'b0;
+                    wready_out  <= 1'b1;
                 end
             end
             S_GET_WR: begin
@@ -162,13 +163,12 @@ always @(posedge clk) begin
             S_SEND_B: begin
                 if (bvalid_out & bready_in) begin
                     awready_out <= 1'b1;
-                    wready_out  <=1'b1;
                     bvalid_out  <= 1'b0;
                 end
             end
             default: begin
                 awready_out <= 1'b1;
-                wready_out  <= 1'b1;
+                wready_out  <= 1'b0;
                 bvalid_out  <= 1'b0;
             end
         endcase

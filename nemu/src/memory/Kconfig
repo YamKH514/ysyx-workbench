@@ -10,32 +10,32 @@ config MSIZE
   default 0x8000000
 
 config SRAMBASE
-  depends on YSYXSOC
+  depends on YSYXSOC || SOC_BIN
   hex "ysyxSoC SRAM base address"
   default 0x0f000000
 
 config SRAMSIZE
-  depends on YSYXSOC
+  depends on YSYXSOC || SOC_BIN
   hex "ysyxSoC SRAM size"
   default 0x2000
 
 config PSRAMBASE
-  depends on YSYXSOC
+  depends on YSYXSOC || SOC_BIN
   hex "ysyxSoC PSRAM base address"
   default 0x80000000
 
 config PSRAMSIZE
-  depends on YSYXSOC
+  depends on YSYXSOC || SOC_BIN
   hex "ysyxSoC PSRAM size"
   default 0x400000
 
 config SDRAMBASE
-  depends on YSYXSOC
+  depends on YSYXSOC || SOC_BIN
   hex "SDRAM base address"
   default 0xa0000000
 
 config SDRAMSIZE
-  depends on YSYXSOC
+  depends on YSYXSOC || SOC_BIN
   hex "SDRAM size"
   default 0x2000000
 
