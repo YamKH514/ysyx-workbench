@@ -79,8 +79,8 @@ assign bready_out  = 1'b0;
 
 localparam S_W         = 2;
 localparam S_IDLE      = 2'd0;
-localparam S_WAIT_IDU  = 2'd1;
-localparam S_WAIT_IC   = 2'd2;
+localparam S_WAIT_IC   = 2'd1;
+localparam S_WAIT_IDU  = 2'd2;
 
 reg [S_W-1:0]   state;
 
