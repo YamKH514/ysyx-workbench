@@ -25,17 +25,25 @@ $(BINARY):: compile_git
 # Some convenient rules
 
 override ARGS ?= --log=$(BUILD_DIR)/nemu-log.txt
+override ARGS += --mlog=$(BUILD_DIR)/mtrace-log
 override ARGS += $(ARGS_DIFF)
 
 # Command to execute NEMU
 IMG ?=
 NEMU_EXEC := $(BINARY) $(ARGS) $(IMG)
 
+MAINARGS_MAX_LEN = 64
+MAINARGS_PLACEHOLDER = The insert-arg rule in Makefile will insert mainargs here.
+insert-arg:
+	@python3 $(AM_HOME)/tools/insert-arg.py $(IMG) $(MAINARGS_MAX_LEN) "$(MAINARGS_PLACEHOLDER)" "$(mainargs)"
+
 run-env: $(BINARY) $(DIFF_REF_SO)
 
 run: run-env
 	$(call git_commit, "run NEMU")
 	$(NEMU_EXEC)
+
+run-soc: insert-arg run
 
 gdb: run-env
 	$(call git_commit, "gdb NEMU")

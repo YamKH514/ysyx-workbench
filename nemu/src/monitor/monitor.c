@@ -15,6 +15,7 @@
 
 #include <isa.h>
 #include <memory/paddr.h>
+#include <memory/mtrace.h>
 
 void init_rand();
 void init_log(const char *log_file);
@@ -41,6 +42,7 @@ static void welcome() {
 void sdb_set_batch_mode();
 
 static char *log_file = NULL;
+static char *mt_file = NULL;
 static char *diff_so_file = NULL;
 static char *img_file = NULL;
 static char *elf_file = NULL;
@@ -72,6 +74,7 @@ static int parse_args(int argc, char *argv[]) {
   const struct option table[] = {
     {"batch"    , no_argument      , NULL, 'b'},
     {"log"      , required_argument, NULL, 'l'},
+    {"mlog"     , required_argument, NULL, 'm'},
     {"diff"     , required_argument, NULL, 'd'},
     {"port"     , required_argument, NULL, 'p'},
     {"elf"      , required_argument, NULL, 'e'},
@@ -79,13 +82,14 @@ static int parse_args(int argc, char *argv[]) {
     {0          , 0                , NULL,  0 },
   };
   int o;
-  while ( (o = getopt_long(argc, argv, "-bhl:d:p:e:", table, NULL)) != -1) {
+  while ( (o = getopt_long(argc, argv, "-bhl:m:d:p:e:", table, NULL)) != -1) {
     switch (o) {
       case 'b': 
 #ifdef CONFIG_BATCH_MODE
         sdb_set_batch_mode();
 #endif
         break;
+      case 'm': mt_file = optarg; break;
       case 'p': sscanf(optarg, "%d", &difftest_port); break;
       case 'l': log_file = optarg; break;
       case 'd': diff_so_file = optarg; break;
@@ -95,6 +99,7 @@ static int parse_args(int argc, char *argv[]) {
         printf("Usage: %s [OPTION...] IMAGE [args]\n\n", argv[0]);
         printf("\t-b,--batch              run with batch mode\n");
         printf("\t-l,--log=FILE           output log to FILE\n");
+        printf("\t-m,--mlog=FILE          output mtrace to FILE\n");
         printf("\t-d,--diff=REF_SO        run DiffTest with reference REF_SO\n");
         printf("\t-p,--port=PORT          run DiffTest with port PORT\n");
         printf("\t-e,--elf=FILE           get ELF file\n");
@@ -116,6 +121,8 @@ void init_monitor(int argc, char *argv[]) {
 
   /* Open the log file. */
   init_log(log_file);
+
+  IFDEF(CONFIG_MTRACE_BIN, {init_mtrace(mt_file);});
 
   /* Parse the elf file. */
   IFDEF(CONFIG_FTRACE, {parse_elf(elf_file);});
