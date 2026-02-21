@@ -58,7 +58,7 @@ module IFU(
     input               bg_in
 );
 
-import "DPI-C" function void mem_tracer_read(input int addr,input int data);
+import "DPI-C" function void mem_tracer_read(input int addr,input int data, input int is_inst);
 
 wire [29:0] ic_paddr = ifu_current_pc_r[31:2];
 wire [31:0] ic_pdata;
@@ -125,7 +125,7 @@ end
 
 always @(posedge clk) begin
     if (ic_pvalid & ic_pready & (state == S_WAIT_IC)) begin
-        mem_tracer_read(ifu_current_pc_r, ic_pdata);
+        mem_tracer_read(ifu_current_pc_r, ic_pdata, 32'b1);
     end
 end
 

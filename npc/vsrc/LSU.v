@@ -62,7 +62,7 @@ module LSU(
     input               bg_in
 );
 
-import "DPI-C" function void mem_tracer_read(input int addr,input int data);
+import "DPI-C" function void mem_tracer_read(input int addr,input int data, input int is_inst);
 import "DPI-C" function void mem_tracer_write(input int addr,input int data, input int strb);
 import "DPI-C" function void perip_difftest_skip(input int addr);
 
@@ -160,7 +160,7 @@ always @(posedge clk) begin
             end
             S_GET_R: begin
                 if (rvalid_in & rready_out & rlast_in) begin
-                    mem_tracer_read(lsu_r_addr_in, rdata_in);
+                    mem_tracer_read(lsu_r_addr_in, rdata_in, 32'b0);
                     rid_r                <= rid_in;
                     rdata_r              <= rdata_in;
                     if (rresp_in != 2'b00) begin

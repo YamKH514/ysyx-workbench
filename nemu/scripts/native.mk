@@ -31,18 +31,11 @@ override ARGS += $(ARGS_DIFF)
 IMG ?=
 NEMU_EXEC := $(BINARY) $(ARGS) $(IMG)
 
-MAINARGS_MAX_LEN = 64
-MAINARGS_PLACEHOLDER = The insert-arg rule in Makefile will insert mainargs here.
-insert-arg:
-	@python3 $(AM_HOME)/tools/insert-arg.py $(IMG) $(MAINARGS_MAX_LEN) "$(MAINARGS_PLACEHOLDER)" "$(mainargs)"
-
 run-env: $(BINARY) $(DIFF_REF_SO)
 
 run: run-env
 	$(call git_commit, "run NEMU")
 	$(NEMU_EXEC)
-
-bin-change: insert-arg
 
 gdb: run-env
 	$(call git_commit, "gdb NEMU")
