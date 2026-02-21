@@ -59,6 +59,7 @@ static int parse_args(int argc, char *argv[])
             log_file = optarg;
             break;
         case 'm':
+            printf("mtfile\n");
             mt_file = optarg;
             break;
         case 'd':
