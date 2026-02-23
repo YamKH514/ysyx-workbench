@@ -220,8 +220,81 @@ wire            clint_bready;
 
 assign trap_npc = wbu_pc_ecall ? csr_r_mtvec : csr_r_mepc;
 
+wire [31:0] ifu_pc;
+wire [31:0] ifu_inst;
+wire [ 9:0] gpr_raddr;
+wire [11:0] csr_raddr;
+wire [31:0] idu_pc;
+wire [31:0] idu_inst;
+wire        fence_i;
+wire [ 2:0] idu_imm_type;
+wire [24:0] idu_imm_inst;
+wire [ 5:0] idu_exu_fun;
+wire [ 1:0] idu_exu_src1_sel;
+wire [ 1:0] idu_exu_src2_sel;
+wire [63:0] idu_exu_rdata;
+wire [ 8:0] idu_exu_lsu_data;
+wire [ 9:0] idu_exu_wbu_data;
+wire [31:0] idu_exu_wbu_csr_rdata;
+wire        idu_exu_wbu_csr_we;
+wire [ 3:0] idu_exu_pc_src_sel;
+wire [31:0] exu_pc;
+wire [31:0] exu_inst;
+wire [ 3:0] idu_exu_src_sel;
+wire [31:0] exu_lsu_res;
+wire [ 8:0] exu_lsu_data;
+wire [63:0] exu_lsu_gpr_rdata;
+wire [31:0] exu_lsu_wbu_csr_rdata;
+wire        exu_lsu_wbu_csr_we;
+wire [ 9:0] exu_lsu_wbu_data;
+wire [31:0] exu_lsu_pc_imm;
+wire [ 3:0] exu_lsu_pc_src_sel;
+wire [31:0] lsu_pc;
+wire [31:0] lsu_inst;
+wire [31:0] lsu_wbu_res;
+wire [31:0] lsu_wbu_rdata;
+wire [ 9:0] lsu_wbu_data;
+wire        lsu_wbu_csr_we;
+wire [31:0] lsu_wbu_csr_rdata;
+wire [31:0] lsu_wbu_csr_wdata;
+wire [31:0] lsu_wbu_pc_rdata1;
+wire [31:0] lsu_wbu_pc_imm;
+wire [ 3:0] lsu_wbu_pc_src_sel;
+wire        wbu_gpr_we;
+wire [ 4:0] wbu_gpr_waddr;
+wire [31:0] wbu_gpr_wdata;
+wire [ 2:0] wbu_csr_func3;
+wire        wbu_csr_we;
+wire [11:0] wbu_csr_waddr;
+wire [31:0] wbu_csr_wdata;
+wire [31:0] wbu_csr_mepc;
+wire        wbu_csr_ecall;
+wire        wbu_csr_mret;
+wire        wbu_pc_ecall;
+wire [31:0] wbu_pc_rdata1;
+wire [31:0] wbu_pc_imm;
+wire        wbu_pc_cmp_res;
+wire [ 3:0] wbu_pc_src_sel;
+
+wire [31:0] imm_exu;
+wire [31:0] gpr_rdata1;
+wire [31:0] gpr_rdata2;
+wire [31:0] csr_rdata;
+wire [31:0] csr_r_mtvec;
+wire [31:0] csr_r_mepc;
+
+wire ifu_idu_ready;
+wire idu_exu_valid;
+wire idu_exu_ready;
+wire exu_lsu_valid;
+wire exu_lsu_ready;
+wire lsu_wbu_valid;
+wire lsu_wbu_ready;
+wire wbu_pc_valid;
 wire wbu_pc_ready;
 wire pc_ifu_valid;
+wire pc_ifu_ready;
+wire ifu_idu_valid;
 
 PCCnt #(.RESET_PC 	(32'h30000000  )) u_PCCnt(
     .clk                  	(clock                 ),
@@ -238,13 +311,6 @@ PCCnt #(.RESET_PC 	(32'h30000000  )) u_PCCnt(
     .pc_ifu_valid_o       	(pc_ifu_valid          ),
     .pc_ifu_ready_i       	(pc_ifu_ready          )
 );
-
-wire [31:0] ifu_pc;
-wire [31:0] ifu_inst;
-wire [ 9:0] gpr_raddr;
-wire [11:0] csr_raddr;
-wire pc_ifu_ready;
-wire ifu_idu_valid;
 
 IFU u_IFU(
     .clk             	(clock            ),
@@ -293,23 +359,6 @@ IFU u_IFU(
     .bg_i            	(bg1              )
 );
 
-wire [31:0] idu_pc;
-wire [31:0] idu_inst;
-wire fence_i;
-wire [2:0] idu_imm_type;
-wire [24:0]  idu_imm_inst;
-wire [5:0] idu_exu_fun;
-wire [1:0] idu_exu_src1_sel;
-wire [1:0] idu_exu_src2_sel;
-wire [63:0] idu_exu_rdata;
-wire [8:0] idu_exu_lsu_data;
-wire [9:0] idu_exu_wbu_data;
-wire [31:0] idu_exu_wbu_csr_rdata;
-wire idu_exu_wbu_csr_we;
-wire [3:0] idu_exu_pc_src_sel;
-wire ifu_idu_ready;
-wire idu_exu_valid;
-
 IDU u_IDU(
     .clk                     	(clock                    ),
     .rst                     	(reset                    ),
@@ -338,41 +387,11 @@ IDU u_IDU(
     .idu_exu_ready_i         	(idu_exu_ready            )
 );
 
-wire [31:0] imm_exu;
-
 ImmExt u_ImmExt(
     .idu_imm_type_i         (idu_imm_type         ),
     .idu_imm_inst_i      	(idu_imm_inst         ),
     .imm_exu_o           	(imm_exu              )
 );
-
-wire [31:0] gpr_rdata1;
-wire [31:0] gpr_rdata2;
-
-GPR u_GPR(
-    .clk           	(clock          ),
-    .gpr_we_i      	(wbu_gpr_we     ),
-    .gpr_waddr_i  	(wbu_gpr_waddr  ),
-    .gpr_wdata_i  	(wbu_gpr_wdata  ),
-    .gpr_raddr1_i 	(gpr_raddr[4:0] ),
-    .gpr_raddr2_i 	(gpr_raddr[9:5] ),
-    .gpr_rdata1_o 	(gpr_rdata1     ),
-    .gpr_rdata2_o 	(gpr_rdata2     )
-);
-
-wire [31:0] exu_pc;
-wire [31:0] exu_inst;
-wire [ 3:0] idu_exu_src_sel;
-wire [31:0] exu_lsu_res;
-wire [8:0] exu_lsu_data;
-wire [63:0] exu_lsu_gpr_rdata;
-wire [31:0] exu_lsu_wbu_csr_rdata;
-wire exu_lsu_wbu_csr_we;
-wire [9:0] exu_lsu_wbu_data;
-wire [31:0] exu_lsu_pc_imm;
-wire [3:0] exu_lsu_pc_src_sel;
-wire idu_exu_ready;
-wire exu_lsu_valid;
 
 assign idu_exu_src_sel = {idu_exu_src2_sel, idu_exu_src1_sel};
 
@@ -405,20 +424,6 @@ EXU u_EXU(
     .exu_lsu_valid_o         	(exu_lsu_valid            ),
     .exu_lsu_ready_i         	(exu_lsu_ready            )
 );
-
-wire [31:0] lsu_pc;
-wire [31:0] lsu_inst;
-wire [31:0] lsu_wbu_res;
-wire [31:0] lsu_wbu_rdata;
-wire [9:0] lsu_wbu_data;
-wire lsu_wbu_csr_we;
-wire [31:0] lsu_wbu_csr_rdata;
-wire [31:0] lsu_wbu_csr_wdata;
-wire [31:0] lsu_wbu_pc_rdata1;
-wire [31:0] lsu_wbu_pc_imm;
-wire [3:0] lsu_wbu_pc_src_sel;
-wire exu_lsu_ready;
-wire lsu_wbu_valid;
 
 LSU u_LSU(
     .clk                     	(clock                    ),
@@ -482,24 +487,6 @@ LSU u_LSU(
     .bg_i                    	(bg2                      )
 );
 
-wire wbu_gpr_we;
-wire [4:0] wbu_gpr_waddr;
-wire [31:0] wbu_gpr_wdata;
-wire [2:0] wbu_csr_func3;
-wire wbu_csr_we;
-wire [11:0] wbu_csr_waddr;
-wire [31:0] wbu_csr_wdata;
-wire [31:0] wbu_csr_mepc;
-wire wbu_csr_ecall;
-wire wbu_csr_mret;
-wire wbu_pc_ecall;
-wire [31:0] wbu_pc_rdata1;
-wire [31:0] wbu_pc_imm;
-wire wbu_pc_cmp_res;
-wire [3:0] wbu_pc_src_sel;
-wire lsu_wbu_ready;
-wire wbu_pc_valid;
-
 WBU u_WBU(
     .clk                  	(clock                 ),
     .rst                  	(reset                 ),
@@ -535,9 +522,16 @@ WBU u_WBU(
     .wbu_pc_ready_i       	(wbu_pc_ready          )
 );
 
-wire [31:0] csr_rdata;
-wire [31:0] csr_r_mtvec;
-wire [31:0] csr_r_mepc;
+GPR u_GPR(
+    .clk           	(clock          ),
+    .gpr_we_i      	(wbu_gpr_we     ),
+    .gpr_waddr_i  	(wbu_gpr_waddr  ),
+    .gpr_wdata_i  	(wbu_gpr_wdata  ),
+    .gpr_raddr1_i 	(gpr_raddr[4:0] ),
+    .gpr_raddr2_i 	(gpr_raddr[9:5] ),
+    .gpr_rdata1_o 	(gpr_rdata1     ),
+    .gpr_rdata2_o 	(gpr_rdata2     )
+);
 
 CSR u_CSR(
     .clk           	(clock          ),

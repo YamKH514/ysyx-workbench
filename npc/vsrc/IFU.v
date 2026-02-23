@@ -1,65 +1,57 @@
 module IFU(
-    input               clk,
-    input               rst,
+    input         clk,
+    input         rst,
 
-    input       [31:0]  pc_i,
-    output      [31:0]  ifu_pc_o,
-    output      [31:0]  ifu_inst_o,
+    input  [31:0] pc_i,
+    output [31:0] ifu_pc_o,
+    output [31:0] ifu_inst_o,
 
-    input               pc_ifu_valid_i,
-    output              pc_ifu_ready_o,
+    input         pc_ifu_valid_i,
+    output        pc_ifu_ready_o,
 
-    output              ifu_idu_valid_o,
-    input               ifu_idu_ready_i,
+    output        ifu_idu_valid_o,
+    input         ifu_idu_ready_i,
 
-    output      [9:0]   ifu_gpr_raddr_o,
+    output [ 9:0] ifu_gpr_raddr_o,
 
-    output      [11:0]  ifu_csr_raddr_o,
+    output [11:0] ifu_csr_raddr_o,
 
-    input               fence_i_i,
+    input         fence_i_i,
 
-    // AR
-    output      [3:0]   arid_o,
-    output      [31:0]  araddr_o,
-    output      [3:0]   arlen_o,
-    output      [2:0]   arsize_o,
-    output      [1:0]   arburst_o,
-    output              arvalid_o,
-    input               arready_i,
+    output [ 3:0] arid_o,
+    output [31:0] araddr_o,
+    output [ 3:0] arlen_o,
+    output [ 2:0] arsize_o,
+    output [ 1:0] arburst_o,
+    output        arvalid_o,
+    input         arready_i,
+    input  [ 3:0] rid_i,
+    input  [31:0] rdata_i,
+    input  [ 1:0] rresp_i,
+    input         rlast_i,
+    input         rvalid_i,
+    output        rready_o,
 
-    // R
-    input       [3:0]   rid_i,
-    input       [31:0]  rdata_i,
-    input       [1:0]   rresp_i,
-    input               rlast_i,
-    input               rvalid_i,
-    output              rready_o,
+    output [ 3:0] awid_o,
+    output [31:0] awaddr_o,
+    output [ 3:0] awlen_o,
+    output [ 2:0] awsize_o,
+    output [ 1:0] awburst_o,
+    output        awvalid_o,
+    input         awready_i,
+    output [31:0] wdata_o,
+    output [ 3:0] wstrb_o,
+    output        wlast_o,
+    output        wvalid_o,
+    input         wready_i,
+    input  [ 3:0] bid_i,
+    input  [ 1:0] bresp_i,
+    input         bvalid_i,
+    output        bready_o,
 
-    // AW
-    output  reg [3:0]   awid_o,
-    output  reg [31:0]  awaddr_o,
-    output  reg [3:0]   awlen_o,
-    output  reg [2:0]   awsize_o,
-    output  reg [1:0]   awburst_o,
-    output  reg         awvalid_o,
-    input               awready_i,
-
-    // W
-    output  reg [31:0]  wdata_o,
-    output  reg [3:0]   wstrb_o,
-    output  reg         wlast_o,
-    output  reg         wvalid_o,
-    input               wready_i,
-
-    // B
-    input       [3:0]   bid_i,
-    input       [1:0]   bresp_i,
-    input               bvalid_i,
-    output  reg         bready_o,
-
-    output  reg         bs_o,
-    output  reg         br_o,
-    input               bg_i
+    output        bs_o,
+    output        br_o,
+    input         bg_i
 );
 
 // Pipeline Reg
@@ -122,11 +114,9 @@ end
 
 always @(posedge clk) begin
     if (rst) begin
-        ifu_current_pc_r     <= 32'b0;
-    end else if (state == S_IDLE) begin
-        if (pc_ifu_valid_i & pc_ifu_ready_o) begin
-            ifu_current_pc_r    <= pc_i;
-        end
+        ifu_current_pc_r <= 32'b0;
+    end else if (pc_ifu_valid_i & pc_ifu_ready_o) begin
+        ifu_current_pc_r <= pc_i;
     end
 end
 
