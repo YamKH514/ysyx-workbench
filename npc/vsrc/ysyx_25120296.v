@@ -220,22 +220,6 @@ wire            clint_bready;
 
 assign trap_npc = wbu_pc_ecall ? csr_r_mtvec : csr_r_mepc;
 
-// PCCnt #(.RESET_PC 	(32'h30000000)) u_PCCnt(
-//     .clk                 	(clock              ),
-//     .rst                  	(reset              ),
-//     .pc_cnt_cmp_res_in     	(exu_res[0]         ),
-//     .pc_cnt_rd1_in         	(gpr_r_data1        ),
-//     .pc_cnt_imm_in         	(imm_ext            ),
-//     .pc_cnt_npc_src_sel_in 	(pc_cnt_npc_src_sel ),
-//     .pc_cnt_trap_npc_in    	(trap_npc           ),
-//     .pc_cnt_pc_out         	(pc                 ),
-//     .pc_cnt_npc_out        	(npc                ),
-//     .wbu_to_pc_valid_in     (wbu_to_pc_valid    ),
-//     .pc_to_wbu_ready_out    (pc_to_wbu_ready    ),
-//     .pc_to_ifu_valid_out    (pc_to_ifu_valid    ),
-//     .ifu_to_pc_ready_in     (ifu_to_pc_ready    )
-// );
-
 reg wbu_pc_ready;
 reg pc_ifu_valid;
 
@@ -309,25 +293,6 @@ IFU u_IFU(
     .bg_i            	(bg1              )
 );
 
-// IDU u_IDU(
-//     .clk                	(clock              ),
-//     .rst                    (reset              ),
-//     .idu_inst_in           	(ifu_inst           ),
-//     .idu_inst_type_out     	(inst_type          ),
-//     .csr_we_out        	    (csr_we             ),
-//     .funce_i_out            (fence_i            ),
-//     .exu_alu_fun_out       	(exu_alu_func       ),
-//     .exu_alu_src1_sel_out  	(exu_alu_src_sel1   ),
-//     .exu_alu_src2_sel_out  	(exu_alu_src_sel2   ),
-//     .pc_cnt_npc_src_sel_out (pc_cnt_npc_src_sel ),
-//     .idu_to_lsu_data_out    (idu_to_lsu_data    ),
-//     .idu_to_wbu_data_out    (idu_to_wbu_data    ),
-//     .ifu_to_idu_valid_in    (ifu_to_idu_valid   ),
-//     .idu_to_ifu_ready_out   (idu_to_ifu_ready   ),
-//     .idu_to_exu_valid_out   (idu_to_exu_valid   ),
-//     .exu_to_idu_ready_in    (exu_to_idu_ready   )
-// );
-
 wire [31:0] idu_pc;
 wire [31:0] idu_inst;
 wire fence_i;
@@ -381,17 +346,6 @@ ImmExt u_ImmExt(
     .imm_exu_o           	(imm_exu              )
 );
 
-// GPR u_GPR(
-//     .clk                    (clock              ),
-//     .gpr_we_in    	        (gpr_we             ),
-//     .gpr_r_addr1_in         (ifu_inst[19:15]    ),
-//     .gpr_r_addr2_in         (ifu_inst[24:20]    ),
-//     .gpr_w_addr_in          (gpr_w_addr         ),
-//     .gpr_w_data_in          (gpr_w_data         ),
-//     .gpr_r_data1_out        (gpr_r_data1        ),
-//     .gpr_r_data2_out        (gpr_r_data2        )
-// );
-
 wire [31:0] gpr_rdata1;
 wire [31:0] gpr_rdata2;
 
@@ -405,23 +359,6 @@ GPR u_GPR(
     .gpr_rdata1_o 	(gpr_rdata1     ),
     .gpr_rdata2_o 	(gpr_rdata2     )
 );
-
-// EXU u_EXU(
-//     .clk                    (clock              ),
-//     .rst                    (reset              ),
-//     .exu_pc_in           	(pc                 ),
-//     .exu_alu_fun_in      	(exu_alu_func       ),
-//     .exu_rd1_in          	(gpr_r_data1        ),
-//     .exu_rd2_in          	(gpr_r_data2        ),
-//     .exu_imm_in          	(imm_ext            ),
-//     .exu_alu_src1_sel_in 	(exu_alu_src_sel1   ),
-//     .exu_alu_src2_sel_in 	(exu_alu_src_sel2   ),
-//     .exu_res_out         	(exu_res            ),
-//     .idu_to_exu_valid_in    (idu_to_exu_valid   ),
-//     .exu_to_idu_ready_out   (exu_to_idu_ready   ),
-//     .exu_to_lsu_valid_out   (exu_to_lsu_valid   ),
-//     .lsu_to_exu_ready_in    (lsu_to_exu_ready   )
-// );
 
 wire [31:0] exu_pc;
 wire [31:0] exu_inst;
@@ -468,52 +405,6 @@ EXU u_EXU(
     .exu_lsu_valid_o         	(exu_lsu_valid            ),
     .exu_lsu_ready_i         	(exu_lsu_ready            )
 );
-
-// LSU u_LSU(
-//     .clk                  	(clock              ),
-//     .rst                  	(reset              ),
-//     .idu_to_lsu_data_in   	(idu_to_lsu_data    ),
-//     .lsu_r_addr_in        	(exu_res            ),
-//     .lsu_r_data_out       	(lsu_r_data         ),
-//     .lsu_w_addr_in        	(exu_res            ),
-//     .lsu_w_data_in        	(gpr_r_data2        ),
-//     .arid_out               (lsu_arid           ),
-//     .araddr_out           	(lsu_araddr         ),
-//     .arlen_out              (lsu_arlen          ),
-//     .arsize_out             (lsu_arsize         ),
-//     .arburst_out            (lsu_arburst        ),
-//     .arvalid_out          	(lsu_arvalid        ),
-//     .arready_in           	(lsu_arready        ),
-//     .rid_in                 (lsu_rid            ),
-//     .rdata_in             	(lsu_rdata          ),
-//     .rresp_in             	(lsu_rresp          ),
-//     .rlast_in               (lsu_rlast          ),
-//     .rvalid_in            	(lsu_rvalid         ),
-//     .rready_out           	(lsu_rready         ),
-//     .awid_out               (lsu_awid           ),
-//     .awaddr_out           	(lsu_awaddr         ),
-//     .awlen_out              (lsu_awlen          ),
-//     .awsize_out             (lsu_awsize         ),
-//     .awburst_out            (lsu_awburst        ),
-//     .awvalid_out          	(lsu_awvalid        ),
-//     .awready_in           	(lsu_awready        ),
-//     .wdata_out            	(lsu_wdata          ),
-//     .wstrb_out            	(lsu_wstrb          ),
-//     .wlast_out              (lsu_wlast          ),
-//     .wvalid_out           	(lsu_wvalid         ),
-//     .wready_in            	(lsu_wready         ),
-//     .bid_in                 (lsu_bid            ),
-//     .bresp_in             	(lsu_bresp          ),
-//     .bvalid_in            	(lsu_bvalid         ),
-//     .bready_out           	(lsu_bready         ),
-//     .exu_to_lsu_valid_in  	(exu_to_lsu_valid   ),
-//     .lsu_to_exu_ready_out 	(lsu_to_exu_ready   ),
-//     .lsu_to_wbu_valid_out 	(lsu_to_wbu_valid   ),
-//     .wbu_to_lsu_ready_in  	(wbu_to_lsu_ready   ),
-//     .bs_out                 (bs2                ),
-//     .br_out                 (br2                ),
-//     .bg_in                  (bg2                )
-// );
 
 wire [31:0] lsu_pc;
 wire [31:0] lsu_inst;
@@ -591,24 +482,6 @@ LSU u_LSU(
     .bg_i                    	(bg2                      )
 );
 
-// WBU u_WBU(
-//     .clk                    (clock              ),
-//     .rst                    (reset              ),
-//     .idu_to_wbu_data_in     (idu_to_wbu_data    ),
-//     .exu_res_in             (exu_res            ),
-//     .lsu_r_data_in          (lsu_r_data         ),
-//     .csr_r_data_in          (csr_r_data         ),
-//     .gpr_we_out     	    (gpr_we             ),
-//     .gpr_w_addr_out 	    (gpr_w_addr         ),
-//     .gpr_w_data_out 	    (gpr_w_data         ),
-//     .csr_w_ecall_out        (is_ecall           ),
-//     .csr_w_mret_out         (is_mret            ),
-//     .lsu_to_wbu_valid_in    (lsu_to_wbu_valid   ),
-//     .wbu_to_lsu_ready_out   (wbu_to_lsu_ready   ),
-//     .wbu_to_pc_valid_out    (wbu_to_pc_valid    ),
-//     .pc_to_wbu_ready_in     (pc_to_wbu_ready    )
-// );
-
 wire wbu_gpr_we;
 wire [4:0] wbu_gpr_waddr;
 wire [31:0] wbu_gpr_wdata;
@@ -661,10 +534,6 @@ WBU u_WBU(
     .wbu_pc_valid_o       	(wbu_pc_valid          ),
     .wbu_pc_ready_i       	(wbu_pc_ready          )
 );
-
-// assign csr_w_data   = gpr_r_data1;
-// assign csr_w_mepc   = pc;
-// assign csr_rw_addr  = ifu_inst[31:20];
 
 wire [31:0] csr_rdata;
 wire [31:0] csr_r_mtvec;
