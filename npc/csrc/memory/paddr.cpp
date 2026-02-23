@@ -71,7 +71,7 @@ void init_mem()
 extern "C" void mem_tracer_read(int32_t addr, int32_t data, int32_t is_inst)
 {
 #ifdef CONFIG_MTRACE
-    Log("MEM_READ , raddr=0x%08x, rdata=0x%08x\n", addr, data);
+    printf("MEM_READ , raddr=0x%08x, rdata=0x%08x\n", addr, data);
 #endif
 #ifdef CONFIG_MTRACE_BIN
     mtrace_write(addr, false, (bool)is_inst);
@@ -89,7 +89,7 @@ extern "C" void mem_tracer_write(int32_t addr, int32_t data, int32_t strb)
     }
 #endif
 #ifdef CONFIG_MTRACE
-    Log("MEM_WRITE, waddr=0x%08x, wdata=0x%08x, wstrb=0x%08x\n", addr, data, strb);
+    printf("MEM_WRITE, waddr=0x%08x, wdata=0x%08x, wstrb=0x%08x\n", addr, data, strb);
 #endif
 #ifdef CONFIG_MTRACE_BIN
     mtrace_write(addr, true, false);
