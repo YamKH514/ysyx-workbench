@@ -1,11 +1,10 @@
-#include "cache.hpp"
-#include <iostream>
+#include "dcache.hpp"
 #include <stdexcept>
 
 #define AVE_MT_ONCE 32.87
 #define AVE_MT_MUL_TRANSFER 7.00
 
-Cache::Cache(uint32_t m, uint32_t n)
+DCache::DCache(uint32_t m, uint32_t n)
 {
     if (m + n > ADDR_BITS)
     {
@@ -24,9 +23,11 @@ Cache::Cache(uint32_t m, uint32_t n)
     c_n = n;
     cl_w = 8 * (1u << c_m);
     cl_n = 1u << c_n;
-    cache_line = std::vector<Cache_line>(cl_n);
-    if (m == 2) ave_misstime = AVE_MT_ONCE; // When m = 2
-    else ave_misstime = AVE_MT_ONCE + (cl_w / 16 - 1) * AVE_MT_MUL_TRANSFER; // When m > 2
+    cache_line = std::vector<DCache_line>(cl_n);
+    if (m == 2)
+        ave_misstime = AVE_MT_ONCE;
+    else
+        ave_misstime = AVE_MT_ONCE + (cl_w / 16 - 1) * AVE_MT_MUL_TRANSFER;
 
     for (auto &line : cache_line)
     {
@@ -34,25 +35,26 @@ Cache::Cache(uint32_t m, uint32_t n)
     }
 }
 
-bool Cache::check_hit(uint32_t pc)
+bool DCache::access(uint32_t addr, bool is_write)
 {
-    Cache_line cache_line = {};
-    split_pc(pc, cache_line);
+    DCache_line line = {};
+    split_addr(addr, line);
 
-    if ((this->cache_line[cache_line.index].tag == cache_line.tag) &&
-        (this->cache_line[cache_line.index].valid == true))
+    if ((this->cache_line[line.index].tag == line.tag) &&
+        (this->cache_line[line.index].valid == true))
     {
         return true;
     }
-    else
+
+    if (!is_write)
     {
-        this->cache_line[cache_line.index] = cache_line;
-        this->cache_line[cache_line.index].valid = true;
-        return false;
+        this->cache_line[line.index] = line;
+        this->cache_line[line.index].valid = true;
     }
+    return false;
 }
 
-void Cache::print_config() const
+void DCache::print_config() const
 {
     printf("Cache Configuration:\n");
     printf("  Address bits: %u\n", ADDR_BITS);

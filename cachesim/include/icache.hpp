@@ -1,5 +1,5 @@
-#ifndef CACHE_HPP__
-#define CACHE_HPP__
+#ifndef ICACHE_HPP__
+#define ICACHE_HPP__
 
 #include <cstdint>
 #include <vector>
