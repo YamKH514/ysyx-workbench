@@ -2,13 +2,13 @@ module Arbiter(
     input               clk,
     input               rst,
 
-    input               bs_in,
+    input               bs_i,
 
-    input               br1_in,
-    output  reg         bg1_out,
+    input               br1_i,
+    output  reg         bg1_o,
 
-    input               br2_in,
-    output  reg         bg2_out
+    input               br2_i,
+    output  reg         bg2_o
 );
 
 localparam S_IDLE = 1'd0;
@@ -21,26 +21,26 @@ always @(posedge clk) begin
     else state <= next_state;
 
     if (rst) begin
-        bg1_out <= 1'b0;
-        bg2_out <= 1'b0;
+        bg1_o <= 1'b0;
+        bg2_o <= 1'b0;
     end else begin
         case (state)
             S_IDLE: begin
-                if (br1_in) begin
-                    bg1_out <= 1'b1;
-                end else if (br2_in) begin
-                    bg2_out <= 1'b1;
+                if (br1_i) begin
+                    bg1_o <= 1'b1;
+                end else if (br2_i) begin
+                    bg2_o <= 1'b1;
                 end
             end
             S_BUSY: begin
-                if (bs_in) begin
-                    bg1_out <= 1'b0;
-                    bg2_out <= 1'b0;
+                if (bs_i) begin
+                    bg1_o <= 1'b0;
+                    bg2_o <= 1'b0;
                 end
             end
             default: begin
-                bg1_out <= 1'b0;
-                bg2_out <= 1'b0;
+                bg1_o <= 1'b0;
+                bg2_o <= 1'b0;
             end
         endcase
     end
@@ -50,12 +50,12 @@ always @(*) begin
     next_state = state;
     case (state)
         S_IDLE: begin
-            if (bs_in) begin
+            if (bs_i) begin
                 next_state = S_BUSY;
             end
         end
         S_BUSY: begin
-            if (!bs_in) begin
+            if (!bs_i) begin
                 next_state = S_IDLE;
             end
         end

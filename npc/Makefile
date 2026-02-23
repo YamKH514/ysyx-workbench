@@ -76,6 +76,7 @@ LDFLAGS += -lreadline -lncurses
 include $(NPC_HOME)/tools/difftest.mk
 
 override ARGS ?= --log=$(BUILD_DIR)/npc-log.txt
+override ARGS += --mlog=$(BUILD_DIR)/mtrace
 override ARGS += $(ARGS_DIFF)
 
 ifeq ($(PLATFORM), ysyxSoC) # ysyxSoC

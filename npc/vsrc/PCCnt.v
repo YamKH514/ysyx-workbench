@@ -1,21 +1,32 @@
 module PCCnt(
     input               clk,
     input               rst,
-    input               pc_cnt_cmp_res_in,
-    input       [31:0]  pc_cnt_rd1_in,
-    input       [31:0]  pc_cnt_imm_in,
-    input       [3:0]   pc_cnt_npc_src_sel_in, // npc = pc+4(0000) pc+imm(0001) src1+imm(0011) trap_npc(0100) res=0,jump(10--) res=1,jump(11--)
-    input       [31:0]  pc_cnt_trap_npc_in,
-    output  reg [31:0]  pc_cnt_pc_out,
-    output  reg [31:0]  pc_cnt_npc_out,
+    input               pc_cnt_cmp_res_i,
+    input       [31:0]  pc_cnt_rd1_i,
+    input       [31:0]  pc_cnt_imm_i,
+    input       [3:0]   pc_cnt_npc_src_sel_i, // npc = pc+4(0000) pc+imm(0001) src1+imm(0011) trap_npc(0100) res=0,jump(10--) res=1,jump(11--)
+    input       [31:0]  pc_cnt_trap_npc_i,
+    output  reg [31:0]  pc_cnt_pc_o,
 
-    input               wbu_to_pc_valid_in,
-    output  reg         pc_to_wbu_ready_out,
-    output  reg         pc_to_ifu_valid_out,
-    input               ifu_to_pc_ready_in
+    input               wbu_pc_valid_i,
+    output  reg         wbu_pc_ready_o,
+    output  reg         pc_ifu_valid_o,
+    input               pc_ifu_ready_i
 );
 
 parameter RESET_PC = 32'h30000000;
+
+reg [31:0] pc_r;
+
+assign pc_cnt_pc_o = pc_r;
+
+always @(posedge clk) begin
+    if (rst) begin
+        pc_r <= RESET_PC;
+    end else if (wbu_pc_valid_i & wbu_pc_ready_o) begin
+        pc_r <= is_trap ? pc_cnt_trap_npc_i : addr_res;
+    end
+end
 
 wire        is_trap;
 wire        is_jump;
@@ -23,73 +34,41 @@ wire [31:0] base;
 wire [31:0] offset;
 wire [31:0] addr_res;
 
-assign is_trap = ~pc_cnt_npc_src_sel_in[3] & pc_cnt_npc_src_sel_in[2];
-assign is_jump = pc_cnt_npc_src_sel_in[3];
+assign is_trap = ~pc_cnt_npc_src_sel_i[3] & pc_cnt_npc_src_sel_i[2];
+assign is_jump = pc_cnt_npc_src_sel_i[3];
 
 assign base = 
             is_trap ? 32'b0 :
-            (!is_jump & pc_cnt_npc_src_sel_in[1]) ? pc_cnt_rd1_in : pc_cnt_pc_out;
+            (!is_jump & pc_cnt_npc_src_sel_i[1]) ? pc_cnt_rd1_i : pc_r;
 assign offset = 
             is_trap ? 32'b0 :
             is_jump ?
-            (pc_cnt_npc_src_sel_in[2] == pc_cnt_cmp_res_in) ? pc_cnt_imm_in : 4 :
-            pc_cnt_npc_src_sel_in[0] ? pc_cnt_imm_in : 32'd4;
+            (pc_cnt_npc_src_sel_i[2] == pc_cnt_cmp_res_i) ? pc_cnt_imm_i : 4 :
+            pc_cnt_npc_src_sel_i[0] ? pc_cnt_imm_i : 32'd4;
 
 assign addr_res = base + offset;
 
-assign pc_cnt_npc_out = is_trap ? pc_cnt_trap_npc_in : addr_res;
+assign wbu_pc_ready_o = state == S_IDLE & wbu_pc_valid_i;
+assign pc_ifu_valid_o = state == S_BUSY;
 
 localparam S_IDLE = 1'd0;
 localparam S_BUSY = 1'd1;
 
-reg state, next_state;
-
-// assign pc_cnt_npc_out = (pc_cnt_npc_src_sel_in[3] == 1'b0) ?
-//                         (pc_cnt_npc_src_sel_in[2] == 1'b1 ? pc_cnt_trap_npc_in : (((pc_cnt_npc_src_sel_in[1] == 1'b0) ? pc_cnt_pc_out : pc_cnt_rd1_in) + ((pc_cnt_npc_src_sel_in[0] == 1'b0) ? 32'd4 : pc_cnt_imm_in))) :
-//                         (pc_cnt_pc_out + ((pc_cnt_npc_src_sel_in[2] == pc_cnt_cmp_res_in) ? pc_cnt_imm_in : 4));
+reg state;
 
 always @(posedge clk) begin
     if (rst) begin
-        pc_to_wbu_ready_out <= 1'b0;
-        pc_to_ifu_valid_out <= 1'b1;
-        pc_cnt_pc_out       <= RESET_PC;
+        state <= S_BUSY;
     end else begin
         case (state)
             S_IDLE: begin
-                if (wbu_to_pc_valid_in & pc_to_wbu_ready_out) begin
-                    pc_to_wbu_ready_out <= 1'b0;
-                    pc_to_ifu_valid_out <= 1'b1;
-                    pc_cnt_pc_out       <= pc_cnt_npc_out;
-                end
+                if (wbu_pc_valid_i & wbu_pc_ready_o) state <= S_BUSY;
             end
             S_BUSY: begin
-                if (pc_to_ifu_valid_out & ifu_to_pc_ready_in) begin
-                    pc_to_wbu_ready_out <= 1'b1;
-                    pc_to_ifu_valid_out <= 1'b0;
-                end
+                if (pc_ifu_valid_o & pc_ifu_ready_i) state <= S_IDLE;
             end
         endcase
     end
-end
-
-always @(posedge clk) begin
-    if (rst) state <= S_BUSY;
-    else state <= next_state;
-end
-
-always @(*) begin
-    case (state)
-        S_IDLE: begin
-            if (wbu_to_pc_valid_in & pc_to_wbu_ready_out) begin
-                next_state = S_BUSY;
-            end
-        end
-        S_BUSY: begin
-            if (pc_to_ifu_valid_out & ifu_to_pc_ready_in) begin
-                next_state = S_IDLE;
-            end
-        end
-    endcase
 end
 
 endmodule

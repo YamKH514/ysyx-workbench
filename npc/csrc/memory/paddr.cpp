@@ -1,18 +1,12 @@
 #include "memory/host.h"
 #include "memory/paddr.h"
+#include "memory/mtrace.h"
 #include "macro.h"
 #include "utils.h"
 #include "timer.h"
 #include "difftest-def.h"
 #include "cpu.h"
 
-// static uint32_t flash_data[10] =   {0x100007b7, // lui	a5,0x10000
-//                                     0x04100713, // li	a4,65
-//                                     0x00e78023, // sb	a4,0(a5) # 10000000
-//                                     0x00a00713, // li	a4,10
-//                                     0x00e78023, // sb	a4,0(a5)
-//                                     0x00008067  // ret
-//                                     };
 #ifdef PLATFORM_YSYXSOC
 static uint8_t pmem[CONFIG_MSIZE] PG_ALIGN = {};
 static uint8_t psram[CONFIG_PSRAMSIZE] PG_ALIGN = {};
@@ -74,10 +68,13 @@ void init_mem()
 #endif
 }
 
-extern "C" void mem_tracer_read(int32_t addr, int32_t data)
+extern "C" void mem_tracer_read(int32_t addr, int32_t data, int32_t is_inst)
 {
 #ifdef CONFIG_MTRACE
     printf("MEM_READ , raddr=0x%08x, rdata=0x%08x\n", addr, data);
+#endif
+#ifdef CONFIG_MTRACE_BIN
+    mtrace_write(addr, false, (bool)is_inst);
 #endif
 }
 
@@ -93,6 +90,9 @@ extern "C" void mem_tracer_write(int32_t addr, int32_t data, int32_t strb)
 #endif
 #ifdef CONFIG_MTRACE
     printf("MEM_WRITE, waddr=0x%08x, wdata=0x%08x, wstrb=0x%08x\n", addr, data, strb);
+#endif
+#ifdef CONFIG_MTRACE_BIN
+    mtrace_write(addr, true, false);
 #endif
 }
 

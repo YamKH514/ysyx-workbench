@@ -1,5 +1,6 @@
 #include "common.h"
 #include "memory/paddr.h"
+#include "memory/mtrace.h"
 #include "ftrace.h"
 #include "npc-init.h"
 #include "disasm.h"
@@ -8,6 +9,7 @@
 #include "cpu.h"
 
 static char *log_file = NULL;
+static char *mt_file = NULL;
 static char *diff_so_file = NULL;
 static char *img_file = NULL;
 static char *elf_file = NULL;
@@ -38,12 +40,13 @@ static int parse_args(int argc, char *argv[])
     const struct option table[] = {
         {"batch",   no_argument      , NULL, 'b'},
         {"log",     required_argument, NULL, 'l'},
+        {"mlog",    required_argument, NULL, 'm'},
         {"diff",    required_argument, NULL, 'd'},
         {"elf",     required_argument, NULL, 'e'},
         {0, 0, NULL, 0},
     };
     int o;
-    while ((o = getopt_long(argc, argv, "-bl:d:e:", table, NULL)) != -1)
+    while ((o = getopt_long(argc, argv, "-bl:m:d:e:", table, NULL)) != -1)
     {
         switch (o)
         {
@@ -54,6 +57,9 @@ static int parse_args(int argc, char *argv[])
             break;
         case 'l':
             log_file = optarg;
+            break;
+        case 'm':
+            mt_file = optarg;
             break;
         case 'd':
             diff_so_file = optarg;
@@ -68,6 +74,7 @@ static int parse_args(int argc, char *argv[])
             printf("Usage: %s [OPTION...] IMAGE [args]\n\n", argv[0]);
             printf("\t-b,--batch              run with batch mode\n");
             printf("\t-l,--log=FILE           output log to FILE\n");
+            printf("\t-m,--mlog=FILE          output mtrace to FILE\n");
             printf("\t-d,--diff=REF_SO        run DiffTest with reference REF_SO\n");
             printf("\t-e,--elf=FILE           get ELF file\n");
             printf("\n");
@@ -82,6 +89,8 @@ void init_npc(int argc, char *argv[], VTOP *top, VerilatedContext *contextp, Ver
     parse_args(argc, argv);
 
     init_log(log_file);
+
+    init_mtrace(mt_file);
 
 #ifdef CONFIG_FTRACE
     parse_elf(elf_file);

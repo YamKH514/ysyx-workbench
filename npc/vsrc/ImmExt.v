@@ -1,31 +1,31 @@
 `include "common.vh"
 
 module ImmExt(
-    input   [2:0]   imm_ext_inst_type_in,
-    input   [31:7]  imm_ext_imm_in,
-    output  [31:0]  imm_ext_imm_out
+    input   [2:0]   idu_imm_type_i,
+    input   [31:7]  idu_imm_inst_i,
+    output  [31:0]  imm_exu_o
 );
 
-// assign imm_ext_imm_out = 
-//             (imm_ext_inst_type_in == `INST_TYPE_I) ? {{20{imm_ext_imm_in[31]}}, imm_ext_imm_in[31:20]} :
-//             (imm_ext_inst_type_in == `INST_TYPE_S) ? {{20{imm_ext_imm_in[31]}}, imm_ext_imm_in[31:25], imm_ext_imm_in[11:7]} :
-//             (imm_ext_inst_type_in == `INST_TYPE_B) ? {{19{imm_ext_imm_in[31]}}, imm_ext_imm_in[31], imm_ext_imm_in[7], imm_ext_imm_in[30:25], imm_ext_imm_in[11:8], 1'b0} :
-//             (imm_ext_inst_type_in == `INST_TYPE_U) ? {imm_ext_imm_in[31:12], 12'b0} :
-//             (imm_ext_inst_type_in == `INST_TYPE_J) ? {{11{imm_ext_imm_in[31]}}, imm_ext_imm_in[31], imm_ext_imm_in[19:12], imm_ext_imm_in[20], imm_ext_imm_in[30:21], 1'b0} :
+// assign imm_exu_o = 
+//             (idu_imm_type_i == `INST_TYPE_I) ? {{20{idu_imm_inst_i[31]}}, idu_imm_inst_i[31:20]} :
+//             (idu_imm_type_i == `INST_TYPE_S) ? {{20{idu_imm_inst_i[31]}}, idu_imm_inst_i[31:25], idu_imm_inst_i[11:7]} :
+//             (idu_imm_type_i == `INST_TYPE_B) ? {{19{idu_imm_inst_i[31]}}, idu_imm_inst_i[31], idu_imm_inst_i[7], idu_imm_inst_i[30:25], idu_imm_inst_i[11:8], 1'b0} :
+//             (idu_imm_type_i == `INST_TYPE_U) ? {idu_imm_inst_i[31:12], 12'b0} :
+//             (idu_imm_type_i == `INST_TYPE_J) ? {{11{idu_imm_inst_i[31]}}, idu_imm_inst_i[31], idu_imm_inst_i[19:12], idu_imm_inst_i[20], idu_imm_inst_i[30:21], 1'b0} :
 //             32'b0;
 
 wire [31:0] imm_i, imm_s, imm_b, imm_u, imm_j;
 reg  [31:0] imm_r;
 
-assign imm_i = {{20{imm_ext_imm_in[31]}}, imm_ext_imm_in[31:20]};
-assign imm_s = {{20{imm_ext_imm_in[31]}}, imm_ext_imm_in[31:25], imm_ext_imm_in[11:7]};
-assign imm_b = {{19{imm_ext_imm_in[31]}}, imm_ext_imm_in[31], imm_ext_imm_in[7], imm_ext_imm_in[30:25], imm_ext_imm_in[11:8], 1'b0};
-assign imm_u = {imm_ext_imm_in[31:12], 12'b0};
-assign imm_j = {{11{imm_ext_imm_in[31]}}, imm_ext_imm_in[31], imm_ext_imm_in[19:12], imm_ext_imm_in[20], imm_ext_imm_in[30:21], 1'b0};
-assign imm_ext_imm_out = imm_r;
+assign imm_i = {{20{idu_imm_inst_i[31]}}, idu_imm_inst_i[31:20]};
+assign imm_s = {{20{idu_imm_inst_i[31]}}, idu_imm_inst_i[31:25], idu_imm_inst_i[11:7]};
+assign imm_b = {{19{idu_imm_inst_i[31]}}, idu_imm_inst_i[31], idu_imm_inst_i[7], idu_imm_inst_i[30:25], idu_imm_inst_i[11:8], 1'b0};
+assign imm_u = {idu_imm_inst_i[31:12], 12'b0};
+assign imm_j = {{11{idu_imm_inst_i[31]}}, idu_imm_inst_i[31], idu_imm_inst_i[19:12], idu_imm_inst_i[20], idu_imm_inst_i[30:21], 1'b0};
+assign imm_exu_o = imm_r;
 
 always @(*) begin
-    case (imm_ext_inst_type_in)
+    case (idu_imm_type_i)
         `INST_TYPE_I: begin
             imm_r = imm_i;
         end

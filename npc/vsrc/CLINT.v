@@ -4,43 +4,43 @@ module CLINT(
     input               rst,
 
     // AR
-    input       [3:0]   arid_in,
-    input       [31:0]  araddr_in,
-    input       [3:0]   arlen_in,
-    input       [2:0]   arsize_in,
-    input       [1:0]   arburst_in,
-    input               arvalid_in,
-    output              arready_out,
+    input       [3:0]   arid_i,
+    input       [31:0]  araddr_i,
+    input       [3:0]   arlen_i,
+    input       [2:0]   arsize_i,
+    input       [1:0]   arburst_i,
+    input               arvalid_i,
+    output              arready_o,
 
     // R
-    output      [3:0]   rid_out,
-    output      [31:0]  rdata_out,
-    output      [1:0]   rresp_out,
-    output              rlast_out,
-    output              rvalid_out,
-    input               rready_in,
+    output      [3:0]   rid_o,
+    output      [31:0]  rdata_o,
+    output      [1:0]   rresp_o,
+    output              rlast_o,
+    output              rvalid_o,
+    input               rready_i,
 
     // AW
-    input       [3:0]   awid_in,
-    input       [31:0]  awaddr_in,
-    input       [3:0]   awlen_in,
-    input       [2:0]   awsize_in,
-    input       [1:0]   awburst_in,
-    input               awvalid_in,
-    output              awready_out,
+    input       [3:0]   awid_i,
+    input       [31:0]  awaddr_i,
+    input       [3:0]   awlen_i,
+    input       [2:0]   awsize_i,
+    input       [1:0]   awburst_i,
+    input               awvalid_i,
+    output              awready_o,
 
     // W
-    input       [31:0]  wdata_in,
-    input       [3:0]   wstrb_in,
-    input               wlast_in,
-    input               wvalid_in,
-    output              wready_out,
+    input       [31:0]  wdata_i,
+    input       [3:0]   wstrb_i,
+    input               wlast_i,
+    input               wvalid_i,
+    output              wready_o,
 
     // B
-    output      [3:0]   bid_out,
-    output      [1:0]   bresp_out,
-    output              bvalid_out,
-    input               bready_in
+    output      [3:0]   bid_o,
+    output      [1:0]   bresp_o,
+    output              bvalid_o,
+    input               bready_i
 );
 
 import "DPI-C" function void clint_difftest_skip();
@@ -51,12 +51,12 @@ reg [3:0]   arlen_r;
 reg [2:0]   arsize_r;
 reg [1:0]   arburst_r;
 
-assign arready_out = r_state == S_IDLE;
-assign rid_out = arid_r;
-assign rdata_out = (araddr_r[7:0] == 8'h48 ? mtime[31:0] : mtime[63:32]);
-assign rlast_out = r_state == S_SEND_R;
-assign rresp_out = 2'b0;
-assign rvalid_out = r_state == S_SEND_R;
+assign arready_o = r_state == S_IDLE;
+assign rid_o = arid_r;
+assign rdata_o = (araddr_r[7:0] == 8'h48 ? mtime[31:0] : mtime[63:32]);
+assign rlast_o = r_state == S_SEND_R;
+assign rresp_o = 2'b0;
+assign rvalid_o = r_state == S_SEND_R;
 
 localparam S_W      = 2;
 localparam S_IDLE   = 2'd0;
@@ -76,12 +76,12 @@ always @(posedge clk) begin
     end else begin
         case (r_state)
             S_IDLE: begin
-                if (arvalid_in & arready_out) begin
-                    arid_r      <= arid_in;
-                    araddr_r    <= araddr_in;
-                    arlen_r     <= arlen_in;
-                    arsize_r    <= arsize_in;
-                    arburst_r   <= arburst_in;
+                if (arvalid_i & arready_o) begin
+                    arid_r      <= arid_i;
+                    araddr_r    <= araddr_i;
+                    arlen_r     <= arlen_i;
+                    arsize_r    <= arsize_i;
+                    arburst_r   <= arburst_i;
                 end
             end
             default: begin
@@ -100,12 +100,12 @@ always @(posedge clk) begin
     end else begin
         case (r_state)
             S_IDLE: begin
-                if (arvalid_in & arready_out) begin
+                if (arvalid_i & arready_o) begin
                     r_state <= S_SEND_R;
                 end
             end
             S_SEND_R: begin
-                if (rvalid_out & rready_in) begin
+                if (rvalid_o & rready_i) begin
                     clint_difftest_skip();
                     r_state <= S_IDLE;
                 end
@@ -125,11 +125,11 @@ reg [1:0]   awburst_r;
 reg [31:0]  wdata_r;
 reg [3:0]   wstrb_r;
 
-assign awready_out = w_state == S_IDLE;
-assign wready_out = w_state == S_GET_WD;
-assign bid_out = 4'b0;
-assign bresp_out = 2'b00;
-assign bvalid_out = w_state == S_SEND_B;
+assign awready_o = w_state == S_IDLE;
+assign wready_o = w_state == S_GET_WD;
+assign bid_o = 4'b0;
+assign bresp_o = 2'b00;
+assign bvalid_o = w_state == S_SEND_B;
 
 always @(posedge clk) begin
     if (rst) begin
@@ -142,18 +142,18 @@ always @(posedge clk) begin
     end else begin
         case (w_state)
             S_IDLE: begin
-                if (awvalid_in & awready_out) begin
-                    awid_r      <= awid_in;
-                    awaddr_r    <= awaddr_in;
-                    awlen_r     <= awlen_in;
-                    awsize_r    <= awsize_in;
-                    awburst_r   <= awburst_in;
+                if (awvalid_i & awready_o) begin
+                    awid_r      <= awid_i;
+                    awaddr_r    <= awaddr_i;
+                    awlen_r     <= awlen_i;
+                    awsize_r    <= awsize_i;
+                    awburst_r   <= awburst_i;
                 end
             end
             S_GET_WD: begin
-                if (wvalid_in & wready_out) begin
-                    wdata_r    <= wdata_in;
-                    wstrb_r    <= wstrb_in;
+                if (wvalid_i & wready_o) begin
+                    wdata_r    <= wdata_i;
+                    wstrb_r    <= wstrb_i;
                 end
             end
             default: begin
@@ -174,17 +174,17 @@ always @(posedge clk) begin
     end else begin
         case (w_state)
             S_IDLE: begin
-                if (awvalid_in & awready_out) begin
+                if (awvalid_i & awready_o) begin
                     w_state <= S_GET_WD;
                 end
             end
             S_GET_WD: begin
-                if (wvalid_in & wready_out) begin
+                if (wvalid_i & wready_o) begin
                     w_state <= S_SEND_B;
                 end
             end
             S_SEND_B: begin
-                if (bvalid_out & bready_in) begin
+                if (bvalid_o & bready_i) begin
                     w_state <= S_IDLE;
                 end
             end
