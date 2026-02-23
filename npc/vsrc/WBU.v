@@ -36,9 +36,9 @@ module WBU(
     output      [ 3:0]  wbu_pc_src_sel_o,
 
     input               lsu_wbu_valid_i,
-    output reg          lsu_wbu_ready_o,
+    output              lsu_wbu_ready_o,
 
-    output reg          wbu_pc_valid_o,
+    output              wbu_pc_valid_o,
     input               wbu_pc_ready_i
 );
 
@@ -72,7 +72,7 @@ always @(posedge clk) begin
         lsu_wbu_pc_imm_r <= 'b0;
         lsu_wbu_pc_cmp_res_r <= 'b0;
         lsu_wbu_pc_src_sel_r <= 'b0;
-    end else if (state == S_IDLE & lsu_wbu_valid_i) begin
+    end else if (lsu_wbu_valid_i & lsu_wbu_ready_o) begin
         pc_r <= lsu_pc_i;
         inst_r <= lsu_inst_i;
         lsu_wbu_csr_we_r <= lsu_wbu_csr_we_i;
@@ -84,85 +84,55 @@ always @(posedge clk) begin
     end
 end
 
-parameter S_IDLE = 1'd0;
-parameter S_BUSY = 1'd1;
-
-reg state, next_state;
-
-always @(posedge clk) begin
-    if (rst) state <= S_IDLE;
-    else state <= next_state;
-
-    if (rst) begin
-        lsu_wbu_ready_o <= 1'b0;
-        wbu_pc_valid_o <= 1'b0;
-        wbu_gpr_we_o <= 1'b0;
-        wbu_gpr_waddr_o <= 5'b0;
-        wbu_gpr_wdata_o <= 32'b0;
-        wbu_csr_ecall_o <= 1'b0;
-        wbu_csr_mret_o <= 1'b0;
-    end else begin
-        case (state)
-            S_IDLE: begin
-                if (lsu_wbu_valid_i) begin
-                    lsu_wbu_ready_o <= 1'b1;
-                    wbu_pc_valid_o <= 1'b1;
-                    wbu_gpr_we_o <= wbu_we_r;
-                    wbu_gpr_waddr_o <= wbu_w_addr_r;
-                    wbu_gpr_wdata_o <= gpr_w_data_r;
-                    wbu_csr_ecall_o <= ecall_r;
-                    wbu_csr_mret_o <= mret_r;
-                end
-            end
-            S_BUSY: begin
-                lsu_wbu_ready_o <= 1'b0;
-                wbu_gpr_we_o <= 1'b0;
-                wbu_gpr_waddr_o <= 5'b0;
-                wbu_gpr_wdata_o <= 32'b0;
-                wbu_csr_ecall_o <= 1'b0;
-                wbu_csr_mret_o <= 1'b0;
-                if (wbu_pc_valid_o & wbu_pc_ready_i) begin
-                    wbu_pc_valid_o <= 1'b0;
-                end
-            end
-            default: begin
-                lsu_wbu_ready_o <= 1'b0;
-                wbu_pc_valid_o <= 1'b0;
-                wbu_gpr_we_o <= 1'b0;
-                wbu_gpr_waddr_o <= 5'b0;
-                wbu_gpr_wdata_o <= 32'b0;
-                wbu_csr_ecall_o <= 1'b0;
-                wbu_csr_mret_o <= 1'b0;
-            end
-        endcase
-    end
-end
-
-always @(*) begin
-    next_state = state;
-    case (state)
-        S_IDLE: begin
-            if (lsu_wbu_valid_i) begin
-                next_state = S_BUSY;
-            end
-        end
-        S_BUSY: begin
-            if (wbu_pc_valid_o & wbu_pc_ready_i) begin
-                next_state = S_IDLE;
-            end
-        end
-        default: begin
-            next_state = S_IDLE;
-        end
-    endcase
-end
-
 reg         ecall_r;
 reg         mret_r;
 reg         wbu_we_r;
 reg [4:0]   wbu_w_addr_r;
 reg [1:0]   wbu_wd_sel_r;
-assign {ecall_r, mret_r, wbu_we_r, wbu_w_addr_r, wbu_wd_sel_r} = lsu_wbu_data_i;
+
+assign wbu_gpr_we_o = wbu_we_r;
+assign wbu_gpr_waddr_o = wbu_w_addr_r;
+assign wbu_gpr_wdata_o = gpr_w_data_r;
+assign wbu_csr_ecall_o = ecall_r;
+assign wbu_csr_mret_o = mret_r;
+
+always @(posedge clk) begin
+    if (rst) begin
+        ecall_r <= 'b0;
+        mret_r <= 'b0;
+        wbu_we_r <= 'b0;
+        wbu_w_addr_r <= 'b0;
+        wbu_wd_sel_r <= 'b0;
+    end else if (lsu_wbu_valid_i & lsu_wbu_ready_o) begin
+        {ecall_r, mret_r, wbu_we_r, wbu_w_addr_r, wbu_wd_sel_r} <= lsu_wbu_data_i;
+    end
+end
+
+assign lsu_wbu_ready_o = state == S_IDLE & lsu_wbu_valid_i;
+assign wbu_pc_valid_o = state == S_BUSY;
+
+localparam S_IDLE = 1'd0;
+localparam S_BUSY = 1'd1;
+
+reg state;
+
+always @(posedge clk) begin
+    if (rst) begin
+        state <= S_IDLE;
+    end else begin
+        case (state)
+            S_IDLE: begin
+                if (lsu_wbu_valid_i & lsu_wbu_ready_o) state <= S_BUSY;
+            end
+            S_BUSY: begin
+                if (wbu_pc_valid_o & wbu_pc_ready_i) state <= S_IDLE;
+            end
+            default: begin
+                state <= S_IDLE;
+            end
+        endcase
+    end
+end
 
 reg [31:0]  gpr_w_data_r;
 
@@ -170,15 +140,5 @@ assign gpr_w_data_r =   (wbu_wd_sel_r == `GPR_WD_SEL_ALU_RES)  ? lsu_wbu_res_i  
                         (wbu_wd_sel_r == `GPR_WD_SEL_MEM_DATA) ? lsu_wbu_rdata_i:
                         (wbu_wd_sel_r == `GPR_WD_SEL_CSR_DATA) ? lsu_wbu_csr_rdata_i:
                         32'b0;
-
-// always @(*) begin
-//     if (wbu_we_r) begin
-//         wbu_gpr_waddr_o = wbu_w_addr_r;
-//         wbu_gpr_wdata_o = gpr_w_data_r;
-//     end else begin
-//         wbu_gpr_waddr_o = 5'b0;
-//         wbu_gpr_wdata_o = 32'b0;
-//     end
-// end
 
 endmodule
