@@ -44,6 +44,9 @@ module WBU(
 
 reg [31:0] pc_r;
 reg [31:0] inst_r;
+reg [31:0] lsu_wbu_res_r;
+reg [31:0] lsu_wbu_rdata_r;
+reg [31:0] lsu_wbu_csr_rdata_r;
 reg        lsu_wbu_csr_we_r;
 reg [31:0] lsu_wbu_csr_wdata_r;
 reg [31:0] lsu_wbu_pc_rdata1_r;
@@ -66,6 +69,9 @@ always @(posedge clk) begin
     if (rst) begin
         pc_r <= 'b0;
         inst_r <= 'b0;
+        lsu_wbu_res_r <= 'b0;
+        lsu_wbu_rdata_r <= 'b0;
+        lsu_wbu_csr_rdata_r <= 'b0;
         lsu_wbu_csr_we_r <= 'b0;
         lsu_wbu_csr_wdata_r <= 'b0;
         lsu_wbu_pc_rdata1_r <= 'b0;
@@ -75,6 +81,9 @@ always @(posedge clk) begin
     end else if (lsu_wbu_valid_i & lsu_wbu_ready_o) begin
         pc_r <= lsu_pc_i;
         inst_r <= lsu_inst_i;
+        lsu_wbu_res_r <= lsu_wbu_res_i;
+        lsu_wbu_rdata_r <= lsu_wbu_rdata_i;
+        lsu_wbu_csr_rdata_r <= lsu_wbu_csr_rdata_i;
         lsu_wbu_csr_we_r <= lsu_wbu_csr_we_i;
         lsu_wbu_csr_wdata_r <= lsu_wbu_csr_wdata_i;
         lsu_wbu_pc_rdata1_r <= lsu_wbu_pc_rdata1_i;
@@ -136,9 +145,9 @@ end
 
 reg [31:0]  gpr_w_data_r;
 
-assign gpr_w_data_r =   (wbu_wd_sel_r == `GPR_WD_SEL_ALU_RES)  ? lsu_wbu_res_i   :
-                        (wbu_wd_sel_r == `GPR_WD_SEL_MEM_DATA) ? lsu_wbu_rdata_i:
-                        (wbu_wd_sel_r == `GPR_WD_SEL_CSR_DATA) ? lsu_wbu_csr_rdata_i:
+assign gpr_w_data_r =   (wbu_wd_sel_r == `GPR_WD_SEL_ALU_RES)  ? lsu_wbu_res_r:
+                        (wbu_wd_sel_r == `GPR_WD_SEL_MEM_DATA) ? lsu_wbu_rdata_r:
+                        (wbu_wd_sel_r == `GPR_WD_SEL_CSR_DATA) ? lsu_wbu_csr_rdata_r:
                         32'b0;
 
 endmodule
