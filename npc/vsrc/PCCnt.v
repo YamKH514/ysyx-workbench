@@ -40,23 +40,22 @@ assign addr_res = base + offset;
 assign pc_cnt_npc_o = is_trap ? pc_cnt_trap_npc_i : addr_res;
 
 assign wbu_pc_ready_o = state == S_IDLE & wbu_pc_valid_i;
-assign pc_ifu_valid_o = rst | state == S_BUSY;
 
 always @(posedge clk) begin
     if (rst) begin
-        // pc_ifu_valid_o <= 1'b1;
-        pc_cnt_pc_o       <= RESET_PC;
+        pc_ifu_valid_o <= 1'b1;
+        pc_cnt_pc_o <= RESET_PC;
     end else begin
         case (state)
             S_IDLE: begin
                 if (wbu_pc_valid_i & wbu_pc_ready_o) begin
-                    // pc_ifu_valid_o <= 1'b1;
+                    pc_ifu_valid_o <= 1'b1;
                     pc_cnt_pc_o <= pc_cnt_npc_o;
                 end
             end
             S_BUSY: begin
                 if (pc_ifu_valid_o & pc_ifu_ready_i) begin
-                    // pc_ifu_valid_o <= 1'b0;
+                    pc_ifu_valid_o <= 1'b0;
                 end
             end
         endcase
