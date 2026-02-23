@@ -51,25 +51,6 @@ assign addr_res = base + offset;
 assign wbu_pc_ready_o = state == S_IDLE & wbu_pc_valid_i;
 assign pc_ifu_valid_o = state == S_BUSY;
 
-// always @(posedge clk) begin
-//     if (rst) begin
-//         pc_ifu_valid_o <= 1'b1;
-//     end else begin
-//         case (state)
-//             S_IDLE: begin
-//                 if (wbu_pc_valid_i & wbu_pc_ready_o) begin
-//                     pc_ifu_valid_o <= 1'b1;
-//                 end
-//             end
-//             S_BUSY: begin
-//                 if (pc_ifu_valid_o & pc_ifu_ready_i) begin
-//                     pc_ifu_valid_o <= 1'b0;
-//                 end
-//             end
-//         endcase
-//     end
-// end
-
 localparam S_IDLE = 1'd0;
 localparam S_BUSY = 1'd1;
 
