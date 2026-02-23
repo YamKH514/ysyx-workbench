@@ -180,7 +180,7 @@ extern void npcmem_write(int waddr, int wdata, char wmask)
 {
     uint32_t addr = (uint32_t)waddr & ~0x3u, data = (uint32_t)wdata;
     uint8_t  mask = (uint8_t) wmask;
-    if(addr == 0x10000000)
+    if(addr == 0xa00003f8)
     {
         putchar(data & 0xFF);
         return;
