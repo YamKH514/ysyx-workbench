@@ -1,83 +1,75 @@
 `include "common.vh"
 
 module LSU(
-    input               clk,
-    input               rst,
+    input         clk,
+    input         rst,
 
-    input       [31:0]  exu_pc_i,
-    input       [31:0]  exu_inst_i,
-    output      [31:0]  lsu_pc_o,
-    output      [31:0]  lsu_inst_o,
+    input  [31:0] exu_pc_i,
+    input  [31:0] exu_inst_i,
+    output [31:0] lsu_pc_o,
+    output [31:0] lsu_inst_o,
 
-    input       [31:0]  exu_lsu_wbu_csr_rdata_i,
-    input       [ 9:0]  exu_lsu_wbu_data_i,
-    input               exu_lsu_wbu_csr_we_i,
-    input       [31:0]  exu_lsu_pc_imm_i,
-    input       [ 3:0]  exu_lsu_pc_src_sel_i,
+    input  [31:0] exu_lsu_wbu_csr_rdata_i,
+    input  [ 9:0] exu_lsu_wbu_data_i,
+    input         exu_lsu_wbu_csr_we_i,
+    input  [31:0] exu_lsu_pc_imm_i,
+    input  [ 3:0] exu_lsu_pc_src_sel_i,
 
     // idu_to_lsu_data lsu_r_func[8:6], lsu_re[5], lsu_w_mask[4:1], lsu_we[0]
-    input       [8:0]   exu_lsu_data_i,
-    input       [31:0]  exu_lsu_res_i,
-    input       [63:0]  exu_lsu_gpr_rdata_i,
+    input  [ 8:0] exu_lsu_data_i,
+    input  [31:0] exu_lsu_res_i,
+    input  [63:0] exu_lsu_gpr_rdata_i,
 
-    output      [31:0]  lsu_wbu_res_o,
-    output  reg [31:0]  lsu_wbu_rdata_o,
-    output      [ 9:0]  lsu_wbu_data_o,
-    output              lsu_wbu_csr_we_o,
-    output      [31:0]  lsu_wbu_csr_rdata_o,
-    output      [31:0]  lsu_wbu_csr_wdata_o,
-    output      [31:0]  lsu_wbu_pc_rdata1_o,
-    output      [31:0]  lsu_wbu_pc_imm_o,
-    output      [ 3:0]  lsu_wbu_pc_src_sel_o,
+    output [31:0] lsu_wbu_res_o,
+    output [31:0] lsu_wbu_rdata_o,
+    output [ 9:0] lsu_wbu_data_o,
+    output        lsu_wbu_csr_we_o,
+    output [31:0] lsu_wbu_csr_rdata_o,
+    output [31:0] lsu_wbu_csr_wdata_o,
+    output [31:0] lsu_wbu_pc_rdata1_o,
+    output [31:0] lsu_wbu_pc_imm_o,
+    output [ 3:0] lsu_wbu_pc_src_sel_o,
 
-    input               exu_lsu_valid_i,
-    output  reg         exu_lsu_ready_o,
+    input         exu_lsu_valid_i,
+    output        exu_lsu_ready_o,
 
-    output  reg         lsu_wbu_valid_o,
-    input               lsu_wbu_ready_i,
+    output        lsu_wbu_valid_o,
+    input         lsu_wbu_ready_i,
 
-    // AR
-    output      [3:0]   arid_o,
-    output      [31:0]  araddr_o,
-    output      [3:0]   arlen_o,
-    output      [2:0]   arsize_o,
-    output      [1:0]   arburst_o,
-    output              arvalid_o,
-    input               arready_i,
+    output [ 3:0] arid_o,
+    output [31:0] araddr_o,
+    output [ 3:0] arlen_o,
+    output [ 2:0] arsize_o,
+    output [ 1:0] arburst_o,
+    output        arvalid_o,
+    input         arready_i,
+    input  [ 3:0] rid_i,
+    input  [31:0] rdata_i,
+    input  [ 1:0] rresp_i,
+    input         rlast_i,
+    input         rvalid_i,
+    output        rready_o,
 
-    // R
-    input       [3:0]   rid_i,
-    input       [31:0]  rdata_i,
-    input       [1:0]   rresp_i,
-    input               rlast_i,
-    input               rvalid_i,
-    output              rready_o,
+    output [ 3:0] awid_o,
+    output [31:0] awaddr_o,
+    output [ 3:0] awlen_o,
+    output [ 2:0] awsize_o,
+    output [ 1:0] awburst_o,
+    output        awvalid_o,
+    input         awready_i,
+    output [31:0] wdata_o,
+    output [ 3:0] wstrb_o,
+    output        wlast_o,
+    output        wvalid_o,
+    input         wready_i,
+    input  [ 3:0] bid_i,
+    input  [ 1:0] bresp_i,
+    input         bvalid_i,
+    output        bready_o,
 
-    // AW
-    output      [3:0]   awid_o,
-    output      [31:0]  awaddr_o,
-    output      [3:0]   awlen_o,
-    output      [2:0]   awsize_o,
-    output      [1:0]   awburst_o,
-    output              awvalid_o,
-    input               awready_i,
-
-    // W
-    output      [31:0]  wdata_o,
-    output      [3:0]   wstrb_o,
-    output              wlast_o,
-    output              wvalid_o,
-    input               wready_i,
-
-    // B
-    input       [3:0]   bid_i,
-    input       [1:0]   bresp_i,
-    input               bvalid_i,
-    output              bready_o,
-
-    output              bs_o,
-    output              br_o,
-    input               bg_i
+    output        bs_o,
+    output        br_o,
+    input         bg_i
 );
 
 reg [31:0] pc_r;
@@ -129,32 +121,22 @@ import "DPI-C" function void mem_tracer_read(input int addr,input int data, inpu
 import "DPI-C" function void mem_tracer_write(input int addr,input int data, input int strb);
 import "DPI-C" function void perip_difftest_skip(input int addr);
 
-reg [2:0]   lsu_r_func_r;
-reg         lsu_re_r;
-wire    [3:0]   lsu_w_mask_r;
-wire            lsu_we_r;
+reg  [2:0] lsu_r_func_r;
+reg        lsu_re_r;
+wire [3:0] lsu_w_mask_r;
+wire       lsu_we_r;
 assign {lsu_r_func_r, lsu_re_r, lsu_w_mask_r, lsu_we_r} = exu_lsu_data_i;
 
-localparam S_IDLE     = 3'd0;
-localparam S_WAIT_ARB = 3'd1;
-localparam S_SEND_AR  = 3'd2;
-localparam S_GET_R    = 3'd3;
-localparam S_W_SEND   = 3'd4;
-localparam S_GET_B    = 3'd6;
-localparam S_WAIT_WBU = 3'd7;
-
-reg [2:0] state;
-
-reg         aw_handshake_r;
-reg         w_handshake_r;
-reg [3:0]   rid_r;
-reg [31:0]  rdata_r;
-reg [3:0]   bid_r;
+reg        aw_handshake_r;
+reg        w_handshake_r;
+reg [ 3:0] rid_r;
+reg [31:0] rdata_r;
+reg [ 3:0] bid_r;
 
 assign br_o = state == S_WAIT_ARB;
 assign bs_o = state == S_SEND_AR |
-                state == S_GET_R   |
-                state == S_W_SEND  |
+                state == S_GET_R |
+                state == S_W_SEND|
                 state == S_GET_B;
 
 always @(posedge clk) begin
@@ -245,6 +227,16 @@ always @(posedge clk) begin
         endcase
     end
 end
+
+localparam S_IDLE     = 3'd0;
+localparam S_WAIT_ARB = 3'd1;
+localparam S_SEND_AR  = 3'd2;
+localparam S_GET_R    = 3'd3;
+localparam S_W_SEND   = 3'd4;
+localparam S_GET_B    = 3'd6;
+localparam S_WAIT_WBU = 3'd7;
+
+reg [2:0] state;
 
 always @(posedge clk) begin
     case (state)

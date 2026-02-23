@@ -1,55 +1,55 @@
 module EXU(
-    input               clk,
-    input               rst,
+    input         clk,
+    input         rst,
 
-    input       [31:0]  idu_pc_i,
-    input       [31:0]  idu_inst_i,
-    output      [31:0]  exu_pc_o,
-    output      [31:0]  exu_inst_o,
+    input  [31:0] idu_pc_i,
+    input  [31:0] idu_inst_i,
+    output [31:0] exu_pc_o,
+    output [31:0] exu_inst_o,
 
-    input       [ 8:0]  idu_exu_lsu_data_i,
-    input       [31:0]  idu_exu_wbu_csr_rdata_i,
-    input       [ 9:0]  idu_exu_wbu_data_i,
-    input               idu_exu_wbu_csr_we_i,
-    input       [ 3:0]  idu_exu_pc_src_sel_i,
+    input  [ 8:0] idu_exu_lsu_data_i,
+    input  [31:0] idu_exu_wbu_csr_rdata_i,
+    input  [ 9:0] idu_exu_wbu_data_i,
+    input         idu_exu_wbu_csr_we_i,
+    input  [ 3:0] idu_exu_pc_src_sel_i,
 
-    input       [63:0]  idu_exu_rdata_i,
-    input       [ 5:0]  idu_exu_fun_i,
-    input       [ 3:0]  idu_exu_src_sel_i,
-    input       [31:0]  imm_exu_i,
+    input  [63:0] idu_exu_rdata_i,
+    input  [ 5:0] idu_exu_fun_i,
+    input  [ 3:0] idu_exu_src_sel_i,
+    input  [31:0] imm_exu_i,
 
-    output      [31:0]  exu_lsu_res_o,
-    output      [ 8:0]  exu_lsu_data_o,
-    output      [63:0]  exu_lsu_gpr_rdata_o,
-    output      [31:0]  exu_lsu_wbu_csr_rdata_o,
-    output              exu_lsu_wbu_csr_we_o,
-    output      [ 9:0]  exu_lsu_wbu_data_o,
-    output      [31:0]  exu_lsu_pc_imm_o,
-    output      [ 3:0]  exu_lsu_pc_src_sel_o,
+    output [31:0] exu_lsu_res_o,
+    output [ 8:0] exu_lsu_data_o,
+    output [63:0] exu_lsu_gpr_rdata_o,
+    output [31:0] exu_lsu_wbu_csr_rdata_o,
+    output        exu_lsu_wbu_csr_we_o,
+    output [ 9:0] exu_lsu_wbu_data_o,
+    output [31:0] exu_lsu_pc_imm_o,
+    output [ 3:0] exu_lsu_pc_src_sel_o,
 
-    input               idu_exu_valid_i,
-    output  reg         idu_exu_ready_o,
+    input         idu_exu_valid_i,
+    output        idu_exu_ready_o,
 
-    output  reg         exu_lsu_valid_o,
-    input               exu_lsu_ready_i
+    output        exu_lsu_valid_o,
+    input         exu_lsu_ready_i
 );
 
 // Pipeline Reg
-reg [31:0]  pc_r;
-reg [31:0]  inst_r;
-reg [ 5:0]  alu_fun_r;
-reg [31:0]  rd1_r;
-reg [31:0]  rd2_r;
-reg [31:0]  imm_r;
-reg [ 1:0]  alu_src1_sel_r;
-reg [ 1:0]  alu_src2_sel_r;
+reg [31:0] pc_r;
+reg [31:0] inst_r;
+reg [ 5:0] alu_fun_r;
+reg [31:0] rd1_r;
+reg [31:0] rd2_r;
+reg [31:0] imm_r;
+reg [ 1:0] alu_src1_sel_r;
+reg [ 1:0] alu_src2_sel_r;
 
-reg [ 8:0]  exu_lsu_data_r;
-reg [63:0]  exu_lsu_gpr_rdata_r;
-reg [31:0]  idu_exu_wbu_csr_rdata_r;
-reg [ 9:0]  idu_exu_wbu_data_r;
-reg         idu_exu_wbu_csr_we_r;
-reg [ 3:0]  idu_exu_pc_src_sel_r;
+reg [ 8:0] exu_lsu_data_r;
+reg [63:0] exu_lsu_gpr_rdata_r;
+reg [31:0] idu_exu_wbu_csr_rdata_r;
+reg [ 9:0] idu_exu_wbu_data_r;
+reg        idu_exu_wbu_csr_we_r;
+reg [ 3:0] idu_exu_pc_src_sel_r;
 
 assign exu_pc_o = pc_r;
 assign exu_inst_o = inst_r;
@@ -98,8 +98,8 @@ always @(posedge clk) begin
     end
 end
 
-parameter S_IDLE = 2'd0;
-parameter S_WAIT_LSU = 2'd1;
+localparam S_IDLE = 2'd0;
+localparam S_WAIT_LSU = 2'd1;
 
 reg [1:0] state;
 
