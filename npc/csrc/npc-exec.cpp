@@ -55,11 +55,11 @@ static void exec_once(VTOP *top, VerilatedContext *contextp, VerilatedVcdC *tfp)
     // Perf CNT
     if (!CPU_RESET) {
         current_inst_cyc ++;
-        if (S_CPU(ifu_to_idu_valid) & S_CPU(idu_to_ifu_ready)) inst_num ++;
-        if (S_CPU( pc_to_ifu_valid) & S_CPU( ifu_to_pc_ready)) perf_cnt.module_add(IFU);
-        if (S_CPU(idu_to_exu_valid) & S_CPU(exu_to_idu_ready)) perf_cnt.module_add(EXU);
-        if (S_CPU(exu_to_lsu_valid) & S_CPU(lsu_to_exu_ready)) perf_cnt.module_add(LSU);
-        if (S_CPU(idu_to_exu_valid) & S_CPU(exu_to_idu_ready)) inst_type = (INST_TYPE_ENUM)S_CPU(inst_type);
+        if (S_CPU(ifu_idu_valid) & S_CPU(ifu_idu_ready)) inst_num ++;
+        if (S_CPU( pc_ifu_valid) & S_CPU( pc_ifu_ready)) perf_cnt.module_add(IFU);
+        if (S_CPU(idu_exu_valid) & S_CPU(idu_exu_ready)) perf_cnt.module_add(EXU);
+        if (S_CPU(exu_lsu_valid) & S_CPU(exu_lsu_ready)) perf_cnt.module_add(LSU);
+        if (S_CPU(idu_exu_valid) & S_CPU(idu_exu_ready)) inst_type = (INST_TYPE_ENUM)S_CPU(idu_imm_type);
         // Recoding IFU wait Inst
         if ((int)S_IFU(state) == 1) perf_cnt.ifu_wait_rd();
         else if ((int)S_IFU(state) == 0) perf_cnt.ifu_wait_pc();
@@ -76,12 +76,12 @@ static void exec_once(VTOP *top, VerilatedContext *contextp, VerilatedVcdC *tfp)
         if ((int)S_LSU(state) == 4 | (int)S_LSU(state) == 6) perf_cnt.lsu_wait_cyc('w');
     }
 
-    if ((S_CPU(wbu_to_pc_valid)) & (S_CPU(pc_to_wbu_ready))) 
+    if ((S_CPU(wbu_pc_valid)) & (S_CPU(wbu_pc_ready))) 
     {
         pc = S_CPU(pc);
         inst_end = true;
     }
-    if ((!S_CPU(wbu_to_pc_valid)) & (!S_CPU(pc_to_wbu_ready)) & inst_end)
+    if ((!S_CPU(wbu_pc_valid)) & (!S_CPU(wbu_pc_ready)) & inst_end)
     {
         perf_cnt.inst_add(inst_type, current_inst_cyc);
         current_inst_cyc = 0;
