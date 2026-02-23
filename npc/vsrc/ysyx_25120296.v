@@ -220,8 +220,8 @@ wire            clint_bready;
 
 assign trap_npc = wbu_pc_ecall ? csr_r_mtvec : csr_r_mepc;
 
-reg wbu_pc_ready;
-reg pc_ifu_valid;
+wire wbu_pc_ready;
+wire pc_ifu_valid;
 
 PCCnt #(.RESET_PC 	(32'h30000000  )) u_PCCnt(
     .clk                  	(clock                 ),
@@ -554,21 +554,6 @@ CSR u_CSR(
     .csr_r_mtvec_o 	(csr_r_mtvec    ),
     .csr_r_mepc_o  	(csr_r_mepc     )
 );
-
-// CSR u_CSR(
-//     .clk                    (clock              ),
-//     .rst                    (reset              ),
-//     .is_ecall               (is_ecall           ),
-//     .is_mret                (is_mret            ),
-//     .csr_func3_in           (ifu_inst[14:12]    ),
-//     .csr_we_in              (csr_we             ),
-//     .csr_rw_addr_in         (csr_rw_addr        ), //!! 分离r w addr
-//     .csr_w_data_in          (csr_w_data         ),
-//     .csr_w_mepc_in   	    (csr_w_mepc         ),
-//     .csr_r_data_out         (csr_r_data         ),
-//     .csr_r_mtvec_out   	    (csr_r_mtvec        ),
-//     .csr_r_mepc_out         (csr_r_mepc         )
-// );
 
 assign bs = bs1 | bs2;
 
