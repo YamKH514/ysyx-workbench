@@ -52,7 +52,7 @@ reg        lsu_wbu_pc_cmp_res_r;
 reg [ 3:0] lsu_wbu_pc_src_sel_r;
 
 assign wbu_csr_func3_o = inst_r[14:12];
-assign wbu_csr_we_o = lsu_wbu_csr_we_r;
+assign wbu_csr_we_o = lsu_wbu_csr_we_r & S_BUSY;
 assign wbu_csr_waddr_o = inst_r[31:20];
 assign wbu_csr_wdata_o = lsu_wbu_csr_wdata_r;
 assign wbu_csr_mepc_o = pc_r;
@@ -90,7 +90,7 @@ reg         wbu_we_r;
 reg [4:0]   wbu_w_addr_r;
 reg [1:0]   wbu_wd_sel_r;
 
-assign wbu_gpr_we_o = wbu_we_r;
+assign wbu_gpr_we_o = wbu_we_r & state == S_BUSY;
 assign wbu_gpr_waddr_o = wbu_w_addr_r;
 assign wbu_gpr_wdata_o = gpr_w_data_r;
 assign wbu_csr_ecall_o = ecall_r;
