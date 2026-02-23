@@ -39,57 +39,48 @@ assign addr_res = base + offset;
 
 assign pc_cnt_npc_o = is_trap ? pc_cnt_trap_npc_i : addr_res;
 
-localparam S_IDLE = 1'd0;
-localparam S_BUSY = 1'd1;
-
-reg state, next_state;
-
-// assign pc_cnt_npc_o = (pc_cnt_npc_src_sel_i[3] == 1'b0) ?
-//                         (pc_cnt_npc_src_sel_i[2] == 1'b1 ? pc_cnt_trap_npc_i : (((pc_cnt_npc_src_sel_i[1] == 1'b0) ? pc_cnt_pc_o : pc_cnt_rd1_i) + ((pc_cnt_npc_src_sel_i[0] == 1'b0) ? 32'd4 : pc_cnt_imm_i))) :
-//                         (pc_cnt_pc_o + ((pc_cnt_npc_src_sel_i[2] == pc_cnt_cmp_res_i) ? pc_cnt_imm_i : 4));
+assign wbu_pc_ready_o = state == S_IDLE & wbu_pc_valid_i;
+assign pc_ifu_valid_o = rst | state == S_BUSY;
 
 always @(posedge clk) begin
     if (rst) begin
-        wbu_pc_ready_o <= 1'b0;
-        pc_ifu_valid_o <= 1'b1;
+        // pc_ifu_valid_o <= 1'b1;
         pc_cnt_pc_o       <= RESET_PC;
     end else begin
         case (state)
             S_IDLE: begin
                 if (wbu_pc_valid_i & wbu_pc_ready_o) begin
-                    wbu_pc_ready_o <= 1'b0;
-                    pc_ifu_valid_o <= 1'b1;
-                    pc_cnt_pc_o       <= pc_cnt_npc_o;
+                    // pc_ifu_valid_o <= 1'b1;
+                    pc_cnt_pc_o <= pc_cnt_npc_o;
                 end
             end
             S_BUSY: begin
                 if (pc_ifu_valid_o & pc_ifu_ready_i) begin
-                    wbu_pc_ready_o <= 1'b1;
-                    pc_ifu_valid_o <= 1'b0;
+                    // pc_ifu_valid_o <= 1'b0;
                 end
             end
         endcase
     end
 end
 
-always @(posedge clk) begin
-    if (rst) state <= S_BUSY;
-    else state <= next_state;
-end
+localparam S_IDLE = 1'd0;
+localparam S_BUSY = 1'd1;
 
-always @(*) begin
-    case (state)
-        S_IDLE: begin
-            if (wbu_pc_valid_i & wbu_pc_ready_o) begin
-                next_state = S_BUSY;
+reg state;
+
+always @(posedge clk) begin
+    if (rst) begin
+        state <= S_IDLE;
+    end else begin
+        case (state)
+            S_IDLE: begin
+                if (wbu_pc_valid_i & wbu_pc_ready_o) state <= S_BUSY;
             end
-        end
-        S_BUSY: begin
-            if (pc_ifu_valid_o & pc_ifu_ready_i) begin
-                next_state = S_IDLE;
+            S_BUSY: begin
+                if (pc_ifu_valid_o & pc_ifu_ready_i) state <= S_IDLE;
             end
-        end
-    endcase
+        endcase
+    end
 end
 
 endmodule
