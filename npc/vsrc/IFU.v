@@ -54,7 +54,6 @@ module IFU(
     input         bg_i
 );
 
-// Pipeline Reg
 reg [31:0]  ifu_current_pc_r;
 reg [31:0]  ic_data_r;
 

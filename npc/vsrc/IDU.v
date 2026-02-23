@@ -49,7 +49,7 @@ always @(posedge clk) begin
         ifu_inst_r <= 32'b0;
         gpr_rdata_r <= 64'b0;
         csr_rdata_r <= 32'b0;
-    end else if (state == S_IDLE && ifu_idu_valid_i) begin
+    end else if (ifu_idu_valid_i & ifu_idu_ready_o) begin
         ifu_pc_r <= ifu_pc_i;
         ifu_inst_r <= ifu_inst_i;
         gpr_rdata_r <= {gpr_idu_rdata2_i, gpr_idu_rdata1_i};
@@ -76,61 +76,30 @@ reg [4:0]   wbu_w_addr_r;
 reg [1:0]   wbu_wd_sel_r;
 assign idu_exu_wbu_data_o = {ecall_r, mret_r, wbu_we_r, wbu_w_addr_r, wbu_wd_sel_r};
 
-parameter S_IDLE = 1'd0;
-parameter S_WAIT_EXU = 1'd1;
+assign ifu_idu_ready_o = state == S_IDLE & ifu_idu_valid_i;
+assign idu_exu_valid_o = state == S_WAIT_EXU;
 
-reg state, next_state;
+localparam S_IDLE = 1'd0;
+localparam S_WAIT_EXU = 1'd1;
+
+reg state;
 
 always @(posedge clk) begin
-    if (rst) state <= S_IDLE;
-    else state <= next_state;
-
     if (rst) begin
-        ifu_idu_ready_o <= 1'b0;
-        idu_exu_valid_o <= 1'b0;
-        ifu_inst_r <= 32'b0;
+        state <= S_IDLE;
     end else begin
         case (state)
             S_IDLE: begin
-                ifu_idu_ready_o <= 1'b0;
-                idu_exu_valid_o <= 1'b0;
-                if (ifu_idu_valid_i) begin
-                    ifu_idu_ready_o <= 1'b1;
-                    idu_exu_valid_o <= 1'b1;
-                    ifu_inst_r <= ifu_inst_i;
-                end
+                if (ifu_idu_valid_i & ifu_idu_ready_o) state <= S_WAIT_EXU;
             end
             S_WAIT_EXU: begin
-                ifu_idu_ready_o <= 1'b0;
-                if (idu_exu_ready_i) begin
-                    idu_exu_valid_o <= 1'b0;
-                end
+                if (idu_exu_valid_o & idu_exu_ready_i) state <= S_IDLE;
             end
             default: begin
-                ifu_idu_ready_o <= 1'b0;
-                idu_exu_valid_o <= 1'b0;
+                state <= S_IDLE;
             end
         endcase
     end
-end
-
-always @(*) begin
-    next_state = state;
-    case (state)
-        S_IDLE: begin
-            if (ifu_idu_valid_i) begin
-                next_state = S_WAIT_EXU;
-            end
-        end
-        S_WAIT_EXU: begin
-            if (idu_exu_ready_i) begin
-                next_state = S_IDLE;
-            end
-        end
-        default: begin
-            next_state = S_IDLE;
-        end
-    endcase
 end
 
 wire    [6:0]   inst_opcode;
