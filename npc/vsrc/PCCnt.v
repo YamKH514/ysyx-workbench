@@ -7,7 +7,6 @@ module PCCnt(
     input       [3:0]   pc_cnt_npc_src_sel_i, // npc = pc+4(0000) pc+imm(0001) src1+imm(0011) trap_npc(0100) res=0,jump(10--) res=1,jump(11--)
     input       [31:0]  pc_cnt_trap_npc_i,
     output  reg [31:0]  pc_cnt_pc_o,
-    output  reg [31:0]  pc_cnt_npc_o,
 
     input               wbu_pc_valid_i,
     output  reg         wbu_pc_ready_o,
@@ -16,6 +15,18 @@ module PCCnt(
 );
 
 parameter RESET_PC = 32'h30000000;
+
+reg [31:0] pc_r;
+
+assign pc_cnt_pc_o = pc_r;
+
+always @(posedge clk) begin
+    if (rst) begin
+        pc_r <= RESET_PC;
+    end else if (wbu_pc_valid_i & wbu_pc_ready_o) begin
+        pc_r <= is_trap ? pc_cnt_trap_npc_i : addr_res;
+    end
+end
 
 wire        is_trap;
 wire        is_jump;
@@ -28,7 +39,7 @@ assign is_jump = pc_cnt_npc_src_sel_i[3];
 
 assign base = 
             is_trap ? 32'b0 :
-            (!is_jump & pc_cnt_npc_src_sel_i[1]) ? pc_cnt_rd1_i : pc_cnt_pc_o;
+            (!is_jump & pc_cnt_npc_src_sel_i[1]) ? pc_cnt_rd1_i : pc_r;
 assign offset = 
             is_trap ? 32'b0 :
             is_jump ?
@@ -37,30 +48,27 @@ assign offset =
 
 assign addr_res = base + offset;
 
-assign pc_cnt_npc_o = is_trap ? pc_cnt_trap_npc_i : addr_res;
-
 assign wbu_pc_ready_o = state == S_IDLE & wbu_pc_valid_i;
+assign pc_ifu_valid_o = state == S_BUSY;
 
-always @(posedge clk) begin
-    if (rst) begin
-        pc_ifu_valid_o <= 1'b1;
-        pc_cnt_pc_o <= RESET_PC;
-    end else begin
-        case (state)
-            S_IDLE: begin
-                if (wbu_pc_valid_i & wbu_pc_ready_o) begin
-                    pc_ifu_valid_o <= 1'b1;
-                    pc_cnt_pc_o <= pc_cnt_npc_o;
-                end
-            end
-            S_BUSY: begin
-                if (pc_ifu_valid_o & pc_ifu_ready_i) begin
-                    pc_ifu_valid_o <= 1'b0;
-                end
-            end
-        endcase
-    end
-end
+// always @(posedge clk) begin
+//     if (rst) begin
+//         pc_ifu_valid_o <= 1'b1;
+//     end else begin
+//         case (state)
+//             S_IDLE: begin
+//                 if (wbu_pc_valid_i & wbu_pc_ready_o) begin
+//                     pc_ifu_valid_o <= 1'b1;
+//                 end
+//             end
+//             S_BUSY: begin
+//                 if (pc_ifu_valid_o & pc_ifu_ready_i) begin
+//                     pc_ifu_valid_o <= 1'b0;
+//                 end
+//             end
+//         endcase
+//     end
+// end
 
 localparam S_IDLE = 1'd0;
 localparam S_BUSY = 1'd1;
@@ -69,7 +77,7 @@ reg state;
 
 always @(posedge clk) begin
     if (rst) begin
-        state <= S_IDLE;
+        state <= S_BUSY;
     end else begin
         case (state)
             S_IDLE: begin

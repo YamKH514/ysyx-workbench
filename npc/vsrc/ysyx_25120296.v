@@ -76,15 +76,7 @@ assign io_slave_bid = 0;
 assign io_slave_bresp = 0;
 assign io_slave_bvalid = 0;
 
-wire    [31:0]  pc;
-wire    [31:0]  npc;
-
-// To keep wire npc
-reg [31:0] npc_r;
-always @(posedge clock) begin
-    npc_r <= npc;
-end
-
+wire [31:0] pc;
 wire [31:0] trap_npc;
 
 wire [31:0] csr_r_mtvec;
@@ -218,8 +210,6 @@ wire    [1:0]   clint_bresp;
 wire            clint_bvalid;
 wire            clint_bready;
 
-assign trap_npc = wbu_pc_ecall ? csr_r_mtvec : csr_r_mepc;
-
 wire [31:0] ifu_pc;
 wire [31:0] ifu_inst;
 wire [ 9:0] gpr_raddr;
@@ -296,6 +286,8 @@ wire pc_ifu_valid;
 wire pc_ifu_ready;
 wire ifu_idu_valid;
 
+assign trap_npc = wbu_pc_ecall ? csr_r_mtvec : csr_r_mepc;
+
 PCCnt #(.RESET_PC 	(32'h30000000  )) u_PCCnt(
     .clk                    (clock          ),
     .rst                    (reset          ),
@@ -305,7 +297,6 @@ PCCnt #(.RESET_PC 	(32'h30000000  )) u_PCCnt(
     .pc_cnt_npc_src_sel_i   (wbu_pc_src_sel ),
     .pc_cnt_trap_npc_i      (trap_npc       ),
     .pc_cnt_pc_o            (pc             ),
-    .pc_cnt_npc_o           (npc            ),
     .wbu_pc_valid_i         (wbu_pc_valid   ),
     .wbu_pc_ready_o         (wbu_pc_ready   ),
     .pc_ifu_valid_o         (pc_ifu_valid   ),

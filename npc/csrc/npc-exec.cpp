@@ -78,7 +78,8 @@ static void exec_once(VTOP *top, VerilatedContext *contextp, VerilatedVcdC *tfp)
 
     if ((S_CPU(wbu_pc_valid)) & (S_CPU(wbu_pc_ready))) 
     {
-        pc = S_CPU(pc);
+        pc = S_WBU(pc_r);
+        cpu.pc = S_WBU(pc_r);
         inst_end = true;
     }
     if ((!S_CPU(wbu_pc_valid)) & (!S_CPU(wbu_pc_ready)) & inst_end)
@@ -87,8 +88,7 @@ static void exec_once(VTOP *top, VerilatedContext *contextp, VerilatedVcdC *tfp)
         current_inst_cyc = 0;
 
         inst_end = false;
-        cpu.pc = S_CPU(pc);
-        cpu.npc = S_CPU(npc);
+        cpu.npc = S_PCCnt(pc_r);
 #ifdef PLATFORM_YSYXSOC
         svSetScope(svGetScopeFromName("TOP.ysyxSoCFull.asic.cpu.cpu.u_GPR"));
 #else
