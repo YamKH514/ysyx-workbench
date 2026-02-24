@@ -81,6 +81,7 @@ void __am_gpu_fbdraw(AM_GPU_FBDRAW_T *draw) {
   int y_start = draw->y;
   int w = draw->w;
   int h = draw->h;
+  if (!draw->sync && (w == 0 || h == 0)) return;
   uint32_t *pixels = draw->pixels;
   int x = 0, y = 0;
 
