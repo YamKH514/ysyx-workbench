@@ -44,7 +44,6 @@ SECTIONS {
     . = ALIGN(4);
     rodata_start = .;
     *(.rodata*)
-    *(.srodata*)
     rodata_end = .;
   } > REGION_RODATA AT > flash
   rodata_size = SIZEOF(.rodata);
