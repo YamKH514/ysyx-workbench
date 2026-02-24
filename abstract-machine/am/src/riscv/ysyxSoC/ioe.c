@@ -21,7 +21,7 @@ static void __am_gpu_config(AM_GPU_CONFIG_T *cfg) {
     cfg->has_accel = false;
     cfg->width  = WIDTH;
     cfg->height = HEIGHT;
-    cfg->vmemsz = WIDTH * HEIGHT * sizeof(uint32_t);
+    cfg->vmemsz = 0;
 }
 
 typedef void (*handler_t)(void *buf);
