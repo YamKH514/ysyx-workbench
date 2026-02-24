@@ -1,4 +1,4 @@
-`define NEED_DELAY
+// `define NEED_DELAY
 
 module axi4_delayer(
   input         clock,
