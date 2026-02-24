@@ -17,9 +17,11 @@ static void __am_timer_config(AM_TIMER_CONFIG_T *cfg) { cfg->present = true; cfg
 static void __am_input_config(AM_INPUT_CONFIG_T *cfg) { cfg->present = true;  }
 static void __am_uart_config(AM_INPUT_CONFIG_T *cfg) { cfg->present = true;  }
 static void __am_gpu_config(AM_GPU_CONFIG_T *cfg) {
+    cfg->present = true;
+    cfg->has_accel = false;
     cfg->width  = WIDTH;
     cfg->height = HEIGHT;
-    cfg->vmemsz = WIDTH * HEIGHT * sizeof(uint32_t);
+    cfg->vmemsz = 0;
 }
 
 typedef void (*handler_t)(void *buf);
@@ -79,6 +81,7 @@ void __am_gpu_fbdraw(AM_GPU_FBDRAW_T *draw) {
   int y_start = draw->y;
   int w = draw->w;
   int h = draw->h;
+  if (!draw->sync && (w == 0 || h == 0)) return;
   uint32_t *pixels = draw->pixels;
   int x = 0, y = 0;
 
