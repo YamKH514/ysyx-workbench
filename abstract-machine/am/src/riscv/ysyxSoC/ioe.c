@@ -17,6 +17,8 @@ static void __am_timer_config(AM_TIMER_CONFIG_T *cfg) { cfg->present = true; cfg
 static void __am_input_config(AM_INPUT_CONFIG_T *cfg) { cfg->present = true;  }
 static void __am_uart_config(AM_INPUT_CONFIG_T *cfg) { cfg->present = true;  }
 static void __am_gpu_config(AM_GPU_CONFIG_T *cfg) {
+    cfg->present = true;
+    cfg->has_accel = false;
     cfg->width  = WIDTH;
     cfg->height = HEIGHT;
     cfg->vmemsz = WIDTH * HEIGHT * sizeof(uint32_t);
