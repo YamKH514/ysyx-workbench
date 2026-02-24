@@ -1,3 +1,5 @@
+`define NEED_DELAY
+
 module apb_delayer(
   input         clock,
   input         reset,
@@ -24,6 +26,7 @@ module apb_delayer(
   input         out_pslverr
 );
 
+`ifdef NEED_DELAY
   assign out_paddr   = in_paddr;
   assign out_psel    = in_psel;
   assign out_penable = in_penable;
@@ -99,5 +102,17 @@ module apb_delayer(
       end
     end
   end
+`else
+  assign out_paddr   = in_paddr;
+  assign out_psel    = in_psel;
+  assign out_penable = in_penable;
+  assign out_pprot   = in_pprot;
+  assign out_pwrite  = in_pwrite;
+  assign out_pwdata  = in_pwdata;
+  assign out_pstrb   = in_pstrb;
+  assign in_pready   = out_pready;
+  assign in_prdata   = out_prdata;
+  assign in_pslverr  = out_pslverr;
+`endif
 
 endmodule
