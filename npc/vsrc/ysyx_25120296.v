@@ -212,18 +212,16 @@ wire            clint_bready;
 
 wire [31:0] ifu_ifid_pc;
 wire [31:0] ifu_ifid_inst;
-wire [31:0] ifid_idu_pc;
-wire [31:0] ifid_idu_inst;
-
 wire [ 9:0] ifu_gpr_raddr;
 wire [11:0] ifu_csr_raddr;
-
+wire [31:0] ifid_idu_pc;
+wire [31:0] ifid_idu_inst;
 wire [31:0] ifid_gpr_rdata1;
 wire [31:0] ifid_gpr_rdata2;
 wire [31:0] ifid_csr_rdata;
 
-wire [31:0] idu_pc;
-wire [31:0] idu_inst;
+wire [31:0] id_idex_pc;
+wire [31:0] id_idex_inst;
 wire        fence_i;
 wire [ 2:0] idu_imm_type;
 wire [24:0] idu_imm_inst;
@@ -361,22 +359,22 @@ IFU u_IFU(
 );
 
 IF_ID u_IF_ID(
-    .clk        	(clock         ),
-    .rst        	(reset         ),
-    .pc_i       	(ifu_ifid_pc        ),
-    .inst_i     	(ifu_ifid_inst      ),
-    .gpr_rdata1_i   (gpr_ifid_rdata1 ),
-    .gpr_rdata2_i   (gpr_ifid_rdata2 ),
-    .csr_rdata_i    (csr_ifid_rdata  ),
-    .pc_o       	(ifid_idu_pc        ),
-    .inst_o     	(ifid_idu_inst      ),
-    .gpr_rdata1_o   (ifid_gpr_rdata1   ),
-    .gpr_rdata2_o   (ifid_gpr_rdata2   ),
-    .csr_rdata_o    (ifid_csr_rdata    ),
-    .if_valid_i 	(if_ifid_valid  ),
-    .if_ready_o 	(if_ifid_ready  ),
-    .id_valid_o 	(ifid_id_valid  ),
-    .id_ready_i 	(ifid_id_ready  )
+    .clk        	(clock),
+    .rst        	(reset),
+    .pc_i       	(ifu_ifid_pc),
+    .inst_i     	(ifu_ifid_inst),
+    .gpr_rdata1_i   (gpr_ifid_rdata1),
+    .gpr_rdata2_i   (gpr_ifid_rdata2),
+    .csr_rdata_i    (csr_ifid_rdata),
+    .pc_o       	(ifid_idu_pc),
+    .inst_o     	(ifid_idu_inst),
+    .gpr_rdata1_o   (ifid_gpr_rdata1),
+    .gpr_rdata2_o   (ifid_gpr_rdata2),
+    .csr_rdata_o    (ifid_csr_rdata),
+    .if_ifid_valid_i(if_ifid_valid),
+    .if_ifid_ready_o(if_ifid_ready),
+    .ifid_id_valid_o(ifid_id_valid),
+    .ifid_id_ready_i(ifid_id_ready)
 );
 
 IDU u_IDU(
@@ -384,14 +382,13 @@ IDU u_IDU(
     .rst                        (reset                  ),
     .ifu_pc_i                   (ifid_idu_pc                 ),
     .ifu_inst_i          	    (ifid_idu_inst               ),
-    .idu_pc_o                   (idu_pc                 ),
-    .idu_inst_o                 (idu_inst               ),
+    .idu_pc_o                   (id_idex_pc                 ),
+    .idu_inst_o                 (id_idex_inst               ),
     .gpr_idu_rdata1_i           (ifid_gpr_rdata1       ),
     .gpr_idu_rdata2_i           (ifid_gpr_rdata2       ),
     .csr_idu_rdata_i            (ifid_csr_rdata        ),
     .fence_i_o                  (fence_i                ),
     .idu_imm_type_o             (idu_imm_type           ),
-    .idu_imm_inst_o             (idu_imm_inst           ),
     .idu_exu_fun_o              (idu_exu_fun            ),
     .idu_exu_src1_sel_o         (idu_exu_src1_sel       ),
     .idu_exu_src2_sel_o         (idu_exu_src2_sel       ),
@@ -409,11 +406,36 @@ IDU u_IDU(
 
 ImmExt u_ImmExt(
     .idu_imm_type_i (idu_imm_type   ),
-    .idu_imm_inst_i (idu_imm_inst   ),
+    .idu_imm_inst_i (id_idex_inst[31:7]),
     .imm_exu_o      (imm_exu        )
 );
 
 assign idu_exu_src_sel = {idu_exu_src2_sel, idu_exu_src1_sel};
+
+ID_EX u_ID_EX(
+    .clk             	(clock            ),
+    .rst             	(reset            ),
+    .fun_i           	(fun_i            ),
+    .src_sel_i       	(src_sel_i        ),
+    .rdata_i         	(rdata_i          ),
+    .lsu_data_i      	(lsu_data_i       ),
+    .wbu_data_i      	(wbu_data_i       ),
+    .wbu_csr_rdata_i 	(wbu_csr_rdata_i  ),
+    .wbu_csr_we_i    	(wbu_csr_we_i     ),
+    .pc_src_sel_i    	(pc_src_sel_i     ),
+    .fun_o           	(fun_o            ),
+    .src_sel_o       	(src_sel_o        ),
+    .rdata_o         	(rdata_o          ),
+    .lsu_data_o      	(lsu_data_o       ),
+    .wbu_data_o      	(wbu_data_o       ),
+    .wbu_csr_rdata_o 	(wbu_csr_rdata_o  ),
+    .wbu_csr_we_o    	(wbu_csr_we_o     ),
+    .pc_src_sel_o    	(pc_src_sel_o     ),
+    .id_idex_valid_i 	(id_idex_valid_i  ),
+    .id_idex_ready_o 	(id_idex_ready_o  ),
+    .idex_ex_valid_o 	(idex_ex_valid_o  ),
+    .idex_ex_ready_i 	(idex_ex_ready_i  )
+);
 
 EXU u_EXU(
     .clk                        (clock                  ),

@@ -12,14 +12,14 @@ module IF_ID(
                     gpr_rdata2_o,
                     csr_rdata_o,
 
-    input           if_valid_i,
-    output          if_ready_o,
-    output          id_valid_o,
-    input           id_ready_i
+    input           if_ifid_valid_i,
+    output          if_ifid_ready_o,
+    output          ifid_id_valid_o,
+    input           ifid_id_ready_i
 );
 
-assign if_ready_o = if_valid_i & state == S_IDLE;
-assign id_valid_o = state == S_BUSY;
+assign if_ifid_ready_o = if_ifid_valid_i & state == S_IDLE;
+assign ifid_id_valid_o = state == S_BUSY;
 
 reg [31:0] pc_r;
 reg [31:0] inst_r;
@@ -40,7 +40,7 @@ always @(posedge clk) begin
         gpr_rdata1_r <= 'b0;
         gpr_rdata2_r <= 'b0;
         csr_rdata_r <= 'b0;
-    end else if (if_valid_i & if_ready_o) begin
+    end else if (if_ifid_valid_i & if_ifid_ready_o) begin
         pc_r <= pc_i;
         inst_r <= inst_i;
         gpr_rdata1_r <= gpr_rdata1_i;
@@ -61,10 +61,10 @@ always @(posedge clk) begin
     end else begin
         case (state)
             S_IDLE: begin
-                if (if_valid_i & if_ready_o) state <= S_BUSY;
+                if (if_ifid_valid_i & if_ifid_ready_o) state <= S_BUSY;
             end
             S_BUSY: begin
-                if (id_valid_o & id_ready_i) state <= S_IDLE;
+                if (ifid_id_valid_o & ifid_id_ready_i) state <= S_IDLE;
             end
             default: begin
                 state <= S_IDLE;
