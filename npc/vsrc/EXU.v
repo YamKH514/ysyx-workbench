@@ -3,13 +3,13 @@ module EXU(
     input         rst,
 
     input  [31:0] idu_pc_i,
-    input  [31:0] idu_inst_i,
     output [31:0] exu_pc_o,
-    output [31:0] exu_inst_o,
 
     input  [ 8:0] idu_exu_lsu_data_i,
-    input  [31:0] idu_exu_wbu_csr_rdata_i,
     input  [ 9:0] idu_exu_wbu_data_i,
+    input  [31:0] idu_exu_wbu_csr_rdata_i,
+    input  [ 2:0] idu_exu_lsu_wbu_csr_func3_i,
+    input  [11:0] idu_exu_lsu_wbu_csr_waddr_i,
     input         idu_exu_wbu_csr_we_i,
     input  [ 3:0] idu_exu_pc_src_sel_i,
 
@@ -22,6 +22,8 @@ module EXU(
     output [ 8:0] exu_lsu_data_o,
     output [63:0] exu_lsu_gpr_rdata_o,
     output [31:0] exu_lsu_wbu_csr_rdata_o,
+    output [ 2:0] exu_lsu_wbu_csr_func3_o,
+    output [11:0] exu_lsu_wbu_csr_waddr_o,
     output        exu_lsu_wbu_csr_we_o,
     output [ 9:0] exu_lsu_wbu_data_o,
     output [31:0] exu_lsu_pc_imm_o,
@@ -43,10 +45,11 @@ assign {rd2, rd1} = idu_exu_rdata_i;
 assign {alu_src2_sel_r, alu_src1_sel_r} = idu_exu_src_sel_i;
 
 assign exu_pc_o = idu_pc_i;
-assign exu_inst_o = idu_inst_i;
 assign exu_lsu_data_o = idu_exu_lsu_data_i;
 assign exu_lsu_gpr_rdata_o = idu_exu_rdata_i;
 assign exu_lsu_wbu_csr_rdata_o = idu_exu_wbu_csr_rdata_i;
+assign exu_lsu_wbu_csr_func3_o = idu_exu_lsu_wbu_csr_func3_i;
+assign exu_lsu_wbu_csr_waddr_o = idu_exu_lsu_wbu_csr_waddr_i;
 assign exu_lsu_wbu_csr_we_o = idu_exu_wbu_csr_we_i;
 assign exu_lsu_wbu_data_o = idu_exu_wbu_data_i;
 assign exu_lsu_pc_imm_o = imm_exu_i;
