@@ -55,7 +55,7 @@ static void exec_once(VTOP *top, VerilatedContext *contextp, VerilatedVcdC *tfp)
     // Perf CNT
     if (!CPU_RESET) {
         current_inst_cyc ++;
-        if (S_CPU(ifu_idu_valid) & S_CPU(ifu_idu_ready)) inst_num ++;
+        if (S_CPU(if_ifid_valid) & S_CPU(if_ifid_ready)) inst_num ++;
         if (S_CPU( pc_ifu_valid) & S_CPU( pc_ifu_ready)) perf_cnt.module_add(IFU);
         if (S_CPU(idu_exu_valid) & S_CPU(idu_exu_ready)) perf_cnt.module_add(EXU);
         if (S_CPU(exu_lsu_valid) & S_CPU(exu_lsu_ready)) perf_cnt.module_add(LSU);
