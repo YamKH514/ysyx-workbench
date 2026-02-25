@@ -57,9 +57,9 @@ static void exec_once(VTOP *top, VerilatedContext *contextp, VerilatedVcdC *tfp)
         current_inst_cyc ++;
         if (S_CPU(if_ifid_valid) & S_CPU(if_ifid_ready)) inst_num ++;
         if (S_CPU( pc_ifu_valid) & S_CPU( pc_ifu_ready)) perf_cnt.module_add(IFU);
-        if (S_CPU(idu_exu_valid) & S_CPU(idu_exu_ready)) perf_cnt.module_add(EXU);
+        if (S_CPU(id_idex_valid) & S_CPU(id_idex_ready)) perf_cnt.module_add(EXU);
         if (S_CPU(exu_lsu_valid) & S_CPU(exu_lsu_ready)) perf_cnt.module_add(LSU);
-        if (S_CPU(idu_exu_valid) & S_CPU(idu_exu_ready)) inst_type = (INST_TYPE_ENUM)S_CPU(idu_imm_type);
+        if (S_CPU(id_idex_valid) & S_CPU(id_idex_ready)) inst_type = (INST_TYPE_ENUM)S_CPU(idu_imm_type);
         // Recoding IFU wait Inst
         if ((int)S_IFU(state) == 1) perf_cnt.ifu_wait_rd();
         else if ((int)S_IFU(state) == 0) perf_cnt.ifu_wait_pc();
