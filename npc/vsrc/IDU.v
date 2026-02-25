@@ -7,7 +7,7 @@ module IDU(
     input  [31:0] ifu_pc_i,
     input  [31:0] ifu_inst_i,
     output [31:0] idu_pc_o,
-    output [31:0] idu_inst_o,
+    output [24:0] idu_inst_o,
 
     input  [31:0] gpr_idu_rdata1_i,
     input  [31:0] gpr_idu_rdata2_i,
@@ -38,7 +38,7 @@ module IDU(
 );
 
 assign idu_pc_o = ifu_pc_i;
-assign idu_inst_o = ifu_inst_i;
+assign idu_inst_o = ifu_inst_i[31:7];
 assign idu_exu_rdata_o = {gpr_idu_rdata2_i, gpr_idu_rdata1_i};
 assign idu_exu_wbu_csr_rdata_o = csr_idu_rdata_i;
 

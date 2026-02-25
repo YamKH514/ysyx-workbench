@@ -222,7 +222,7 @@ wire [31:0] ifid_csr_rdata;
 
 wire        fence_i;
 wire [31:0] idu_idex_pc;
-wire [31:0] idu_idex_inst;
+wire [24:0] idu_idex_inst;
 wire [ 2:0] idu_imm_type;
 wire [ 5:0] idu_idex_fun;
 wire [ 1:0] idu_idex_src1_sel;
@@ -422,7 +422,7 @@ IDU u_IDU(
 
 ImmExt u_ImmExt(
     .idu_imm_type_i (idu_imm_type   ),
-    .idu_imm_inst_i (idu_idex_inst[31:7]),
+    .idu_imm_inst_i (idu_idex_inst  ),
     .imm_res_o      (imm_idex_res        )
 );
 
@@ -438,8 +438,8 @@ ID_EX u_ID_EX(
     .lsu_data_i      	(idu_idex_lsu_data       ),
     .wbu_data_i      	(idu_idex_wbu_data       ),
     .wbu_csr_rdata_i 	(idu_idex_wbu_csr_rdata  ),
-    .wbu_csr_func3_i    (idu_idex_inst[14:12]),
-    .wbu_csr_waddr_i    (idu_idex_inst[31:20]),
+    .wbu_csr_func3_i    (idu_idex_inst[7:5]),
+    .wbu_csr_waddr_i    (idu_idex_inst[24:13]),
     .wbu_csr_we_i    	(idu_idex_wbu_csr_we     ),
     .pc_src_sel_i    	(idu_idex_pc_src_sel     ),
     .imm_res_i          (imm_idex_res),
