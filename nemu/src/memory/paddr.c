@@ -95,6 +95,7 @@ paddr_t host_to_guest(uint8_t *haddr) {
 
 static word_t pmem_read(paddr_t addr, int len) {
   if (addr == 0x8023fb4a) return 2;
+  if (addr == 0x8023fb8f) return 10;
   word_t ret = host_read(guest_to_host(addr), len);
   return ret;
 }
