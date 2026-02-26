@@ -210,7 +210,7 @@ reg [2:0] state;
 always @(posedge clk) begin
     case (state)
         S_IDLE: begin
-            if (exu_lsu_valid_i & exu_lsu_ready_o) begin
+            if (exu_lsu_valid_i) begin
                 if (lsu_re_r | lsu_we_r) begin
                     state <= S_WAIT_ARB;
                 end else begin
