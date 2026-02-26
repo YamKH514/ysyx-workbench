@@ -18,6 +18,7 @@
 #include <memory/mtrace.h>
 #include <device/mmio.h>
 #include <isa.h>
+#include <stdio.h>
 
 #if   defined(CONFIG_PMEM_MALLOC)
 #ifdef CONFIG_YSYXSOC
@@ -170,4 +171,9 @@ void paddr_write(paddr_t addr, int len, word_t data) {
   if (likely(in_pmem(addr))) { pmem_write(addr, len, data); return; }
   IFDEF(CONFIG_DEVICE, mmio_write(addr, len, data); return);
   out_of_bound(addr);
+}
+
+extern void mem_dump() {
+  static int num = 0;
+  printf("mem_dump %d\n", num++);
 }

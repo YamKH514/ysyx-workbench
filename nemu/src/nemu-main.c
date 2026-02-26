@@ -21,10 +21,11 @@ void am_init_monitor();
 void engine_start();
 int is_exit_status_bad();
 void ftrace_end();
+void mem_dump();
 
 void int_handler (int signum)
 {
-  printf("int_handle 123\n");
+  mem_dump();
 }
 
 void init_magic() {
