@@ -5,13 +5,13 @@ module LSU(
     input         rst,
 
     input  [31:0] exu_pc_i,
-    input  [31:0] exu_inst_i,
     output [31:0] lsu_pc_o,
-    output [31:0] lsu_inst_o,
 
     input  [31:0] exu_lsu_wbu_csr_rdata_i,
     input  [ 9:0] exu_lsu_wbu_data_i,
     input         exu_lsu_wbu_csr_we_i,
+    input  [ 2:0] exu_lsu_wbu_csr_func3_i,
+    input  [11:0] exu_lsu_wbu_csr_waddr_i,
     input  [31:0] exu_lsu_pc_imm_i,
     input  [ 3:0] exu_lsu_pc_src_sel_i,
 
@@ -23,8 +23,10 @@ module LSU(
     output [31:0] lsu_wbu_res_o,
     output [31:0] lsu_wbu_rdata_o,
     output [ 9:0] lsu_wbu_data_o,
-    output        lsu_wbu_csr_we_o,
     output [31:0] lsu_wbu_csr_rdata_o,
+    output        lsu_wbu_csr_we_o,
+    output [ 2:0] lsu_wbu_csr_func3_o,
+    output [11:0] lsu_wbu_csr_waddr_o,
     output [31:0] lsu_wbu_csr_wdata_o,
     output [31:0] lsu_wbu_pc_rdata1_o,
     output [31:0] lsu_wbu_pc_imm_o,
@@ -72,50 +74,17 @@ module LSU(
     input         bg_i
 );
 
-reg [31:0] pc_r;
-reg [31:0] inst_r;
-reg [31:0] exu_lsu_wbu_res_r;
-reg [31:0] exu_lsu_wbu_csr_rdata_r;
-reg        exu_lsu_wbu_csr_we_r;
-reg [31:0] exu_lsu_wbu_csr_wdata_r;
-reg [ 9:0] exu_lsu_wbu_data_r;
-reg [31:0] exu_lsu_pc_imm_r;
-reg [ 3:0] exu_lsu_pc_src_sel_r;
-
-assign lsu_pc_o = pc_r;
-assign lsu_inst_o = inst_r;
-assign lsu_wbu_res_o = exu_lsu_wbu_res_r;
-assign lsu_wbu_csr_rdata_o = exu_lsu_wbu_csr_rdata_r;
-assign lsu_wbu_csr_we_o = exu_lsu_wbu_csr_we_r;
-assign lsu_wbu_csr_wdata_o = exu_lsu_wbu_csr_wdata_r;
-assign lsu_wbu_data_o = exu_lsu_wbu_data_r;
-assign lsu_wbu_pc_rdata1_o = exu_lsu_wbu_csr_wdata_r;
-assign lsu_wbu_pc_imm_o = exu_lsu_pc_imm_r;
-assign lsu_wbu_pc_src_sel_o = exu_lsu_pc_src_sel_r;
-
-always @(posedge clk) begin
-    if (rst) begin
-        pc_r <= 32'b0;
-        inst_r <= 32'b0;
-        exu_lsu_wbu_res_r <= 32'b0;
-        exu_lsu_wbu_csr_rdata_r <= 32'b0;
-        exu_lsu_wbu_csr_we_r <= 1'b0;
-        exu_lsu_wbu_csr_wdata_r <= 32'b0;
-        exu_lsu_wbu_data_r <= 10'b0;
-        exu_lsu_pc_imm_r <= 32'b0;
-        exu_lsu_pc_src_sel_r <= 4'b0;
-    end else if (exu_lsu_valid_i & exu_lsu_ready_o) begin
-        pc_r <= exu_pc_i;
-        inst_r <= exu_inst_i;
-        exu_lsu_wbu_res_r <= exu_lsu_res_i;
-        exu_lsu_wbu_csr_rdata_r <= exu_lsu_wbu_csr_rdata_i;
-        exu_lsu_wbu_csr_we_r <= exu_lsu_wbu_csr_we_i;
-        exu_lsu_wbu_csr_wdata_r <= exu_lsu_gpr_rdata_i[31:0];
-        exu_lsu_wbu_data_r <= exu_lsu_wbu_data_i;
-        exu_lsu_pc_imm_r <= exu_lsu_pc_imm_i;
-        exu_lsu_pc_src_sel_r <= exu_lsu_pc_src_sel_i;
-    end
-end
+assign lsu_pc_o = exu_pc_i;
+assign lsu_wbu_res_o = exu_lsu_res_i;
+assign lsu_wbu_csr_rdata_o = exu_lsu_wbu_csr_rdata_i;
+assign lsu_wbu_csr_we_o = exu_lsu_wbu_csr_we_i;
+assign lsu_wbu_csr_func3_o = exu_lsu_wbu_csr_func3_i;
+assign lsu_wbu_csr_waddr_o = exu_lsu_wbu_csr_waddr_i;
+assign lsu_wbu_csr_wdata_o = exu_lsu_gpr_rdata_i[31:0]; // GPR rdata1
+assign lsu_wbu_data_o = exu_lsu_wbu_data_i;
+assign lsu_wbu_pc_rdata1_o = exu_lsu_gpr_rdata_i[31:0]; // GPR rdata1
+assign lsu_wbu_pc_imm_o = exu_lsu_pc_imm_i;
+assign lsu_wbu_pc_src_sel_o = exu_lsu_pc_src_sel_i;
 
 import "DPI-C" function void mem_tracer_read(input int addr,input int data, input int is_inst);
 import "DPI-C" function void mem_tracer_write(input int addr,input int data, input int strb);
@@ -179,9 +148,6 @@ assign arburst_o = (state == S_SEND_AR) ? 2'b01 : 2'b0;
 assign arvalid_o = (state == S_SEND_AR);
 assign rready_o  = (state == S_GET_R);
 
-assign exu_lsu_ready_o = (state == S_IDLE) && exu_lsu_valid_i;
-assign lsu_wbu_valid_o = (state == S_WAIT_WBU);
-
 always @(posedge clk) begin
     if (rst) begin
         rid_r <= 4'b0;
@@ -227,6 +193,9 @@ always @(posedge clk) begin
         endcase
     end
 end
+
+assign exu_lsu_ready_o = lsu_wbu_valid_o & lsu_wbu_ready_i;
+assign lsu_wbu_valid_o = (state == S_WAIT_WBU);
 
 localparam S_IDLE     = 3'd0;
 localparam S_WAIT_ARB = 3'd1;
