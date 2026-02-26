@@ -27,13 +27,16 @@ void int_handler (int signum)
   printf("int_handle 123\n");
 }
 
-int main(int argc, char *argv[]) {
+void init_magic() {
   struct sigaction sh;
   sh.sa_handler = int_handler;
   sigemptyset (&sh.sa_mask);
   sh.sa_flags = 0;
   sigaction (SIGINT, &sh, NULL);
+}
 
+int main(int argc, char *argv[]) {
+  init_magic();
   /* Initialize the monitor. */
 #ifdef CONFIG_TARGET_AM
   am_init_monitor();
