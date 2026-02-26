@@ -29,9 +29,7 @@ module EXU(
     output [11:0] exu_lsu_wbu_csr_waddr_o,
     output        exu_lsu_wbu_csr_we_o,
     output [ 9:0] exu_lsu_wbu_data_o,
-    output [31:0] exu_lsu_pc_imm_o,
-    output [ 3:0] exu_lsu_pc_src_sel_o,
-    output [31:0] exu_lsu_target_pc,
+    output [31:0] exu_lsu_target_pc_o,
 
     input         idu_exu_valid_i,
     output        idu_exu_ready_o,
@@ -56,8 +54,6 @@ assign exu_lsu_wbu_csr_func3_o = idu_exu_lsu_wbu_csr_func3_i;
 assign exu_lsu_wbu_csr_waddr_o = idu_exu_lsu_wbu_csr_waddr_i;
 assign exu_lsu_wbu_csr_we_o = idu_exu_wbu_csr_we_i;
 assign exu_lsu_wbu_data_o = idu_exu_wbu_data_i;
-assign exu_lsu_pc_imm_o = imm_exu_i;
-assign exu_lsu_pc_src_sel_o = idu_exu_pc_src_sel_i;
 
 assign idu_exu_ready_o = exu_lsu_valid_o & exu_lsu_ready_i;
 assign exu_lsu_valid_o = (state == S_WAIT_LSU);
@@ -107,6 +103,7 @@ assign is_trap = ~idu_exu_pc_src_sel_i[3] & idu_exu_pc_src_sel_i[2];
 assign is_jump = idu_exu_pc_src_sel_i[3];
 assign is_ecall = exu_lsu_wbu_data_o[9];
 
+// npc = pc+4(0000) pc+imm(0001) src1+imm(0011) trap_npc(0100) res=0,jump(10--) res=1,jump(11--)
 assign trap_pc = is_ecall ? csr_r_mtvec_i : csr_r_mepc_i;
 assign base = (!is_jump & idu_exu_pc_src_sel_i[1]) ? rd1 : idu_pc_i;
 assign offset = 
@@ -114,6 +111,6 @@ assign offset =
             (idu_exu_pc_src_sel_i[2] == exu_lsu_res_o[0]) ? imm_exu_i : 4 :
             idu_exu_pc_src_sel_i[0] ? imm_exu_i : 32'd4;
 
-assign exu_lsu_target_pc = is_trap ? trap_pc : base + offset;
+assign exu_lsu_target_pc_o = is_trap ? trap_pc : base + offset;
 
 endmodule

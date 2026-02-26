@@ -15,9 +15,7 @@ module WBU(
     input       [ 2:0]  lsu_wbu_csr_func3_i,
     input       [11:0]  lsu_wbu_csr_waddr_i,
     input       [31:0]  lsu_wbu_csr_wdata_i,
-    input       [31:0]  lsu_wbu_pc_rdata1_i,
-    input       [31:0]  lsu_wbu_pc_imm_i,
-    input       [ 3:0]  lsu_wbu_pc_src_sel_i,
+    input       [31:0]  lsu_wbu_target_pc_i,
 
     output reg          wbu_gpr_we_o,
     output reg  [4:0]   wbu_gpr_waddr_o,
@@ -30,11 +28,7 @@ module WBU(
     output      [31:0]  wbu_csr_mepc_o,
     output reg          wbu_csr_ecall_o,
     output reg          wbu_csr_mret_o,
-    output              wbu_pc_ecall_o,
-    output      [31:0]  wbu_pc_rdata1_o,
-    output      [31:0]  wbu_pc_imm_o,
-    output              wbu_pc_cmp_res_o,
-    output      [ 3:0]  wbu_pc_src_sel_o,
+    output      [31:0]  wbu_pc_target_pc_o,
 
     input               lsu_wbu_valid_i,
     output              lsu_wbu_ready_o,
@@ -54,11 +48,7 @@ assign wbu_csr_we_o = lsu_wbu_csr_we_i & S_BUSY;
 assign wbu_csr_waddr_o = lsu_wbu_csr_waddr_i;
 assign wbu_csr_wdata_o = lsu_wbu_csr_wdata_i;
 assign wbu_csr_mepc_o = lsu_pc_i;
-assign wbu_pc_ecall_o = ecall;
-assign wbu_pc_rdata1_o = lsu_wbu_pc_rdata1_i;
-assign wbu_pc_imm_o = lsu_wbu_pc_imm_i;
-assign wbu_pc_cmp_res_o = lsu_wbu_res_i[0];
-assign wbu_pc_src_sel_o = lsu_wbu_pc_src_sel_i;
+assign wbu_pc_target_pc_o = lsu_wbu_target_pc_i;
 
 wire        ecall;
 wire        mret;

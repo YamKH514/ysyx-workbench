@@ -14,30 +14,14 @@
 ***************************************************************************************/
 
 #include <common.h>
-#include <signal.h>
 
 void init_monitor(int, char *[]);
 void am_init_monitor();
 void engine_start();
 int is_exit_status_bad();
 void ftrace_end();
-void mem_dump();
-
-void int_handler (int signum)
-{
-  mem_dump();
-}
-
-void init_magic() {
-  struct sigaction sh;
-  sh.sa_handler = int_handler;
-  sigemptyset (&sh.sa_mask);
-  sh.sa_flags = 0;
-  sigaction (SIGINT, &sh, NULL);
-}
 
 int main(int argc, char *argv[]) {
-  init_magic();
   /* Initialize the monitor. */
 #ifdef CONFIG_TARGET_AM
   am_init_monitor();
