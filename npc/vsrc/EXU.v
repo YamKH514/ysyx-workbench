@@ -18,6 +18,9 @@ module EXU(
     input  [ 3:0] idu_exu_src_sel_i,
     input  [31:0] imm_exu_i,
 
+    input  [31:0] csr_r_mtvec_i,
+    input  [31:0] csr_r_mepc_i,
+
     output [31:0] exu_lsu_res_o,
     output [ 8:0] exu_lsu_data_o,
     output [63:0] exu_lsu_gpr_rdata_o,
@@ -28,6 +31,7 @@ module EXU(
     output [ 9:0] exu_lsu_wbu_data_o,
     output [31:0] exu_lsu_pc_imm_o,
     output [ 3:0] exu_lsu_pc_src_sel_o,
+    output [31:0] exu_lsu_target_pc,
 
     input         idu_exu_valid_i,
     output        idu_exu_ready_o,
@@ -91,5 +95,25 @@ ALU u_ALU(
     .ALUSrcSel2 	(alu_src2_sel_r ),
     .ALURes     	(exu_lsu_res_o  )
 );
+
+wire        is_trap;
+wire        is_jump;
+wire        is_ecall;
+wire [31:0] trap_pc;
+wire [31:0] base;
+wire [31:0] offset;
+
+assign is_trap = ~idu_exu_pc_src_sel_i[3] & idu_exu_pc_src_sel_i[2];
+assign is_jump = idu_exu_pc_src_sel_i[3];
+assign is_ecall = exu_lsu_wbu_data_o[9];
+
+assign trap_pc = is_ecall ? csr_r_mtvec_i : csr_r_mepc_i;
+assign base = (!is_jump & idu_exu_pc_src_sel_i[1]) ? rd1 : idu_pc_i;
+assign offset = 
+            is_jump ?
+            (idu_exu_pc_src_sel_i[2] == exu_lsu_res_o[0]) ? imm_exu_i : 4 :
+            idu_exu_pc_src_sel_i[0] ? imm_exu_i : 32'd4;
+
+assign exu_lsu_target_pc = is_trap ? trap_pc : base + offset;
 
 endmodule
