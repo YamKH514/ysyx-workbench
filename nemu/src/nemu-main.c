@@ -24,7 +24,7 @@ void ftrace_end();
 
 void int_handler (int signum)
 {
-  printf("int_handle\n");
+  printf("int_handle 123\n");
 }
 
 int main(int argc, char *argv[]) {
