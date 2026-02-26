@@ -14,6 +14,7 @@
 ***************************************************************************************/
 
 #include <common.h>
+#include <signal.h>
 
 void init_monitor(int, char *[]);
 void am_init_monitor();
@@ -21,7 +22,18 @@ void engine_start();
 int is_exit_status_bad();
 void ftrace_end();
 
+void int_handler (int signum)
+{
+  printf("int_handle\n");
+}
+
 int main(int argc, char *argv[]) {
+  struct sigaction sh;
+  sh.sa_handler = int_handler;
+  sigemptyset (&sh.sa_mask);
+  sh.sa_flags = 0;
+  sigaction (SIGINT, &sh, NULL);
+
   /* Initialize the monitor. */
 #ifdef CONFIG_TARGET_AM
   am_init_monitor();
