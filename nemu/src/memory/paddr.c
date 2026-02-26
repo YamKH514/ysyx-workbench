@@ -174,6 +174,8 @@ void paddr_write(paddr_t addr, int len, word_t data) {
 }
 
 extern void mem_dump() {
-  static int num = 0;
-  printf("mem_dump %d\n", num++);
+  FILE *fp;
+  fp = fopen("mem_dump.bin", "wb");
+  fwrite(pmem, sizeof(uint8_t), CONFIG_MSIZE, fp);
+  fclose(fp);
 }
