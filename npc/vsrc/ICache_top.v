@@ -74,13 +74,13 @@ end
 
 assign arid = 0;
 //* IF use burst, addr_r[29:n] need config
-// assign araddr = bs ? {addr_r, 2'b0} : 0;
-assign araddr = bs ? {addr_r[29:1], !need_cache & addr_r[0], 2'b0} : 0;
-assign arlen = ARLEN & {4{need_cache & bs}};
-assign arsize = bs ? 3'b010 : 0;
-assign arburst = bs ? 2'b01 : 0;
-assign arvalid = bs ? (state == S_GET_DATA) & !ar_handshake_r : 0;
-assign rready = bs ? (state == S_GET_DATA) & ar_handshake_r : 0;
+// assign araddr = state == S_GET_DATA ? {addr_r, 2'b0} : 0;
+assign araddr = state == S_GET_DATA ? {addr_r[29:1], !need_cache & addr_r[0], 2'b0} : 0;
+assign arlen = ARLEN & {4{need_cache & state == S_GET_DATA}};
+assign arsize = state == S_GET_DATA ? 3'b010 : 0;
+assign arburst = state == S_GET_DATA ? 2'b01 : 0;
+assign arvalid = state == S_GET_DATA ? (state == S_GET_DATA) & !ar_handshake_r : 0;
+assign rready = state == S_GET_DATA ? (state == S_GET_DATA) & ar_handshake_r : 0;
 
 always @(posedge clk) begin
     if (rst) begin
