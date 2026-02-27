@@ -26,6 +26,8 @@ always @(posedge clk) begin
     end else begin
         case (state)
             S_IDLE: begin
+                bg1_o <= 1'b0;
+                bg2_o <= 1'b0;
                 if (br1_i) begin
                     bg1_o <= 1'b1;
                 end else if (br2_i) begin
