@@ -107,7 +107,7 @@ assign cache_wvalid = state == S_WRITE_CACHE & need_cache;
 assign cache_flush = state == S_FLUSHING;
 
 assign br = state == S_WAIT_ARB;
-assign bs = state == S_WRITE_CACHE & target_state == S_READ_CACHE;
+assign bs = pvalid && pready | (state == S_WRITE_CACHE & target_state == S_READ_CACHE);
 
 localparam S_W           = 3;
 localparam S_IDLE        = 3'd0;
