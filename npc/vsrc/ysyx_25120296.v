@@ -81,7 +81,6 @@ wire [31:0] pc;
 wire [31:0] csr_r_mtvec;
 wire [31:0] csr_r_mepc;
 
-wire bs;
 wire bs1;
 wire br1;
 wire bg1;
@@ -671,16 +670,15 @@ CSR u_CSR(
     .csr_r_mepc_o  	(csr_r_mepc     )
 );
 
-assign bs = bs1 | bs2;
-
 Arbiter u_Arbiter(
     .clk    (clock  ),
     .rst    (reset  ),
-    .bs_i   (bs     ),
     .br1_i  (br1    ),
     .bg1_o 	(bg1    ),
+    .bs1_i  (bs1    ),
     .br2_i  (br2    ),
-    .bg2_o 	(bg2    )
+    .bg2_o 	(bg2    ),
+    .bs2_i  (bs2    )
 );
 
 assign xbar_arid = inst_arid | lsu_arid;

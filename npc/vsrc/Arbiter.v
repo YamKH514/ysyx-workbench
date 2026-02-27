@@ -2,16 +2,16 @@ module Arbiter(
     input   clk,
     input   rst,
 
-    input   bs_i,
-
     input   br1_i,
     output  bg1_o,
+    input   bs1_i,
 
     input   br2_i,
-    output  bg2_o
+    output  bg2_o,
+    input   bs2_i
 );
 
-//* br请求信号，bg仲裁选中，bs表示占用
+//* br请求信号，bg仲裁选中，bs占用结束
 
 reg last_grant; // 0 -> device1, 1 -> device2
 
@@ -47,7 +47,7 @@ always @(posedge clk) begin
                 end
             end
             S_BUSY: begin
-                if (!bs_i) begin
+                if ((bs1_i & ~last_grant) | (bs2_i & last_grant)) begin
                     state <= S_IDLE;
                 end
             end

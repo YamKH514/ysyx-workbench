@@ -95,11 +95,7 @@ reg [31:0] rdata_r;
 reg [ 3:0] bid_r;
 
 assign br_o = state == S_WAIT_ARB;
-assign bs_o = state == S_SEND_AR |
-                state == S_GET_R |
-                state == S_W_SEND|
-                state == S_GET_B |
-                bg_i;
+assign bs_o = (rvalid_i & rready_o & rlast_i) | (bvalid_i & bready_o);
 
 always @(posedge clk) begin
     if (rst) begin
