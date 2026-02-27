@@ -98,7 +98,8 @@ assign br_o = state == S_WAIT_ARB;
 assign bs_o = state == S_SEND_AR |
                 state == S_GET_R |
                 state == S_W_SEND|
-                state == S_GET_B;
+                state == S_GET_B |
+                bg_i;
 
 always @(posedge clk) begin
     if (rst) begin

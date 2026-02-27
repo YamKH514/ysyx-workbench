@@ -108,7 +108,8 @@ assign cache_flush = state == S_FLUSHING;
 
 assign br = state == S_WAIT_ARB;
 assign bs = state == S_GET_DATA|
-            state == S_WRITE_CACHE;
+            state == S_WRITE_CACHE|
+            bg;
 
 localparam S_W           = 3;
 localparam S_IDLE        = 3'd0;
