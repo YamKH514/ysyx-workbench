@@ -15,7 +15,6 @@ module WBU(
     input       [ 2:0]  lsu_wbu_csr_func3_i,
     input       [11:0]  lsu_wbu_csr_waddr_i,
     input       [31:0]  lsu_wbu_csr_wdata_i,
-    input       [31:0]  lsu_wbu_target_pc_i,
 
     output reg          wbu_gpr_we_o,
     output reg  [4:0]   wbu_gpr_waddr_o,
@@ -28,13 +27,9 @@ module WBU(
     output      [31:0]  wbu_csr_mepc_o,
     output reg          wbu_csr_ecall_o,
     output reg          wbu_csr_mret_o,
-    output      [31:0]  wbu_pc_target_pc_o,
 
     input               lsu_wbu_valid_i,
-    output              lsu_wbu_ready_o,
-
-    output              wbu_pc_valid_o,
-    input               wbu_pc_ready_i
+    output              lsu_wbu_ready_o
 );
 
 // 为仿真环境准备
@@ -48,7 +43,6 @@ assign wbu_csr_we_o = lsu_wbu_csr_we_i & S_BUSY;
 assign wbu_csr_waddr_o = lsu_wbu_csr_waddr_i;
 assign wbu_csr_wdata_o = lsu_wbu_csr_wdata_i;
 assign wbu_csr_mepc_o = lsu_pc_i;
-assign wbu_pc_target_pc_o = lsu_wbu_target_pc_i;
 
 wire        ecall;
 wire        mret;
@@ -64,8 +58,7 @@ assign wbu_gpr_wdata_o = gpr_w_data;
 assign wbu_csr_ecall_o = ecall;
 assign wbu_csr_mret_o = mret;
 
-assign lsu_wbu_ready_o = wbu_pc_valid_o & wbu_pc_ready_i;
-assign wbu_pc_valid_o = state == S_BUSY;
+assign lsu_wbu_ready_o = state == S_BUSY;
 
 localparam S_IDLE = 1'd0;
 localparam S_BUSY = 1'd1;
@@ -81,7 +74,7 @@ always @(posedge clk) begin
                 if (lsu_wbu_valid_i) state <= S_BUSY;
             end
             S_BUSY: begin
-                if (wbu_pc_valid_o & wbu_pc_ready_i) state <= S_IDLE;
+                state <= S_IDLE;
             end
             default: begin
                 state <= S_IDLE;

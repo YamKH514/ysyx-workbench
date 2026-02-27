@@ -14,6 +14,8 @@ module ID_EX(
     input           wbu_csr_we_i,
     input  [ 3:0]   pc_src_sel_i,
     input  [31:0]   imm_res_i,
+    input           need_flush_i,
+
     output [31:0]   pc_o,
     output [ 5:0]   fun_o,
     output [ 3:0]   src_sel_o,
@@ -34,7 +36,7 @@ module ID_EX(
 );
 
 assign id_idex_ready_o = id_idex_valid_i & state == S_IDLE;
-assign idex_ex_valid_o = state == S_BUSY;
+assign idex_ex_valid_o = state == S_BUSY & !need_flush_i;
 
 reg [31:0] pc_r;
 reg [ 5:0] fun_r;
@@ -104,10 +106,10 @@ always @(posedge clk) begin
     end else begin
         case (state)
             S_IDLE: begin
-                if (id_idex_valid_i & id_idex_ready_o) state <= S_BUSY;
+                if (!need_flush_i & id_idex_valid_i & id_idex_ready_o) state <= S_BUSY;
             end
             S_BUSY: begin
-                if (idex_ex_valid_o & idex_ex_ready_i) state <= S_IDLE;
+                if (need_flush_i | (idex_ex_valid_o & idex_ex_ready_i)) state <= S_IDLE;
             end
             default: begin
                 state <= S_IDLE;

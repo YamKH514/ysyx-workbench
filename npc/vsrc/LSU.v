@@ -12,7 +12,6 @@ module LSU(
     input         exu_lsu_wbu_csr_we_i,
     input  [ 2:0] exu_lsu_wbu_csr_func3_i,
     input  [11:0] exu_lsu_wbu_csr_waddr_i,
-    input  [31:0] exu_lsu_target_pc_i,
 
     // idu_to_lsu_data lsu_r_func[8:6], lsu_re[5], lsu_w_mask[4:1], lsu_we[0]
     input  [ 8:0] exu_lsu_data_i,
@@ -27,7 +26,6 @@ module LSU(
     output [ 2:0] lsu_wbu_csr_func3_o,
     output [11:0] lsu_wbu_csr_waddr_o,
     output [31:0] lsu_wbu_csr_wdata_o,
-    output [31:0] lsu_wbu_target_pc_o,
 
     input         exu_lsu_valid_i,
     output        exu_lsu_ready_o,
@@ -79,7 +77,6 @@ assign lsu_wbu_csr_func3_o = exu_lsu_wbu_csr_func3_i;
 assign lsu_wbu_csr_waddr_o = exu_lsu_wbu_csr_waddr_i;
 assign lsu_wbu_csr_wdata_o = exu_lsu_gpr_rdata_i[31:0]; // GPR rdata1
 assign lsu_wbu_data_o = exu_lsu_wbu_data_i;
-assign lsu_wbu_target_pc_o = exu_lsu_target_pc_i;
 
 import "DPI-C" function void mem_tracer_read(input int addr,input int data, input int is_inst);
 import "DPI-C" function void mem_tracer_write(input int addr,input int data, input int strb);

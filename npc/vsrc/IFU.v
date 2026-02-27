@@ -17,6 +17,7 @@ module IFU(
     output [11:0] ifu_csr_raddr_o,
 
     input         fence_i_i,
+    input         need_flush_i,
 
     output [ 3:0] arid_o,
     output [31:0] araddr_o,
@@ -98,7 +99,7 @@ always @(posedge clk) begin
 end
 
 assign pc_ifu_ready_o = (state == S_IDLE) && pc_ifu_valid_i;
-assign ifu_idu_valid_o= (state == S_WAIT_IDU);
+assign ifu_idu_valid_o= (state == S_WAIT_IDU) & !need_flush_i;
 
 assign ifu_pc_o = ifu_current_pc_r;
 assign ifu_inst_o= ic_data_r;
@@ -130,17 +131,17 @@ always @(posedge clk) begin
     else begin
         case (state)
             S_IDLE: begin
-                if (pc_ifu_valid_i & pc_ifu_ready_o) begin
+                if (!need_flush_i & pc_ifu_valid_i & pc_ifu_ready_o) begin
                     state <= S_WAIT_IC;
                 end
             end
             S_WAIT_IC: begin
                 if (ic_pvalid & ic_pready) begin
-                    state <= S_WAIT_IDU;
+                    state <= need_flush_r ? S_IDLE : S_WAIT_IDU;
                 end
             end
             S_WAIT_IDU: begin
-                if (ifu_idu_valid_o && ifu_idu_ready_i) begin
+                if (need_flush_i | (ifu_idu_valid_o && ifu_idu_ready_i)) begin
                     state <= S_IDLE;
                 end
             end
@@ -149,6 +150,17 @@ always @(posedge clk) begin
             end
         endcase
     end
+end
+
+reg need_flush_r;
+
+always @(posedge clk) begin
+    if (rst)
+        need_flush_r <= 1'b0;
+    else if (need_flush_i)
+        need_flush_r <= state == S_WAIT_IC;
+    else if (state == S_IDLE)
+        need_flush_r <= 1'b0;
 end
 
 ICache_top u_ICache_top(

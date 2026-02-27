@@ -1,11 +1,14 @@
 module IF_ID(
     input           clk,
                     rst,
+
     input  [31:0]   pc_i,
                     inst_i,
                     gpr_rdata1_i,
                     gpr_rdata2_i,
                     csr_rdata_i,
+    input           need_flush_i,
+
     output [31:0]   pc_o,
                     inst_o,
                     gpr_rdata1_o,
@@ -19,7 +22,7 @@ module IF_ID(
 );
 
 assign if_ifid_ready_o = if_ifid_valid_i & state == S_IDLE;
-assign ifid_id_valid_o = state == S_BUSY;
+assign ifid_id_valid_o = state == S_BUSY & !need_flush_i;
 
 reg [31:0] pc_r;
 reg [31:0] inst_r;
@@ -61,10 +64,10 @@ always @(posedge clk) begin
     end else begin
         case (state)
             S_IDLE: begin
-                if (if_ifid_valid_i & if_ifid_ready_o) state <= S_BUSY;
+                if (!need_flush_i & if_ifid_valid_i & if_ifid_ready_o) state <= S_BUSY;
             end
             S_BUSY: begin
-                if (ifid_id_valid_o & ifid_id_ready_i) state <= S_IDLE;
+                if (need_flush_i | (ifid_id_valid_o & ifid_id_ready_i)) state <= S_IDLE;
             end
             default: begin
                 state <= S_IDLE;

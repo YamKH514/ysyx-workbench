@@ -29,7 +29,9 @@ module EXU(
     output [11:0] exu_lsu_wbu_csr_waddr_o,
     output        exu_lsu_wbu_csr_we_o,
     output [ 9:0] exu_lsu_wbu_data_o,
-    output [31:0] exu_lsu_target_pc_o,
+    output [31:0] exu_pc_target_pc_o,
+
+    output        need_flush_o,
 
     input         idu_exu_valid_i,
     output        idu_exu_ready_o,
@@ -55,13 +57,16 @@ assign exu_lsu_wbu_csr_waddr_o = idu_exu_lsu_wbu_csr_waddr_i;
 assign exu_lsu_wbu_csr_we_o = idu_exu_wbu_csr_we_i;
 assign exu_lsu_wbu_data_o = idu_exu_wbu_data_i;
 
+assign need_flush_o = (state == S_WAIT_LSU) & (exu_pc_target_pc_o == idu_pc_i + 4);
+
 assign idu_exu_ready_o = exu_lsu_valid_o & exu_lsu_ready_i;
 assign exu_lsu_valid_o = (state == S_WAIT_LSU);
 
-localparam S_IDLE = 2'd0;
+localparam S_W        = 2;
+localparam S_IDLE     = 2'd0;
 localparam S_WAIT_LSU = 2'd1;
 
-reg [1:0] state;
+reg [S_W-1:0] state;
 
 always @(posedge clk) begin
     if (rst) begin
@@ -111,6 +116,6 @@ assign offset =
             (idu_exu_pc_src_sel_i[2] == exu_lsu_res_o[0]) ? imm_exu_i : 4 :
             idu_exu_pc_src_sel_i[0] ? imm_exu_i : 32'd4;
 
-assign exu_lsu_target_pc_o = is_trap ? trap_pc : base + offset;
+assign exu_pc_target_pc_o = is_trap ? trap_pc : base + offset;
 
 endmodule

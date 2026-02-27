@@ -11,7 +11,7 @@ module LS_WB(
     input  [ 2:0] csr_func3_i,
     input  [11:0] csr_waddr_i,
     input  [31:0] csr_wdata_i,
-    input  [31:0] target_pc_i,
+
     output [31:0] pc_o,
     output [31:0] res_o,
     output [31:0] rdata_o,
@@ -21,7 +21,6 @@ module LS_WB(
     output [ 2:0] csr_func3_o,
     output [11:0] csr_waddr_o,
     output [31:0] csr_wdata_o,
-    output [31:0] target_pc_o,
 
     input           ls_lswb_valid_i,
     output          ls_lswb_ready_o,
@@ -41,7 +40,6 @@ reg        csr_we_r;
 reg [ 2:0] csr_func3_r;
 reg [11:0] csr_waddr_r;
 reg [31:0] csr_wdata_r;
-reg [31:0] target_pc_r;
 
 assign pc_o = pc_r;
 assign res_o = res_r;
@@ -52,7 +50,6 @@ assign csr_we_o = csr_we_r;
 assign csr_func3_o = csr_func3_r;
 assign csr_waddr_o = csr_waddr_r;
 assign csr_wdata_o = csr_wdata_r;
-assign target_pc_o = target_pc_r;
 
 always @(posedge clk) begin
     if (rst) begin
@@ -65,7 +62,6 @@ always @(posedge clk) begin
         csr_func3_r <= 'b0;
         csr_waddr_r <= 'b0;
         csr_wdata_r <= 'b0;
-        target_pc_r <= 'b0;
     end else if (ls_lswb_valid_i & ls_lswb_ready_o) begin
         pc_r <= pc_i;
         res_r <= res_i;
@@ -76,7 +72,6 @@ always @(posedge clk) begin
         csr_func3_r <= csr_func3_i;
         csr_waddr_r <= csr_waddr_i;
         csr_wdata_r <= csr_wdata_i;
-        target_pc_r <= target_pc_i;
     end
 end
 

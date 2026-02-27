@@ -6,6 +6,8 @@ module IDU(
 
     input  [31:0] ifu_pc_i,
     input  [31:0] ifu_inst_i,
+    input         need_flush_i,
+
     output [31:0] idu_pc_o,
     output [24:0] idu_inst_o,
 
@@ -56,7 +58,7 @@ reg [1:0]   wbu_wd_sel_r;
 assign idu_exu_wbu_data_o = {ecall_r, mret_r, wbu_we_r, wbu_w_addr_r, wbu_wd_sel_r};
 
 assign ifu_idu_ready_o = idu_exu_valid_o & idu_exu_ready_i;
-assign idu_exu_valid_o = state == S_WAIT_EXU;
+assign idu_exu_valid_o = state == S_WAIT_EXU & !need_flush_i;
 
 localparam S_IDLE = 1'd0;
 localparam S_WAIT_EXU = 1'd1;
@@ -69,10 +71,10 @@ always @(posedge clk) begin
     end else begin
         case (state)
             S_IDLE: begin
-                if (ifu_idu_valid_i) state <= S_WAIT_EXU;
+                if (!need_flush_i & ifu_idu_valid_i) state <= S_WAIT_EXU;
             end
             S_WAIT_EXU: begin
-                if (idu_exu_valid_o & idu_exu_ready_i) state <= S_IDLE;
+                if (need_flush_i | (idu_exu_valid_o & idu_exu_ready_i)) state <= S_IDLE;
             end
             default: begin
                 state <= S_IDLE;
