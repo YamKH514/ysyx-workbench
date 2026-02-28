@@ -59,7 +59,7 @@ static void exec_once(VTOP *top, VerilatedContext *contextp, VerilatedVcdC *tfp)
         FIND_DPIC(u_IFU); if (ifu_commit()) perf_cnt.module_add(IFU); // IFU每锁存一次pc值，认为IFU调用一次
         FIND_DPIC(u_EXU); if (exu_commit()) perf_cnt.module_add(EXU);
         FIND_DPIC(u_LSU); if (lsu_commit()) perf_cnt.module_add(LSU);
-        if (S_CPU(id_idex_valid) & S_CPU(id_idex_ready)) inst_type = (INST_TYPE_ENUM)S_CPU(idu_imm_type);
+        FIND_DPIC(u_IDU); if (idu_commit()) inst_type = (INST_TYPE_ENUM)idu_inst_type();
         // Recoding IFU wait Inst
         if ((int)S_IFU(state) == 1) perf_cnt.ifu_wait_rd();
         else if ((int)S_IFU(state) == 0) perf_cnt.ifu_wait_pc();

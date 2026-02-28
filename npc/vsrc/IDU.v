@@ -10,10 +10,6 @@ module IDU(
     output [31:0] idu_pc_o,
     output [24:0] idu_inst_o,
 
-    input  [31:0] gpr_idu_rdata1_i,
-    input  [31:0] gpr_idu_rdata2_i,
-    input  [31:0] csr_idu_rdata_i,
-
     output        fence_i_o,
 
     output [ 2:0] idu_imm_type_o,
@@ -21,13 +17,11 @@ module IDU(
     output [ 5:0] idu_exu_fun_o,
     output [ 1:0] idu_exu_src1_sel_o,
     output [ 1:0] idu_exu_src2_sel_o,
-    output [63:0] idu_exu_rdata_o,
 
     // idu_to_lsu_data lsu_r_func[8:6], lsu_re[5], lsu_w_mask[4:1], lsu_we[0]
     output [ 8:0] idu_exu_lsu_data_o,
     // idu_to_wbu_data is_ecall[9], is_mret[8], wbu_we[7], wbu_w_addr[6:2], wbu_wd_sel[1:0]
     output [ 9:0] idu_exu_wbu_data_o,
-    output [31:0] idu_exu_wbu_csr_rdata_o,
     output        idu_exu_wbu_csr_we_o,
     output [ 3:0] idu_exu_pc_src_sel_o,
 
@@ -40,8 +34,6 @@ module IDU(
 
 assign idu_pc_o = ifu_pc_i;
 assign idu_inst_o = ifu_inst_i[31:7];
-assign idu_exu_rdata_o = {gpr_idu_rdata2_i, gpr_idu_rdata1_i};
-assign idu_exu_wbu_csr_rdata_o = csr_idu_rdata_i;
 
 reg [2:0]   lsu_r_func_r;
 reg         lsu_re_r;
@@ -251,5 +243,18 @@ assign lsu_r_func_r =   {3{inst_lbu}} & `MEM_READ_FUNC_LBU |
                         {3{inst_lhu}} & `MEM_READ_FUNC_LHU |
                         {3{inst_lh}}  & `MEM_READ_FUNC_LH  |
                         {3{inst_lw}}  & `MEM_READ_FUNC_LW  ;
+
+`ifdef FOR_SIMULATION_ENV
+export "DPI-C" function idu_inst_type;
+function int idu_inst_type();
+    return {29'b0, idu_imm_type_o};
+endfunction
+
+export "DPI-C" function idu_commit;
+function int idu_commit();
+    if (!need_flush_i & ifu_idu_valid_i & state == S_IDLE) return 1;
+    else return 0;
+endfunction
+`endif
 
 endmodule

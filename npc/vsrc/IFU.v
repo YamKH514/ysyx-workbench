@@ -13,10 +13,6 @@ module IFU(
     output        ifu_idu_valid_o,
     input         ifu_idu_ready_i,
 
-    output [ 9:0] ifu_gpr_raddr_o,
-
-    output [11:0] ifu_csr_raddr_o,
-
     input         fence_i_i,
     input         need_flush_i,
 
@@ -58,9 +54,6 @@ module IFU(
 
 reg [31:0]  ifu_current_pc_r;
 reg [31:0]  ic_data_r;
-
-assign ifu_gpr_raddr_o = ic_data_r[24:15];
-assign ifu_csr_raddr_o = ic_data_r[31:20];
 
 import "DPI-C" function void mem_tracer_read(input int addr,input int data, input int is_inst);
 

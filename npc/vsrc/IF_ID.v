@@ -4,16 +4,10 @@ module IF_ID(
 
     input  [31:0]   pc_i,
                     inst_i,
-                    gpr_rdata1_i,
-                    gpr_rdata2_i,
-                    csr_rdata_i,
     input           need_flush_i,
 
     output [31:0]   pc_o,
                     inst_o,
-                    gpr_rdata1_o,
-                    gpr_rdata2_o,
-                    csr_rdata_o,
 
     input           if_ifid_valid_i,
     output          if_ifid_ready_o,
@@ -26,35 +20,20 @@ assign ifid_id_valid_o = state == S_BUSY & !need_flush_i;
 
 reg [31:0] pc_r;
 reg [31:0] inst_r;
-reg [31:0] gpr_rdata1_r;
-reg [31:0] gpr_rdata2_r;
-reg [31:0] csr_rdata_r;
 
 assign pc_o = pc_r;
 assign inst_o = inst_r;
-assign gpr_rdata1_o = gpr_rdata1_r;
-assign gpr_rdata2_o = gpr_rdata2_r;
-assign csr_rdata_o = csr_rdata_r;
 
 always @(posedge clk) begin
     if (rst) begin
         pc_r <= 'b0;
         inst_r <= 'b0;
-        gpr_rdata1_r <= 'b0;
-        gpr_rdata2_r <= 'b0;
-        csr_rdata_r <= 'b0;
     end else if (if_ifid_valid_i & if_ifid_ready_o) begin
         pc_r <= pc_i;
         inst_r <= inst_i;
-        gpr_rdata1_r <= gpr_rdata1_i;
-        gpr_rdata2_r <= gpr_rdata2_i;
-        csr_rdata_r <= csr_rdata_i;
     end else if (need_flush_i | (ifid_id_valid_o & ifid_id_ready_i)) begin
         pc_r <= 'b0;
         inst_r <= 'b0;
-        gpr_rdata1_r <= 'b0;
-        gpr_rdata2_r <= 'b0;
-        csr_rdata_r <= 'b0;
     end
 end
 
