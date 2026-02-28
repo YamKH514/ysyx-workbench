@@ -76,8 +76,8 @@ static void exec_once(VTOP *top, VerilatedContext *contextp, VerilatedVcdC *tfp)
     if (wbu_commit())
     {
         pc = S_WBU(pc_r);
-        cpu.pc = S_PCCnt(target_pc_r);
-        cpu.npc = S_PCCnt(target_pc_r);
+        cpu.pc = S_WBU(target_pc_r);
+        cpu.npc = S_WBU(target_pc_r);
         inst_end = true;
     }
     else if (inst_end) // 写回后一周期，寄存器才能更新为正确的值
