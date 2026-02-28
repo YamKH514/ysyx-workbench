@@ -49,6 +49,12 @@ always @(posedge clk) begin
         gpr_rdata1_r <= gpr_rdata1_i;
         gpr_rdata2_r <= gpr_rdata2_i;
         csr_rdata_r <= csr_rdata_i;
+    end else if (need_flush_i | (ifid_id_valid_o & ifid_id_ready_i)) begin
+        pc_r <= 'b0;
+        inst_r <= 'b0;
+        gpr_rdata1_r <= 'b0;
+        gpr_rdata2_r <= 'b0;
+        csr_rdata_r <= 'b0;
     end
 end
 
