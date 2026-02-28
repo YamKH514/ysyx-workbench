@@ -55,20 +55,16 @@ static void exec_once(VTOP *top, VerilatedContext *contextp, VerilatedVcdC *tfp)
     // Perf CNT
     if (!CPU_RESET) {
         current_inst_cyc ++;
-        // if (S_CPU(if_ifid_valid) & S_CPU(if_ifid_ready)) inst_num ++;
-        // if (S_CPU( pc_ifu_valid) & S_CPU( pc_ifu_ready)) perf_cnt.module_add(IFU);
-        // if (S_CPU(id_idex_valid) & S_CPU(id_idex_ready)) perf_cnt.module_add(EXU);
-        // if (S_CPU(ex_exls_valid) & S_CPU(ex_exls_ready)) perf_cnt.module_add(LSU);
-        // if (S_CPU(id_idex_valid) & S_CPU(id_idex_ready)) inst_type = (INST_TYPE_ENUM)S_CPU(idu_imm_type);
+        FIND_DPIC(u_WBU); if (wbu_commit()) inst_num ++; // wbu每提交一次commit，表明完整执行一次指令
+        FIND_DPIC(u_IFU); if (ifu_commit()) perf_cnt.module_add(IFU); // IFU每锁存一次pc值，认为IFU调用一次
+        FIND_DPIC(u_EXU); if (exu_commit()) perf_cnt.module_add(EXU);
+        FIND_DPIC(u_LSU); if (lsu_commit()) perf_cnt.module_add(LSU);
+        if (S_CPU(id_idex_valid) & S_CPU(id_idex_ready)) inst_type = (INST_TYPE_ENUM)S_CPU(idu_imm_type);
         // Recoding IFU wait Inst
         if ((int)S_IFU(state) == 1) perf_cnt.ifu_wait_rd();
         else if ((int)S_IFU(state) == 0) perf_cnt.ifu_wait_pc();
         // Recoding LSU wait memory read
-#ifdef PLATFORM_YSYXSOC
-        svSetScope(svGetScopeFromName("TOP.ysyxSoCFull.asic.cpu.cpu.u_LSU"));
-#else
-        svSetScope(svGetScopeFromName("TOP.top.u_LSU"));
-#endif
+        FIND_DPIC(u_LSU);
         if (lsu_r_call()) perf_cnt.lsu_wait_num('r');
         if ((int)S_LSU(state) == 2 | (int)S_LSU(state) == 3) perf_cnt.lsu_wait_cyc('r');
         // Recoding LSU wait memory write
@@ -76,42 +72,37 @@ static void exec_once(VTOP *top, VerilatedContext *contextp, VerilatedVcdC *tfp)
         if ((int)S_LSU(state) == 4 | (int)S_LSU(state) == 6) perf_cnt.lsu_wait_cyc('w');
     }
 
-    // if ((S_CPU(wbu_pc_valid)) & (S_CPU(wbu_pc_ready))) 
-    // {
-    //     pc = S_WBU(pc_r);
-    //     inst_end = true;
-    // }
-//     if ((!S_CPU(wbu_pc_valid)) & (!S_CPU(wbu_pc_ready)) & inst_end)
-//     {
-//         perf_cnt.inst_add(inst_type, current_inst_cyc);
-//         current_inst_cyc = 0;
+    FIND_DPIC(u_WBU);
+    if (wbu_commit())
+    {
+        pc = S_WBU(pc_r);
+        inst_end = true;
+    }
+    else if (inst_end) // 写回后一周期，寄存器才能更新为正确的值
+    {
+        perf_cnt.inst_add(inst_type, current_inst_cyc);
+        current_inst_cyc = 0;
 
-//         inst_end = false;
-//         cpu.pc = S_PCCnt(pc_r);
-//         cpu.npc = S_PCCnt(pc_r);
-// #ifdef PLATFORM_YSYXSOC
-//         svSetScope(svGetScopeFromName("TOP.ysyxSoCFull.asic.cpu.cpu.u_GPR"));
-// #else
-//         svSetScope(svGetScopeFromName("TOP.top.u_GPR"));
-// #endif
-//         get_gpr(cpu.gpr);
-// #ifdef PLATFORM_YSYXSOC
-//         svSetScope(svGetScopeFromName("TOP.ysyxSoCFull.asic.cpu.cpu.u_CSR"));
-// #else
-//         svSetScope(svGetScopeFromName("TOP.top.u_CSR"));
-// #endif
-//         get_csr((int *)(&cpu.csr));
-// #ifdef CONFIG_WATCHPOINT
-//         bool changed = wp_scan();
-//         if (changed)
-//         {
-//             npc_state.state = NPC_STOP;
-//         }
-// #endif
-// #ifdef CONFIG_DIFFTEST
-//         difftest_step(pc);
-// #endif
-//     }
+        inst_end = false;
+        cpu.pc = S_PCCnt(pc_r);
+        cpu.npc = S_PCCnt(pc_r);
+
+        FIND_DPIC(u_GPR);
+        get_gpr(cpu.gpr);
+
+        FIND_DPIC(u_CSR);
+        get_csr((int *)(&cpu.csr));
+#ifdef CONFIG_WATCHPOINT
+        bool changed = wp_scan();
+        if (changed)
+        {
+            npc_state.state = NPC_STOP;
+        }
+#endif
+#ifdef CONFIG_DIFFTEST
+        difftest_step(pc);
+#endif
+    }
 
     if (in_pmem(pc))
     {

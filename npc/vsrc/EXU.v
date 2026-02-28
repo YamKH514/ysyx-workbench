@@ -1,3 +1,5 @@
+`define FOR_SIMULATION_ENV
+
 module EXU(
     input         clk,
     input         rst,
@@ -121,5 +123,13 @@ assign offset =
             idu_exu_pc_src_sel_i[0] ? imm_exu_i : 32'd4;
 
 assign exu_pc_target_pc_o = is_trap ? trap_pc : base + offset;
+
+`ifdef FOR_SIMULATION_ENV
+export "DPI-C" function exu_commit;
+function int exu_commit();
+    if (idu_exu_valid_i & state == S_IDLE) return 1;
+    else return 0;
+endfunction
+`endif
 
 endmodule

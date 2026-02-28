@@ -1,3 +1,5 @@
+`define FOR_SIMULATION_ENV
+
 module IFU(
     input         clk,
     input         rst,
@@ -189,5 +191,13 @@ ICache_top u_ICache_top(
     .br      	(br_o        ),
     .bg      	(bg_i        )
 );
+
+`ifdef FOR_SIMULATION_ENV
+export "DPI-C" function ifu_commit;
+function int ifu_commit();
+    if (pc_ifu_ready_o) return 1;
+    else return 0;
+endfunction
+`endif
 
 endmodule

@@ -1,3 +1,4 @@
+`define FOR_SIMULATION_ENV
 `include "common.vh"
 
 module WBU(
@@ -31,12 +32,6 @@ module WBU(
     input               lsu_wbu_valid_i,
     output              lsu_wbu_ready_o
 );
-
-// 为仿真环境准备
-reg [31:0] pc_r;
-always @(posedge clk) begin
-    if (lsu_wbu_valid_i & state == S_IDLE) pc_r <= lsu_pc_i;
-end
 
 assign wbu_csr_func3_o = lsu_wbu_csr_func3_i;
 assign wbu_csr_we_o = lsu_wbu_csr_we_i & S_BUSY;
@@ -87,5 +82,19 @@ assign gpr_w_data = (wbu_wd_sel == `GPR_WD_SEL_ALU_RES)  ? lsu_wbu_res_i:
                     (wbu_wd_sel == `GPR_WD_SEL_MEM_DATA) ? lsu_wbu_rdata_i:
                     (wbu_wd_sel == `GPR_WD_SEL_CSR_DATA) ? lsu_wbu_csr_rdata_i:
                     32'b0;
+
+`ifdef FOR_SIMULATION_ENV
+reg [31:0] pc_r;
+always @(posedge clk) begin
+    if (lsu_wbu_valid_i & state == S_IDLE) pc_r <= lsu_pc_i;
+end
+
+export "DPI-C" function wbu_commit;
+function int wbu_commit();
+    if (lsu_wbu_valid_i & lsu_wbu_ready_o) return 1;
+    else return 0;
+endfunction
+
+`endif
 
 endmodule
