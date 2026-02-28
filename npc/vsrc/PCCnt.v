@@ -19,8 +19,10 @@ assign pc_cnt_pc_o = pc_r;
 always @(posedge clk) begin
     if (rst) begin
         pc_r <= RESET_PC;
+    end else if (need_flush_i) begin
+        pc_r <= pc_target_pc_i;
     end else if (pc_ifu_valid_o & pc_ifu_ready_i) begin
-        pc_r <= need_flush_i ? pc_target_pc_i : pc_r + 4;
+        pc_r <= pc_r + 4;
     end
 end
 
