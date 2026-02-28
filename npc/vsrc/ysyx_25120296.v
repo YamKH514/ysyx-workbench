@@ -302,7 +302,8 @@ wire if_ifid_valid;
 wire if_ifid_ready;
 wire ifid_id_valid;
 wire ifid_id_ready;
-wire id_idex_valid;
+wire id_dhdu_valid;
+wire dhdu_idex_valid;
 wire id_idex_ready;
 wire idex_ex_valid;
 wire idex_ex_ready;
@@ -410,8 +411,21 @@ IDU u_IDU(
     .idu_exu_pc_src_sel_o       (idu_idex_pc_src_sel    ),
     .ifu_idu_valid_i            (ifid_id_valid          ),
     .ifu_idu_ready_o            (ifid_id_ready          ),
-    .idu_exu_valid_o            (id_idex_valid          ),
+    .idu_exu_valid_o            (id_dhdu_valid          ),
     .idu_exu_ready_i            (id_idex_ready          )
+);
+
+DHDU u_DHDU(
+    .idu_inst_type_i   	(idu_idex_inst_type ),
+    .idu_gpr_rs        	(idu_idex_inst[17:8]),
+    .idex_rd_i         	(idex_exu_wbu_data[6:2]),
+    .idex_we_i         	(idex_exu_wbu_data[7]),
+    .exls_rd_i         	(exls_lsu_wbu_data[6:2]),
+    .exls_we_i         	(exls_lsu_wbu_data[7]),
+    .lswb_rd_i         	(lswb_wbu_data[6:2]),
+    .lswb_we_i         	(lswb_wbu_data[7]),
+    .id_dhdu_valid_i   	(id_dhdu_valid      ),
+    .dhdu_idex_valid_o 	(dhdu_idex_valid    )
 );
 
 assign idu_idex_src_sel = {idu_idex_src2_sel, idu_idex_src1_sel};
@@ -442,7 +456,7 @@ ID_EX u_ID_EX(
     .wbu_csr_waddr_o    (idex_exu_wbu_csr_waddr ),
     .wbu_csr_we_o    	(idex_exu_wbu_csr_we    ),
     .pc_src_sel_o    	(idex_exu_pc_src_sel    ),
-    .id_idex_valid_i 	(id_idex_valid          ),
+    .id_idex_valid_i 	(dhdu_idex_valid        ),
     .id_idex_ready_o 	(id_idex_ready          ),
     .idex_ex_valid_o 	(idex_ex_valid          ),
     .idex_ex_ready_i 	(idex_ex_ready          )
