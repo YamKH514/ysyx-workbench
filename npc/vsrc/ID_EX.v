@@ -91,6 +91,19 @@ always @(posedge clk) begin
         wbu_csr_we_r <= wbu_csr_we_i;
         pc_src_sel_r <= pc_src_sel_i;
         imm_res_r <= imm_res_i;
+    end else if (need_flush_i | (idex_ex_valid_o & idex_ex_ready_i)) begin
+        pc_r <= 'b0;
+        fun_r <= 'b0;
+        src_sel_r <= 'b0;
+        rdata_r <= 'b0;
+        lsu_data_r <= 'b0;
+        wbu_data_r <= 'b0;
+        wbu_csr_rdata_r <= 'b0;
+        wbu_csr_func3_r <= 'b0;
+        wbu_csr_waddr_r <= 'b0;
+        wbu_csr_we_r <= 'b0;
+        pc_src_sel_r <= 'b0;
+        imm_res_r <= 'b0;
     end
 end
 

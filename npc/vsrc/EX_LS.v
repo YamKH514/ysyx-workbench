@@ -76,6 +76,16 @@ always @(posedge clk) begin
         wbu_csr_waddr_r <= wbu_csr_waddr_i;
         wbu_csr_we_r <= wbu_csr_we_i;
         wbu_data_r <= wbu_data_i;
+    end else if (exls_ls_valid_o & exls_ls_ready_i) begin
+        pc_r <= 'b0;
+        res_r <= 'b0;
+        data_r <= 'b0;
+        gpr_rdata_r <= 'b0;
+        wbu_csr_rdata_r <= 'b0;
+        wbu_csr_func3_r <= 'b0;
+        wbu_csr_waddr_r <= 'b0;
+        wbu_csr_we_r <= 'b0;
+        wbu_data_r <= 'b0;
     end
 end
 
