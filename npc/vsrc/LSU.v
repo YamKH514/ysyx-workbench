@@ -1,6 +1,4 @@
-`define FOR_SIMULATION_ENV
 `include "common.vh"
-
 module LSU(
     input         clk,
     input         rst,
@@ -27,7 +25,10 @@ module LSU(
     output [ 2:0] lsu_wbu_csr_func3_o,
     output [11:0] lsu_wbu_csr_waddr_o,
     output [31:0] lsu_wbu_csr_wdata_o,
-
+`ifdef FOR_SIMULATION_ENV
+    input  [31:0]   target_pc_i,
+    output [31:0]   target_pc_o,
+`endif
     input         exu_lsu_valid_i,
     output        exu_lsu_ready_o,
 
@@ -284,6 +285,8 @@ assign wdata_aligned =  {32{w_byte_off == 2'b00}} & exu_lsu_gpr_rdata_i[63-:32] 
 assign wstrb_aligned = lsu_w_mask_r << w_byte_off;
 
 `ifdef FOR_SIMULATION_ENV
+assign target_pc_o = target_pc_i;
+
 export "DPI-C" function lsu_w_call;
 function int lsu_w_call();
     if (state == S_IDLE && exu_lsu_valid_i && lsu_we_r) return 1;

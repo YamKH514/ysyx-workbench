@@ -1,6 +1,4 @@
-`define FOR_SIMULATION_ENV
 `include "common.vh"
-
 module WBU(
     input               clk,
     input               rst,
@@ -28,7 +26,9 @@ module WBU(
     output      [31:0]  wbu_csr_mepc_o,
     output reg          wbu_csr_ecall_o,
     output reg          wbu_csr_mret_o,
-
+`ifdef FOR_SIMULATION_ENV
+    input  [31:0]   target_pc_i,
+`endif
     input               lsu_wbu_valid_i,
     output              lsu_wbu_ready_o
 );
@@ -85,8 +85,12 @@ assign gpr_w_data = (wbu_wd_sel == `GPR_WD_SEL_ALU_RES)  ? lsu_wbu_res_i:
 
 `ifdef FOR_SIMULATION_ENV
 reg [31:0] pc_r;
+reg [31:0] target_pc_r;
 always @(posedge clk) begin
-    if (lsu_wbu_valid_i & state == S_IDLE) pc_r <= lsu_pc_i;
+    if (lsu_wbu_valid_i & state == S_IDLE) begin
+        pc_r <= lsu_pc_i;
+        target_pc_r <= target_pc_i;
+    end
 end
 
 export "DPI-C" function wbu_commit;

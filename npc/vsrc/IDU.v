@@ -1,5 +1,4 @@
 `include "common.vh"
-
 module IDU(
     input         clk,
     input         rst,

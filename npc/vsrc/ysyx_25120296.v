@@ -1,3 +1,4 @@
+`include "common.vh"
 module ysyx_25120296(
     input           clock,
     input           reset,
@@ -322,6 +323,12 @@ wire ls_lswb_ready;
 wire lswb_wb_valid;
 wire lswb_wb_ready;
 
+`ifdef FOR_SIMULATION_ENV
+wire [31:0] exls_ls_target_pc;
+wire [31:0] ls_lswb_target_pc;
+wire [31:0] lswb_wb_target_pc;
+`endif
+
 PCCnt #(.RESET_PC 	(32'h30000000  )) u_PCCnt(
     .clk                (clock              ),
     .rst                (reset              ),
@@ -525,6 +532,10 @@ EX_LS u_EX_LS(
     .wbu_csr_waddr_o 	(exls_lsu_wbu_csr_waddr ),
     .wbu_csr_we_o    	(exls_lsu_wbu_csr_we    ),
     .wbu_data_o      	(exls_lsu_wbu_data      ),
+`ifdef FOR_SIMULATION_ENV
+    .target_pc_i        (exu_pc_target_pc       ),
+    .target_pc_o        (exls_ls_target_pc      ),
+`endif
     .ex_exls_valid_i 	(ex_exls_valid          ),
     .ex_exls_ready_o 	(ex_exls_ready          ),
     .exls_ls_valid_o 	(exls_ls_valid          ),
@@ -552,6 +563,10 @@ LSU u_LSU(
     .lsu_wbu_csr_func3_o        (lsu_lswb_csr_func3     ),
     .lsu_wbu_csr_waddr_o        (lsu_lswb_csr_waddr     ),
     .lsu_wbu_csr_wdata_o        (lsu_lswb_csr_wdata     ),
+`ifdef FOR_SIMULATION_ENV
+    .target_pc_i                (exls_ls_target_pc      ),
+    .target_pc_o                (ls_lswb_target_pc      ),
+`endif
     .exu_lsu_valid_i      	    (exls_ls_valid          ),
     .exu_lsu_ready_o      	    (exls_ls_ready          ),
     .lsu_wbu_valid_o      	    (ls_lswb_valid          ),
@@ -611,6 +626,10 @@ LS_WB u_LS_WB(
     .csr_func3_o     	(lswb_wbu_csr_func3 ),
     .csr_waddr_o     	(lswb_wbu_csr_waddr ),
     .csr_wdata_o     	(lswb_wbu_csr_wdata ),
+`ifdef FOR_SIMULATION_ENV
+    .target_pc_i        (ls_lswb_target_pc  ),
+    .target_pc_o        (lswb_wb_target_pc  ),
+`endif
     .ls_lswb_valid_i 	(ls_lswb_valid      ),
     .ls_lswb_ready_o 	(ls_lswb_ready      ),
     .lswb_wb_valid_o 	(lswb_wb_valid      ),
@@ -639,6 +658,9 @@ WBU u_WBU(
     .wbu_csr_mepc_o         (wbu_csr_mepc       ),
     .wbu_csr_ecall_o        (wbu_csr_ecall      ),
     .wbu_csr_mret_o         (wbu_csr_mret       ),
+`ifdef FOR_SIMULATION_ENV
+    .target_pc_i            (lswb_wb_target_pc  ),
+`endif
     .lsu_wbu_valid_i        (lswb_wb_valid      ),
     .lsu_wbu_ready_o        (lswb_wb_ready      )
 );

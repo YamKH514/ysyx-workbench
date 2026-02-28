@@ -1,5 +1,4 @@
-`define FOR_SIMULATION_ENV
-
+`include "common.vh"
 module EXU(
     input         clk,
     input         rst,

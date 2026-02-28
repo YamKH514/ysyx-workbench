@@ -76,6 +76,8 @@ static void exec_once(VTOP *top, VerilatedContext *contextp, VerilatedVcdC *tfp)
     if (wbu_commit())
     {
         pc = S_WBU(pc_r);
+        cpu.pc = S_PCCnt(target_pc_r);
+        cpu.npc = S_PCCnt(target_pc_r);
         inst_end = true;
     }
     else if (inst_end) // 写回后一周期，寄存器才能更新为正确的值
@@ -84,12 +86,8 @@ static void exec_once(VTOP *top, VerilatedContext *contextp, VerilatedVcdC *tfp)
         current_inst_cyc = 0;
 
         inst_end = false;
-        cpu.pc = S_PCCnt(pc_r);
-        cpu.npc = S_PCCnt(pc_r);
-
         FIND_DPIC(u_GPR);
         get_gpr(cpu.gpr);
-
         FIND_DPIC(u_CSR);
         get_csr((int *)(&cpu.csr));
 #ifdef CONFIG_WATCHPOINT

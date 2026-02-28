@@ -1,3 +1,4 @@
+`include "common.vh"
 module EX_LS(
     input           clk,
                     rst,
@@ -21,7 +22,10 @@ module EX_LS(
     output [11:0]   wbu_csr_waddr_o,
     output          wbu_csr_we_o,
     output [ 9:0]   wbu_data_o,
-
+`ifdef FOR_SIMULATION_ENV
+    input  [31:0]   target_pc_i,
+    output [31:0]   target_pc_o,
+`endif
     input           ex_exls_valid_i,
     output          ex_exls_ready_o,
     output          exls_ls_valid_o,
@@ -98,5 +102,17 @@ always @(posedge clk) begin
         endcase
     end
 end
+
+`ifdef FOR_SIMULATION_ENV
+reg [31:0] target_pc_r;
+assign target_pc_o = target_pc_r;
+always @(posedge clk) begin
+    if (rst) begin
+        target_pc_r <= 'b0;
+    end else if (ex_exls_valid_i & ex_exls_ready_o) begin
+        target_pc_r <= target_pc_i;
+    end
+end
+`endif
 
 endmodule

@@ -1,3 +1,4 @@
+`include "common.vh"
 module LS_WB(
     input           clk,
                     rst,
@@ -21,7 +22,10 @@ module LS_WB(
     output [ 2:0] csr_func3_o,
     output [11:0] csr_waddr_o,
     output [31:0] csr_wdata_o,
-
+`ifdef FOR_SIMULATION_ENV
+    input  [31:0]   target_pc_i,
+    output [31:0]   target_pc_o,
+`endif
     input           ls_lswb_valid_i,
     output          ls_lswb_ready_o,
     output          lswb_wb_valid_o,
@@ -98,5 +102,17 @@ always @(posedge clk) begin
         endcase
     end
 end
+
+`ifdef FOR_SIMULATION_ENV
+reg [31:0] target_pc_r;
+assign target_pc_o = target_pc_r;
+always @(posedge clk) begin
+    if (rst) begin
+        target_pc_r <= 'b0;
+    end else if (ls_lswb_valid_i & ls_lswb_ready_o) begin
+        target_pc_r <= target_pc_i;
+    end
+end
+`endif
 
 endmodule
