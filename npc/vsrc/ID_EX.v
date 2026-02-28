@@ -78,7 +78,7 @@ always @(posedge clk) begin
         wbu_csr_we_r <= 'b0;
         pc_src_sel_r <= 'b0;
         imm_res_r <= 'b0;
-    end else begin
+    end else if (!need_flush_i & id_idex_valid_i & id_idex_ready_o) begin
         pc_r <= pc_i;
         fun_r <= fun_i;
         src_sel_r <= src_sel_i;
