@@ -84,12 +84,8 @@ wire need_cache = (pc_i[31-:4] == 4'ha && pc_i[27-:4] < 4'h9) | (pc_i[31-:4] == 
 reg  need_cache_r;
 
 always @(posedge clk) begin
-    if (rst) begin
-        need_cache_r <= 0;
-    end else if (state == S_IDLE) begin
-        if (pc_ifu_valid_i & pc_ifu_ready_o) need_cache_r <= need_cache;
-        if (pc_ifu_valid_i & pc_ifu_ready_o & need_cache) $display("need ICache\n");
-    end
+    if (rst) need_cache_r <= 0;
+    else if (state == S_IDLE & pc_ifu_valid_i) need_cache_r <= need_cache;
 end
 
 assign pc_ifu_ready_o = ifu_idu_valid_o && ifu_idu_ready_i;

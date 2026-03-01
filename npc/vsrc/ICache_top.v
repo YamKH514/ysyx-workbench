@@ -134,7 +134,6 @@ always @(posedge clk) begin
             end
             S_READ_CACHE: begin
                 if (cache_valid && cache_ready) state <= (cache_datav) ? S_GET_CACHE : S_WAIT_ARB;
-                if (cache_valid && cache_ready && cache_datav) $display("ICache Hit\n");
             end
             S_GET_CACHE: begin
                 if (pvalid && pready) state <= S_IDLE;
