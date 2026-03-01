@@ -25,8 +25,6 @@ bool g_print_step = false;
 CPU_state cpu = {};
 static uint32_t pc = 0;
 static bool inst_end = false;
-static INST_TYPE_ENUM inst_type;
-static int current_inst_cyc = 0;
 
 static void trace_and_difftest(VTOP *top, char *logbuf)
 {
@@ -54,12 +52,11 @@ static void exec_once(VTOP *top, VerilatedContext *contextp, VerilatedVcdC *tfp)
 
     // Perf CNT
     if (!CPU_RESET) {
-        current_inst_cyc ++;
         FIND_DPIC(u_WBU); if (wbu_commit()) inst_num ++; // wbu每提交一次commit，表明完整执行一次指令
         FIND_DPIC(u_IFU); if (ifu_commit()) perf_cnt.module_add(IFU); // IFU每锁存一次pc值，认为IFU调用一次
         FIND_DPIC(u_EXU); if (exu_commit()) perf_cnt.module_add(EXU);
         FIND_DPIC(u_LSU); if (lsu_commit()) perf_cnt.module_add(LSU);
-        FIND_DPIC(u_IDU); if (idu_commit()) inst_type = (INST_TYPE_ENUM)idu_inst_type();
+        FIND_DPIC(u_IDU); if (idu_commit()) perf_cnt.inst_add((INST_TYPE_ENUM)idu_inst_type());
         // Recoding IFU wait Inst
         if ((int)S_IFU(state) == 1) perf_cnt.ifu_wait_rd();
         else if ((int)S_IFU(state) == 0) perf_cnt.ifu_wait_pc();
@@ -71,7 +68,6 @@ static void exec_once(VTOP *top, VerilatedContext *contextp, VerilatedVcdC *tfp)
         if (lsu_w_call()) perf_cnt.lsu_wait_num('w');
         if ((int)S_LSU(state) == 4 | (int)S_LSU(state) == 6) perf_cnt.lsu_wait_cyc('w');
     }
-
     FIND_DPIC(u_WBU);
     if (wbu_commit())
     {
@@ -82,9 +78,6 @@ static void exec_once(VTOP *top, VerilatedContext *contextp, VerilatedVcdC *tfp)
     }
     else if (inst_end) // 写回后一周期，寄存器才能更新为正确的值
     {
-        perf_cnt.inst_add(inst_type, current_inst_cyc);
-        current_inst_cyc = 0;
-
         inst_end = false;
         FIND_DPIC(u_GPR);
         get_gpr(cpu.gpr);

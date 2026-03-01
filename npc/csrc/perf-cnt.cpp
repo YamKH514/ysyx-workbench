@@ -21,11 +21,9 @@ void Perf_cnt::module_add(MODULE_ENUM module) {
     this->__module[module] ++;
 }
 
-void Perf_cnt::inst_add(INST_TYPE_ENUM inst_type, int num) {
+void Perf_cnt::inst_add(INST_TYPE_ENUM inst_type) {
     this->__inst[inst_type].num ++;
-    this->__inst[inst_type].cyc += (unsigned long long)num;
     this->__total_inst.num ++;
-    this->__total_inst.cyc += (unsigned long long)num;
 }
 
 unsigned long long Perf_cnt::module(MODULE_ENUM module) {
