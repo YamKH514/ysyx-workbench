@@ -176,7 +176,7 @@ end
 
 //* IF use burst, need CACHE_M config
 ICache #(
-    .CACHE_M 	(4  ),
+    .CACHE_M 	(3  ),
     .CACHE_N 	(4  ))
 u_ICache(
     .clk            	(clk            ),
