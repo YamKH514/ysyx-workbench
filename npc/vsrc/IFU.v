@@ -52,12 +52,11 @@ module IFU(
     input         bg_i
 );
 
-reg [31:0]  ifu_current_pc_r;
 reg [31:0]  ic_data_r;
 
 import "DPI-C" function void mem_tracer_read(input int addr,input int data, input int is_inst);
 
-wire [29:0] ic_paddr = ifu_current_pc_r[31:2];
+wire [29:0] ic_paddr = pc_i[31:2];
 wire [31:0] ic_pdata;
 wire        ic_pvalid = state == S_WAIT_IC;
 wire        ic_pready;
@@ -92,10 +91,10 @@ always @(posedge clk) begin
     end
 end
 
-assign pc_ifu_ready_o = (state == S_IDLE) && pc_ifu_valid_i;
+assign pc_ifu_ready_o = ifu_idu_valid_o && ifu_idu_ready_i;
 assign ifu_idu_valid_o= (state == S_WAIT_IDU) & !need_flush_i;
 
-assign ifu_pc_o = ifu_current_pc_r;
+assign ifu_pc_o = pc_i;
 assign ifu_inst_o= ic_data_r;
 
 always @(posedge clk) begin
@@ -107,16 +106,8 @@ always @(posedge clk) begin
 end
 
 always @(posedge clk) begin
-    if (rst) begin
-        ifu_current_pc_r <= 32'b0;
-    end else if (pc_ifu_valid_i & pc_ifu_ready_o) begin
-        ifu_current_pc_r <= pc_i;
-    end
-end
-
-always @(posedge clk) begin
     if (ic_pvalid & ic_pready & (state == S_WAIT_IC)) begin
-        mem_tracer_read(ifu_current_pc_r, ic_pdata, 32'b1);
+        mem_tracer_read(pc_i, ic_pdata, 32'b1);
     end
 end
 

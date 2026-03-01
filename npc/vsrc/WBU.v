@@ -98,7 +98,6 @@ function int wbu_commit();
     if (lsu_wbu_valid_i & lsu_wbu_ready_o) return 1;
     else return 0;
 endfunction
-
 `endif
 
 endmodule
