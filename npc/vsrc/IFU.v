@@ -89,7 +89,7 @@ always @(posedge clk) begin
 end
 
 assign pc_ifu_ready_o = ifu_idu_valid_o && ifu_idu_ready_i;
-assign ifu_idu_valid_o= (state == S_WAIT_IDU) & !need_flush_i;
+assign ifu_idu_valid_o= (state == S_WAIT_IDU) & !(need_flush_i | need_flush_r);
 
 assign ifu_pc_o = pc_i;
 assign ifu_inst_o= ic_data_r;
@@ -119,7 +119,7 @@ always @(posedge clk) begin
             end
             S_WAIT_IC: begin
                 if (ic_pvalid & ic_pready) begin
-                    state <= need_flush_r ? S_IDLE : S_WAIT_IDU;
+                    state <= (need_flush_i | need_flush_r) ? S_IDLE : S_WAIT_IDU;
                 end
             end
             S_WAIT_IDU: begin
