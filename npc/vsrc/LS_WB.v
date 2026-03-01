@@ -76,7 +76,7 @@ always @(posedge clk) begin
         csr_func3_r <= csr_func3_i;
         csr_waddr_r <= csr_waddr_i;
         csr_wdata_r <= csr_wdata_i;
-    end else if (ls_lswb_valid_i & ls_lswb_ready_o) begin
+    end else if (lswb_wb_valid_o & lswb_wb_ready_i) begin
         pc_r <= 'b0;
         res_r <= 'b0;
         rdata_r <= 'b0;
