@@ -58,7 +58,7 @@ assign exu_lsu_wbu_csr_waddr_o = idu_exu_lsu_wbu_csr_waddr_i;
 assign exu_lsu_wbu_csr_we_o = idu_exu_wbu_csr_we_i;
 assign exu_lsu_wbu_data_o = idu_exu_wbu_data_i;
 
-assign need_flush_o = (state == S_WAIT_LSU) & (exu_pc_target_pc_o != idu_pc_i + 4);
+assign need_flush_o = (exu_lsu_valid_o & exu_lsu_ready_i) & (exu_pc_target_pc_o != idu_pc_i + 4);
 
 assign idu_exu_ready_o = exu_lsu_valid_o & exu_lsu_ready_i;
 assign exu_lsu_valid_o = (state == S_WAIT_LSU);
