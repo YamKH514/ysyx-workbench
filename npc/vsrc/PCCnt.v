@@ -26,6 +26,6 @@ always @(posedge clk) begin
     end
 end
 
-assign pc_ifu_valid_o = !rst & !need_flush_i;
+assign pc_ifu_valid_o = !rst;
 
 endmodule
