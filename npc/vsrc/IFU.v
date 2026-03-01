@@ -80,7 +80,7 @@ localparam S_WAIT_IDU  = 2'd2;
 
 reg [S_W-1:0]   state;
 
-wire need_cache = pc_i[31-:4] == 4'ha && pc_i[27-:4] < 4'h9;
+wire need_cache = (pc_i[31-:4] == 4'ha && pc_i[27-:4] < 4'h9) | (pc_i[31-:4] == 4'h3);
 reg  need_cache_r;
 
 always @(posedge clk) begin
