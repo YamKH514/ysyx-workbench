@@ -58,35 +58,29 @@ assign exu_lsu_wbu_csr_waddr_o = idu_exu_lsu_wbu_csr_waddr_i;
 assign exu_lsu_wbu_csr_we_o = idu_exu_wbu_csr_we_i;
 assign exu_lsu_wbu_data_o = idu_exu_wbu_data_i;
 
-assign need_flush_o = state == S_FLUSH;
+assign need_flush_o = state == S_WAIT_LSU;
 
 assign idu_exu_ready_o = exu_lsu_valid_o & exu_lsu_ready_i;
-assign exu_lsu_valid_o = (state == S_WAIT_LSU);
+assign exu_lsu_valid_o = (state == S_WAIT_LSU) & (exu_pc_target_pc_o != idu_pc_i + 4);
 
 localparam S_W        = 2;
 localparam S_IDLE     = 2'd0;
 localparam S_WAIT_LSU = 2'd1;
-localparam S_FLUSH    = 2'd2;
 
-reg [S_W-1:0] state, target_state;
+reg [S_W-1:0] state;
 
 always @(posedge clk) begin
     if (rst) begin
         state <= S_IDLE;
-        target_state <= S_IDLE;
     end else begin
         case (state)
             S_IDLE: begin
                 if (idu_exu_valid_i) begin
                     state <= S_WAIT_LSU;
-                    target_state <= (exu_pc_target_pc_o != idu_pc_i + 4) ? S_FLUSH : S_IDLE;
                 end
             end
             S_WAIT_LSU: begin
-                if (exu_lsu_valid_o & exu_lsu_ready_i) state <= target_state;
-            end
-            S_FLUSH: begin
-                state <= S_IDLE;
+                if (exu_lsu_valid_o & exu_lsu_ready_i) state <= S_IDLE;
             end
             default: begin
                 state <= S_IDLE;
