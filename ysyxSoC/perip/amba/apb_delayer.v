@@ -1,4 +1,4 @@
-`define NEED_DELAY
+// `define NEED_DELAY
 
 module apb_delayer(
   input         clock,
