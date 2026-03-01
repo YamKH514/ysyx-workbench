@@ -88,6 +88,7 @@ always @(posedge clk) begin
         need_cache_r <= 0;
     end else if (state == S_IDLE) begin
         if (pc_ifu_valid_i & pc_ifu_ready_o) need_cache_r <= need_cache;
+        if (pc_ifu_valid_i & pc_ifu_ready_o & need_cache) $display("need ICache\n");
     end
 end
 
