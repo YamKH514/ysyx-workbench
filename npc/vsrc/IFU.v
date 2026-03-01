@@ -116,7 +116,7 @@ always @(posedge clk) begin
     else begin
         case (state)
             S_IDLE: begin
-                if (!need_flush_i & pc_ifu_valid_i & pc_ifu_ready_o) begin
+                if (!need_flush_i & pc_ifu_valid_i) begin
                     state <= S_WAIT_IC;
                 end
             end
