@@ -43,11 +43,11 @@ module EXU(
 
 wire [31:0] rd1;
 wire [31:0] rd2;
-wire [ 1:0] alu_src1_sel_r;
-wire [ 1:0] alu_src2_sel_r;
+wire [ 1:0] alu_src1_sel;
+wire [ 1:0] alu_src2_sel;
 
 assign {rd2, rd1} = idu_exu_rdata_i;
-assign {alu_src2_sel_r, alu_src1_sel_r} = idu_exu_src_sel_i;
+assign {alu_src2_sel, alu_src1_sel} = idu_exu_src_sel_i;
 
 assign exu_pc_o = idu_pc_i;
 assign exu_lsu_data_o = idu_exu_lsu_data_i;
@@ -68,21 +68,25 @@ localparam S_IDLE     = 2'd0;
 localparam S_WAIT_LSU = 2'd1;
 localparam S_FLUSH    = 2'd2;
 
-reg [S_W-1:0] state;
+reg [S_W-1:0] state, target_state;
 
 always @(posedge clk) begin
     if (rst) begin
         state <= S_IDLE;
+        target_state <= S_IDLE;
     end else begin
         case (state)
             S_IDLE: begin
-                if (idu_exu_valid_i) state <= (exu_pc_target_pc_o != idu_pc_i + 4) ? S_FLUSH : S_WAIT_LSU;
-            end
-            S_FLUSH: begin
-                state <= S_WAIT_LSU;
+                if (idu_exu_valid_i) begin
+                    state <= S_WAIT_LSU;
+                    target_state <= (exu_pc_target_pc_o != idu_pc_i + 4) ? S_FLUSH : S_IDLE;
+                end
             end
             S_WAIT_LSU: begin
-                if (exu_lsu_valid_o & exu_lsu_ready_i) state <= S_IDLE;
+                if (exu_lsu_valid_o & exu_lsu_ready_i) state <= target_state;
+            end
+            S_FLUSH: begin
+                state <= S_IDLE;
             end
             default: begin
                 state <= S_IDLE;
@@ -97,8 +101,8 @@ ALU u_ALU(
     .ReadData1  	(rd1            ),
     .ReadData2  	(rd2            ),
     .ImmExt     	(imm_exu_i      ),
-    .ALUSrcSel1 	(alu_src1_sel_r ),
-    .ALUSrcSel2 	(alu_src2_sel_r ),
+    .ALUSrcSel1 	(alu_src1_sel   ),
+    .ALUSrcSel2 	(alu_src2_sel   ),
     .ALURes     	(exu_lsu_res_o  )
 );
 

@@ -105,28 +105,28 @@ void _ssbl() {
   _trm_init();
 }
 
-// static void print_info() {
-//   uint32_t mvendorid;
-//   uint32_t marchid;
-//   uint32_t seg7_val = 0;
-//   asm volatile("csrr %0, mvendorid" : "=r"(mvendorid):);
-//   asm volatile("csrr %0, marchid" : "=r"(marchid):);
-//   for(int i = 3; i >= 0; i--){
-//       putch((char)((mvendorid >> i*8) & 0xFF));
-//   }
-//   printf("_%d\n", marchid);
+static void print_info() {
+  uint32_t mvendorid;
+  uint32_t marchid;
+  uint32_t seg7_val = 0;
+  asm volatile("csrr %0, mvendorid" : "=r"(mvendorid):);
+  asm volatile("csrr %0, marchid" : "=r"(marchid):);
+  for(int i = 3; i >= 0; i--){
+      putch((char)((mvendorid >> i*8) & 0xFF));
+  }
+  printf("_%d\n", marchid);
 
-//     asm volatile("csrr %0, marchid" : "=r"(marchid):);
-//     seg7_val |= ((marchid / 10000000) % 10) << 28;
-//     seg7_val |= ((marchid / 1000000)  % 10) << 24;
-//     seg7_val |= ((marchid / 100000)   % 10) << 20;
-//     seg7_val |= ((marchid / 10000)    % 10) << 16;
-//     seg7_val |= ((marchid / 1000)     % 10) << 12;
-//     seg7_val |= ((marchid / 100)      % 10) << 8;
-//     seg7_val |= ((marchid / 10)       % 10) << 4;
-//     seg7_val |= (marchid % 10);
-//     *(volatile uint32_t *)(GPIO_CTRL + GPIO_SEG7) = seg7_val;
-// }
+    asm volatile("csrr %0, marchid" : "=r"(marchid):);
+    seg7_val |= ((marchid / 10000000) % 10) << 28;
+    seg7_val |= ((marchid / 1000000)  % 10) << 24;
+    seg7_val |= ((marchid / 100000)   % 10) << 20;
+    seg7_val |= ((marchid / 10000)    % 10) << 16;
+    seg7_val |= ((marchid / 1000)     % 10) << 12;
+    seg7_val |= ((marchid / 100)      % 10) << 8;
+    seg7_val |= ((marchid / 10)       % 10) << 4;
+    seg7_val |= (marchid % 10);
+    *(volatile uint32_t *)(GPIO_CTRL + GPIO_SEG7) = seg7_val;
+}
 
 void halt(int code) {
   npc_trap(code);
@@ -136,7 +136,7 @@ void halt(int code) {
 
 void _trm_init() {
   uart_init();
-  // print_info();
+  print_info();
   int ret = main(mainargs);
   halt(ret);
 }
