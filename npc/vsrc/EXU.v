@@ -1,15 +1,16 @@
+`include "common.vh"
 module EXU(
     input         clk,
     input         rst,
 
     input  [31:0] idu_pc_i,
-    input  [31:0] idu_inst_i,
     output [31:0] exu_pc_o,
-    output [31:0] exu_inst_o,
 
     input  [ 8:0] idu_exu_lsu_data_i,
-    input  [31:0] idu_exu_wbu_csr_rdata_i,
     input  [ 9:0] idu_exu_wbu_data_i,
+    input  [31:0] idu_exu_wbu_csr_rdata_i,
+    input  [ 2:0] idu_exu_lsu_wbu_csr_func3_i,
+    input  [11:0] idu_exu_lsu_wbu_csr_waddr_i,
     input         idu_exu_wbu_csr_we_i,
     input  [ 3:0] idu_exu_pc_src_sel_i,
 
@@ -18,14 +19,20 @@ module EXU(
     input  [ 3:0] idu_exu_src_sel_i,
     input  [31:0] imm_exu_i,
 
+    input  [31:0] csr_r_mtvec_i,
+    input  [31:0] csr_r_mepc_i,
+
     output [31:0] exu_lsu_res_o,
     output [ 8:0] exu_lsu_data_o,
     output [63:0] exu_lsu_gpr_rdata_o,
     output [31:0] exu_lsu_wbu_csr_rdata_o,
+    output [ 2:0] exu_lsu_wbu_csr_func3_o,
+    output [11:0] exu_lsu_wbu_csr_waddr_o,
     output        exu_lsu_wbu_csr_we_o,
     output [ 9:0] exu_lsu_wbu_data_o,
-    output [31:0] exu_lsu_pc_imm_o,
-    output [ 3:0] exu_lsu_pc_src_sel_o,
+    output [31:0] exu_pc_target_pc_o,
+
+    output        need_flush_o,
 
     input         idu_exu_valid_i,
     output        idu_exu_ready_o,
@@ -34,74 +41,33 @@ module EXU(
     input         exu_lsu_ready_i
 );
 
-// Pipeline Reg
-reg [31:0] pc_r;
-reg [31:0] inst_r;
-reg [ 5:0] alu_fun_r;
-reg [31:0] rd1_r;
-reg [31:0] rd2_r;
-reg [31:0] imm_r;
-reg [ 1:0] alu_src1_sel_r;
-reg [ 1:0] alu_src2_sel_r;
+wire [31:0] rd1;
+wire [31:0] rd2;
+wire [ 1:0] alu_src1_sel;
+wire [ 1:0] alu_src2_sel;
 
-reg [ 8:0] exu_lsu_data_r;
-reg [63:0] exu_lsu_gpr_rdata_r;
-reg [31:0] idu_exu_wbu_csr_rdata_r;
-reg [ 9:0] idu_exu_wbu_data_r;
-reg        idu_exu_wbu_csr_we_r;
-reg [ 3:0] idu_exu_pc_src_sel_r;
+assign {rd2, rd1} = idu_exu_rdata_i;
+assign {alu_src2_sel, alu_src1_sel} = idu_exu_src_sel_i;
 
-assign exu_pc_o = pc_r;
-assign exu_inst_o = inst_r;
-assign exu_lsu_data_o = exu_lsu_data_r;
-assign exu_lsu_gpr_rdata_o = exu_lsu_gpr_rdata_r;
-assign exu_lsu_wbu_csr_rdata_o = idu_exu_wbu_csr_rdata_r;
-assign exu_lsu_wbu_csr_we_o = idu_exu_wbu_csr_we_r;
-assign exu_lsu_wbu_data_o = idu_exu_wbu_data_r;
-assign exu_lsu_pc_imm_o = imm_r;
-assign exu_lsu_pc_src_sel_o = idu_exu_pc_src_sel_r;
+assign exu_pc_o = idu_pc_i;
+assign exu_lsu_data_o = idu_exu_lsu_data_i;
+assign exu_lsu_gpr_rdata_o = idu_exu_rdata_i;
+assign exu_lsu_wbu_csr_rdata_o = idu_exu_wbu_csr_rdata_i;
+assign exu_lsu_wbu_csr_func3_o = idu_exu_lsu_wbu_csr_func3_i;
+assign exu_lsu_wbu_csr_waddr_o = idu_exu_lsu_wbu_csr_waddr_i;
+assign exu_lsu_wbu_csr_we_o = idu_exu_wbu_csr_we_i;
+assign exu_lsu_wbu_data_o = idu_exu_wbu_data_i;
 
-assign idu_exu_ready_o = (state == S_IDLE) && idu_exu_valid_i;
+assign need_flush_o = (exu_lsu_valid_o & exu_lsu_ready_i) & (exu_pc_target_pc_o != idu_pc_i + 4);
+
+assign idu_exu_ready_o = exu_lsu_valid_o & exu_lsu_ready_i;
 assign exu_lsu_valid_o = (state == S_WAIT_LSU);
 
-always @(posedge clk) begin
-    if (rst) begin
-        pc_r           <= 32'b0;
-        inst_r         <= 32'b0;
-        alu_fun_r      <= 6'b0;
-        {rd2_r, rd1_r} <= 64'b0;
-        imm_r          <= 32'b0;
-        alu_src1_sel_r <= 2'b0;
-        alu_src2_sel_r <= 2'b0;
-
-        exu_lsu_data_r       <= 9'b0;
-        exu_lsu_gpr_rdata_r  <= 64'b0;
-        idu_exu_wbu_csr_rdata_r <= 32'b0;
-        idu_exu_wbu_data_r   <= 10'b0;
-        idu_exu_wbu_csr_we_r <= 1'b0;
-        idu_exu_pc_src_sel_r <= 4'b0;
-    end else if (idu_exu_valid_i & idu_exu_ready_o) begin
-        pc_r           <= idu_pc_i;
-        inst_r         <= idu_inst_i;
-        alu_fun_r      <= idu_exu_fun_i;
-        {rd2_r, rd1_r} <= idu_exu_rdata_i;
-        imm_r          <= imm_exu_i;
-        alu_src1_sel_r <= idu_exu_src_sel_i[1:0];
-        alu_src2_sel_r <= idu_exu_src_sel_i[3:2];
-
-        exu_lsu_data_r       <= idu_exu_lsu_data_i;
-        exu_lsu_gpr_rdata_r  <= idu_exu_rdata_i;
-        idu_exu_wbu_csr_rdata_r <= idu_exu_wbu_csr_rdata_i;
-        idu_exu_wbu_data_r   <= idu_exu_wbu_data_i;
-        idu_exu_wbu_csr_we_r <= idu_exu_wbu_csr_we_i;
-        idu_exu_pc_src_sel_r <= idu_exu_pc_src_sel_i;
-    end
-end
-
-localparam S_IDLE = 2'd0;
+localparam S_W        = 2;
+localparam S_IDLE     = 2'd0;
 localparam S_WAIT_LSU = 2'd1;
 
-reg [1:0] state;
+reg [S_W-1:0] state;
 
 always @(posedge clk) begin
     if (rst) begin
@@ -109,14 +75,12 @@ always @(posedge clk) begin
     end else begin
         case (state)
             S_IDLE: begin
-                if (idu_exu_valid_i & idu_exu_ready_o) begin
+                if (idu_exu_valid_i) begin
                     state <= S_WAIT_LSU;
                 end
             end
             S_WAIT_LSU: begin
-                if (exu_lsu_valid_o & exu_lsu_ready_i) begin
-                    state <= S_IDLE;
-                end
+                if (exu_lsu_valid_o & exu_lsu_ready_i) state <= S_IDLE;
             end
             default: begin
                 state <= S_IDLE;
@@ -126,14 +90,43 @@ always @(posedge clk) begin
 end
 
 ALU u_ALU(
-    .PC         	(pc_r           ),
-    .ALUFunc    	(alu_fun_r      ),
-    .ReadData1  	(rd1_r          ),
-    .ReadData2  	(rd2_r          ),
-    .ImmExt     	(imm_r          ),
-    .ALUSrcSel1 	(alu_src1_sel_r ),
-    .ALUSrcSel2 	(alu_src2_sel_r ),
+    .PC         	(idu_pc_i       ),
+    .ALUFunc    	(idu_exu_fun_i  ),
+    .ReadData1  	(rd1            ),
+    .ReadData2  	(rd2            ),
+    .ImmExt     	(imm_exu_i      ),
+    .ALUSrcSel1 	(alu_src1_sel   ),
+    .ALUSrcSel2 	(alu_src2_sel   ),
     .ALURes     	(exu_lsu_res_o  )
 );
+
+wire        is_trap;
+wire        is_jump;
+wire        is_ecall;
+wire [31:0] trap_pc;
+wire [31:0] base;
+wire [31:0] offset;
+
+assign is_trap = ~idu_exu_pc_src_sel_i[3] & idu_exu_pc_src_sel_i[2];
+assign is_jump = idu_exu_pc_src_sel_i[3];
+assign is_ecall = exu_lsu_wbu_data_o[9];
+
+// npc = pc+4(0000) pc+imm(0001) src1+imm(0011) trap_npc(0100) res=0,jump(10--) res=1,jump(11--)
+assign trap_pc = is_ecall ? csr_r_mtvec_i : csr_r_mepc_i;
+assign base = (!is_jump & idu_exu_pc_src_sel_i[1]) ? rd1 : idu_pc_i;
+assign offset = 
+            is_jump ?
+            (idu_exu_pc_src_sel_i[2] == exu_lsu_res_o[0]) ? imm_exu_i : 4 :
+            idu_exu_pc_src_sel_i[0] ? imm_exu_i : 32'd4;
+
+assign exu_pc_target_pc_o = is_trap ? trap_pc : base + offset;
+
+`ifdef FOR_SIMULATION_ENV
+export "DPI-C" function exu_commit;
+function int exu_commit();
+    if (idu_exu_valid_i & state == S_IDLE) return 1;
+    else return 0;
+endfunction
+`endif
 
 endmodule

@@ -1,67 +1,39 @@
 `include "common.vh"
-
 module IDU(
-    input               clk,
-    input               rst,
+    input         clk,
+    input         rst,
 
-    input       [31:0]  ifu_pc_i,
-    input       [31:0]  ifu_inst_i,
-    output      [31:0]  idu_pc_o,
-    output      [31:0]  idu_inst_o,
+    input  [31:0] ifu_pc_i,
+    input  [31:0] ifu_inst_i,
+    input         need_flush_i,
 
-    input       [31:0]  gpr_idu_rdata1_i,
-    input       [31:0]  gpr_idu_rdata2_i,
-    input       [31:0]  csr_idu_rdata_i,
+    output [31:0] idu_pc_o,
+    output [24:0] idu_inst_o,
 
-    output              fence_i_o,
+    output        fence_i_o,
 
-    output  reg [ 2:0]  idu_imm_type_o,
-    output      [24:0]  idu_imm_inst_o,
+    output [ 2:0] idu_imm_type_o,
 
-    output  reg [ 5:0]  idu_exu_fun_o,
-    output  reg [ 1:0]  idu_exu_src1_sel_o,
-    output  reg [ 1:0]  idu_exu_src2_sel_o,
-    output      [63:0]  idu_exu_rdata_o,
+    output [ 5:0] idu_exu_fun_o,
+    output [ 1:0] idu_exu_src1_sel_o,
+    output [ 1:0] idu_exu_src2_sel_o,
 
     // idu_to_lsu_data lsu_r_func[8:6], lsu_re[5], lsu_w_mask[4:1], lsu_we[0]
-    output  reg [ 8:0]  idu_exu_lsu_data_o,
+    output [ 8:0] idu_exu_lsu_data_o,
     // idu_to_wbu_data is_ecall[9], is_mret[8], wbu_we[7], wbu_w_addr[6:2], wbu_wd_sel[1:0]
-    output  reg [ 9:0]  idu_exu_wbu_data_o,
-    output      [31:0]  idu_exu_wbu_csr_rdata_o,
-    output  reg         idu_exu_wbu_csr_we_o,
-    output  reg [ 3:0]  idu_exu_pc_src_sel_o,
+    output [ 9:0] idu_exu_wbu_data_o,
+    output        idu_exu_wbu_csr_we_o,
+    output [ 3:0] idu_exu_pc_src_sel_o,
 
-    input               ifu_idu_valid_i,
-    output  reg         ifu_idu_ready_o,
+    input         ifu_idu_valid_i,
+    output        ifu_idu_ready_o,
 
-    output  reg         idu_exu_valid_o,
-    input               idu_exu_ready_i
+    output        idu_exu_valid_o,
+    input         idu_exu_ready_i
 );
 
-reg [31:0] ifu_pc_r;
-reg [31:0] ifu_inst_r;
-reg [63:0] gpr_rdata_r;
-reg [31:0] csr_rdata_r;
-
-always @(posedge clk) begin
-    if (rst) begin
-        ifu_pc_r <= 32'b0;
-        ifu_inst_r <= 32'b0;
-        gpr_rdata_r <= 64'b0;
-        csr_rdata_r <= 32'b0;
-    end else if (ifu_idu_valid_i & ifu_idu_ready_o) begin
-        ifu_pc_r <= ifu_pc_i;
-        ifu_inst_r <= ifu_inst_i;
-        gpr_rdata_r <= {gpr_idu_rdata2_i, gpr_idu_rdata1_i};
-        csr_rdata_r <= csr_idu_rdata_i;
-    end
-end
-
-assign idu_imm_inst_o = ifu_inst_r[31:7];
-assign idu_pc_o = ifu_pc_r;
-assign idu_inst_o = ifu_inst_r;
-assign idu_exu_rdata_o = gpr_rdata_r;
-assign idu_exu_wbu_csr_rdata_o = csr_rdata_r;
+assign idu_pc_o = ifu_pc_i;
+assign idu_inst_o = ifu_inst_i[31:7];
 
 reg [2:0]   lsu_r_func_r;
 reg         lsu_re_r;
@@ -76,8 +48,8 @@ reg [4:0]   wbu_w_addr_r;
 reg [1:0]   wbu_wd_sel_r;
 assign idu_exu_wbu_data_o = {ecall_r, mret_r, wbu_we_r, wbu_w_addr_r, wbu_wd_sel_r};
 
-assign ifu_idu_ready_o = state == S_IDLE & ifu_idu_valid_i;
-assign idu_exu_valid_o = state == S_WAIT_EXU;
+assign ifu_idu_ready_o = idu_exu_valid_o & idu_exu_ready_i;
+assign idu_exu_valid_o = state == S_WAIT_EXU & !need_flush_i;
 
 localparam S_IDLE = 1'd0;
 localparam S_WAIT_EXU = 1'd1;
@@ -90,10 +62,10 @@ always @(posedge clk) begin
     end else begin
         case (state)
             S_IDLE: begin
-                if (ifu_idu_valid_i & ifu_idu_ready_o) state <= S_WAIT_EXU;
+                if (!need_flush_i & ifu_idu_valid_i) state <= S_WAIT_EXU;
             end
             S_WAIT_EXU: begin
-                if (idu_exu_valid_o & idu_exu_ready_i) state <= S_IDLE;
+                if (need_flush_i | (idu_exu_valid_o & idu_exu_ready_i)) state <= S_IDLE;
             end
             default: begin
                 state <= S_IDLE;
@@ -106,9 +78,9 @@ wire    [6:0]   inst_opcode;
 wire    [2:0]   inst_func3;
 wire    [6:0]   inst_func7;
 
-assign inst_opcode  = ifu_inst_r[6:0];
-assign inst_func3   = ifu_inst_r[14:12];
-assign inst_func7   = ifu_inst_r[31:25];
+assign inst_opcode  = ifu_inst_i[6:0];
+assign inst_func3   = ifu_inst_i[14:12];
+assign inst_func7   = ifu_inst_i[31:25];
 
 wire inst_lui;      // U
 wire inst_auipc;    // U
@@ -191,12 +163,12 @@ assign inst_srl     = (inst_opcode == 7'b0110011) & (inst_func3 == 3'b101) & (in
 assign inst_sra     = (inst_opcode == 7'b0110011) & (inst_func3 == 3'b101) & (inst_func7 == 7'b0100000);
 assign inst_or      = (inst_opcode == 7'b0110011) & (inst_func3 == 3'b110) & (inst_func7 == 7'b0000000);
 assign inst_and     = (inst_opcode == 7'b0110011) & (inst_func3 == 3'b111) & (inst_func7 == 7'b0000000);
-assign inst_ecall   = (ifu_inst_r == 32'b00000000000000000000000001110011);
-assign inst_ebreak  = (ifu_inst_r == 32'b00000000000100000000000001110011);
+assign inst_ecall   = (ifu_inst_i == 32'b00000000000000000000000001110011);
+assign inst_ebreak  = (ifu_inst_i == 32'b00000000000100000000000001110011);
 assign inst_fence_i = (inst_opcode == 7'b0001111) & (inst_func3 == 3'b001);
 assign inst_csrrw   = (inst_opcode == 7'b1110011) & (inst_func3 == 3'b001);
 assign inst_csrrs   = (inst_opcode == 7'b1110011) & (inst_func3 == 3'b010);
-assign inst_mret    = (ifu_inst_r == 32'b00110000001000000000000001110011);
+assign inst_mret    = (ifu_inst_i == 32'b00110000001000000000000001110011);
 
 import "DPI-C" function void ebreak_trigger();
 
@@ -251,7 +223,7 @@ assign idu_exu_pc_src_sel_o =   `NPC_SRC_SEL_PC_IMM     & {4{inst_jal}} |
                                 `NPC_SRC_SEL_JUMP_1     & {4{inst_beq | inst_blt | inst_bltu}} |
                                 `NPC_SRC_SEL_PC_4;
 
-assign wbu_w_addr_r = ifu_inst_r[11:7];
+assign wbu_w_addr_r = ifu_inst_i[11:7];
 
 assign wbu_wd_sel_r =   `GPR_WD_SEL_MEM_DATA & {2{inst_lb | inst_lh | inst_lw | inst_lbu | inst_lhu}} |
                         `GPR_WD_SEL_CSR_DATA & {2{inst_csrrw | inst_csrrs}} |
@@ -271,5 +243,18 @@ assign lsu_r_func_r =   {3{inst_lbu}} & `MEM_READ_FUNC_LBU |
                         {3{inst_lhu}} & `MEM_READ_FUNC_LHU |
                         {3{inst_lh}}  & `MEM_READ_FUNC_LH  |
                         {3{inst_lw}}  & `MEM_READ_FUNC_LW  ;
+
+`ifdef FOR_SIMULATION_ENV
+export "DPI-C" function idu_inst_type;
+function int idu_inst_type();
+    return {29'b0, idu_imm_type_o};
+endfunction
+
+export "DPI-C" function idu_commit;
+function int idu_commit();
+    if (!need_flush_i & ifu_idu_valid_i & state == S_IDLE) return 1;
+    else return 0;
+endfunction
+`endif
 
 endmodule

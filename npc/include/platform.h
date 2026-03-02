@@ -16,6 +16,8 @@ typedef VysyxSoCFull VTOP;
 #define S_LSU(signal) top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__u_LSU__DOT__##signal
 #define S_WBU(signal) top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__u_WBU__DOT__##signal
 
+#define FIND_DPIC(module) svSetScope(svGetScopeFromName("TOP.ysyxSoCFull.asic.cpu.cpu." #module))
+
 #else
 
 #include "Vtop.h"
@@ -30,6 +32,8 @@ typedef Vtop VTOP;
 #define S_ICache_top(signal) top->rootp->top__DOT__u_IFU__DOT__u_ICache_top__DOT__##signal
 #define S_LSU(signal) top->rootp->top__DOT__u_LSU__DOT__##signal
 #define S_WBU(signal) top->rootp->top__DOT__u_WBU__DOT__##signal
+
+#define FIND_DPIC(module) svSetScope(svGetScopeFromName("TOP.top." #module))
 
 #endif
 

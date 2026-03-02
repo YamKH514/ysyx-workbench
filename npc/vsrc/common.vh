@@ -1,6 +1,8 @@
 `ifndef COMMON_VH__
 `define COMMON_VH__
 
+`define FOR_SIMULATION_ENV
+
 // ==========================
 // Inst Type
 // ==========================

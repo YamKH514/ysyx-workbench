@@ -3,10 +3,10 @@
 module ImmExt(
     input   [2:0]   idu_imm_type_i,
     input   [31:7]  idu_imm_inst_i,
-    output  [31:0]  imm_exu_o
+    output  [31:0]  imm_res_o
 );
 
-// assign imm_exu_o = 
+// assign imm_res_o = 
 //             (idu_imm_type_i == `INST_TYPE_I) ? {{20{idu_imm_inst_i[31]}}, idu_imm_inst_i[31:20]} :
 //             (idu_imm_type_i == `INST_TYPE_S) ? {{20{idu_imm_inst_i[31]}}, idu_imm_inst_i[31:25], idu_imm_inst_i[11:7]} :
 //             (idu_imm_type_i == `INST_TYPE_B) ? {{19{idu_imm_inst_i[31]}}, idu_imm_inst_i[31], idu_imm_inst_i[7], idu_imm_inst_i[30:25], idu_imm_inst_i[11:8], 1'b0} :
@@ -22,7 +22,7 @@ assign imm_s = {{20{idu_imm_inst_i[31]}}, idu_imm_inst_i[31:25], idu_imm_inst_i[
 assign imm_b = {{19{idu_imm_inst_i[31]}}, idu_imm_inst_i[31], idu_imm_inst_i[7], idu_imm_inst_i[30:25], idu_imm_inst_i[11:8], 1'b0};
 assign imm_u = {idu_imm_inst_i[31:12], 12'b0};
 assign imm_j = {{11{idu_imm_inst_i[31]}}, idu_imm_inst_i[31], idu_imm_inst_i[19:12], idu_imm_inst_i[20], idu_imm_inst_i[30:21], 1'b0};
-assign imm_exu_o = imm_r;
+assign imm_res_o = imm_r;
 
 always @(*) begin
     case (idu_imm_type_i)

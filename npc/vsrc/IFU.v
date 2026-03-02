@@ -1,3 +1,4 @@
+`include "common.vh"
 module IFU(
     input         clk,
     input         rst,
@@ -12,11 +13,8 @@ module IFU(
     output        ifu_idu_valid_o,
     input         ifu_idu_ready_i,
 
-    output [ 9:0] ifu_gpr_raddr_o,
-
-    output [11:0] ifu_csr_raddr_o,
-
     input         fence_i_i,
+    input         need_flush_i,
 
     output [ 3:0] arid_o,
     output [31:0] araddr_o,
@@ -54,15 +52,11 @@ module IFU(
     input         bg_i
 );
 
-reg [31:0]  ifu_current_pc_r;
 reg [31:0]  ic_data_r;
-
-assign ifu_gpr_raddr_o = ic_data_r[24:15];
-assign ifu_csr_raddr_o = ic_data_r[31:20];
 
 import "DPI-C" function void mem_tracer_read(input int addr,input int data, input int is_inst);
 
-wire [29:0] ic_paddr = ifu_current_pc_r[31:2];
+wire [29:0] ic_paddr = pc_i[31:2];
 wire [31:0] ic_pdata;
 wire        ic_pvalid = state == S_WAIT_IC;
 wire        ic_pready;
@@ -86,21 +80,18 @@ localparam S_WAIT_IDU  = 2'd2;
 
 reg [S_W-1:0]   state;
 
-wire need_cache = pc_i[31-:4] == 4'ha && pc_i[27-:4] < 4'h9;
+wire need_cache = (pc_i[31-:4] == 4'ha && pc_i[27-:4] < 4'h9) | (pc_i[31-:4] == 4'h3);
 reg  need_cache_r;
 
 always @(posedge clk) begin
-    if (rst) begin
-        need_cache_r <= 0;
-    end else if (state == S_IDLE) begin
-        if (pc_ifu_valid_i & pc_ifu_ready_o) need_cache_r <= need_cache;
-    end
+    if (rst) need_cache_r <= 0;
+    else if (state == S_IDLE & pc_ifu_valid_i) need_cache_r <= need_cache;
 end
 
-assign pc_ifu_ready_o = (state == S_IDLE) && pc_ifu_valid_i;
-assign ifu_idu_valid_o= (state == S_WAIT_IDU);
+assign pc_ifu_ready_o = ifu_idu_valid_o && ifu_idu_ready_i;
+assign ifu_idu_valid_o= (state == S_WAIT_IDU) & !(need_flush_i | need_flush_r);
 
-assign ifu_pc_o = ifu_current_pc_r;
+assign ifu_pc_o = pc_i;
 assign ifu_inst_o= ic_data_r;
 
 always @(posedge clk) begin
@@ -112,16 +103,8 @@ always @(posedge clk) begin
 end
 
 always @(posedge clk) begin
-    if (rst) begin
-        ifu_current_pc_r <= 32'b0;
-    end else if (pc_ifu_valid_i & pc_ifu_ready_o) begin
-        ifu_current_pc_r <= pc_i;
-    end
-end
-
-always @(posedge clk) begin
     if (ic_pvalid & ic_pready & (state == S_WAIT_IC)) begin
-        mem_tracer_read(ifu_current_pc_r, ic_pdata, 32'b1);
+        mem_tracer_read(pc_i, ic_pdata, 32'b1);
     end
 end
 
@@ -130,17 +113,17 @@ always @(posedge clk) begin
     else begin
         case (state)
             S_IDLE: begin
-                if (pc_ifu_valid_i & pc_ifu_ready_o) begin
+                if (!need_flush_i & pc_ifu_valid_i) begin
                     state <= S_WAIT_IC;
                 end
             end
             S_WAIT_IC: begin
                 if (ic_pvalid & ic_pready) begin
-                    state <= S_WAIT_IDU;
+                    state <= (need_flush_i | need_flush_r) ? S_IDLE : S_WAIT_IDU;
                 end
             end
             S_WAIT_IDU: begin
-                if (ifu_idu_valid_o && ifu_idu_ready_i) begin
+                if (need_flush_i | (ifu_idu_valid_o && ifu_idu_ready_i)) begin
                     state <= S_IDLE;
                 end
             end
@@ -149,6 +132,17 @@ always @(posedge clk) begin
             end
         endcase
     end
+end
+
+reg need_flush_r;
+
+always @(posedge clk) begin
+    if (rst)
+        need_flush_r <= 1'b0;
+    else if (need_flush_i)
+        need_flush_r <= state == S_WAIT_IC;
+    else if (state == S_IDLE)
+        need_flush_r <= 1'b0;
 end
 
 ICache_top u_ICache_top(
@@ -177,5 +171,13 @@ ICache_top u_ICache_top(
     .br      	(br_o        ),
     .bg      	(bg_i        )
 );
+
+`ifdef FOR_SIMULATION_ENV
+export "DPI-C" function ifu_commit;
+function int ifu_commit();
+    if (pc_ifu_ready_o) return 1;
+    else return 0;
+endfunction
+`endif
 
 endmodule
