@@ -33,7 +33,7 @@ module WBU(
 );
 
 assign wbu_csr_func3_o = lsu_wbu_csr_func3_i;
-assign wbu_csr_we_o = lsu_wbu_csr_we_i & S_BUSY;
+assign wbu_csr_we_o = lsu_wbu_csr_we_i & (state == S_IDLE & lsu_wbu_valid_i);
 assign wbu_csr_waddr_o = lsu_wbu_csr_waddr_i;
 assign wbu_csr_wdata_o = lsu_wbu_csr_wdata_i;
 assign wbu_csr_mepc_o = lsu_pc_i;
