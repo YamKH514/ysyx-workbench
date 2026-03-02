@@ -25,7 +25,12 @@ wire        mepc_we      = csr_we_i & (csr_waddr_i == 12'h341);
 wire        mcause_we    = csr_we_i & (csr_waddr_i == 12'h342);
 wire        mtvec_we     = csr_we_i & (csr_waddr_i == 12'h305);
 wire        mstatus_we   = csr_we_i & (csr_waddr_i == 12'h300);
-wire [31:0] csr_old_data = csr_rdata_o;
+wire [31:0] csr_old_data =  {32{csr_raddr_i == 12'h341}} & mepc_r |
+                            {32{csr_raddr_i == 12'h342}} & mcause_r |
+                            {32{csr_raddr_i == 12'h305}} & mtvec_r |
+                            {32{csr_raddr_i == 12'h300}} & mstatus_r |
+                            {32{csr_raddr_i == 12'hF11}} & mvendorid_r |
+                            {32{csr_raddr_i == 12'hF12}} & marchid_r;;
 wire [31:0] csr_r_data   =  {32{csr_func3_i == 3'b001}} & csr_wdata_i |
                             {32{csr_func3_i == 3'b010}} & (csr_old_data | csr_wdata_i);
 
