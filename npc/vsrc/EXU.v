@@ -9,9 +9,9 @@ module EXU(
     input  [ 8:0] idu_exu_lsu_data_i,
     input  [ 9:0] idu_exu_wbu_data_i,
     input  [31:0] idu_exu_wbu_csr_rdata_i,
-    input  [ 2:0] idu_exu_lsu_wbu_csr_func3_i,
-    input  [11:0] idu_exu_lsu_wbu_csr_waddr_i,
-    input         idu_exu_wbu_csr_we_i,
+    input         idu_exu_csr_we_i,
+    input  [ 2:0] idu_exu_csr_func3_i,
+    input  [11:0] idu_exu_csr_waddr_i,
     input  [ 3:0] idu_exu_pc_src_sel_i,
 
     input  [63:0] idu_exu_rdata_i,
@@ -22,13 +22,15 @@ module EXU(
     input  [31:0] csr_r_mtvec_i,
     input  [31:0] csr_r_mepc_i,
 
+    output        exu_csr_we_o,
+    output [ 2:0] exu_csr_func3_o,
+    output [11:0] exu_csr_waddr_o,
+    output [31:0] exu_csr_wdata_o,
+
     output [31:0] exu_lsu_res_o,
     output [ 8:0] exu_lsu_data_o,
     output [63:0] exu_lsu_gpr_rdata_o,
     output [31:0] exu_lsu_wbu_csr_rdata_o,
-    output [ 2:0] exu_lsu_wbu_csr_func3_o,
-    output [11:0] exu_lsu_wbu_csr_waddr_o,
-    output        exu_lsu_wbu_csr_we_o,
     output [ 9:0] exu_lsu_wbu_data_o,
     output [31:0] exu_pc_target_pc_o,
 
@@ -50,12 +52,13 @@ assign {rd2, rd1} = idu_exu_rdata_i;
 assign {alu_src2_sel, alu_src1_sel} = idu_exu_src_sel_i;
 
 assign exu_pc_o = idu_pc_i;
+assign exu_csr_we_o = idu_exu_csr_we_i & idu_exu_valid_i & state == S_IDLE;
+assign exu_csr_func3_o = idu_exu_csr_func3_i;
+assign exu_csr_waddr_o = idu_exu_csr_waddr_i;
+assign exu_csr_wdata_o = rd1;
 assign exu_lsu_data_o = idu_exu_lsu_data_i;
 assign exu_lsu_gpr_rdata_o = idu_exu_rdata_i;
 assign exu_lsu_wbu_csr_rdata_o = idu_exu_wbu_csr_rdata_i;
-assign exu_lsu_wbu_csr_func3_o = idu_exu_lsu_wbu_csr_func3_i;
-assign exu_lsu_wbu_csr_waddr_o = idu_exu_lsu_wbu_csr_waddr_i;
-assign exu_lsu_wbu_csr_we_o = idu_exu_wbu_csr_we_i;
 assign exu_lsu_wbu_data_o = idu_exu_wbu_data_i;
 
 assign need_flush_o = (exu_lsu_valid_o & exu_lsu_ready_i) & (exu_pc_target_pc_o != idu_pc_i + 4);
