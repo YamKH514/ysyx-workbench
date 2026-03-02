@@ -7,7 +7,7 @@ module LSU(
     output [31:0] lsu_pc_o,
 
     input  [31:0] exu_lsu_wbu_csr_rdata_i,
-    input  [ 9:0] exu_lsu_wbu_data_i,
+    input  [ 7:0] exu_lsu_wbu_data_i,
 
     // idu_to_lsu_data lsu_r_func[8:6], lsu_re[5], lsu_w_mask[4:1], lsu_we[0]
     input  [ 8:0] exu_lsu_data_i,
@@ -16,7 +16,7 @@ module LSU(
 
     output [31:0] lsu_wbu_res_o,
     output [31:0] lsu_wbu_rdata_o,
-    output [ 9:0] lsu_wbu_data_o,
+    output [ 7:0] lsu_wbu_data_o,
     output [31:0] lsu_wbu_csr_rdata_o,
 `ifdef FOR_SIMULATION_ENV
     input  [31:0]   target_pc_i,

@@ -6,18 +6,14 @@ module WBU(
     input       [31:0]  lsu_pc_i,
 
     // idu_to_wbu_data is_ecall[9], is_mret[8], wbu_we[7], wbu_w_addr[6:2], wbu_wd_sel[1:0]
-    input       [9:0]   lsu_wbu_data_i,
+    input       [ 7:0]  lsu_wbu_data_i,
     input       [31:0]  lsu_wbu_res_i,
     input       [31:0]  lsu_wbu_rdata_i,
     input       [31:0]  lsu_wbu_csr_rdata_i,
 
     output reg          wbu_gpr_we_o,
-    output reg  [4:0]   wbu_gpr_waddr_o,
+    output reg  [ 4:0]  wbu_gpr_waddr_o,
     output reg  [31:0]  wbu_gpr_wdata_o,
-
-    output      [31:0]  wbu_csr_mepc_o,
-    output reg          wbu_csr_ecall_o,
-    output reg          wbu_csr_mret_o,
 `ifdef FOR_SIMULATION_ENV
     input  [31:0]   target_pc_i,
 `endif
@@ -25,21 +21,15 @@ module WBU(
     output              lsu_wbu_ready_o
 );
 
-assign wbu_csr_mepc_o = lsu_pc_i;
-
-wire        ecall;
-wire        mret;
 wire        wbu_we;
 wire [ 4:0] wbu_w_addr;
 wire [31:0] gpr_w_data;
 wire [ 1:0] wbu_wd_sel;
 
-assign {ecall, mret, wbu_we, wbu_w_addr, wbu_wd_sel} = lsu_wbu_data_i;
+assign {wbu_we, wbu_w_addr, wbu_wd_sel} = lsu_wbu_data_i;
 assign wbu_gpr_we_o = wbu_we & state == S_BUSY;
 assign wbu_gpr_waddr_o = wbu_w_addr;
 assign wbu_gpr_wdata_o = gpr_w_data;
-assign wbu_csr_ecall_o = ecall;
-assign wbu_csr_mret_o = mret;
 
 assign lsu_wbu_ready_o = state == S_BUSY;
 

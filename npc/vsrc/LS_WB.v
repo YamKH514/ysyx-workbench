@@ -6,13 +6,13 @@ module LS_WB(
     input  [31:0] pc_i,
     input  [31:0] res_i,
     input  [31:0] rdata_i,
-    input  [ 9:0] data_i,
+    input  [ 7:0] data_i,
     input  [31:0] csr_rdata_i,
 
     output [31:0] pc_o,
     output [31:0] res_o,
     output [31:0] rdata_o,
-    output [ 9:0] data_o,
+    output [ 7:0] data_o,
     output [31:0] csr_rdata_o,
 `ifdef FOR_SIMULATION_ENV
     input  [31:0]   target_pc_i,
@@ -30,7 +30,7 @@ assign lswb_wb_valid_o = state == S_BUSY;
 reg [31:0] pc_r;
 reg [31:0] res_r;
 reg [31:0] rdata_r;
-reg [ 9:0] data_r;
+reg [ 7:0] data_r;
 reg [31:0] csr_rdata_r;
 
 assign pc_o = pc_r;
