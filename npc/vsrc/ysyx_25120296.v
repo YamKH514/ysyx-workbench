@@ -214,12 +214,13 @@ wire [31:0] ifu_ifid_inst;
 wire [31:0] ifid_idu_pc;
 wire [31:0] ifid_idu_inst;
 wire        need_flush;
+wire [63:0] idex_rdata;
 wire        fence_i;
 wire [31:0] idu_idex_pc;
 wire [24:0] idu_idex_inst;
 wire [ 2:0] idu_idex_inst_type;
 wire [ 9:0] idu_gpr_rs;
-wire        idu_dhdu_use_csr;
+wire        idu_dhdu_is_csr;
 wire [ 5:0] idu_idex_fun;
 wire [ 1:0] idu_idex_src1_sel;
 wire [ 1:0] idu_idex_src2_sel;
@@ -228,6 +229,8 @@ wire [ 9:0] idu_idex_wbu_data;
 wire        idu_idex_wbu_csr_we;
 wire [ 3:0] idu_idex_pc_src_sel;
 wire [ 3:0] idu_idex_src_sel;
+wire [ 1:0] dhdu_idex_rs1_sel;
+wire [ 1:0] dhdu_idex_rs2_sel;
 wire [31:0] idex_exu_pc;
 wire [ 2:0] idex_immext_inst_type;
 wire [24:0] idex_immext_imm;
@@ -403,7 +406,7 @@ IDU u_IDU(
     .fence_i_o                  (fence_i                ),
     .idu_imm_type_o             (idu_idex_inst_type     ),
     .idu_gpr_rs_o               (idu_gpr_rs             ),
-    .idu_dhdu_use_csr_o         (idu_dhdu_use_csr       ),
+    .idu_dhdu_is_csr_o          (idu_dhdu_is_csr        ),
     .idu_exu_fun_o              (idu_idex_fun           ),
     .idu_exu_src1_sel_o         (idu_idex_src1_sel      ),
     .idu_exu_src2_sel_o         (idu_idex_src2_sel      ),
@@ -420,8 +423,9 @@ IDU u_IDU(
 DHDU u_DHDU(
     .idu_inst_type_i   	(idu_idex_inst_type ),
     .idu_gpr_rs_i      	(idu_idex_inst[17:8]),
+    .is_load_i          (idu_idex_wbu_data[5]),
     .idu_csr_raddr_i    (idu_idex_inst[24:13]),
-    .use_csr_i          (idu_dhdu_use_csr),
+    .is_csr_i           (idu_dhdu_is_csr),
     .is_ecall_i         (idu_idex_wbu_data[9]),
     .is_mret_i          (idu_idex_wbu_data[8]),
     .idex_rd_i         	(idex_exu_wbu_data[6:2]),
@@ -442,11 +446,35 @@ DHDU u_DHDU(
     .lswb_csr_we_i      (lswb_wbu_csr_we),
     .lswb_ecall         (lswb_wbu_data[9]),
     .lswb_mret          (lswb_wbu_data[8]),
+    .exu_rs1_sel_o      (dhdu_idex_rs1_sel),
+    .exu_rs2_sel_o      (dhdu_idex_rs2_sel),
     .id_dhdu_valid_i   	(id_dhdu_valid      ),
     .dhdu_idex_valid_o 	(dhdu_idex_valid    )
 );
 
 assign idu_idex_src_sel = {idu_idex_src2_sel, idu_idex_src1_sel};
+assign idex_rdata[31:0] = (dhdu_idex_rs1_sel == 2'b00) ? gpr_idex_rdata[31:0]:
+                            (dhdu_idex_rs1_sel == 2'b01) ? exls_lsu_res:
+                            (dhdu_idex_rs1_sel == 2'b10) ? lswb_wbu_res : 32'b0;
+assign idex_rdata[63:32]= (dhdu_idex_rs2_sel == 2'b00) ? gpr_idex_rdata[63:32]:
+                            (dhdu_idex_rs2_sel == 2'b01) ? exls_lsu_res:
+                            (dhdu_idex_rs2_sel == 2'b10) ? lswb_wbu_res : 32'b0;
+
+reg [63:0] rdata_r;
+reg        need_recode;
+wire idex_valid = dhdu_idex_valid & ~need_recode;
+always @(posedge clock) begin
+    if (reset) begin
+        rdata_r <= 'b0;
+        need_recode <= 'b1;
+    end else if (dhdu_idex_valid & need_recode) begin
+        rdata_r <= idex_rdata;
+        need_recode <= 'b0;
+    end else if (need_flush | (dhdu_idex_valid & id_idex_ready)) begin
+        rdata_r <= 'b0;
+        need_recode <= 'b1;
+    end
+end
 
 ID_EX u_ID_EX(
     .clk             	(clock                  ),
@@ -461,7 +489,7 @@ ID_EX u_ID_EX(
     .wbu_csr_we_i    	(idu_idex_wbu_csr_we    ),
     .pc_src_sel_i    	(idu_idex_pc_src_sel    ),
     .need_flush_i       (need_flush             ),
-    .gpr_rdata_i        (gpr_idex_rdata         ),
+    .gpr_rdata_i        (rdata_r                ),
     .pc_o               (idex_exu_pc            ),
     .inst_type_o        (idex_immext_inst_type  ),
     .imm_o              (idex_immext_imm        ),
@@ -475,7 +503,7 @@ ID_EX u_ID_EX(
     .wbu_csr_waddr_o    (idex_exu_csr_waddr     ),
     .wbu_csr_we_o    	(idex_exu_csr_we        ),
     .pc_src_sel_o    	(idex_exu_pc_src_sel    ),
-    .id_idex_valid_i 	(dhdu_idex_valid        ),
+    .id_idex_valid_i 	(idex_valid             ),
     .id_idex_ready_o 	(id_idex_ready          ),
     .idex_ex_valid_o 	(idex_ex_valid          ),
     .idex_ex_ready_i 	(idex_ex_ready          )
