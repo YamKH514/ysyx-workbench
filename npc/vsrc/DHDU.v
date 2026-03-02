@@ -32,7 +32,8 @@ module DHDU(
     output       dhdu_idex_valid_o
 );
 
-wire need_check = ~(idu_inst_type_i == `INST_TYPE_U | idu_inst_type_i == `INST_TYPE_J);
+wire need_check = ~(idu_inst_type_i == `INST_TYPE_U | idu_inst_type_i == `INST_TYPE_J) |
+                    use_csr_i | is_ecall_i | is_mret_i;
 wire use_rs2 = ~(idu_inst_type_i == `INST_TYPE_I);
 wire [4:0] rs1 = idu_gpr_rs_i[4:0];
 wire [4:0] rs2 = idu_gpr_rs_i[9:5];
@@ -50,10 +51,22 @@ wire ecall_hazard = (idex_ecall | exls_ecall | lswb_ecall)&
                     (idu_csr_raddr_i == 12'h341 | idu_csr_raddr_i == 12'h342 | idu_csr_raddr_i == 12'h300);
 wire mret_hazard  = (idex_mret | exls_mret | lswb_mret) & (idu_csr_raddr_i == 12'h300);
 
-assign dhdu_idex_valid_o = id_dhdu_valid_i &
-                            (need_check & !(rs1_hazard | (rs2_hazard & use_rs2))) &
-                            (use_csr_i & !csr_hazard) &
-                            (is_ecall_i & !ecall_hazard) &
-                            (is_mret_i & !mret_hazard);
+wire gpr_hazard =
+        (rs1_hazard |
+        (rs2_hazard & use_rs2));
+wire csr_read_hazard =
+        use_csr_i & csr_hazard;
+wire ecall_read_hazard =
+        is_ecall_i & ecall_hazard;
+wire mret_read_hazard =
+        is_mret_i & mret_hazard;
+wire stall =
+        need_check &
+        (gpr_hazard |
+        csr_read_hazard |
+        ecall_read_hazard |
+        mret_read_hazard);
+
+assign dhdu_idex_valid_o = id_dhdu_valid_i & !stall;
 
 endmodule
