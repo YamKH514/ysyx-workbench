@@ -9,9 +9,9 @@ module EXU(
     input  [ 8:0] idu_exu_lsu_data_i,
     input  [ 9:0] idu_exu_wbu_data_i,
     input  [31:0] idu_exu_wbu_csr_rdata_i,
-    input  [ 2:0] idu_exu_lsu_wbu_csr_func3_i,
-    input  [11:0] idu_exu_lsu_wbu_csr_waddr_i,
-    input         idu_exu_wbu_csr_we_i,
+    input         idu_exu_csr_we_i,
+    input  [ 2:0] idu_exu_csr_func3_i,
+    input  [11:0] idu_exu_csr_waddr_i,
     input  [ 3:0] idu_exu_pc_src_sel_i,
 
     input  [63:0] idu_exu_rdata_i,
@@ -26,9 +26,9 @@ module EXU(
     output [ 8:0] exu_lsu_data_o,
     output [63:0] exu_lsu_gpr_rdata_o,
     output [31:0] exu_lsu_wbu_csr_rdata_o,
+    output        exu_lsu_wbu_csr_we_o,
     output [ 2:0] exu_lsu_wbu_csr_func3_o,
     output [11:0] exu_lsu_wbu_csr_waddr_o,
-    output        exu_lsu_wbu_csr_we_o,
     output [ 9:0] exu_lsu_wbu_data_o,
     output [31:0] exu_pc_target_pc_o,
 
@@ -45,20 +45,24 @@ wire [31:0] rd1;
 wire [31:0] rd2;
 wire [ 1:0] alu_src1_sel;
 wire [ 1:0] alu_src2_sel;
+wire        is_ecall;
+wire        is_mret;
 
 assign {rd2, rd1} = idu_exu_rdata_i;
 assign {alu_src2_sel, alu_src1_sel} = idu_exu_src_sel_i;
+assign {is_ecall, is_mret} = idu_exu_wbu_data_i[9:8];
 
 assign exu_pc_o = idu_pc_i;
+assign exu_lsu_wbu_csr_we_o = idu_exu_csr_we_i;
+assign exu_lsu_wbu_csr_func3_o = idu_exu_csr_func3_i;
+assign exu_lsu_wbu_csr_waddr_o = idu_exu_csr_waddr_i;
 assign exu_lsu_data_o = idu_exu_lsu_data_i;
 assign exu_lsu_gpr_rdata_o = idu_exu_rdata_i;
 assign exu_lsu_wbu_csr_rdata_o = idu_exu_wbu_csr_rdata_i;
-assign exu_lsu_wbu_csr_func3_o = idu_exu_lsu_wbu_csr_func3_i;
-assign exu_lsu_wbu_csr_waddr_o = idu_exu_lsu_wbu_csr_waddr_i;
-assign exu_lsu_wbu_csr_we_o = idu_exu_wbu_csr_we_i;
 assign exu_lsu_wbu_data_o = idu_exu_wbu_data_i;
 
-assign need_flush_o = (exu_lsu_valid_o & exu_lsu_ready_i) & (exu_pc_target_pc_o != idu_pc_i + 4);
+assign need_flush_o = (exu_lsu_valid_o & exu_lsu_ready_i) &
+                        ((exu_pc_target_pc_o != idu_pc_i + 4) | is_ecall | is_mret);
 
 assign idu_exu_ready_o = exu_lsu_valid_o & exu_lsu_ready_i;
 assign exu_lsu_valid_o = (state == S_WAIT_LSU);
@@ -102,14 +106,12 @@ ALU u_ALU(
 
 wire        is_trap;
 wire        is_jump;
-wire        is_ecall;
 wire [31:0] trap_pc;
 wire [31:0] base;
 wire [31:0] offset;
 
 assign is_trap = ~idu_exu_pc_src_sel_i[3] & idu_exu_pc_src_sel_i[2];
 assign is_jump = idu_exu_pc_src_sel_i[3];
-assign is_ecall = exu_lsu_wbu_data_o[9];
 
 // npc = pc+4(0000) pc+imm(0001) src1+imm(0011) trap_npc(0100) res=0,jump(10--) res=1,jump(11--)
 assign trap_pc = is_ecall ? csr_r_mtvec_i : csr_r_mepc_i;

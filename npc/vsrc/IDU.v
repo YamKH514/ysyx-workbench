@@ -13,6 +13,7 @@ module IDU(
     output        fence_i_o,
 
     output [ 2:0] idu_imm_type_o,
+    output        idu_dhdu_use_csr_o,
 
     output [ 5:0] idu_exu_fun_o,
     output [ 1:0] idu_exu_src1_sel_o,
@@ -180,6 +181,7 @@ end
 
 assign ecall_r = inst_ecall;
 assign mret_r  = inst_mret;
+assign idu_dhdu_use_csr_o = inst_csrrw | inst_csrrs;
 
 assign idu_imm_type_o = `INST_TYPE_I & {3{inst_jalr | inst_lb | inst_lh | inst_lw | inst_lbu | inst_lhu |  inst_addi | inst_slti | inst_sltiu | inst_xori | inst_ori | inst_andi | inst_slli | inst_srli | inst_srai | inst_fence_i | inst_csrrw | inst_csrrs}} |
                         `INST_TYPE_S & {3{inst_sb | inst_sh | inst_sw}} |

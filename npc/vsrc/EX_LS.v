@@ -8,9 +8,9 @@ module EX_LS(
     input  [ 8:0]   data_i,
     input  [63:0]   gpr_rdata_i,
     input  [31:0]   wbu_csr_rdata_i,
+    input           wbu_csr_we_i,
     input  [ 2:0]   wbu_csr_func3_i,
     input  [11:0]   wbu_csr_waddr_i,
-    input           wbu_csr_we_i,
     input  [ 9:0]   wbu_data_i,
 
     output [31:0]   pc_o,
@@ -18,9 +18,9 @@ module EX_LS(
     output [ 8:0]   data_o,
     output [63:0]   gpr_rdata_o,
     output [31:0]   wbu_csr_rdata_o,
+    output          wbu_csr_we_o,
     output [ 2:0]   wbu_csr_func3_o,
     output [11:0]   wbu_csr_waddr_o,
-    output          wbu_csr_we_o,
     output [ 9:0]   wbu_data_o,
 `ifdef FOR_SIMULATION_ENV
     input  [31:0]   target_pc_i,
@@ -40,9 +40,9 @@ reg [31:0] res_r;
 reg [ 8:0] data_r;
 reg [63:0] gpr_rdata_r;
 reg [31:0] wbu_csr_rdata_r;
+reg        wbu_csr_we_r;
 reg [ 2:0] wbu_csr_func3_r;
 reg [11:0] wbu_csr_waddr_r;
-reg        wbu_csr_we_r;
 reg [ 9:0] wbu_data_r;
 
 assign pc_o = pc_r;
@@ -50,9 +50,9 @@ assign res_o = res_r;
 assign data_o = data_r;
 assign gpr_rdata_o = gpr_rdata_r;
 assign wbu_csr_rdata_o = wbu_csr_rdata_r;
+assign wbu_csr_we_o = wbu_csr_we_r;
 assign wbu_csr_func3_o = wbu_csr_func3_r;
 assign wbu_csr_waddr_o = wbu_csr_waddr_r;
-assign wbu_csr_we_o = wbu_csr_we_r;
 assign wbu_data_o = wbu_data_r;
 
 always @(posedge clk) begin
@@ -62,9 +62,9 @@ always @(posedge clk) begin
         data_r <= 'b0;
         gpr_rdata_r <= 'b0;
         wbu_csr_rdata_r <= 'b0;
+        wbu_csr_we_r <= 'b0;
         wbu_csr_func3_r <= 'b0;
         wbu_csr_waddr_r <= 'b0;
-        wbu_csr_we_r <= 'b0;
         wbu_data_r <= 'b0;
     end else if (ex_exls_valid_i & ex_exls_ready_o) begin
         pc_r <= pc_i;
@@ -72,9 +72,9 @@ always @(posedge clk) begin
         data_r <= data_i;
         gpr_rdata_r <= gpr_rdata_i;
         wbu_csr_rdata_r <= wbu_csr_rdata_i;
+        wbu_csr_we_r <= wbu_csr_we_i;
         wbu_csr_func3_r <= wbu_csr_func3_i;
         wbu_csr_waddr_r <= wbu_csr_waddr_i;
-        wbu_csr_we_r <= wbu_csr_we_i;
         wbu_data_r <= wbu_data_i;
     end else if (exls_ls_valid_o & exls_ls_ready_i) begin
         pc_r <= 'b0;
@@ -82,9 +82,9 @@ always @(posedge clk) begin
         data_r <= 'b0;
         gpr_rdata_r <= 'b0;
         wbu_csr_rdata_r <= 'b0;
+        wbu_csr_we_r <= 'b0;
         wbu_csr_func3_r <= 'b0;
         wbu_csr_waddr_r <= 'b0;
-        wbu_csr_we_r <= 'b0;
         wbu_data_r <= 'b0;
     end
 end
