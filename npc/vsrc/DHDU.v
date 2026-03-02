@@ -60,7 +60,7 @@ wire gpr_hazard =
         (rs1_hazard |
         (rs2_hazard & use_rs2));
 wire csr_read_hazard =
-        use_csr_i & csr_hazard;
+        use_csr_i & csr_hazard & rs1_hazard;
 wire ecall_read_hazard =
         is_ecall_i & ecall_hazard;
 wire mret_read_hazard =
