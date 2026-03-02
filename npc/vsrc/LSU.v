@@ -7,6 +7,9 @@ module LSU(
     output [31:0] lsu_pc_o,
 
     input  [31:0] exu_lsu_wbu_csr_rdata_i,
+    input         exu_lsu_wbu_csr_we_i,
+    input  [ 2:0] exu_lsu_wbu_csr_func3_i,
+    input  [11:0] exu_lsu_wbu_csr_waddr_i,
     input  [ 7:0] exu_lsu_wbu_data_i,
 
     // idu_to_lsu_data lsu_r_func[8:6], lsu_re[5], lsu_w_mask[4:1], lsu_we[0]
@@ -18,6 +21,10 @@ module LSU(
     output [31:0] lsu_wbu_rdata_o,
     output [ 7:0] lsu_wbu_data_o,
     output [31:0] lsu_wbu_csr_rdata_o,
+    output        lsu_wbu_csr_we_o,
+    output [ 2:0] lsu_wbu_csr_func3_o,
+    output [11:0] lsu_wbu_csr_waddr_o,
+    output [31:0] lsu_wbu_csr_wdata_o,
 `ifdef FOR_SIMULATION_ENV
     input  [31:0]   target_pc_i,
     output [31:0]   target_pc_o,
@@ -67,6 +74,10 @@ module LSU(
 assign lsu_pc_o = exu_pc_i;
 assign lsu_wbu_res_o = exu_lsu_res_i;
 assign lsu_wbu_csr_rdata_o = exu_lsu_wbu_csr_rdata_i;
+assign lsu_wbu_csr_we_o = exu_lsu_wbu_csr_we_i;
+assign lsu_wbu_csr_func3_o = exu_lsu_wbu_csr_func3_i;
+assign lsu_wbu_csr_waddr_o = exu_lsu_wbu_csr_waddr_i;
+assign lsu_wbu_csr_wdata_o = exu_lsu_gpr_rdata_i[31:0];
 assign lsu_wbu_data_o = exu_lsu_wbu_data_i;
 
 import "DPI-C" function void mem_tracer_read(input int addr,input int data, input int is_inst);

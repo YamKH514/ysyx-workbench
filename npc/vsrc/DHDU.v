@@ -1,33 +1,47 @@
 // Data Hazard Detection Unit
 `include "common.vh"
 module DHDU(
-    input [2:0] idu_inst_type_i,
-    input [9:0] idu_gpr_rs,
+    input [ 2:0] idu_inst_type_i,
+    input [ 9:0] idu_gpr_rs_i,
 
-    input [4:0] idex_rd_i,
-    input       idex_we_i,
+    input [11:0] idu_csr_raddr_i,
+    input        use_csr_i,
+    input        is_ecall_i,
+    input        is_mret_i,
 
-    input [4:0] exls_rd_i,
-    input       exls_we_i,
+    input [ 4:0] idex_rd_i,
+    input        idex_we_i,
+    input [11:0] idex_csr_waddr_i,
+    input        idex_csr_we_i,
+    input [ 4:0] exls_rd_i,
+    input        exls_we_i,
+    input [11:0] exls_csr_waddr_i,
+    input        exls_csr_we_i,
+    input [ 4:0] lswb_rd_i,
+    input        lswb_we_i,
+    input [11:0] lswb_csr_waddr_i,
+    input        lswb_csr_we_i,
 
-    input [4:0] lswb_rd_i,
-    input       lswb_we_i,
-
-    input       id_dhdu_valid_i,
-    output      dhdu_idex_valid_o
+    input        id_dhdu_valid_i,
+    output       dhdu_idex_valid_o
 );
 
-wire need_check = ~(idu_inst_type_i == `INST_TYPE_U | idu_inst_type_i == `INST_TYPE_J);
+wire need_check = ~(idu_inst_type_i == `INST_TYPE_U | idu_inst_type_i == `INST_TYPE_J) | use_csr_i | is_ecall_i | is_mret_i;
 wire use_rs2 = ~(idu_inst_type_i == `INST_TYPE_I);
-wire [4:0] rs1 = idu_gpr_rs[4:0];
-wire [4:0] rs2 = idu_gpr_rs[9:5];
+wire [4:0] rs1 = idu_gpr_rs_i[4:0];
+wire [4:0] rs2 = idu_gpr_rs_i[9:5];
 wire rs1_hazard =   (idex_we_i & (idex_rd_i != 0) & (rs1 == idex_rd_i))|
                     (exls_we_i & (exls_rd_i != 0) & (rs1 == exls_rd_i))|
                     (lswb_we_i & (lswb_rd_i != 0) & (rs1 == lswb_rd_i));
 wire rs2_hazard =   (idex_we_i & (idex_rd_i != 0) & (rs2 == idex_rd_i))|
                     (exls_we_i & (exls_rd_i != 0) & (rs2 == exls_rd_i))|
                     (lswb_we_i & (lswb_rd_i != 0) & (rs2 == lswb_rd_i));
+wire [11:0] csr_addr_check = is_ecall_i ? 12'h305 : 12'h341;
+wire csr_hazard =   (idex_csr_we_i & (~(is_ecall_i | is_mret_i) ? (idu_csr_raddr_i == idex_csr_waddr_i) : (idex_csr_waddr_i == csr_addr_check)))|
+                    (exls_csr_we_i & (~(is_ecall_i | is_mret_i) ? (idu_csr_raddr_i == exls_csr_waddr_i) : (exls_csr_waddr_i == csr_addr_check)))|
+                    (lswb_csr_we_i & (~(is_ecall_i | is_mret_i) ? (idu_csr_raddr_i == lswb_csr_waddr_i) : (lswb_csr_waddr_i == csr_addr_check)));
 
-assign dhdu_idex_valid_o = id_dhdu_valid_i & (!need_check | !(rs1_hazard | (rs2_hazard & use_rs2)));
+assign dhdu_idex_valid_o = id_dhdu_valid_i &
+                            (!need_check | !(rs1_hazard | (rs2_hazard & use_rs2)) | csr_hazard);
 
 endmodule

@@ -22,9 +22,9 @@ module ID_EX(
     output [ 3:0]   src_sel_o,
     output [ 8:0]   lsu_data_o,
     output [ 9:0]   wbu_data_o,
+    output          wbu_csr_we_o,
     output [ 2:0]   wbu_csr_func3_o,
     output [11:0]   wbu_csr_waddr_o,
-    output          wbu_csr_we_o,
     output [ 3:0]   pc_src_sel_o,
 
     input           id_idex_valid_i,

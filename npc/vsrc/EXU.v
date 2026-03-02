@@ -22,10 +22,6 @@ module EXU(
     input  [31:0] csr_r_mtvec_i,
     input  [31:0] csr_r_mepc_i,
 
-    output        exu_csr_we_o,
-    output [ 2:0] exu_csr_func3_o,
-    output [11:0] exu_csr_waddr_o,
-    output [31:0] exu_csr_wdata_o,
     output [31:0] exu_csr_mepc_o,
     output        exu_csr_ecall_o,
     output        exu_csr_mret_o,
@@ -34,6 +30,9 @@ module EXU(
     output [ 8:0] exu_lsu_data_o,
     output [63:0] exu_lsu_gpr_rdata_o,
     output [31:0] exu_lsu_wbu_csr_rdata_o,
+    output        exu_lsu_wbu_csr_we_o,
+    output [ 2:0] exu_lsu_wbu_csr_func3_o,
+    output [11:0] exu_lsu_wbu_csr_waddr_o,
     output [ 7:0] exu_lsu_wbu_data_o,
     output [31:0] exu_pc_target_pc_o,
 
@@ -58,10 +57,9 @@ assign {alu_src2_sel, alu_src1_sel} = idu_exu_src_sel_i;
 assign {is_ecall, is_mret} = idu_exu_wbu_data_i[9:8];
 
 assign exu_pc_o = idu_pc_i;
-assign exu_csr_we_o = idu_exu_csr_we_i & (idu_exu_valid_i & state == S_IDLE);
-assign exu_csr_func3_o = idu_exu_csr_func3_i;
-assign exu_csr_waddr_o = idu_exu_csr_waddr_i;
-assign exu_csr_wdata_o = rd1;
+assign exu_lsu_wbu_csr_we_o = idu_exu_csr_we_i;
+assign exu_lsu_wbu_csr_func3_o = idu_exu_csr_func3_i;
+assign exu_lsu_wbu_csr_waddr_o = idu_exu_csr_waddr_i;
 assign exu_csr_mepc_o = idu_pc_i;
 assign exu_csr_ecall_o = is_ecall & (idu_exu_valid_i & state == S_IDLE);
 assign exu_csr_mret_o = is_mret & (idu_exu_valid_i & state == S_IDLE);
