@@ -41,14 +41,14 @@ module EXU(
     input         exu_lsu_ready_i
 );
 
-wire [31:0] rd1;
-wire [31:0] rd2;
+wire [31:0] rs1;
+wire [31:0] rs2;
 wire [ 1:0] alu_src1_sel;
 wire [ 1:0] alu_src2_sel;
 wire        is_ecall;
 wire        is_mret;
 
-assign {rd2, rd1} = idu_exu_rdata_i;
+assign {rs2, rs1} = idu_exu_rdata_i;
 assign {alu_src2_sel, alu_src1_sel} = idu_exu_src_sel_i;
 assign {is_ecall, is_mret} = idu_exu_wbu_data_i[9:8];
 
@@ -96,8 +96,8 @@ end
 ALU u_ALU(
     .PC         	(idu_pc_i       ),
     .ALUFunc    	(idu_exu_fun_i  ),
-    .ReadData1  	(rd1            ),
-    .ReadData2  	(rd2            ),
+    .ReadData1  	(rs1            ),
+    .ReadData2  	(rs2            ),
     .ImmExt     	(imm_exu_i      ),
     .ALUSrcSel1 	(alu_src1_sel   ),
     .ALUSrcSel2 	(alu_src2_sel   ),
@@ -115,7 +115,7 @@ assign is_jump = idu_exu_pc_src_sel_i[3];
 
 // npc = pc+4(0000) pc+imm(0001) src1+imm(0011) trap_npc(0100) res=0,jump(10--) res=1,jump(11--)
 assign trap_pc = is_ecall ? csr_r_mtvec_i : csr_r_mepc_i;
-assign base = (!is_jump & idu_exu_pc_src_sel_i[1]) ? rd1 : idu_pc_i;
+assign base = (!is_jump & idu_exu_pc_src_sel_i[1]) ? rs1 : idu_pc_i;
 assign offset = 
             is_jump ?
             (idu_exu_pc_src_sel_i[2] == exu_lsu_res_o[0]) ? imm_exu_i : 4 :

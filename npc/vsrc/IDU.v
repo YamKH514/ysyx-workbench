@@ -13,6 +13,8 @@ module IDU(
     output        fence_i_o,
 
     output [ 2:0] idu_imm_type_o,
+    output [ 9:0] idu_gpr_rs_o,
+
     output        idu_dhdu_use_csr_o,
 
     output [ 5:0] idu_exu_fun_o,
@@ -189,6 +191,8 @@ assign idu_imm_type_o = `INST_TYPE_I & {3{inst_jalr | inst_lb | inst_lh | inst_l
                         `INST_TYPE_U & {3{inst_lui | inst_auipc}} |
                         `INST_TYPE_J & {3{inst_jal}} |
                         `INST_TYPE_R & {3{inst_add | inst_sub | inst_sll | inst_slt | inst_sltu | inst_xor | inst_srl | inst_sra | inst_or | inst_and}} ;
+
+assign idu_gpr_rs_o = ifu_inst_i[24:15];
 
 assign wbu_we_r = inst_lui | inst_auipc | inst_jal | inst_jalr | inst_lb | inst_lh | inst_lw | inst_lbu | inst_lhu | inst_addi | inst_slti | inst_sltiu | inst_xori | inst_ori | inst_andi | inst_slli | inst_srli | inst_srai | inst_add | inst_sub | inst_sll | inst_slt | inst_sltu | inst_xor | inst_srl | inst_sra | inst_or | inst_and | inst_csrrw | inst_csrrs;
 

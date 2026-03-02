@@ -3,7 +3,8 @@
 module DHDU(
     input [ 2:0] idu_inst_type_i,
     input [ 9:0] idu_gpr_rs_i,
-
+    // Checking lsu_re to find out which one is load inst. And load inst cannot use forward.
+    // input        idu_is_load,
     input [11:0] idu_csr_raddr_i,
     input        use_csr_i,
     input        is_ecall_i,
@@ -27,6 +28,10 @@ module DHDU(
     input        lswb_csr_we_i,
     input        lswb_ecall,
     input        lswb_mret,
+
+    // 00b -> use GPR, 01b -> use ex_ls,  10b -> use ls_wb, 11b -> Unused
+    // output[ 1:0] exu_rs1_sel_o,
+    // output[ 1:0] exu_rs2_sel_o,
 
     input        id_dhdu_valid_i,
     output       dhdu_idex_valid_o
