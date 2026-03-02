@@ -10,7 +10,7 @@ module LSU(
     input         exu_lsu_wbu_csr_we_i,
     input  [ 2:0] exu_lsu_wbu_csr_func3_i,
     input  [11:0] exu_lsu_wbu_csr_waddr_i,
-    input  [ 7:0] exu_lsu_wbu_data_i,
+    input  [ 9:0] exu_lsu_wbu_data_i,
 
     // idu_to_lsu_data lsu_r_func[8:6], lsu_re[5], lsu_w_mask[4:1], lsu_we[0]
     input  [ 8:0] exu_lsu_data_i,
@@ -19,7 +19,7 @@ module LSU(
 
     output [31:0] lsu_wbu_res_o,
     output [31:0] lsu_wbu_rdata_o,
-    output [ 7:0] lsu_wbu_data_o,
+    output [ 9:0] lsu_wbu_data_o,
     output [31:0] lsu_wbu_csr_rdata_o,
     output        lsu_wbu_csr_we_o,
     output [ 2:0] lsu_wbu_csr_func3_o,

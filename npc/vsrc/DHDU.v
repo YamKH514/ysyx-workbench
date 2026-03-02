@@ -13,14 +13,20 @@ module DHDU(
     input        idex_we_i,
     input [11:0] idex_csr_waddr_i,
     input        idex_csr_we_i,
+    input        idex_ecall,
+    input        idex_mret,
     input [ 4:0] exls_rd_i,
     input        exls_we_i,
     input [11:0] exls_csr_waddr_i,
     input        exls_csr_we_i,
+    input        exls_ecall,
+    input        exls_mret,
     input [ 4:0] lswb_rd_i,
     input        lswb_we_i,
     input [11:0] lswb_csr_waddr_i,
     input        lswb_csr_we_i,
+    input        lswb_ecall,
+    input        lswb_mret,
 
     input        id_dhdu_valid_i,
     output       dhdu_idex_valid_o
@@ -40,8 +46,12 @@ wire [11:0] csr_addr_check = is_ecall_i ? 12'h305 : 12'h341;
 wire csr_hazard =   (idex_csr_we_i & (~(is_ecall_i | is_mret_i) ? (idu_csr_raddr_i == idex_csr_waddr_i) : (idex_csr_waddr_i == csr_addr_check)))|
                     (exls_csr_we_i & (~(is_ecall_i | is_mret_i) ? (idu_csr_raddr_i == exls_csr_waddr_i) : (exls_csr_waddr_i == csr_addr_check)))|
                     (lswb_csr_we_i & (~(is_ecall_i | is_mret_i) ? (idu_csr_raddr_i == lswb_csr_waddr_i) : (lswb_csr_waddr_i == csr_addr_check)));
+wire ecall_hazard = (idex_ecall | exls_ecall | lswb_ecall)&
+                    (idu_csr_raddr_i == 12'h341 | idu_csr_raddr_i == 12'h342 | idu_csr_raddr_i == 12'h300);
+wire mret_hazard  = (idex_mret | exls_mret | lswb_mret) & (idu_csr_raddr_i == 12'h300);
 
 assign dhdu_idex_valid_o = id_dhdu_valid_i &
-                            (!need_check | !(rs1_hazard | (rs2_hazard & use_rs2)) | csr_hazard);
+                            (!need_check | !(rs1_hazard | (rs2_hazard & use_rs2)) |
+                            !csr_hazard | !ecall_hazard | !mret_hazard);
 
 endmodule

@@ -11,7 +11,7 @@ module EX_LS(
     input           wbu_csr_we_i,
     input  [ 2:0]   wbu_csr_func3_i,
     input  [11:0]   wbu_csr_waddr_i,
-    input  [ 7:0]   wbu_data_i,
+    input  [ 9:0]   wbu_data_i,
 
     output [31:0]   pc_o,
     output [31:0]   res_o,
@@ -21,7 +21,7 @@ module EX_LS(
     output          wbu_csr_we_o,
     output [ 2:0]   wbu_csr_func3_o,
     output [11:0]   wbu_csr_waddr_o,
-    output [ 7:0]   wbu_data_o,
+    output [ 9:0]   wbu_data_o,
 `ifdef FOR_SIMULATION_ENV
     input  [31:0]   target_pc_i,
     output [31:0]   target_pc_o,
@@ -43,7 +43,7 @@ reg [31:0] wbu_csr_rdata_r;
 reg        wbu_csr_we_r;
 reg [ 2:0] wbu_csr_func3_r;
 reg [11:0] wbu_csr_waddr_r;
-reg [ 7:0] wbu_data_r;
+reg [ 9:0] wbu_data_r;
 
 assign pc_o = pc_r;
 assign res_o = res_r;

@@ -6,7 +6,7 @@ module LS_WB(
     input  [31:0] pc_i,
     input  [31:0] res_i,
     input  [31:0] rdata_i,
-    input  [ 7:0] data_i,
+    input  [ 9:0] data_i,
     input  [31:0] csr_rdata_i,
     input         csr_we_i,
     input  [ 2:0] csr_func3_i,
@@ -16,7 +16,7 @@ module LS_WB(
     output [31:0] pc_o,
     output [31:0] res_o,
     output [31:0] rdata_o,
-    output [ 7:0] data_o,
+    output [ 9:0] data_o,
     output [31:0] csr_rdata_o,
     output        csr_we_o,
     output [ 2:0] csr_func3_o,
@@ -38,7 +38,7 @@ assign lswb_wb_valid_o = state == S_BUSY;
 reg [31:0] pc_r;
 reg [31:0] res_r;
 reg [31:0] rdata_r;
-reg [ 7:0] data_r;
+reg [ 9:0] data_r;
 reg [31:0] csr_rdata_r;
 reg        csr_we_r;
 reg [ 2:0] csr_func3_r;
