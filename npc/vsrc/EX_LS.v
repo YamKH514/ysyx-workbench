@@ -17,7 +17,7 @@ module EX_LS(
     output [31:0]   res_o,
     output [ 8:0]   data_o,
     output [63:0]   gpr_rdata_o,
-    output [31:0]   wbu_csr_rdata_o,
+    output [31:0]   wbu_gpr_wdata_o,
     output          wbu_csr_we_o,
     output [ 2:0]   wbu_csr_func3_o,
     output [11:0]   wbu_csr_waddr_o,
@@ -39,17 +39,18 @@ reg [31:0] pc_r;
 reg [31:0] res_r;
 reg [ 8:0] data_r;
 reg [63:0] gpr_rdata_r;
-reg [31:0] wbu_csr_rdata_r;
+reg [31:0] wbu_gpr_wdata_r;
 reg        wbu_csr_we_r;
 reg [ 2:0] wbu_csr_func3_r;
 reg [11:0] wbu_csr_waddr_r;
 reg [ 9:0] wbu_data_r;
+wire[ 1:0] wbu_wd_sel = data_i[1:0];
 
 assign pc_o = pc_r;
 assign res_o = res_r;
 assign data_o = data_r;
 assign gpr_rdata_o = gpr_rdata_r;
-assign wbu_csr_rdata_o = wbu_csr_rdata_r;
+assign wbu_gpr_wdata_o = wbu_gpr_wdata_r;
 assign wbu_csr_we_o = wbu_csr_we_r;
 assign wbu_csr_func3_o = wbu_csr_func3_r;
 assign wbu_csr_waddr_o = wbu_csr_waddr_r;
@@ -61,7 +62,7 @@ always @(posedge clk) begin
         res_r <= 'b0;
         data_r <= 'b0;
         gpr_rdata_r <= 'b0;
-        wbu_csr_rdata_r <= 'b0;
+        wbu_gpr_wdata_r <= 'b0;
         wbu_csr_we_r <= 'b0;
         wbu_csr_func3_r <= 'b0;
         wbu_csr_waddr_r <= 'b0;
@@ -71,7 +72,7 @@ always @(posedge clk) begin
         res_r <= res_i;
         data_r <= data_i;
         gpr_rdata_r <= gpr_rdata_i;
-        wbu_csr_rdata_r <= wbu_csr_rdata_i;
+        wbu_gpr_wdata_r <= (wbu_wd_sel == `GPR_WD_SEL_CSR_DATA) ? wbu_csr_rdata_i : res_i;
         wbu_csr_we_r <= wbu_csr_we_i;
         wbu_csr_func3_r <= wbu_csr_func3_i;
         wbu_csr_waddr_r <= wbu_csr_waddr_i;
@@ -81,7 +82,7 @@ always @(posedge clk) begin
         res_r <= 'b0;
         data_r <= 'b0;
         gpr_rdata_r <= 'b0;
-        wbu_csr_rdata_r <= 'b0;
+        wbu_gpr_wdata_r <= 'b0;
         wbu_csr_we_r <= 'b0;
         wbu_csr_func3_r <= 'b0;
         wbu_csr_waddr_r <= 'b0;

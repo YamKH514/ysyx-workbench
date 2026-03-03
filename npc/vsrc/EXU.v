@@ -41,6 +41,16 @@ module EXU(
     input         exu_lsu_ready_i
 );
 
+reg [63:0] idu_exu_rdata_r;
+
+always @(posedge clk) begin
+    if (rst) begin
+        idu_exu_rdata_r <= 'b0;
+    end else if (idu_exu_valid_i & (state == S_IDLE)) begin
+        idu_exu_rdata_r <= idu_exu_rdata_i;
+    end
+end
+
 wire [31:0] rs1;
 wire [31:0] rs2;
 wire [ 1:0] alu_src1_sel;
@@ -48,7 +58,7 @@ wire [ 1:0] alu_src2_sel;
 wire        is_ecall;
 wire        is_mret;
 
-assign {rs2, rs1} = idu_exu_rdata_i;
+assign {rs2, rs1} = idu_exu_rdata_r;
 assign {alu_src2_sel, alu_src1_sel} = idu_exu_src_sel_i;
 assign {is_ecall, is_mret} = idu_exu_wbu_data_i[9:8];
 
@@ -57,7 +67,7 @@ assign exu_lsu_wbu_csr_we_o = idu_exu_csr_we_i;
 assign exu_lsu_wbu_csr_func3_o = idu_exu_csr_func3_i;
 assign exu_lsu_wbu_csr_waddr_o = idu_exu_csr_waddr_i;
 assign exu_lsu_data_o = idu_exu_lsu_data_i;
-assign exu_lsu_gpr_rdata_o = idu_exu_rdata_i;
+assign exu_lsu_gpr_rdata_o = idu_exu_rdata_r;
 assign exu_lsu_wbu_csr_rdata_o = idu_exu_wbu_csr_rdata_i;
 assign exu_lsu_wbu_data_o = idu_exu_wbu_data_i;
 

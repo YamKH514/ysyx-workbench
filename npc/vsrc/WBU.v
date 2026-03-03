@@ -6,10 +6,8 @@ module WBU(
     input       [31:0]  lsu_pc_i,
 
     // idu_to_wbu_data is_ecall[9], is_mret[8], wbu_we[7], wbu_w_addr[6:2], wbu_wd_sel[1:0]
-    input       [ 9:0]  lsu_wbu_data_i,
-    input       [31:0]  lsu_wbu_res_i,
-    input       [31:0]  lsu_wbu_rdata_i,
-    input       [31:0]  lsu_wbu_csr_rdata_i,
+    input       [ 7:0]  lsu_wbu_data_i,
+    input       [31:0]  lsu_wbu_gpr_wdata_i,
     input               lsu_wbu_csr_we_i,
     input       [ 2:0]  lsu_wbu_csr_func3_i,
     input       [11:0]  lsu_wbu_csr_waddr_i,
@@ -42,13 +40,11 @@ wire        ecall;
 wire        mret;
 wire        wbu_we;
 wire [ 4:0] wbu_w_addr;
-wire [31:0] gpr_w_data;
-wire [ 1:0] wbu_wd_sel;
 
-assign {ecall, mret, wbu_we, wbu_w_addr, wbu_wd_sel} = lsu_wbu_data_i;
+assign {ecall, mret, wbu_we, wbu_w_addr} = lsu_wbu_data_i;
 assign wbu_gpr_we_o = wbu_we & state == S_BUSY;
 assign wbu_gpr_waddr_o = wbu_w_addr;
-assign wbu_gpr_wdata_o = gpr_w_data;
+assign wbu_gpr_wdata_o = lsu_wbu_gpr_wdata_i;
 assign wbu_csr_ecall_o = ecall & state == S_BUSY;
 assign wbu_csr_mret_o = mret & state == S_BUSY;
 
@@ -76,11 +72,6 @@ always @(posedge clk) begin
         endcase
     end
 end
-
-assign gpr_w_data = (wbu_wd_sel == `GPR_WD_SEL_ALU_RES)  ? lsu_wbu_res_i:
-                    (wbu_wd_sel == `GPR_WD_SEL_MEM_DATA) ? lsu_wbu_rdata_i:
-                    (wbu_wd_sel == `GPR_WD_SEL_CSR_DATA) ? lsu_wbu_csr_rdata_i:
-                    32'b0;
 
 `ifdef FOR_SIMULATION_ENV
 reg [31:0] pc_r;

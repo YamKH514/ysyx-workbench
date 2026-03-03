@@ -6,7 +6,7 @@ module LSU(
     input  [31:0] exu_pc_i,
     output [31:0] lsu_pc_o,
 
-    input  [31:0] exu_lsu_wbu_csr_rdata_i,
+    input  [31:0] exu_lsu_wbu_gpr_wdata_i,
     input         exu_lsu_wbu_csr_we_i,
     input  [ 2:0] exu_lsu_wbu_csr_func3_i,
     input  [11:0] exu_lsu_wbu_csr_waddr_i,
@@ -17,10 +17,9 @@ module LSU(
     input  [31:0] exu_lsu_res_i,
     input  [63:0] exu_lsu_gpr_rdata_i,
 
-    output [31:0] lsu_wbu_res_o,
     output [31:0] lsu_wbu_rdata_o,
     output [ 9:0] lsu_wbu_data_o,
-    output [31:0] lsu_wbu_csr_rdata_o,
+    output [31:0] lsu_wbu_gpr_wdata_o,
     output        lsu_wbu_csr_we_o,
     output [ 2:0] lsu_wbu_csr_func3_o,
     output [11:0] lsu_wbu_csr_waddr_o,
@@ -72,8 +71,7 @@ module LSU(
 );
 
 assign lsu_pc_o = exu_pc_i;
-assign lsu_wbu_res_o = exu_lsu_res_i;
-assign lsu_wbu_csr_rdata_o = exu_lsu_wbu_csr_rdata_i;
+assign lsu_wbu_gpr_wdata_o = exu_lsu_wbu_gpr_wdata_i;
 assign lsu_wbu_csr_we_o = exu_lsu_wbu_csr_we_i;
 assign lsu_wbu_csr_func3_o = exu_lsu_wbu_csr_func3_i;
 assign lsu_wbu_csr_waddr_o = exu_lsu_wbu_csr_waddr_i;
