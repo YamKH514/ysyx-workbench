@@ -467,7 +467,7 @@ DHDU u_DHDU(
     .exls_ecall         (exls_lsu_wbu_data[9]),
     .exls_mret          (exls_lsu_wbu_data[8]),
     .exls_is_load       (exls_lsu_data[5]),
-    .lswb_rd_i         	(lswb_wbu_data[6:2]),
+    .lswb_rd_i         	(lswb_wbu_data[4:0]),
     .lswb_we_i         	(lswb_wbu_data[7]),
     .lswb_csr_waddr_i   (lswb_wbu_csr_waddr),
     .lswb_csr_we_i      (lswb_wbu_csr_we),
