@@ -215,10 +215,11 @@ wire [31:0] ifid_idu_pc;
 wire [31:0] ifid_idu_inst;
 wire        need_flush;
 wire        fence_i;
+wire [31:0] fence_i_pc;
 wire [31:0] idu_idex_pc;
 wire [24:0] idu_idex_inst;
 wire [ 2:0] idu_idex_inst_type;
-wire        idu_dhdu_use_csr;
+wire        idu_idex_is_csr;
 wire [ 5:0] idu_idex_fun;
 wire [ 1:0] idu_idex_src1_sel;
 wire [ 1:0] idu_idex_src2_sel;
@@ -228,7 +229,9 @@ wire        idu_idex_wbu_csr_we;
 wire [ 3:0] idu_idex_pc_src_sel;
 wire [ 3:0] idu_idex_src_sel;
 wire [31:0] idex_exu_pc;
+wire [24:0] idex_dhdu_inst;
 wire [ 2:0] idex_immext_inst_type;
+wire        idex_dhdu_is_csr;
 wire [24:0] idex_immext_imm;
 wire [ 9:0] idex_gpr_raddr;
 wire [11:0] idex_csr_raddr;
@@ -240,6 +243,8 @@ wire [11:0] idex_exu_csr_waddr;
 wire        idex_exu_csr_we;
 wire [ 3:0] idex_exu_pc_src_sel;
 wire [ 3:0] idex_exu_src_sel;
+wire [ 1:0] dhdu_exu_rs1_sel;
+wire [ 1:0] dhdu_exu_rs2_sel;
 wire [31:0] exu_exls_pc;
 wire [31:0] exu_exls_res;
 wire [ 8:0] exu_exls_data;
@@ -254,25 +259,22 @@ wire [31:0] exls_lsu_pc;
 wire [31:0] exls_lsu_res;
 wire [ 8:0] exls_lsu_data;
 wire [63:0] exls_lsu_gpr_rdata;
+wire [31:0] exls_lsu_wbu_gpr_wdata;
 wire        exls_lsu_wbu_csr_we;
 wire [ 2:0] exls_lsu_wbu_csr_func3;
 wire [11:0] exls_lsu_wbu_csr_waddr;
-wire [31:0] exls_lsu_wbu_csr_rdata;
 wire [ 9:0] exls_lsu_wbu_data;
 wire [31:0] lsu_lswb_pc;
-wire [31:0] lsu_lswb_res;
 wire [31:0] lsu_lswb_rdata;
 wire [ 9:0] lsu_lswb_data;
-wire [31:0] lsu_lswb_csr_rdata;
+wire [31:0] lsu_lswb_gpr_wdata;
 wire        lsu_lswb_csr_we;
 wire [ 2:0] lsu_lswb_csr_func3;
 wire [11:0] lsu_lswb_csr_waddr;
 wire [31:0] lsu_lswb_csr_wdata;
 wire [31:0] lswb_wbu_pc;
-wire [31:0] lswb_wbu_res;
-wire [31:0] lswb_wbu_rdata;
-wire [ 9:0] lswb_wbu_data;
-wire [31:0] lswb_wbu_csr_rdata;
+wire [ 7:0] lswb_wbu_data;
+wire [31:0] lswb_wbu_gpr_wdata;
 wire        lswb_wbu_csr_we;
 wire [ 2:0] lswb_wbu_csr_func3;
 wire [11:0] lswb_wbu_csr_waddr;
@@ -301,10 +303,10 @@ wire if_ifid_valid;
 wire if_ifid_ready;
 wire ifid_id_valid;
 wire ifid_id_ready;
-wire id_dhdu_valid;
-wire dhdu_idex_valid;
+wire id_idex_valid;
+wire idex_dhdu_valid;
 wire id_idex_ready;
-wire idex_ex_valid;
+wire dhdu_ex_valid;
 wire idex_ex_ready;
 wire ex_exls_valid;
 wire ex_exls_ready;
@@ -327,6 +329,8 @@ PCCnt #(.RESET_PC 	(32'h30000000  )) u_PCCnt(
     .pc_target_pc_i     (exu_pc_target_pc   ),
     .pc_cnt_pc_o        (pc                 ),
     .need_flush_i       (need_flush         ),
+    .fence_i_i          (fence_i            ),
+    .fence_i_pc_i       (fence_i_pc         ),
     .pc_ifu_valid_o     (pc_if_valid        ),
     .pc_ifu_ready_i     (pc_if_ready        )
 );
@@ -400,8 +404,9 @@ IDU u_IDU(
     .idu_pc_o                   (idu_idex_pc            ),
     .idu_inst_o                 (idu_idex_inst          ),
     .fence_i_o                  (fence_i                ),
+    .fence_i_pc_o               (fence_i_pc             ),
     .idu_imm_type_o             (idu_idex_inst_type     ),
-    .idu_dhdu_use_csr_o         (idu_dhdu_use_csr       ),
+    .idu_dhdu_is_csr_o          (idu_idex_is_csr        ),
     .idu_exu_fun_o              (idu_idex_fun           ),
     .idu_exu_src1_sel_o         (idu_idex_src1_sel      ),
     .idu_exu_src2_sel_o         (idu_idex_src2_sel      ),
@@ -411,37 +416,8 @@ IDU u_IDU(
     .idu_exu_pc_src_sel_o       (idu_idex_pc_src_sel    ),
     .ifu_idu_valid_i            (ifid_id_valid          ),
     .ifu_idu_ready_o            (ifid_id_ready          ),
-    .idu_exu_valid_o            (id_dhdu_valid          ),
+    .idu_exu_valid_o            (id_idex_valid          ),
     .idu_exu_ready_i            (id_idex_ready          )
-);
-
-DHDU u_DHDU(
-    .idu_inst_type_i   	(idu_idex_inst_type ),
-    .idu_gpr_rs_i      	(idu_idex_inst[17:8]),
-    .idu_csr_raddr_i    (idu_idex_inst[24:13]),
-    .use_csr_i          (idu_dhdu_use_csr),
-    .is_ecall_i         (idu_idex_wbu_data[9]),
-    .is_mret_i          (idu_idex_wbu_data[8]),
-    .idex_rd_i         	(idex_exu_wbu_data[6:2]),
-    .idex_we_i         	(idex_exu_wbu_data[7]),
-    .idex_csr_waddr_i   (idex_exu_csr_waddr),
-    .idex_csr_we_i      (idex_exu_csr_we),
-    .idex_ecall         (idex_exu_wbu_data[9]),
-    .idex_mret          (idex_exu_wbu_data[8]),
-    .exls_rd_i         	(exls_lsu_wbu_data[6:2]),
-    .exls_we_i         	(exls_lsu_wbu_data[7]),
-    .exls_csr_waddr_i   (exls_lsu_wbu_csr_waddr),
-    .exls_csr_we_i      (exls_lsu_wbu_csr_we),
-    .exls_ecall         (exls_lsu_wbu_data[9]),
-    .exls_mret          (exls_lsu_wbu_data[8]),
-    .lswb_rd_i         	(lswb_wbu_data[6:2]),
-    .lswb_we_i         	(lswb_wbu_data[7]),
-    .lswb_csr_waddr_i   (lswb_wbu_csr_waddr),
-    .lswb_csr_we_i      (lswb_wbu_csr_we),
-    .lswb_ecall         (lswb_wbu_data[9]),
-    .lswb_mret          (lswb_wbu_data[8]),
-    .id_dhdu_valid_i   	(id_dhdu_valid      ),
-    .dhdu_idex_valid_o 	(dhdu_idex_valid    )
 );
 
 assign idu_idex_src_sel = {idu_idex_src2_sel, idu_idex_src1_sel};
@@ -452,6 +428,7 @@ ID_EX u_ID_EX(
     .pc_i               (idu_idex_pc            ),
     .inst_i             (idu_idex_inst          ),
     .inst_type_i        (idu_idex_inst_type     ),
+    .is_csr_i           (idu_idex_is_csr        ),
     .fun_i           	(idu_idex_fun           ),
     .src_sel_i       	(idu_idex_src_sel       ),
     .lsu_data_i      	(idu_idex_lsu_data      ),
@@ -460,7 +437,9 @@ ID_EX u_ID_EX(
     .pc_src_sel_i    	(idu_idex_pc_src_sel    ),
     .need_flush_i       (need_flush             ),
     .pc_o               (idex_exu_pc            ),
+    .inst_o             (idex_dhdu_inst         ),
     .inst_type_o        (idex_immext_inst_type  ),
+    .is_csr_o           (idex_dhdu_is_csr       ),
     .imm_o              (idex_immext_imm        ),
     .gpr_raddr_o        (idex_gpr_raddr         ),
     .csr_raddr_o        (idex_csr_raddr         ),
@@ -472,11 +451,53 @@ ID_EX u_ID_EX(
     .wbu_csr_waddr_o    (idex_exu_csr_waddr     ),
     .wbu_csr_we_o    	(idex_exu_csr_we        ),
     .pc_src_sel_o    	(idex_exu_pc_src_sel    ),
-    .id_idex_valid_i 	(dhdu_idex_valid        ),
+    .id_idex_valid_i 	(id_idex_valid          ),
     .id_idex_ready_o 	(id_idex_ready          ),
-    .idex_ex_valid_o 	(idex_ex_valid          ),
+    .idex_ex_valid_o 	(idex_dhdu_valid        ),
     .idex_ex_ready_i 	(idex_ex_ready          )
 );
+
+DHDU u_DHDU(
+    .idu_inst_type_i   	(idex_immext_inst_type),
+    .idu_gpr_rs_i      	(idex_dhdu_inst[17:8]),
+    .idu_csr_raddr_i    (idex_dhdu_inst[24:13]),
+    .is_csr_i           (idex_dhdu_is_csr),
+    .is_ecall_i         (idex_exu_wbu_data[9]),
+    .is_mret_i          (idex_exu_wbu_data[8]),
+    .exls_rd_i         	(exls_lsu_wbu_data[6:2]),
+    .exls_we_i         	(exls_lsu_wbu_data[7]),
+    .exls_csr_waddr_i   (exls_lsu_wbu_csr_waddr),
+    .exls_csr_we_i      (exls_lsu_wbu_csr_we),
+    .exls_ecall         (exls_lsu_wbu_data[9]),
+    .exls_mret          (exls_lsu_wbu_data[8]),
+    .exls_is_load       (exls_lsu_data[5]),
+    .lswb_rd_i         	(lswb_wbu_data[4:0]),
+    .lswb_we_i         	(lswb_wbu_data[5]),
+    .lswb_csr_waddr_i   (lswb_wbu_csr_waddr),
+    .lswb_csr_we_i      (lswb_wbu_csr_we),
+    .lswb_ecall         (lswb_wbu_data[7]),
+    .lswb_mret          (lswb_wbu_data[6]),
+    .exu_rs1_sel_o      (dhdu_exu_rs1_sel),
+    .exu_rs2_sel_o      (dhdu_exu_rs2_sel),
+    .id_dhdu_valid_i   	(idex_dhdu_valid),
+    .dhdu_idex_valid_o 	(dhdu_ex_valid)
+);
+
+wire [63:0] exu_rdata;
+always @(*) begin
+    case(dhdu_exu_rs1_sel)
+        2'b00: exu_rdata[31:0] = gpr_exu_rdata[31:0];
+        2'b01: exu_rdata[31:0] = exls_lsu_wbu_gpr_wdata;
+        2'b10: exu_rdata[31:0] = lswb_wbu_gpr_wdata;
+        default: exu_rdata[31:0] = gpr_exu_rdata[31:0];
+    endcase
+    case(dhdu_exu_rs2_sel)
+        2'b00: exu_rdata[63:32] = gpr_exu_rdata[63:32];
+        2'b01: exu_rdata[63:32] = exls_lsu_wbu_gpr_wdata;
+        2'b10: exu_rdata[63:32] = lswb_wbu_gpr_wdata;
+        default: exu_rdata[63:32] = gpr_exu_rdata[63:32];
+    endcase
+end
 
 ImmExt u_ImmExt(
     .idu_imm_type_i (idex_immext_inst_type  ),
@@ -496,7 +517,7 @@ EXU u_EXU(
     .idu_exu_csr_waddr_i        (idex_exu_csr_waddr     ),
     .idu_exu_wbu_data_i         (idex_exu_wbu_data      ),
     .idu_exu_pc_src_sel_i       (idex_exu_pc_src_sel    ),
-    .idu_exu_rdata_i            (gpr_exu_rdata          ),
+    .idu_exu_rdata_i            (exu_rdata              ),
     .idu_exu_fun_i              (idex_exu_fun           ),
     .idu_exu_src_sel_i          (idex_exu_src_sel       ),
     .imm_exu_i                  (immext_exu_res         ),
@@ -512,7 +533,7 @@ EXU u_EXU(
     .exu_lsu_wbu_data_o         (exu_exls_wbu_data      ),
     .exu_pc_target_pc_o         (exu_pc_target_pc       ),
     .need_flush_o               (need_flush             ),
-    .idu_exu_valid_i            (idex_ex_valid          ),
+    .idu_exu_valid_i            (dhdu_ex_valid          ),
     .idu_exu_ready_o            (idex_ex_ready          ),
     .exu_lsu_valid_o            (ex_exls_valid          ),
     .exu_lsu_ready_i            (ex_exls_ready          )
@@ -534,7 +555,7 @@ EX_LS u_EX_LS(
     .res_o           	(exls_lsu_res           ),
     .data_o          	(exls_lsu_data          ),
     .gpr_rdata_o     	(exls_lsu_gpr_rdata     ),
-    .wbu_csr_rdata_o 	(exls_lsu_wbu_csr_rdata ),
+    .wbu_gpr_wdata_o 	(exls_lsu_wbu_gpr_wdata ),
     .wbu_csr_we_o    	(exls_lsu_wbu_csr_we    ),
     .wbu_csr_func3_o 	(exls_lsu_wbu_csr_func3 ),
     .wbu_csr_waddr_o 	(exls_lsu_wbu_csr_waddr ),
@@ -554,7 +575,7 @@ LSU u_LSU(
     .rst                        (reset                  ),
     .exu_pc_i                   (exls_lsu_pc            ),
     .lsu_pc_o                   (lsu_lswb_pc            ),
-    .exu_lsu_wbu_csr_rdata_i    (exls_lsu_wbu_csr_rdata ),
+    .exu_lsu_wbu_gpr_wdata_i    (exls_lsu_wbu_gpr_wdata ),
     .exu_lsu_wbu_data_i         (exls_lsu_wbu_data      ),
     .exu_lsu_wbu_csr_we_i       (exls_lsu_wbu_csr_we    ),
     .exu_lsu_wbu_csr_func3_i    (exls_lsu_wbu_csr_func3 ),
@@ -562,10 +583,9 @@ LSU u_LSU(
     .exu_lsu_data_i             (exls_lsu_data          ),
     .exu_lsu_res_i              (exls_lsu_res           ),
     .exu_lsu_gpr_rdata_i        (exls_lsu_gpr_rdata     ),
-    .lsu_wbu_res_o              (lsu_lswb_res           ),
     .lsu_wbu_rdata_o            (lsu_lswb_rdata         ),
     .lsu_wbu_data_o             (lsu_lswb_data          ),
-    .lsu_wbu_csr_rdata_o        (lsu_lswb_csr_rdata     ),
+    .lsu_wbu_gpr_wdata_o        (lsu_lswb_gpr_wdata     ),
     .lsu_wbu_csr_we_o           (lsu_lswb_csr_we        ),
     .lsu_wbu_csr_func3_o        (lsu_lswb_csr_func3     ),
     .lsu_wbu_csr_waddr_o        (lsu_lswb_csr_waddr     ),
@@ -616,19 +636,16 @@ LS_WB u_LS_WB(
     .clk             	(clock              ),
     .rst             	(reset              ),
     .pc_i               (lsu_lswb_pc        ),
-    .res_i           	(lsu_lswb_res       ),
     .rdata_i         	(lsu_lswb_rdata     ),
     .data_i          	(lsu_lswb_data      ),
-    .csr_rdata_i     	(lsu_lswb_csr_rdata ),
+    .gpr_wdata_i     	(lsu_lswb_gpr_wdata ),
     .csr_we_i        	(lsu_lswb_csr_we    ),
     .csr_func3_i     	(lsu_lswb_csr_func3 ),
     .csr_waddr_i     	(lsu_lswb_csr_waddr ),
     .csr_wdata_i     	(lsu_lswb_csr_wdata ),
     .pc_o               (lswb_wbu_pc        ),
-    .res_o           	(lswb_wbu_res       ),
-    .rdata_o         	(lswb_wbu_rdata     ),
     .data_o          	(lswb_wbu_data      ),
-    .csr_rdata_o     	(lswb_wbu_csr_rdata ),
+    .gpr_wdata_o        (lswb_wbu_gpr_wdata ),
     .csr_we_o        	(lswb_wbu_csr_we    ),
     .csr_func3_o     	(lswb_wbu_csr_func3 ),
     .csr_waddr_o     	(lswb_wbu_csr_waddr ),
@@ -648,9 +665,7 @@ WBU u_WBU(
     .rst                    (reset              ),
     .lsu_pc_i               (lswb_wbu_pc        ),
     .lsu_wbu_data_i         (lswb_wbu_data      ),
-    .lsu_wbu_res_i          (lswb_wbu_res       ),
-    .lsu_wbu_rdata_i        (lswb_wbu_rdata     ),
-    .lsu_wbu_csr_rdata_i    (lswb_wbu_csr_rdata ),
+    .lsu_wbu_gpr_wdata_i    (lswb_wbu_gpr_wdata ),
     .lsu_wbu_csr_we_i       (lswb_wbu_csr_we    ),
     .lsu_wbu_csr_func3_i    (lswb_wbu_csr_func3 ),
     .lsu_wbu_csr_waddr_i    (lswb_wbu_csr_waddr ),

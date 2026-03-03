@@ -11,9 +11,11 @@ module IDU(
     output [24:0] idu_inst_o,
 
     output        fence_i_o,
+    output [31:0] fence_i_pc_o,
 
     output [ 2:0] idu_imm_type_o,
-    output        idu_dhdu_use_csr_o,
+
+    output        idu_dhdu_is_csr_o,
 
     output [ 5:0] idu_exu_fun_o,
     output [ 1:0] idu_exu_src1_sel_o,
@@ -181,7 +183,7 @@ end
 
 assign ecall_r = inst_ecall;
 assign mret_r  = inst_mret;
-assign idu_dhdu_use_csr_o = inst_csrrw | inst_csrrs;
+assign idu_dhdu_is_csr_o = inst_csrrw | inst_csrrs;
 
 assign idu_imm_type_o = `INST_TYPE_I & {3{inst_jalr | inst_lb | inst_lh | inst_lw | inst_lbu | inst_lhu |  inst_addi | inst_slti | inst_sltiu | inst_xori | inst_ori | inst_andi | inst_slli | inst_srli | inst_srai | inst_fence_i | inst_csrrw | inst_csrrs}} |
                         `INST_TYPE_S & {3{inst_sb | inst_sh | inst_sw}} |
@@ -195,6 +197,7 @@ assign wbu_we_r = inst_lui | inst_auipc | inst_jal | inst_jalr | inst_lb | inst_
 assign idu_exu_wbu_csr_we_o = inst_csrrw | inst_csrrs;
 
 assign fence_i_o = inst_fence_i;
+assign fence_i_pc_o = ifu_pc_i + 4;
 
 assign idu_exu_fun_o =  `ALU_SUB                & {6{inst_sub}} |
                         `ALU_EQU                & {6{inst_beq | inst_bne}} |
