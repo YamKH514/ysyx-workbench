@@ -11,6 +11,7 @@ module IDU(
     output [24:0] idu_inst_o,
 
     output        fence_i_o,
+    output [31:0] fence_i_pc_o,
 
     output [ 2:0] idu_imm_type_o,
 
@@ -196,6 +197,7 @@ assign wbu_we_r = inst_lui | inst_auipc | inst_jal | inst_jalr | inst_lb | inst_
 assign idu_exu_wbu_csr_we_o = inst_csrrw | inst_csrrs;
 
 assign fence_i_o = inst_fence_i;
+assign fence_i_pc_o = ifu_pc_i + 4;
 
 assign idu_exu_fun_o =  `ALU_SUB                & {6{inst_sub}} |
                         `ALU_EQU                & {6{inst_beq | inst_bne}} |

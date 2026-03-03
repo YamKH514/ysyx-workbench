@@ -215,6 +215,7 @@ wire [31:0] ifid_idu_pc;
 wire [31:0] ifid_idu_inst;
 wire        need_flush;
 wire        fence_i;
+wire [31:0] fence_i_pc;
 wire [31:0] idu_idex_pc;
 wire [24:0] idu_idex_inst;
 wire [ 2:0] idu_idex_inst_type;
@@ -328,6 +329,8 @@ PCCnt #(.RESET_PC 	(32'h30000000  )) u_PCCnt(
     .pc_target_pc_i     (exu_pc_target_pc   ),
     .pc_cnt_pc_o        (pc                 ),
     .need_flush_i       (need_flush         ),
+    .fence_i_i          (fence_i            ),
+    .fence_i_pc_i       (fence_i_pc         ),
     .pc_ifu_valid_o     (pc_if_valid        ),
     .pc_ifu_ready_i     (pc_if_ready        )
 );
@@ -401,6 +404,7 @@ IDU u_IDU(
     .idu_pc_o                   (idu_idex_pc            ),
     .idu_inst_o                 (idu_idex_inst          ),
     .fence_i_o                  (fence_i                ),
+    .fence_i_pc_o               (fence_i_pc             ),
     .idu_imm_type_o             (idu_idex_inst_type     ),
     .idu_dhdu_is_csr_o          (idu_idex_is_csr        ),
     .idu_exu_fun_o              (idu_idex_fun           ),
