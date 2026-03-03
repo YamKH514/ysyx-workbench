@@ -44,7 +44,7 @@ reg        wbu_csr_we_r;
 reg [ 2:0] wbu_csr_func3_r;
 reg [11:0] wbu_csr_waddr_r;
 reg [ 9:0] wbu_data_r;
-wire[ 1:0] wbu_wd_sel = data_i[1:0];
+wire[ 1:0] wbu_wd_sel = wbu_data_i[1:0];
 
 assign pc_o = pc_r;
 assign res_o = res_r;
